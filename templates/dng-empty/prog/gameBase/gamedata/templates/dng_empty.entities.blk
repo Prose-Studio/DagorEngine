@@ -15,6 +15,10 @@ replicating{
   replication{ _tags:t="net"; }
 }
 
+daeditor_selected{ // added by the entity editor (F12) to the selected entities
+  "daeditor__selected:tag"{}
+}
+
 msg_sink{ // created by the game: network messages
   msg_sink{}
   _use:t=replicating;

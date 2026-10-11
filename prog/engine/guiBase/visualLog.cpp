@@ -192,7 +192,7 @@ void draw(int min_level)
     StdGuiRender::render_frame(0, 0, StdGuiRender::screen_width(), StdGuiRender::screen_height(), 1);
   }
 
-  if (!tabItems.size())
+  if (!tabItems.size() || !StdGuiRender::get_font(fontId)) // no fonts loaded (initUiFonts:b=no): messages stay in history only
     return;
 
   TIME_D3D_PROFILE(visuallog)
