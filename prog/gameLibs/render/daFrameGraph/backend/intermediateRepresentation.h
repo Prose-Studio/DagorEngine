@@ -163,13 +163,13 @@ struct GpuDescription : ResourceDescription
 struct ScheduledResource
 {
   eastl::variant<GpuDescription, BlobDescription> description;
-  ResourceType resourceType;
+  ResourceType resourceType{};
   eastl::optional<AutoResolutionData> resolutionType;
-  ClearStage clearStage;
+  ClearStage clearStage{};
   eastl::variant<ResourceClearValue, DynamicParameter> clearValue;
-  ResourceClearFlags clearFlags;
-  History history;
-  bool autoMipCount;
+  ResourceClearFlags clearFlags{};
+  History history{};
+  bool autoMipCount{};
 
   bool operator==(const ScheduledResource &) const = default;
 
