@@ -1,7 +1,8 @@
-// Tests of this project: python project.py test (or python <engine>/dng.py test run --project <this dir>).
+// The jam runner's tests of this project: python project.py test --jam (or python <engine>/dng.py test --jam run
+// --project <this dir>); python project.py test runs them on CTest (prog/tests/*/CMakeLists.txt).
 // Targets are in prog/tests/*/test.blk, see <engine>/_docs/source/testing.
 game{ // the game the in-game layers (ecs, scenario) run
   codename:t="dng_empty"
   dir:t="game"
-  build:t="{python} project.py build code" // once before in-game targets; scenarios also need python project.py build shaders
+  build:t="{python} project.py build code --jam" // once before in-game targets; scenarios also need python project.py build shaders
 }

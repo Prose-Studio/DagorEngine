@@ -16,6 +16,8 @@ function(_dagor_stringify target mode)
   foreach(file IN LISTS ARGN)
     _dagor_abs_paths(src "${file}")
     cmake_path(RELATIVE_PATH src BASE_DIRECTORY "${base}" OUTPUT_VARIABLE rel)
+    # a file outside the base dir stays in the gen dir: ../ would not resolve on POSIX until the dirs exist
+    string(REPLACE "../" "__/" rel "${rel}")
     set(out "${gen_dir}/${rel}.inl")
     add_custom_command(OUTPUT "${out}"
       COMMAND "${Python3_EXECUTABLE}" "${DAGOR_STRINGIFY_SCRIPT}" ${mode} "${src}" "${out}"
