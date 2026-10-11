@@ -5,9 +5,10 @@
 #   - with DIR (the engine dir that declares <tool>), in a tree that is not cross-compiling: the tree's own target;
 #   - with DAGOR_HOST_TOOLS_DIR (a CDK, e.g. tools/dagor_cdk/windows-x86_64 of a prebuilt engine), the program there;
 #   - otherwise the host CDK of this engine, built on demand: target dagor.hostTools configures and builds the engine's
-#     cdk tree for the host in <engine>/build/host-cdk-<host> and installs it into <engine>/tools/dagor_cdk/<host>
-#     (DAGOR_HOST_TOOLS_CONFIG, Dev by default). Trees sharing that tree (projects, cross builds) build it under a lock,
-#     one at a time; when it is up to date that is a quick check.
+#     cdk tree for the host in <engine>/build/<platform>-cdk (the tools of the editor tree, daBuild with its plugins,
+#     in <platform>-editor: the trees python dng.py build makes) and installs it into <engine>/tools/dagor_cdk/<host> (DAGOR_HOST_TOOLS_CONFIG, Dev by
+#     default). Trees sharing that tree (projects, cross builds) build it under a lock, one at a time; when it is up to
+#     date that is a quick check.
 # A custom command running the tool lists ${<out-var>_DEPENDS} in its DEPENDS.
 include_guard(GLOBAL)
 
@@ -15,6 +16,9 @@ set(DAGOR_HOST_TOOLS_DIR "" CACHE PATH "A CDK (prebuilt engine tools) for the bu
 set(DAGOR_HOST_TOOLS_CONFIG Dev CACHE STRING "Configuration of the host tools built on demand")
 set_property(CACHE DAGOR_HOST_TOOLS_CONFIG PROPERTY STRINGS Dev Rel IRel Dbg)
 set(DAGOR_HOST_TOOLS_SCRIPT "${CMAKE_CURRENT_LIST_DIR}/scripts/build_host_tools.cmake")
+
+# the CDK tools of the editor tree (on the shared kernel; daBuild loads the exporter plugins built with it)
+set(_DAGOR_EDITOR_HOST_TOOLS daBuild ddsxCvt2)
 
 # the CDK tools jam built rel only, without a config postfix (NO_CONFIG_POSTFIX; the cdk tree checks this list)
 set(_DAGOR_CDK_NO_POSTFIX binBlk ddsx2dds ddsxCvt dolphin whale duktape pcDdsxConv iosDdsxConv andDdsxConv)
@@ -59,7 +63,11 @@ function(dagor_host_tool tool out)
   # the engine's host CDK, built by the dagor.hostTools target
   _dagor_host_tool_file(${tool} ${DAGOR_HOST_TOOLS_CONFIG} file)
   set(path "${DAGOR_ENGINE_ROOT}/tools/dagor_cdk/${DAGOR_HOST_TAG}/${file}")
-  set_property(GLOBAL APPEND PROPERTY DAGOR_HOST_TOOLS "${tool}")
+  set(variant cdk)
+  if(tool IN_LIST _DAGOR_EDITOR_HOST_TOOLS)
+    set(variant editor)
+  endif()
+  set_property(GLOBAL APPEND PROPERTY DAGOR_HOST_TOOLS_${variant} "${tool}")
   set_property(GLOBAL APPEND PROPERTY DAGOR_HOST_TOOL_FILES "${path}")
   set(${out} "${path}" PARENT_SCOPE)
   set(${out}_DEPENDS dagor.hostTools PARENT_SCOPE)
@@ -67,24 +75,33 @@ endfunction()
 
 # called by dagor_finalize(): the dagor.hostTools target, building the tools the tree asked for
 function(_dagor_host_tools_target)
-  get_property(tools GLOBAL PROPERTY DAGOR_HOST_TOOLS)
-  if(NOT tools)
+  get_property(files GLOBAL PROPERTY DAGOR_HOST_TOOL_FILES)
+  if(NOT files)
     return()
   endif()
-  list(REMOVE_DUPLICATES tools)
-  get_property(files GLOBAL PROPERTY DAGOR_HOST_TOOL_FILES)
   list(REMOVE_DUPLICATES files)
-  list(JOIN tools "," tool_list)
   set(make_program "")
   if(CMAKE_GENERATOR MATCHES "Ninja")
     set(make_program "${CMAKE_MAKE_PROGRAM}") # the host tree uses the same Ninja
   endif()
-  add_custom_target(dagor.hostTools
-    COMMAND "${CMAKE_COMMAND}" -DENGINE_ROOT=${DAGOR_ENGINE_ROOT} -DHOST_TAG=${DAGOR_HOST_TAG}
-      -DCONFIG=${DAGOR_HOST_TOOLS_CONFIG} -DTOOLS=${tool_list} -DDEPS_DIR=${DAGOR_DEPS_DIR}
-      -DMAKE_PROGRAM=${make_program} -P "${DAGOR_HOST_TOOLS_SCRIPT}"
+  set(commands)
+  set(all_tools)
+  foreach(variant cdk editor)
+    get_property(tools GLOBAL PROPERTY DAGOR_HOST_TOOLS_${variant})
+    if(NOT tools)
+      continue()
+    endif()
+    list(REMOVE_DUPLICATES tools)
+    list(APPEND all_tools ${tools})
+    list(JOIN tools "," tool_list)
+    list(APPEND commands COMMAND "${CMAKE_COMMAND}" -DENGINE_ROOT=${DAGOR_ENGINE_ROOT} -DHOST_TAG=${DAGOR_HOST_TAG}
+      -DVARIANT=${variant} -DCONFIG=${DAGOR_HOST_TOOLS_CONFIG} -DTOOLS=${tool_list} -DDEPS_DIR=${DAGOR_DEPS_DIR}
+      -DMAKE_PROGRAM=${make_program} -P "${DAGOR_HOST_TOOLS_SCRIPT}")
+  endforeach()
+  list(JOIN all_tools ", " all_tools)
+  add_custom_target(dagor.hostTools ${commands}
     BYPRODUCTS ${files}
-    COMMENT "Host tools of ${DAGOR_ENGINE_ROOT} (${DAGOR_HOST_TAG}, ${DAGOR_HOST_TOOLS_CONFIG}): ${tools}"
+    COMMENT "Host tools of ${DAGOR_ENGINE_ROOT} (${DAGOR_HOST_TAG}, ${DAGOR_HOST_TOOLS_CONFIG}): ${all_tools}"
     USES_TERMINAL
     VERBATIM)
   set_property(TARGET dagor.hostTools PROPERTY FOLDER "tools")

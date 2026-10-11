@@ -1,4 +1,5 @@
-# Content built by the tree's tools.
+# Content built by the tree's tools: dagor_add_shaders() (tracked by CMake), dagor_add_content_step() (tracked by its
+# tool).
 #
 # dagor_add_shaders(<name> COMPILER <dsc2 target> BLK <shaders.blk> OUTPUT <dir>/<base> [ARGS <compiler args>...]
 #                   [INSTALL <dir> COMPONENT <component>])
@@ -54,5 +55,54 @@ function(dagor_add_shaders name)
     endif()
     install(DIRECTORY "${out_dir}/" DESTINATION "${arg_INSTALL}" COMPONENT "${arg_COMPONENT}"
       FILES_MATCHING PATTERN "${out_base}.*.shdump.bin")
+  endif()
+endfunction()
+
+# dagor_add_content_step(<name> (TOOL <engine tool> | COMMAND <command>...) [ARGS <argument>...]
+#                        [WORKING_DIRECTORY <dir>] [GROUP <target>] [DEPENDS <target>...] [COMMENT <text>])
+# A target that runs an engine tool (dagor_host_tool: the tree's own, a CDK's or the host CDK built on demand) or a
+# command whenever it is built, for content whose tool keeps track of what changed itself (the shader compilers'
+# caches, daBuild's, vromfsPacker): a game's shaders, vromfs and assets. It is not part of the default build; GROUP
+# (a target made on first use) builds it with the other steps of that group, DEPENDS after other steps.
+function(dagor_add_content_step name)
+  cmake_parse_arguments(PARSE_ARGV 1 arg "" "TOOL;WORKING_DIRECTORY;GROUP;COMMENT" "COMMAND;ARGS;DEPENDS")
+  if(arg_UNPARSED_ARGUMENTS OR (NOT arg_TOOL AND NOT arg_COMMAND) OR (arg_TOOL AND arg_COMMAND))
+    message(FATAL_ERROR "dagor_add_content_step(${name} TOOL <tool> | COMMAND <command>... ...)")
+  endif()
+  set(tool_DEPENDS)
+  if(arg_TOOL)
+    dagor_host_tool(${arg_TOOL} tool)
+    set(command "${tool}")
+  else()
+    set(command ${arg_COMMAND})
+  endif()
+  set(dir "${CMAKE_CURRENT_SOURCE_DIR}")
+  if(arg_WORKING_DIRECTORY)
+    _dagor_abs_paths(dir "${arg_WORKING_DIRECTORY}")
+  endif()
+  set(comment "${arg_COMMENT}")
+  if(NOT comment)
+    set(comment "${name}")
+  endif()
+  # a symbolic output: never made, so the step runs every time its target is built
+  set(run "${CMAKE_CURRENT_BINARY_DIR}/content/${name}.run")
+  set_source_files_properties("${run}" PROPERTIES SYMBOLIC ON)
+  add_custom_command(OUTPUT "${run}"
+    COMMAND ${command} ${arg_ARGS}
+    WORKING_DIRECTORY "${dir}"
+    DEPENDS ${tool_DEPENDS}
+    COMMENT "${comment}"
+    VERBATIM)
+  add_custom_target(${name} DEPENDS "${run}")
+  set_property(TARGET ${name} PROPERTY FOLDER "content")
+  if(arg_DEPENDS)
+    add_dependencies(${name} ${arg_DEPENDS})
+  endif()
+  if(arg_GROUP)
+    if(NOT TARGET ${arg_GROUP})
+      add_custom_target(${arg_GROUP})
+      set_property(TARGET ${arg_GROUP} PROPERTY FOLDER "content")
+    endif()
+    add_dependencies(${arg_GROUP} ${name})
   endif()
 endfunction()

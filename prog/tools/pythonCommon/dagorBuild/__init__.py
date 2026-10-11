@@ -105,6 +105,17 @@ class Build:
         return False
     return True
 
+  def game_content(self, project_root, targets, defines=()):
+    """Builds content targets of the project's client tree (prog/CMakeLists.txt: shaders, vromfs, tools, assets)."""
+    from pythonCommon import dagorCMake
+    tree = dagorCMake.game_tree(project_root, 'client', dagorCMake.Target(arch=self.arch or None, defines=defines),
+                                self.dry_run)
+    if not (tree.configure() and tree.build(targets=targets)):
+      print('FAILED: {} of {}'.format(', '.join(targets), project_root), flush=True)
+      self.ok = False
+      return False
+    return True
+
   @property
   def exit_code(self):
     return 0 if self.ok else 1

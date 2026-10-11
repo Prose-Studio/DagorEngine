@@ -2,12 +2,14 @@
 """Builds the game: python build.py [code] [shaders] [vromfs] [tools] [assets] [arch:<arch>] [--jam] [--dry-run]
 (all of them when none is given, in this order).
 
-  code     the client and the dedicated server (with their das AOT compiler) into ../game/<platform>-<arch>: with
-           CMake (prog/CMakeLists.txt, trees in ../build), with jam given --jam
+  code     the client and the dedicated server (with their das AOT compiler) into ../game/<platform>-<arch>
   shaders  the game shaders into ../game/compiledShaders, the tool shaders into ../tools
   vromfs   prog.vromfs.blk into ../game/dng_empty.vromfs.bin
   tools    the snapshot of shaders, vromfs and tools/*.das daEditor renders levels with (../tools/snapshot)
   assets   develop/assets with dabuild into ../game/content
+
+CMake builds them (prog/CMakeLists.txt, trees in ../build; the content as targets of the client's tree). Given --jam,
+jam builds the code and the engine's tools in tools/dagor_cdk make the content.
 """
 import glob
 import os
@@ -29,9 +31,16 @@ os.chdir(PROG_DIR)
 if not b.dry_run:
   dagorProject.setup(PROJECT)  # the generated engine glue is current before anything is built
 
-if 'code' in b.components and not b.jam:
-  b.game(PROJECT.root, defines=['DAGOR_DAS_AOT=ON'])  # CMake: build/<platform>-client, -dedicated (prog/CMakeLists.txt)
-elif 'code' in b.components:
+DEFINES = ['DAGOR_DAS_AOT=ON']  # the game's CMake trees: build/<platform>-client, -dedicated (prog/CMakeLists.txt)
+CONTENT = [c for c in ('shaders', 'vromfs', 'tools', 'assets') if c in b.components]
+if not b.jam:
+  if 'code' in b.components:
+    b.game(PROJECT.root, defines=DEFINES)
+  if CONTENT and b.ok:
+    b.game_content(PROJECT.root, CONTENT, defines=DEFINES)  # the content targets of the client's tree
+  sys.exit(b.exit_code)
+
+if 'code' in b.components:
   JAM = ['jam', '-sNeedDasAotCompile=yes'] + b.jam_arch
   if HOST == 'windows' and not b.arch:
     JAM += ['-sPlatformArch=' + HOST_ARCH]

@@ -22,7 +22,7 @@ ENGINE_VARIANTS = {
   'tests': {'DAGOR_CHECKED_CONTAINERS_CONFIGS': 'Dev;Dbg', 'DAGOR_EXCEPTIONS_CONFIGS': 'Dev;Rel;IRel;Dbg',
             'DAGOR_FORCE_LOGS': 'ON'},
   'cdk': {},
-  'editor': {'DAGOR_KERNEL_LINKAGE': 'dynamic'},
+  'editor': {},  # the shared kernel (daKernel) by default
   'maxplug': {'DAGOR_EXCEPTIONS_CONFIGS': 'Dev;Rel;IRel;Dbg', 'DAGOR_RTTI': 'ON'},
   'dargbox': {},
   'all': {},
