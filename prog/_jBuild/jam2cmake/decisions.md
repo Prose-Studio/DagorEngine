@@ -109,6 +109,15 @@ The game trees (Phase 3):
   editor tree, on the shared kernel, the editor variant's default now).
 - macOS: the game is an app bundle in its game dir (dagor_apple_bundle; jam's BundleName, plist, icon, ad hoc
   signature); apple_main.mm finds the game dir three levels up, as jam's DAGOR_MACOSX_CONTENTS did.
+- Package regression coverage is on CTest (`cmake.packaging`): client and dedicated TGZ archives, their data and
+  licenses, and shell launchers invoked from another working directory with spaces and quoted arguments. On macOS
+  it also builds and packages a real app bundle, verifies its ad hoc signature and runs its installed launcher.
+  The shell launcher is one concatenated string: CMake's `set(text <part> <part>)` inserted a list separator before
+  `exec`, which made the Linux and macOS launchers invalid.
+- The template CI compares generated engine ES sources in both game trees against the committed jam output with
+  `codegen_parity.py` (line endings normalized). Project sources are excluded because scaffolding changes their
+  location relative to the engine. Windows: 321 outputs compared without differences. macOS verification is CI-only;
+  a manual macOS rendering check remains pending until a Mac is available.
 
 Upstream sync of 2026/10/11 (ported by hand, checked with parity.py against the merged jamfiles):
 - jam's new windows-arm64ec target (PlatformArch=arm64ec: x64 SDK DLLs, ISPC and Oodle in an ARM64EC image) has no

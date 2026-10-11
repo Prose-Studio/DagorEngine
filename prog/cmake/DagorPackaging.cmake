@@ -103,7 +103,7 @@ endif()" COMPONENT ${component})
     set(text "@rem Runs ${name} from this dir, where its data is\n@pushd \"%~dp0\"\n@${run}\n@popd\n")
   else()
     set(launcher "${name}.sh")
-    set(text "#!/bin/sh\n# Runs ${name} from this dir, where its data is\ncd \"$(dirname \"$0\")\" || exit 1\n"
+    string(CONCAT text "#!/bin/sh\n# Runs ${name} from this dir, where its data is\ncd \"$(dirname \"$0\")\" || exit 1\n"
              "exec \"./${dest}/$<TARGET_FILE_NAME:${target}>\" ${args}\"$@\"\n")
   endif()
   set(newlines UNIX)

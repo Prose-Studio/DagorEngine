@@ -170,6 +170,13 @@ jobs:
         shell: bash
         run: python "$PROJECT_DIR/project.py" test --ci --output-junit "$GITHUB_WORKSPACE/test-results.xml"
 
+      - name: Compare engine ES codegen with committed output
+        shell: bash
+        run: |
+          host=$(printf '%s' "$RUNNER_OS" | tr '[:upper:]' '[:lower:]')
+          python prog/_jBuild/jam2cmake/codegen_parity.py "$PROJECT_DIR/build/$host-client" \
+            "$PROJECT_DIR/build/$host-dedicated"
+
       - name: Processes of a hung build
         if: always()
         shell: bash
