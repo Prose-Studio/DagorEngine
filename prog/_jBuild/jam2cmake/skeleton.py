@@ -515,6 +515,8 @@ class Converter:
       self.scalars['Exceptions'] = ['SEH']
       self.scalars['Rtti'] = ['yes']
       return
+    if var in ('Platform', 'PlatformArch') and op == '?=':
+      return  # the tree's
     if var in BOOL_VARS and op == '?=':
       return  # the default of a tree option
     if var == 'Target' and depth > 0:
