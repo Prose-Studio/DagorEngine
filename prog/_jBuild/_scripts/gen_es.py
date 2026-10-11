@@ -73,7 +73,7 @@ for argI in range(4, len(sys.argv)):
         else:
             clang_args = clang_args + ["-I", sys.argv[argI + 1]]
             argI = argI + 1
-    elif arg in ['-isystem', '-include', '-imsvc']:
+    elif arg in ['-isystem', '-include', '-imsvc', '-isysroot', '-idirafter', '-iframework']:
         clang_args = clang_args + [{'-imsvc': '-isystem'}.get(arg, arg), sys.argv[argI + 1]]
         argI = argI + 1
 clang_args = clang_args + ['-w', '-std=c++20']

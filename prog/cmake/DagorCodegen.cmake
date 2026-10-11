@@ -120,8 +120,8 @@ function(_dagor_es_codegen target)
       execute_process(COMMAND xcrun --sdk "${sysroot}" --show-sdk-path OUTPUT_VARIABLE sysroot
         OUTPUT_STRIP_TRAILING_WHITESPACE COMMAND_ERROR_IS_FATAL ANY)
     endif()
-    # libclang does not search the SDK as the driver does: libc++ (before clang's own headers), the system headers
-    # (after them) and the frameworks
+    # the SDK as Apple's clang searches it: its libc++ (before clang's own headers, not the fetched LLVM's), its system
+    # headers (after them) and its frameworks
     string(APPEND content "-isysroot\n${sysroot}\n-isystem\n${sysroot}/usr/include/c++/v1\n"
       "-idirafter\n${sysroot}/usr/include\n-iframework\n${sysroot}/System/Library/Frameworks\n")
   endif()
