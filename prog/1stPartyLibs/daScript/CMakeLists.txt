@@ -46,6 +46,10 @@ elseif(DAGOR_PLATFORM STREQUAL "macOS")
   list(APPEND options -Wno-deprecated-declarations)
 endif()
 
+set(aot_deps)
+if(DAGOR_DAS_AOT)
+  set(aot_deps 1stPartyLibs/daScript/daslib) # daslib's scripts compiled ahead of time
+endif()
 foreach(build standard console)
   set(build_defines ${defines})
   if(build STREQUAL "console")
@@ -62,7 +66,7 @@ foreach(build standard console)
     PRIVATE_DEFINES ${build_defines}
     COMPILE_OPTIONS ${options}
     SOURCE_OPTIONS ${source_options}
-    DEPS 3rdPartyLibs/eastl 3rdPartyLibs/uriparser 3rdPartyLibs/fmt
+    DEPS 3rdPartyLibs/eastl 3rdPartyLibs/uriparser 3rdPartyLibs/fmt ${aot_deps}
     LICENSE_FILES LICENSE
   )
 endforeach()

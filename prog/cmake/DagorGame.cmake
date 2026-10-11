@@ -89,7 +89,12 @@ endif()
 # (framework_<module>_pull, with PULL_VARS). A DAS module has the pull <prefix>_<module>_DAS_pull_AOT of its daScript
 # (*.das of DAS_DIRS, maybe none in a tree): compiled ahead of time with DAGOR_DAS_AOT, 0 without.
 function(dagor_add_dng_module module)
-  cmake_parse_arguments(PARSE_ARGV 1 arg "DAS" "" "CPP_DIRS;ES_DIRS;DAS_DIRS;PULL_VARS")
+  cmake_parse_arguments(PARSE_ARGV 1 arg "DAS;${_DAGOR_TARGET_OPTIONS}" "${_DAGOR_TARGET_ONE_VALUE}"
+    "CPP_DIRS;ES_DIRS;DAS_DIRS;PULL_VARS;${_DAGOR_TARGET_MULTI_VALUE}")
+  if(arg_UNPARSED_ARGUMENTS)
+    message(FATAL_ERROR "dagor_add_dng_module(${module}): unexpected arguments: ${arg_UNPARSED_ARGUMENTS}")
+  endif()
+  _dagor_forward_target_args(forward arg EXCLUDE STRICT QUIRREL SOURCES ES_SOURCES DAS_AOT DAS_AOT_PULL PRIVATE_DEFINES)
   _dagor_base_dir(base)
   _dagor_dir_ref("${base}" ref)
   dagor_ref_target("${ref}" name)
@@ -129,12 +134,12 @@ function(dagor_add_dng_module module)
   endif()
 
   dagor_add_library(${name} STRICT QUIRREL
-    SOURCES ${sources}
-    ES_SOURCES ${es}
+    SOURCES ${sources} ${arg_SOURCES}
+    ES_SOURCES ${es} ${arg_ES_SOURCES}
     DAS_AOT ${das}
     DAS_AOT_PULL ${aot_pull}
-    PRIVATE_DEFINES DISABLE_SYNC_DEBUG # the fork has no gameLibs/syncDebug
-    ${arg_UNPARSED_ARGUMENTS}
+    PRIVATE_DEFINES DISABLE_SYNC_DEBUG ${arg_PRIVATE_DEFINES} # the fork has no gameLibs/syncDebug
+    ${forward}
   )
 endfunction()
 
