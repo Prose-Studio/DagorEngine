@@ -100,7 +100,8 @@ function(_dagor_es_codegen target)
     string(APPEND content "-include\n${header}\n")
   endforeach()
   # the system headers, which the toolchain gives the compiler by other means: on Windows clang's own, MSVC's and the
-  # SDK's (elsewhere the parser gives libclang the LLVM's resource dir, and the system's are found as usual)
+  # SDK's, on Apple platforms the SDK's (elsewhere the parser gives libclang the LLVM's resource dir, and the system's
+  # are found as usual)
   if(DAGOR_PLATFORM STREQUAL "windows")
     file(GLOB clang_builtins LIST_DIRECTORIES true "${llvm}/lib/clang/*/include")
     set(sdk_inc "${DAGOR_WINSDK_DIR}/Include/${DAGOR_WINSDK_RESOLVED_VERSION}")
@@ -119,8 +120,10 @@ function(_dagor_es_codegen target)
       execute_process(COMMAND xcrun --sdk "${sysroot}" --show-sdk-path OUTPUT_VARIABLE sysroot
         OUTPUT_STRIP_TRAILING_WHITESPACE COMMAND_ERROR_IS_FATAL ANY)
     endif()
-    # libc++, which libclang does not look for in the SDK as the driver does (before clang's own headers)
-    string(APPEND content "-isysroot\n${sysroot}\n-isystem\n${sysroot}/usr/include/c++/v1\n")
+    # libclang does not search the SDK as the driver does: libc++ (before clang's own headers), the system headers
+    # (after them) and the frameworks
+    string(APPEND content "-isysroot\n${sysroot}\n-isystem\n${sysroot}/usr/include/c++/v1\n"
+      "-idirafter\n${sysroot}/usr/include\n-iframework\n${sysroot}/System/Library/Frameworks\n")
   endif()
   file(GENERATE OUTPUT "${gen_dir}/args-$<CONFIG>-$<COMPILE_LANGUAGE>.txt" CONTENT "${content}" TARGET ${target})
   set(args "${gen_dir}/args-$<CONFIG>-CXX.txt")
