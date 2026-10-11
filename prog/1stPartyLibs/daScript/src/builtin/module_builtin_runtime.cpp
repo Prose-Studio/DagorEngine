@@ -3062,8 +3062,9 @@ namespace das
         // platform and architecture
         addExternInline<DAS_BIND_FUN(das_get_platform_name)>(*this, lib, "get_platform_name",
             SideEffects::none, "das_get_platform_name");
-        // whether THIS binary's float ops were compiled relaxed (-ffast-math / /fp:fast)
-#if defined(__FAST_MATH__) || defined(_M_FP_FAST)
+        // whether THIS binary's float ops were compiled relaxed (-ffast-math / /fp:fast; reciprocal math without
+        // __FAST_MATH__, -ffast-math -fno-finite-math-only, sets DAS_FAST_INTEGER_MOD 0)
+#if defined(__FAST_MATH__) || defined(_M_FP_FAST) || !DAS_FAST_INTEGER_MOD
         addConstant(*this, "HOST_FAST_MATH", true);
 #else
         addConstant(*this, "HOST_FAST_MATH", false);
