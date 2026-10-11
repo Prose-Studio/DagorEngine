@@ -27,9 +27,13 @@ block(SCOPE_FOR VARIABLES)
 
   set(sources)
   set(deps daNetGame daNetGameLibs/dm/stub)
-  if(NOT DAGOR_DEDICATED AND DAGOR_PLATFORM STREQUAL "windows")
+  set(client OFF)
+  if(NOT DAGOR_DEDICATED AND NOT DAGOR_DAS_AOT_COMPILER)
+    set(client ON)
+  endif()
+  if(client AND DAGOR_PLATFORM STREQUAL "windows")
     list(APPEND sources platform/windows/dng_empty.rc platform/windows/dng_empty.exe.manifest)
-  elseif(NOT DAGOR_DEDICATED AND NOT DAGOR_DAS_AOT_COMPILER AND NOT DAGOR_PLATFORM STREQUAL "linux")
+  elseif(client AND NOT DAGOR_PLATFORM MATCHES "^(linux|macOS)$")
     message(FATAL_ERROR "dng_empty: the ${DAGOR_PLATFORM} client's packaging is not ported yet")
   endif()
 
@@ -48,6 +52,15 @@ block(SCOPE_FOR VARIABLES)
     DEPS ${deps}
     OUTPUT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../game/${DAGOR_PLATFORM}-${DAGOR_ARCH}
   )
+
+  if(client AND DAGOR_PLATFORM STREQUAL "macOS")
+    # game/DngEmpty.app (DngEmptyArm64.app on arm64, as game/client.sh expects)
+    set(bundle DngEmpty)
+    if(DAGOR_ARCH STREQUAL "arm64")
+      string(APPEND bundle Arm64)
+    endif()
+    dagor_apple_bundle(dng_empty NAME ${bundle} ID com.dagor.DngEmpty DIR ../game ICON platform/macOS/dng_empty.icns)
+  endif()
 
   # python project.py package: the game with the data python project.py build made; -forcestart: the game has no
   # launcher (updater), which Windows release clients ask to be started by otherwise

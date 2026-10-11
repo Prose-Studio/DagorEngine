@@ -5,9 +5,9 @@
 #
 # installs the game's program (the client, or the dedicated server in a tree with DAGOR_DEDICATED) into the component
 # game or dedicated: the program, its LICENSE file and the runtime files of its libraries (SDK and driver DLLs) into
-# <platform>-<arch>/, the built DATA of GAME_DIR (shaders, vromfs, content: python project.py build makes them) and a
-# launcher, NAME[-server].cmd / .sh, which runs the program from the package root as the game expects, with ARGS
-# before the arguments it is given. The tree's
+# <platform>-<arch>/ (the app bundle of dagor_apple_bundle() instead, signed ad hoc), the built DATA of GAME_DIR
+# (shaders, vromfs, content: python project.py build makes them) and a launcher, NAME[-server].cmd / .sh, which runs
+# the program from the package root as the game expects, with ARGS before the arguments it is given. The tree's
 # package is a ZIP on Windows and a .tar.gz elsewhere named <project>[-dedicated]-<platform>-<arch>[-<version>]
 # (the project's VERSION), of the configuration cpack is given (-C Rel).
 include_guard(GLOBAL)
@@ -41,17 +41,37 @@ function(dagor_package_game target)
     string(APPEND name "-server")
   endif()
   set(dest "${DAGOR_PLATFORM}-${DAGOR_ARCH}")
+  get_property(bundle TARGET ${target} PROPERTY DAGOR_APPLE_BUNDLE) # dagor_apple_bundle()
+  if(bundle)
+    set(dest "${bundle}.app/Contents/MacOS")
+  endif()
 
   # the program, its license and (at dagor_finalize) the runtime files of its libraries
+  set(license_dir "$<TARGET_FILE_DIR:${target}>")
+  set(license_dest "${dest}")
+  if(bundle)
+    string(APPEND license_dir "/../Resources") # see _dagor_licenses()
+    set(license_dest "${bundle}.app/Contents/Resources")
+  endif()
   install(PROGRAMS "$<TARGET_FILE:${target}>" DESTINATION "${dest}" COMPONENT ${component})
-  install(FILES "$<TARGET_FILE_DIR:${target}>/LICENSE-$<TARGET_FILE_BASE_NAME:${target}>" DESTINATION "${dest}"
+  install(FILES "${license_dir}/LICENSE-$<TARGET_FILE_BASE_NAME:${target}>" DESTINATION "${license_dest}"
     COMPONENT ${component})
   set_property(TARGET ${target} PROPERTY DAGOR_INSTALL_DIR "${dest}")
   set_property(TARGET ${target} PROPERTY DAGOR_INSTALL_COMPONENT ${component})
+  if(bundle)
+    # the rest of the bundle (signed at dagor_finalize, once its runtime files are in it too)
+    get_property(bundle_files TARGET ${target} PROPERTY DAGOR_APPLE_BUNDLE_FILES)
+    foreach(entry IN LISTS bundle_files)
+      string(REPLACE "|" ";" parts "${entry}")
+      list(GET parts 0 sub)
+      list(GET parts 1 file)
+      list(GET parts 2 file_name)
+      install(FILES "${file}" DESTINATION "${bundle}.app/Contents/${sub}" RENAME "${file_name}" COMPONENT ${component})
+    endforeach()
+    set_property(GLOBAL PROPERTY DAGOR_PACKAGE_BUNDLE "${bundle}.app")
+  endif()
 
   # the built data: a missing one stops the install (the package would not run)
-  set(dirs)
-  set(files)
   foreach(item IN LISTS arg_DATA)
     if(IS_ABSOLUTE "${item}" OR item MATCHES "(^|/)\\.\\.(/|$)")
       message(FATAL_ERROR "dagor_package_game(${target}): DATA ${item} is not in the game dir")
@@ -96,11 +116,75 @@ endif()" COMPONENT ${component})
   set_property(GLOBAL PROPERTY DAGOR_PACKAGE_COMPONENT ${component})
 endfunction()
 
+# dagor_apple_bundle(<target> NAME <name> ID <bundle id> DIR <dir> [ICON <.icns>] [VERSION <version>]
+#                    [PLIST <Info.plist template>]): the program as the app bundle <DIR>/<NAME>.app (macOS):
+#   Contents/MacOS/<program> (the names of the configurations differ by their postfix), Contents/Info.plist from the
+#   template (prog/cmake/templates/Info.plist.in: @BUNDLE_EXECUTABLE@, @BUNDLE_NAME@, @BUNDLE_ID@, @BUNDLE_ICON@,
+#   @BUNDLE_VERSION@, @BUNDLE_MIN_SYSTEM@), naming the program of the configuration built last, and
+#   Contents/Resources/<NAME>.icns; signed ad hoc after each build. Called in the directory that declares <target>;
+#   dagor_package_game() packages the bundle.
+function(dagor_apple_bundle target)
+  cmake_parse_arguments(PARSE_ARGV 1 arg "" "NAME;ID;DIR;ICON;VERSION;PLIST" "")
+  if(arg_UNPARSED_ARGUMENTS OR NOT arg_NAME OR NOT arg_ID OR NOT arg_DIR)
+    message(FATAL_ERROR "dagor_apple_bundle(${target} NAME <name> ID <bundle id> DIR <dir> ...)")
+  endif()
+  if(NOT DAGOR_PLATFORM STREQUAL "macOS")
+    message(FATAL_ERROR "dagor_apple_bundle(${target}): app bundles are for macOS")
+  endif()
+  _dagor_abs_paths(dir "${arg_DIR}")
+  set(contents "${dir}/${arg_NAME}.app/Contents")
+  set_target_properties(${target} PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "$<1:${contents}/MacOS>"
+    DAGOR_APPLE_BUNDLE "${arg_NAME}")
+
+  set(plist "${arg_PLIST}")
+  if(plist)
+    _dagor_abs_paths(plist "${plist}")
+  else()
+    set(plist "${DAGOR_CMAKE_DIR}/templates/Info.plist.in")
+  endif()
+  set(BUNDLE_EXECUTABLE "$<TARGET_FILE_NAME:${target}>")
+  set(BUNDLE_NAME "${arg_NAME}")
+  set(BUNDLE_ID "${arg_ID}")
+  set(BUNDLE_ICON "")
+  if(arg_ICON)
+    set(BUNDLE_ICON "${arg_NAME}")
+  endif()
+  set(BUNDLE_VERSION "${arg_VERSION}")
+  if(NOT BUNDLE_VERSION)
+    set(BUNDLE_VERSION "1.0")
+  endif()
+  set(BUNDLE_MIN_SYSTEM "${CMAKE_OSX_DEPLOYMENT_TARGET}")
+  set(gen "${CMAKE_CURRENT_BINARY_DIR}/gen/${target}/bundle")
+  configure_file("${plist}" "${gen}/Info.plist.in" @ONLY)
+  file(GENERATE OUTPUT "${gen}/$<CONFIG>/Info.plist" INPUT "${gen}/Info.plist.in")
+
+  set(files "|${gen}/$<CONFIG>/Info.plist|Info.plist")
+  set(commands COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${gen}/$<CONFIG>/Info.plist" "${contents}/Info.plist")
+  if(arg_ICON)
+    _dagor_abs_paths(icon "${arg_ICON}")
+    list(APPEND files "Resources|${icon}|${arg_NAME}.icns")
+    list(APPEND commands COMMAND "${CMAKE_COMMAND}" -E make_directory "${contents}/Resources"
+                         COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${icon}" "${contents}/Resources/${arg_NAME}.icns")
+  endif()
+  set_property(TARGET ${target} PROPERTY DAGOR_APPLE_BUNDLE_FILES "${files}")
+  add_custom_command(TARGET ${target} POST_BUILD ${commands}
+    COMMAND codesign --force --sign - "${dir}/${arg_NAME}.app"
+    COMMENT "App bundle ${arg_NAME}.app"
+    VERBATIM)
+endfunction()
+
 # called by dagor_finalize(): CPack for the tree's game package
 function(_dagor_package)
   get_property(component GLOBAL PROPERTY DAGOR_PACKAGE_COMPONENT)
   if(NOT component)
     return()
+  endif()
+  get_property(bundle GLOBAL PROPERTY DAGOR_PACKAGE_BUNDLE)
+  if(bundle)
+    # the installed bundle signed as a whole (ad hoc: it runs on the machines that allow that)
+    install(CODE "execute_process(COMMAND codesign --force --sign - \"\$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/${bundle}\"
+  COMMAND_ERROR_IS_FATAL ANY)" COMPONENT ${component})
   endif()
   set(name "${PROJECT_NAME}")
   if(component STREQUAL "dedicated")

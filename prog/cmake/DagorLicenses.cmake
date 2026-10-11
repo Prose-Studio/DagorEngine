@@ -135,11 +135,17 @@ function(_dagor_licenses)
       get_property(postfix TARGET ${target} PROPERTY ${upper}_POSTFIX)
       _dagor_write_if_changed("${dir}/${target}-${config}.txt" "${name}${postfix}${suffix} uses libraries:\n${body}")
     endforeach()
-    # copied next to the program by a target it depends on (a POST_BUILD step can only be added in its directory)
+    # copied next to the program by a target it depends on (a POST_BUILD step can only be added in its directory);
+    # into the Resources of an app bundle, whose MacOS dir holds code only
+    set(license_dir "$<TARGET_FILE_DIR:${target}>")
+    get_property(bundle TARGET ${target} PROPERTY DAGOR_APPLE_BUNDLE)
+    if(bundle)
+      string(APPEND license_dir "/../Resources")
+    endif()
     add_custom_target(${target}.license
-      COMMAND "${CMAKE_COMMAND}" -E make_directory "$<TARGET_FILE_DIR:${target}>"
+      COMMAND "${CMAKE_COMMAND}" -E make_directory "${license_dir}"
       COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${dir}/${target}-$<CONFIG>.txt"
-        "$<TARGET_FILE_DIR:${target}>/LICENSE-$<TARGET_FILE_BASE_NAME:${target}>"
+        "${license_dir}/LICENSE-$<TARGET_FILE_BASE_NAME:${target}>"
       COMMENT "LICENSE-${name} for ${target}"
       VERBATIM)
     set_property(TARGET ${target}.license PROPERTY FOLDER "licenses")

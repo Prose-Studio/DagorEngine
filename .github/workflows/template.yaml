@@ -106,6 +106,8 @@ jobs:
             deps: D:/dagor-deps
           - os: ubuntu-22.04
             deps: /home/runner/dagor-deps
+          - os: macos-15 # Xcode 16: the Metal driver needs the macOS 15 SDK (MTLResidencySet)
+            deps: /Users/runner/dagor-deps
     runs-on: ${{ matrix.os }}
     timeout-minutes: 240
     env:

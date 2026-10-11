@@ -535,6 +535,8 @@ else()
     set(system_libs Ws2_32 shlwapi)
   elseif(DAGOR_PLATFORM STREQUAL "macOS")
     list(APPEND sources main/apple_main.mm)
+    # the game runs from its dir, where its app bundle is (dagor_apple_bundle): <name>.app/Contents/MacOS/../../..
+    set_property(SOURCE main/apple_main.mm APPEND PROPERTY COMPILE_DEFINITIONS "DAGOR_MACOSX_CONTENTS=\"../../..\"")
   elseif(NOT DAGOR_PLATFORM STREQUAL "linux")
     message(FATAL_ERROR "daNetGame: the ${DAGOR_PLATFORM} client is not ported yet")
   endif()
