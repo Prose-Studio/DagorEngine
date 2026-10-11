@@ -411,8 +411,8 @@ function(dagor_add_dng_game target)
   endif()
 
   # the pull of every module and library of the game, filled in by their dagor_game_lib() calls (pulls of some
-  # configurations are $<cond:name>, empty in the others)
-  set(pulls "$<FILTER:$<TARGET_PROPERTY:${target},DAGOR_GAME_PULLS>,EXCLUDE,^$>")
+  # configurations are $<cond:name>, empty in the others; the property keeps them unevaluated)
+  set(pulls "$<FILTER:$<TARGET_GENEX_EVAL:${target},$<TARGET_PROPERTY:${target},DAGOR_GAME_PULLS>>,EXCLUDE,^$>")
   set(bs "\\")
   set(text "#include <daECS/core/componentType.h>\n#define REG_SYS${bs}\n")
   string(APPEND text "$<$<BOOL:${pulls}>:  RS($<JOIN:${pulls},)${bs}\n  RS(>)${bs}\n>\n")

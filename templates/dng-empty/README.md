@@ -53,9 +53,10 @@ vromfs, template, das and shader lists for them. Libs with an `_init.das` are lo
 ## Tests
 
 ```bash
-python project.py test                       # build and run every test target
-python project.py test --layer ecs,das       # some layers
-python project.py test -k dng_empty.ecs -v   # one target, verbose
+python project.py test                       # build the game and its tests, run them all (CTest)
+python project.py test --ci                  # without the tests that need a GPU and a display
+python project.py test -L ecs                # one layer (ctest arguments pass through)
+python project.py test -R dng_empty.ecs -V   # one test, verbose
 ```
 
 | Dir | Layer | What |
@@ -65,7 +66,9 @@ python project.py test -k dng_empty.ecs -v   # one target, verbose
 | `prog/tests/ecs` | ecs | `[ecs_test]` functions in the dedicated server: entities, systems, frames |
 | `prog/tests/scenarios` | scenario | `[ecs_test]` functions in the client: input, rendering, screenshots |
 
-Reports (HTML, JUnit, JSON) go to `<engine>/_output/test_results/<run>/`. See `<engine>/_docs/source/testing`.
+Each dir's `CMakeLists.txt` declares its tests (`prog/tests/CMakeLists.txt` puts the cpp, das and ecs ones in the
+dedicated server's tree, the scenarios in the client's). Results and screenshots go to
+`build/<platform>-<game>/test-artifacts/`. See `<engine>/_docs/source/testing`.
 
 ## Assets
 

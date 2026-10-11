@@ -50,4 +50,6 @@ block(SCOPE_FOR VARIABLES)
   )
 endblock()
 
+add_subdirectory(tests)
+
 dagor_finalize()

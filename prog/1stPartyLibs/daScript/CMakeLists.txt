@@ -10,7 +10,8 @@ set(source_dirs src/ast src/builtin src/runtime src/simulate src/misc src/parser
 # and src/hal/performance_time.cpp the time functions the engine kernel provides: they would be duplicate symbols
 dagor_glob_sources(sources DIRS ${source_dirs} GLOB *.cpp EXCLUDE "project_specific_file_info\\.cpp$" "performance_time\\.cpp$")
 
-# the sources that throw: compiled with exceptions whatever the tree's setting
+# the sources that throw (and the crash handler, which reads the exception in flight): compiled with exceptions
+# whatever the tree's setting
 set(exceptions)
 if(DAGOR_MSVC_LIKE)
   set(exceptions /EHsc -D_HAS_EXCEPTIONS=1 -DDAS_ENABLE_EXCEPTIONS)
@@ -22,7 +23,7 @@ if(DAGOR_CC MATCHES "^(clang|clang-cl)$")
 endif()
 set(source_options)
 foreach(source IN LISTS sources)
-  if(source MATCHES "(_exceptions|_ast_serialize|runtime_string|format)\\.cpp$")
+  if(source MATCHES "(_exceptions|_ast_serialize|runtime_string|format|crash_handler)\\.cpp$")
     list(APPEND source_options "${source}" ${exceptions})
   endif()
 endforeach()

@@ -1,10 +1,15 @@
-# Tests, run by CTest (python dng.py test). Each test gets the CTest labels of its layer (cpp, das, exec), its
-# TAGS and its REQUIRES as requires-<what>, so a run selects with -L / -LE: CI excludes requires-gpu|requires-display.
+# Tests, run by CTest (python dng.py test, python project.py test). Each test gets the CTest labels of its layer (cpp,
+# das, exec, ecs, scenario), its TAGS and its REQUIRES as requires-<what>, so a run selects with -L / -LE: CI excludes
+# requires-gpu|requires-display.
 #
 #   dagor_add_catch2_test(<name> ...)  a Catch2 program (main from <unittest/mainCatch2.inc.cpp>); each test case is
 #                                      a CTest test named <name>:<case>
 #   dagor_add_das_test(<name> ...)     daScript [test] functions run by dastest on the das interpreter
 #   dagor_add_exec_test(<name> ...)    any command; its exit code is the result
+#   dagor_add_game_test(<name> ...)    [ecs_test] functions run by the game of the tree in its test mode
+#
+# The target tests builds the programs the tests run. In the tests and all trees they are part of the default build,
+# in a game's trees (where the tests are on as well) only of that target.
 #
 # Common options: [TAGS <tag>...] [REQUIRES gpu|display|network|http_server ...] [TIMEOUT <seconds>, 600 by default]
 # [SERIAL] (never runs in parallel with other tests) [PLATFORMS <platform>...] (nothing is added for other targets).
@@ -13,10 +18,10 @@
 include_guard(GLOBAL)
 
 set(_dagor_tests_default OFF)
-if(DAGOR_VARIANT MATCHES "^(tests|all)$")
+if(DAGOR_VARIANT MATCHES "^(tests|all)$" OR (DAGOR_VARIANT STREQUAL "game" AND NOT DAGOR_DAS_AOT_COMPILER))
   set(_dagor_tests_default ON)
 endif()
-option(DAGOR_BUILD_TESTS "Build and register the tests (the tests and all trees); off, dagor_add_*_test() do nothing"
+option(DAGOR_BUILD_TESTS "Register the tests (the tests and all trees, a game's); off, dagor_add_*_test() do nothing"
   ${_dagor_tests_default})
 unset(_dagor_tests_default)
 
@@ -50,6 +55,44 @@ function(_dagor_split_test_args test_out exe_out)
   set(${exe_out} "${exe_args}" PARENT_SCOPE)
 endfunction()
 
+# the common options of a test function's parsed arguments (prefix arg_), for _dagor_test_properties: a function with
+# keywords of its own does not pass its ARGN on, in which a value would go to the keyword before it
+function(_dagor_test_common_args out)
+  set(args)
+  foreach(option IN LISTS _DAGOR_TEST_OPTIONS)
+    if(arg_${option})
+      list(APPEND args ${option})
+    endif()
+  endforeach()
+  foreach(keyword IN LISTS _DAGOR_TEST_ONE_VALUE _DAGOR_TEST_MULTI_VALUE)
+    if(DEFINED arg_${keyword})
+      list(APPEND args ${keyword} ${arg_${keyword}})
+    endif()
+  endforeach()
+  set(${out} "${args}" PARENT_SCOPE)
+endfunction()
+
+# a program the tests run: built by the target tests (see the top)
+function(_dagor_test_program target)
+  set_property(GLOBAL APPEND PROPERTY DAGOR_TEST_PROGRAMS ${target})
+endfunction()
+
+# the target tests, at dagor_finalize: the programs exist then (the das interpreter is in a lazily added dir)
+function(_dagor_tests_target)
+  if(NOT DAGOR_BUILD_TESTS)
+    return()
+  endif()
+  add_custom_target(tests)
+  get_property(programs GLOBAL PROPERTY DAGOR_TEST_PROGRAMS)
+  if(programs)
+    list(REMOVE_DUPLICATES programs)
+    add_dependencies(tests ${programs})
+    if(NOT DAGOR_VARIANT MATCHES "^(tests|all)$")
+      set_target_properties(${programs} PROPERTIES EXCLUDE_FROM_ALL ON)
+    endif()
+  endif()
+endfunction()
+
 # the CTest properties of a test: timeout, serialization, skip code in <out>, its labels in <out>_LABELS
 function(_dagor_test_properties out layer)
   cmake_parse_arguments(PARSE_ARGV 2 arg "${_DAGOR_TEST_OPTIONS}" "${_DAGOR_TEST_ONE_VALUE}" "${_DAGOR_TEST_MULTI_VALUE}")
@@ -71,9 +114,17 @@ function(_dagor_test_properties out layer)
   set(${out}_LABELS "${labels}" PARENT_SCOPE)
 endfunction()
 
-# whether a test for <platforms> belongs to this tree (empty: every platform)
+# whether a test for <platforms> belongs to this tree (empty: every platform); a game's trees have the tests of the
+# project's dirs, not those of the engine dirs its programs use
 function(_dagor_test_platform_ok out)
-  if(NOT DAGOR_BUILD_TESTS OR (ARGN AND NOT DAGOR_PLATFORM IN_LIST ARGN))
+  set(foreign OFF)
+  if(DAGOR_VARIANT STREQUAL "game")
+    cmake_path(IS_PREFIX CMAKE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}" NORMALIZE own)
+    if(NOT own)
+      set(foreign ON)
+    endif()
+  endif()
+  if(NOT DAGOR_BUILD_TESTS OR foreign OR (ARGN AND NOT DAGOR_PLATFORM IN_LIST ARGN))
     set(${out} OFF PARENT_SCOPE)
   else()
     set(${out} ON PARENT_SCOPE)
@@ -103,6 +154,7 @@ function(dagor_add_catch2_test name)
     list(APPEND exe_args EXCEPTIONS ON)
   endif()
   dagor_add_executable(${name} CONSOLE OUTPUT_DIR "${CMAKE_BINARY_DIR}/tests" ${exe_args})
+  _dagor_test_program(${name})
   _dagor_link(${name} PRIVATE 3rdPartyLibs/catch2 engine/unitTest)
   target_compile_definitions(${name} PRIVATE "UNITTEST_DEFAULT_DATA_DIR=\"${data_dir}\"")
 
@@ -183,7 +235,8 @@ function(dagor_add_exec_test name)
          "${CMAKE_BINARY_DIR}/test-artifacts/${name}/http")
   endif()
   add_test(NAME ${name} COMMAND ${command} WORKING_DIRECTORY "${dir}")
-  _dagor_test_properties(props exec ${ARGN})
+  _dagor_test_common_args(common)
+  _dagor_test_properties(props exec ${common})
   set_tests_properties(${name} PROPERTIES ${props} LABELS "${props_LABELS}"
     ENVIRONMENT "DAGOR_TEST_OUT=${CMAKE_BINARY_DIR}/test-artifacts/${name}")
 endfunction()
@@ -198,6 +251,7 @@ function(dagor_add_das_test name)
     return()
   endif()
   dagor_use(1stPartyLibs/daScript/utils/daScript)
+  _dagor_test_program(das)
   set(root "${DAGOR_PROG_DIR}/1stPartyLibs/daScript")
   if(NOT arg_TIMEOUT)
     set(arg_TIMEOUT ${DAGOR_TEST_DEFAULT_TIMEOUT})
@@ -218,8 +272,66 @@ function(dagor_add_das_test name)
   list(APPEND command --timeout ${arg_TIMEOUT} --failures-only ${arg_ARGS})
   add_test(NAME ${name} COMMAND ${command} WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
   math(EXPR backstop "${arg_TIMEOUT} + 60")
-  _dagor_test_properties(props das ${ARGN})
+  _dagor_test_common_args(common)
+  _dagor_test_properties(props das ${common})
   set_tests_properties(${name} PROPERTIES ${props} LABELS "${props_LABELS}" TIMEOUT ${backstop})
+endfunction()
+
+# dagor_add_game_test(<name> LAYER ecs|scenario PATHS <dir or file>... [SCENE <scene .blk>] [CASE_TIMEOUT <s>]
+#   [ARGS ...] <common options>): the [ecs_test] functions of the .das files run by the game of the tree
+#   (dagor_add_dng_game, before it) in its test mode (prog/daNetGame/main/testMode.h), from the game dir (the parent of
+#   its output dir), which SCENE is relative to. ecs tests belong in the dedicated server's tree; scenario tests render,
+#   compare their screenshots with references/ next to them and need a GPU and a display: the client's tree. Their
+#   results and screenshots go to test-artifacts/<name> in the build dir.
+function(dagor_add_game_test name)
+  cmake_parse_arguments(PARSE_ARGV 1 arg "${_DAGOR_TEST_OPTIONS}" "${_DAGOR_TEST_ONE_VALUE};LAYER;SCENE"
+                        "${_DAGOR_TEST_MULTI_VALUE};PATHS")
+  _dagor_test_platform_ok(ok ${arg_PLATFORMS})
+  if(NOT ok OR DAGOR_CROSS_COMPILING)
+    return()
+  endif()
+  dagor_check_choice(LAYER "${arg_LAYER}" ecs scenario)
+  get_property(game GLOBAL PROPERTY DAGOR_GAME_TARGET)
+  if(NOT game)
+    message(FATAL_ERROR "dagor_add_game_test(${name}): the tree has no game (dagor_add_dng_game() comes first)")
+  endif()
+  if(NOT arg_PATHS)
+    message(FATAL_ERROR "dagor_add_game_test(${name}) needs PATHS")
+  endif()
+  set(out "${CMAKE_BINARY_DIR}/test-artifacts/${name}")
+  set(args -stdout -quiet -nolisten -nostatsd -nonetenc -nopeerauth
+    -config:debug/useAddonVromSrc:b=yes   # tests and test libs are read from the sources, no repacking needed
+    -config:debug/daScriptHotReload:b=no  # running tests hold pointers into loaded scripts
+    "-test_out:${out}")
+  _dagor_abs_paths(paths ${arg_PATHS})
+  foreach(path IN LISTS paths)
+    list(APPEND args "-das_test:${path}")
+  endforeach()
+  if(arg_CASE_TIMEOUT)
+    list(APPEND args "-test_timeout:${arg_CASE_TIMEOUT}")
+  endif()
+  if(arg_SCENE)
+    list(APPEND args "-scene:${arg_SCENE}")
+  endif()
+  if(arg_LAYER STREQUAL "scenario")
+    list(APPEND arg_REQUIRES gpu display)
+    list(REMOVE_DUPLICATES arg_REQUIRES)
+    list(APPEND args -config:video/mode:t=windowed -config:video/resolution:t=1280x720
+      -config:screenshots/format:t=png "-config:screenshots/dir:t=${out}/screenshots"
+      # no physical keyboard, mouse or joystick (values <= 0 are added to All=7): what a person does on the machine
+      # must not leak into the test; scripted input (send_action, set_axis) works without them
+      -config:input/hidDriversInit:i=-7
+      # temporal antialiasing jitters by the global frame index, which depends on how many frames loading took:
+      # screenshots would differ run to run at every edge
+      -config:video/antialiasing_mode:t=off)
+  endif()
+  add_test(NAME ${name}
+    COMMAND "${Python3_EXECUTABLE}" "${DAGOR_CMAKE_DIR}/scripts/run_game_test.py" "${out}" $<TARGET_FILE:${game}>
+            ${args} ${arg_ARGS}
+    WORKING_DIRECTORY "$<PATH:GET_PARENT_PATH,$<TARGET_FILE_DIR:${game}>>")
+  _dagor_test_common_args(common)
+  _dagor_test_properties(props ${arg_LAYER} ${common})
+  set_tests_properties(${name} PROPERTIES ${props} LABELS "${props_LABELS}")
 endfunction()
 
 # dagor_use_tests(): adds every engine directory that declares tests (in the tests and all trees)

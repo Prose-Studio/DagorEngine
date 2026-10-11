@@ -3,7 +3,7 @@ name: template
 # Creates a project from templates/dng-empty with dng.py new outside the engine checkout (on Windows on another
 # drive, which needs an absolute engine path and jam Location), builds its game and runs its tests that need no GPU.
 # See _docs/source/getting-started/new_project.md. The jam build (new-project) runs next to the CMake one
-# (new-project-cmake: the client and the dedicated server with daScript AOT) until jam is deleted.
+# (new-project-cmake: the client and the dedicated server with daScript AOT, the tests on CTest) until jam is deleted.
 
 on:
   push:
@@ -83,7 +83,7 @@ jobs:
       - name: Run the tests
         shell: bash
         run: |
-          python "$PROJECT_DIR/project.py" test --layer cpp,das,ecs --gpu no --out _output/test_results/ci \
+          python "$PROJECT_DIR/project.py" test --jam --layer cpp,das,ecs --gpu no --out _output/test_results/ci \
             --junit test-results.xml --summary-md "$GITHUB_STEP_SUMMARY"
 
       - name: Upload report
@@ -152,3 +152,15 @@ jobs:
       - name: Build the game
         shell: bash
         run: python "$PROJECT_DIR/project.py" build code
+
+      - name: Run the tests
+        shell: bash
+        run: python "$PROJECT_DIR/project.py" test --ci --output-junit "$GITHUB_WORKSPACE/test-results.xml"
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: template-cmake-report-${{ matrix.os }}
+          path: test-results.xml
+          if-no-files-found: ignore

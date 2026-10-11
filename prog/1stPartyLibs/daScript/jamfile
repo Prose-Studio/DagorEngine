@@ -120,6 +120,7 @@ for s in $(Sources) {
     case *_ast_serialize.cpp : opt on $(s) = $(ExcOpt) ;
     case *runtime_string.cpp : opt on $(s) = $(ExcOpt) ;
     case *format.cpp : opt on $(s) = $(ExcOpt) ;
+    case *crash_handler.cpp : opt on $(s) = $(ExcOpt) ; # its terminate handler reads the exception in flight
   }
 }
 if $(PlatformArch) = e2k { opt on src/simulate/simulate_gc.cpp = -Wno-overloaded-virtual ; }

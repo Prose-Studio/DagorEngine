@@ -29,7 +29,9 @@ ENGINE_VARIANTS = {
 }
 # the variants whose programs go into tools/dagor_cdk/<platform>-<arch> (the install components)
 INSTALLED = {'cdk': ('cdk', 'cdk-data'), 'editor': ('cdk',)}
-GAME_VARIANTS = {'client': {'DAGOR_DEDICATED': 'OFF'}, 'dedicated': {'DAGOR_DEDICATED': 'ON'}}
+# (with the tests registered: trees made before they were on by default keep their cached value otherwise)
+GAME_VARIANTS = {'client': {'DAGOR_DEDICATED': 'OFF', 'DAGOR_BUILD_TESTS': 'ON'},
+                 'dedicated': {'DAGOR_DEDICATED': 'ON', 'DAGOR_BUILD_TESTS': 'ON'}}
 
 PLATFORMS = ('windows', 'linux', 'macOS', 'android', 'iOS', 'tvOS')
 COMPILERS = ('clang', 'msvc', 'gcc', 'lcc')
@@ -202,8 +204,9 @@ class Tree:
   def install(self, config, components):
     return all(self.run([cmake(), '--install', self.dir, '--config', config, '--component', c]) for c in components)
 
-  def test(self, config='Dev', ci=False, jobs=None, ctest_args=()):
-    cmd = [ctest(), '--test-dir', self.dir, '-C', config, '--output-on-failure', '--no-tests=error']
+  def test(self, config='Dev', ci=False, jobs=None, ctest_args=(), no_tests='error'):
+    """runs the tests of the tree with CTest; no_tests: what a run without tests is (error or ignore)"""
+    cmd = [ctest(), '--test-dir', self.dir, '-C', config, '--output-on-failure', '--no-tests=' + no_tests]
     if ci:
       cmd += ['-LE', CI_EXCLUDED_LABELS]
     if jobs:
