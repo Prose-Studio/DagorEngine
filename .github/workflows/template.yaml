@@ -175,6 +175,14 @@ jobs:
         shell: bash
         run: if [ -s "$RUNNER_TEMP/processes.txt" ]; then cat "$RUNNER_TEMP/processes.txt"; fi
 
+      - name: Upload crash reports (macOS)
+        if: failure() && runner.os == 'macOS'
+        uses: actions/upload-artifact@v4
+        with:
+          name: template-cmake-crashes-${{ matrix.os }}
+          path: ~/Library/Logs/DiagnosticReports
+          if-no-files-found: ignore
+
       - name: Upload report
         if: always()
         uses: actions/upload-artifact@v4

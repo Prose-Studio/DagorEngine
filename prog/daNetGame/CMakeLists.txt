@@ -630,12 +630,17 @@ set(source_options)
 if(DAGOR_DEDICATED AND DAGOR_PLATFORM STREQUAL "linux")
   list(APPEND source_options net/dedicated/netded.cpp -DNET_PEER_AUTH) # the clients' auth keys (NetPeerAuth)
 endif()
+# the precompiled header (jam: Windows, Dev and Dbg only); not on Apple platforms, whose SDK has no <malloc.h>
+set(pch)
+if(DAGOR_PLATFORM MATCHES "^(windows|linux)$")
+  set(pch precompile.h)
+endif()
 dagor_add_library(STRICT QUIRREL
   SOURCES ${sources}
   ES_SOURCES ${es}
   DAS_AOT ${das}
   DAS_AOT_PULL ${das_pull}
-  PCH precompile.h # (jam used it in Dev and Dbg only)
+  PCH ${pch}
   PRIVATE_INCLUDES
     ${DAGOR_DNG_INCLUDES}
     ${DAGOR_PROG_DIR}/3rdPartyLibs/openssl-3.x/include
