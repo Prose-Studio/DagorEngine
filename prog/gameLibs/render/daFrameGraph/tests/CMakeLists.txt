@@ -3,6 +3,8 @@
 set(options)
 if(DAGOR_CC MATCHES "^(clang|clang-cl)$")
   set(options -Wc++11-narrowing -Wswitch -Wbitfield-constant-conversion -Wmissing-field-initializers)
+elseif(DAGOR_CC STREQUAL "msvc")
+  set(options /wd4458) # locals that hide members (jam builds these tests with clang only)
 endif()
 dagor_add_catch2_test(daFrameGraph-tests STRICT
   TAGS gameLibs render
