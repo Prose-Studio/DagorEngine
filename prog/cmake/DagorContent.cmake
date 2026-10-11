@@ -9,6 +9,10 @@
 # the build dir. INSTALL also installs the dumps into <dir> of the install prefix.
 include_guard(GLOBAL)
 
+# The content tools already parallelize internally (shader compilers fork one
+# worker per CPU). Keep Ninja from launching several such tools at once.
+set_property(GLOBAL APPEND PROPERTY JOB_POOLS dagor_content=1)
+
 function(dagor_add_shaders name)
   cmake_parse_arguments(PARSE_ARGV 1 arg "" "COMPILER;BLK;OUTPUT;INSTALL;COMPONENT" "ARGS")
   foreach(required COMPILER BLK OUTPUT)
@@ -46,6 +50,7 @@ function(dagor_add_shaders name)
     WORKING_DIRECTORY "${blk_dir}"
     DEPENDS "${blk}" ${shader_sources} ${arg_COMPILER}
     COMMENT "Compiling the shaders of ${name} (${arg_COMPILER})"
+    JOB_POOL dagor_content
     VERBATIM)
   add_custom_target(${name} ALL DEPENDS "${stamp}")
   set_property(TARGET ${name} PROPERTY FOLDER "shaders")
@@ -92,6 +97,7 @@ function(dagor_add_content_step name)
     WORKING_DIRECTORY "${dir}"
     DEPENDS ${tool_DEPENDS}
     COMMENT "${comment}"
+    JOB_POOL dagor_content
     VERBATIM)
   add_custom_target(${name} DEPENDS "${run}")
   set_property(TARGET ${name} PROPERTY FOLDER "content")

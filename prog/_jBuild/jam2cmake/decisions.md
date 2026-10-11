@@ -132,6 +132,9 @@ The game trees (Phase 3):
 - The rebuilt Linux client renders through WSLg using Mesa's software Vulkan driver (explicitly permitted for this
   local check). Its 243 generated ES outputs match the committed sources. The scenario saved screenshots but failed
   the image comparison on both runs (RMS 2.289/2.333 against 1.000); references and tolerances were left unchanged.
+- Content commands share a single Ninja job pool: shader compilers already fork workers per CPU. Parallel outer
+  shader steps multiplied those workers and exhausted available memory during the full content check. The bounded
+  run starts one compiler at a time while retaining its internal parallelism.
 
 Upstream sync of 2026/10/11 (ported by hand, checked with parity.py against the merged jamfiles):
 - jam's new windows-arm64ec target (PlatformArch=arm64ec: x64 SDK DLLs, ISPC and Oodle in an ARM64EC image) has no
