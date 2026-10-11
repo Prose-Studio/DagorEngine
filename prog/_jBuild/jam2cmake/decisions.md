@@ -92,3 +92,12 @@ The game trees (Phase 3):
   as jam's (its startup log is identical but for dates), and the 78 entity systems' generated code it compiles is
   byte-identical to the committed .gen.es.cpp files. A jam build from a project rewrites those committed files with
   absolute paths; the CMake build never writes into the source tree.
+- Parity: the template's roots in roots.txt build with daScript AOT, as its build.py does. jam builds daNetGame of the
+  client and of the dedicated server into one dir; the inventory keeps them apart (<dir>@<tree>). Both trees compare
+  without differences beyond the allowlist (Windows, Dev).
+- The project's tests are CTest tests of its trees (dagor_add_catch2_test, dagor_add_das_test, dagor_add_game_test for
+  the ecs and scenario layers, run by the game in its test mode): the cpp, das and ecs ones in the dedicated server's
+  tree, the scenarios in the client's. A game tree registers the tests of the project's dirs only; their programs are
+  built by the target tests, not by default.
+- Packages: dagor_package_game() installs a game (its program, LICENSE, the runtime files of its libraries, the built
+  data and a launcher) into the component game or dedicated, and CPack packs it (zip on Windows, .tar.gz elsewhere).

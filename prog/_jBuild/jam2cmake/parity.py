@@ -69,8 +69,8 @@ def flags(args, base):
 
 # include dirs of generated files, which exist only once the tree is built
 GENERATED = os.path.normcase(os.path.join(ENGINE, 'build')).replace(os.sep, '/') + '/'
-# sources the inventory has no commands for: jam's dry run lists compilers only, not assemblers
-ASSEMBLY = ('.asm', '.masm', '.nasm', '.nas', '.s', '.ispc')  # (and ISPC)
+# sources the inventory has no commands for: jam's dry run lists compilers only, not assemblers or the resource compiler
+ASSEMBLY = ('.asm', '.masm', '.nasm', '.nas', '.s', '.ispc', '.rc')  # (and ISPC)
 TARGET_DIR = re.compile(r'CMakeFiles[\\/]([^\\/]+)\.dir[\\/]')
 
 
@@ -206,7 +206,7 @@ def main(argv):
   parser = argparse.ArgumentParser(description=__doc__.split('\n\n')[0])
   parser.add_argument('build_dir')
   parser.add_argument('--config', default='Dev')
-  parser.add_argument('--root', action='append', default=[], help='substring of the root ids to compare')
+  parser.add_argument('--root', action='append', default=[], help='a root id, or a part of the ids, to compare')
   parser.add_argument('--inventory', default=os.path.join(ENGINE, '_output', 'jam2cmake', 'inventory.json'))
   args = parser.parse_args(argv)
 
@@ -217,8 +217,10 @@ def main(argv):
 
   # the jam variants of each target the roots build (a library can be built with and without exceptions, say)
   variants = collections.defaultdict(list)
+  ids = [root['id'] for root in inventory['roots']]
   for root in inventory['roots']:
-    if args.root and not any(r in root['id'] for r in args.root):
+    # a root's whole id selects only it (the client's is part of the dedicated server's), a part of one any it is in
+    if args.root and not any(r == root['id'] or (r not in ids and r in root['id']) for r in args.root):
       continue
     for key in root['targets']:
       t = inventory['targets'][key]

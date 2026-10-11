@@ -207,6 +207,7 @@ def main(argv):
     sys.exit('jam is not on PATH')
   common = ['-sPlatform=' + args.platform, '-sPlatformArch=' + args.arch, '-sConfig=' + args.config]
   inventory = {'platform': args.platform, 'arch': args.arch, 'config': args.config, 'roots': [], 'targets': {}}
+  key_trees = {}  # the tree of each target key
   failed = []
   with concurrent.futures.ThreadPoolExecutor(args.j) as pool:
     for (tree, cwd, jam_args), cmd, code, dump in pool.map(lambda r: run_root(r, jam, common), roots(args.tree)):
@@ -215,11 +216,17 @@ def main(argv):
       if code != 0 or not targets:
         failed.append('{} (exit {}): {}'.format(root_id, code, dump.strip().splitlines()[-1:] if dump.strip() else ''))
         continue
-      inventory['roots'].append({'id': root_id, 'tree': tree, 'cwd': cwd, 'args': jam_args, 'targets': sorted(targets)})
+      keys = []
       for key, t in targets.items():
+        # jam builds some libraries of two trees into one dir (daNetGame of the client and of the dedicated server):
+        # they stay apart, the one of a later tree as <dir>@<tree>
+        if key_trees.setdefault(key, tree) != tree:
+          key = '{}@{}'.format(key, tree)
+        keys.append(key)
         known = inventory['targets'].setdefault(key, t)
         known['sources'].update(t['sources'])
         known['digest'].update(t['digest'])
+      inventory['roots'].append({'id': root_id, 'tree': tree, 'cwd': cwd, 'args': jam_args, 'targets': sorted(keys)})
 
   os.makedirs(args.out, exist_ok=True)
   with open(os.path.join(args.out, 'inventory.json'), 'w') as f:
