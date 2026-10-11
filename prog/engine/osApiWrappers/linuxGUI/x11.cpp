@@ -5,6 +5,7 @@
 #include <X11/Xcursor/Xcursor.h>
 #include <osApiWrappers/dag_wndProcCompMsg.h>
 #include <osApiWrappers/dag_unicode.h>
+#include <perfMon/dag_cpuFreq.h>
 #include <workCycle/dag_genGuiMgr.h>
 #include <drv/3d/dag_driver.h>
 #include <drv/3d/dag_resetDevice.h>

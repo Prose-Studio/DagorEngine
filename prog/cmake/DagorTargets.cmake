@@ -749,6 +749,11 @@ function(dagor_add_library)
   add_library(${name} ${type})
   get_property(cmake_type TARGET ${name} PROPERTY TYPE)
   _dagor_setup_target(${name} ${cmake_type} ${args})
+  # built for the programs that link it, as jam built only what a program needed (a tree also loads the libraries of
+  # choices its programs do not make, say the Linux GUI layer in a server's tree); the 'all' variant builds every one
+  if(NOT DAGOR_ADD_ALL AND cmake_type MATCHES "^(STATIC_LIBRARY|OBJECT_LIBRARY)$")
+    set_property(TARGET ${name} PROPERTY EXCLUDE_FROM_ALL ON)
+  endif()
 endfunction()
 
 # dagor_add_shared_library(<name> ...): a DLL / shared object, with dagor_add_library's options and OUTPUT_DIR,
