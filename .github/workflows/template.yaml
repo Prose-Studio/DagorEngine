@@ -39,7 +39,7 @@ jobs:
           - os: macos-15 # Xcode 16: the Metal driver needs the macOS 15 SDK (MTLResidencySet)
             devtools: /Users/runner/devtools
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 240
+    timeout-minutes: 360 # three trees (client, dedicated, daScript AOT compiler) without a compiler cache
     steps:
       - uses: actions/checkout@v4
 
