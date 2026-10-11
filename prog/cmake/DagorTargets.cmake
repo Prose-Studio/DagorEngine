@@ -602,6 +602,7 @@ function(_dagor_setup_target target type)
       install(FILES "$<TARGET_PDB_FILE:${target}>" DESTINATION "${dest}" COMPONENT cdk OPTIONAL)
     endif()
     set_property(TARGET ${target} PROPERTY DAGOR_INSTALL_DIR "${dest}")
+    set_property(TARGET ${target} PROPERTY DAGOR_INSTALL_COMPONENT cdk)
     set_property(GLOBAL APPEND PROPERTY DAGOR_CDK_TARGETS "${target}")
   endif()
 
@@ -609,7 +610,8 @@ function(_dagor_setup_target target type)
 endfunction()
 
 # dagor_runtime_files(<target> [SUBDIR <dir>] FILES <file>...): files a program loads at run time (SDK libraries, say),
-# copied next to it when it is built (into <dir> there) and installed with it if it is a CDK tool. Called in the
+# copied next to it when it is built (into <dir> there) and installed with it if it is installed (a CDK tool, a packaged
+# game: its DAGOR_INSTALL_DIR and DAGOR_INSTALL_COMPONENT properties). Called in the
 # directory that declares <target>. For a library, every program that links it gets the files (jam's BundleCopy of a
 # driver's SDK DLLs), see _dagor_library_runtime_files().
 function(dagor_runtime_files target)
@@ -638,7 +640,8 @@ function(dagor_runtime_files target)
     if(arg_SUBDIR)
       string(APPEND install_dir "/${arg_SUBDIR}")
     endif()
-    install(FILES ${arg_FILES} DESTINATION "${install_dir}" COMPONENT cdk)
+    get_property(component TARGET ${target} PROPERTY DAGOR_INSTALL_COMPONENT)
+    install(FILES ${arg_FILES} DESTINATION "${install_dir}" COMPONENT ${component})
   endif()
 endfunction()
 
@@ -662,6 +665,7 @@ function(_dagor_library_runtime_files)
     endif()
     list(REMOVE_DUPLICATES entries)
     get_property(install_dir TARGET ${target} PROPERTY DAGOR_INSTALL_DIR)
+    get_property(component TARGET ${target} PROPERTY DAGOR_INSTALL_COMPONENT)
     set(commands)
     foreach(entry IN LISTS entries)
       string(REPLACE "|" ";" parts "${entry}")
@@ -671,7 +675,7 @@ function(_dagor_library_runtime_files)
       list(APPEND commands COMMAND "${CMAKE_COMMAND}" -E make_directory "${dir}"
                            COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${file}" "${dir}")
       if(install_dir)
-        install(FILES "${file}" DESTINATION "${install_dir}/${subdir}" COMPONENT cdk)
+        install(FILES "${file}" DESTINATION "${install_dir}/${subdir}" COMPONENT ${component})
       endif()
     endforeach()
     add_custom_target(${target}.runtime ${commands} COMMENT "Runtime files of ${target}" VERBATIM)
@@ -825,6 +829,7 @@ function(dagor_finalize)
   _dagor_licenses()
   _dagor_library_runtime_files()
   _dagor_tests_target()
+  _dagor_package()
   _dagor_host_tools_target()
   _dagor_check_cdk_names()
 endfunction()

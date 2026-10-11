@@ -70,6 +70,13 @@ Each dir's `CMakeLists.txt` declares its tests (`prog/tests/CMakeLists.txt` puts
 dedicated server's tree, the scenarios in the client's). Results and screenshots go to
 `build/<platform>-<game>/test-artifacts/`. See `<engine>/_docs/source/testing`.
 
+## Packages
+
+`python project.py package` builds the client and the dedicated server in Rel and packs each with the game's data into
+`build/packages/` (a zip on Windows, a .tar.gz on Linux): the programs and their DLLs in `<platform>-<arch>/`, the
+shaders, vromfs and content, and a launcher (`dng_empty.cmd`, `dng_empty-server.cmd`, or `.sh`). Build the data first
+(`python project.py build`). `dagor_package_game()` in `prog/CMakeLists.txt` lists what goes in.
+
 ## Assets
 
 `develop/assets` holds the game's source assets; `python project.py build assets` (or `develop/dabuild`) exports them

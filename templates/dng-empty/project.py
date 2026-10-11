@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Commands of this project: python project.py {setup,relink,build,test,info} (-h for help).
+"""Commands of this project: python project.py {setup,relink,build,test,package,info} (-h for help).
 
 The engine checkout is named by engine.blk; the commands themselves live in the engine
 (prog/tools/pythonCommon/dagorProject), so they follow the engine version the project is built with.

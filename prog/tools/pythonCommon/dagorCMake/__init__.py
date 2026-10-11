@@ -204,6 +204,10 @@ class Tree:
   def install(self, config, components):
     return all(self.run([cmake(), '--install', self.dir, '--config', config, '--component', c]) for c in components)
 
+  def package(self, config='Rel'):
+    """the tree's package (CPack, see prog/cmake/DagorPackaging.cmake) of a built configuration"""
+    return self.run([cpack(), '--config', os.path.join(self.dir, 'CPackConfig.cmake'), '-C', config])
+
   def test(self, config='Dev', ci=False, jobs=None, ctest_args=(), no_tests='error'):
     """runs the tests of the tree with CTest; no_tests: what a run without tests is (error or ignore)"""
     cmd = [ctest(), '--test-dir', self.dir, '-C', config, '--output-on-failure', '--no-tests=' + no_tests]
@@ -228,6 +232,10 @@ def cmake():
 
 def ctest():
   return _tool('ctest')
+
+
+def cpack():
+  return _tool('cpack')
 
 
 def engine_tree(variant, target, dry_run=False):

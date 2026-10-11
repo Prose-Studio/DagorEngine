@@ -155,3 +155,50 @@ def project_test(project_root, argv):
     for config in configs:
       ok = tree.test(config, args.ci, args.jobs, ctest_args, no_tests='ignore') and ok  # -L picks one tree's
   return 0 if ok else 1
+
+
+PACKAGE_EPILOG = '''The packages go to build/packages: <project>[-dedicated]-<platform>-<arch>.zip (.tar.gz on Linux and macOS),
+with the programs, their runtime files, the game's data and a launcher (prog/CMakeLists.txt: dagor_package_game).
+The data comes from python project.py build (shaders, vromfs, assets), which package does not run.
+
+examples:
+  python project.py package                    the client and the dedicated server, Rel
+  python project.py package --game dedicated   the dedicated server
+  python project.py package --config Dev       with the development programs'''
+
+
+def project_package_parser():
+  p = argparse.ArgumentParser(prog='project.py package', epilog=PACKAGE_EPILOG,
+                              formatter_class=argparse.RawDescriptionHelpFormatter,
+                              description='Builds the game\'s programs and packages them with its data (CPack).')
+  p.add_argument('--arch', help='the architecture of the build (default: the host\'s)')
+  p.add_argument('--config', choices=CONFIGS, default='Rel', help='the configuration packaged (default Rel)')
+  p.add_argument('--game', choices=('dedicated', 'client', 'both'), default='both', help='the packages (default: both)')
+  p.add_argument('-j', '--jobs', type=int, help='parallel build jobs')
+  p.add_argument('--no-build', action='store_true', help='package the programs that are already built')
+  p.add_argument('--dry-run', action='store_true', help='print the commands instead of running them')
+  return p
+
+
+def project_package(project_root, argv):
+  """project.py package: the game's trees (configured by the project's build.py, which knows its options), built in
+  the configuration, then CPack in each"""
+  args = project_package_parser().parse_args(argv)
+  games = ['dedicated', 'client'] if args.game == 'both' else [args.game]
+  trees = [game_tree(project_root, g, Target(arch=args.arch), args.dry_run) for g in games]
+  if not args.no_build:
+    cmd = [sys.executable, os.path.join(project_root, 'project.py'), 'build', 'code']
+    cmd += (['arch:' + args.arch] if args.arch else []) + (['--dry-run'] if args.dry_run else [])
+    print('--- ' + ' '.join(cmd), flush=True)
+    if subprocess.call(cmd, cwd=project_root) != 0:
+      print('ERROR: building the game failed', flush=True)
+      return 1
+    for tree in trees:
+      if not tree.build([args.config], jobs=args.jobs):
+        print('ERROR: building {} failed'.format(tree.dir), flush=True)
+        return 1
+  for tree in trees:
+    if (args.no_build and not tree.configure()) or not tree.package(args.config):  # a build configures as needed
+      print('ERROR: packaging {} failed'.format(tree.dir), flush=True)
+      return 1
+  return 0

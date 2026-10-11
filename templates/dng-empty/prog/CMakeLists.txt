@@ -48,6 +48,14 @@ block(SCOPE_FOR VARIABLES)
     DEPS ${deps}
     OUTPUT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../game/${DAGOR_PLATFORM}-${DAGOR_ARCH}
   )
+
+  # python project.py package: the game with the data python project.py build made; -forcestart: the game has no
+  # launcher (updater), which Windows release clients ask to be started by otherwise
+  set(data content dng_empty.vromfs.bin)
+  if(NOT DAGOR_DEDICATED)
+    list(APPEND data compiledShaders)
+  endif()
+  dagor_package_game(dng_empty GAME_DIR ../game DATA ${data} ARGS -forcestart)
 endblock()
 
 add_subdirectory(tests)

@@ -67,6 +67,7 @@ include(DagorDas)
 include(DagorGame)
 include(DagorPython)
 include(DagorTesting)
+include(DagorPackaging)
 
 message(STATUS "Dagor: ${DAGOR_TARGET_TAG} ${DAGOR_CC} ${CMAKE_CXX_COMPILER_VERSION}, variant ${DAGOR_VARIANT}, "
                "deps cache ${DAGOR_DEPS_DIR}")

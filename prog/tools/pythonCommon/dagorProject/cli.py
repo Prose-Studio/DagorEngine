@@ -14,7 +14,8 @@ EPILOG = '''examples:
   python project.py build                  code, shaders and vromfs (python project.py build code builds only code)
   python project.py build code --jam       the code with jam instead of CMake
   python project.py test                   build and run the project tests (CTest; python project.py test -h)
-  python project.py test --jam --layer ecs the jam-built tests (any dng.py test run option)'''
+  python project.py test --jam --layer ecs the jam-built tests (any dng.py test run option)
+  python project.py package                the game in Rel with its data, in build/packages'''
 
 
 def make_parser(project: Project):
@@ -27,11 +28,13 @@ def make_parser(project: Project):
   r.add_argument('engine_dir')
   r.add_argument('--absolute', action='store_true', help='store an absolute path (default: relative to the project, '
                  'absolute only across drives)')
-  # build and test pass every following argument on (see PASS_THROUGH in main)
+  # build, test and package pass every following argument on (see PASS_THROUGH in main)
   sub.add_parser('build', help='setup, then prog/build.py with the given arguments: components (default: all, e.g. code '
                  'shaders vromfs assets), arch:<arch>, --dry-run')
   sub.add_parser('test', help='build the game and its tests and run them with CTest (python project.py test -h lists '
                  'the options; --jam: "dng.py test run --project <this project> --no-engine" of the engine)')
+  sub.add_parser('package', help='build the game in Rel and package it with its data into build/packages (python '
+                 'project.py package -h lists the options)')
   sub.add_parser('info', help='print the engine and project paths')
   return p
 
@@ -41,7 +44,7 @@ def _run(cmd, cwd):
   return subprocess.call(cmd, cwd=cwd)
 
 
-PASS_THROUGH = ('build', 'test')
+PASS_THROUGH = ('build', 'test', 'package')
 
 
 def main(project: Project, argv):
@@ -72,6 +75,10 @@ def main(project: Project, argv):
       from ..dagorCMake import cli as cmake_cli
       glue.setup(project)
       return cmake_cli.project_test(project.root, args.args)
+    if args.command == 'package':
+      from ..dagorCMake import cli as cmake_cli
+      glue.setup(project)
+      return cmake_cli.project_package(project.root, args.args)
   except ProjectError as e:
     print('ERROR: {}'.format(e), file=sys.stderr)
     return 2
