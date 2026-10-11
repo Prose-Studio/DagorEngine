@@ -162,7 +162,7 @@ jobs:
               ps auxww
             fi ) > "$RUNNER_TEMP/processes.txt" 2>&1 &
           watchdog=$!
-          python "$PROJECT_DIR/project.py" build code && status=0 || status=$?
+          python "$PROJECT_DIR/project.py" build code 2>&1 | tee "$RUNNER_TEMP/build.log" && status=0 || status=$?
           kill $watchdog 2>/dev/null || true
           exit $status
 
@@ -185,6 +185,20 @@ jobs:
           done
           ls -la "$RUNNER_TEMP/crashes"
           for f in "$RUNNER_TEMP/crashes"/*; do [ -f "$f" ] && head -c 20000 "$f"; done || true
+
+      - name: Backtrace of a crashed build step (macOS)
+        if: failure() && runner.os == 'macOS'
+        shell: bash
+        run: |
+          # the command of the first step that died of a signal (ninja: FAILED: [code=13x], then "cd <dir> && <command>"),
+          # run again in lldb
+          cmd=$(awk '/^FAILED: \[code=1(3[0-9]|4[0-9])\]/ {getline; print; exit}' "$RUNNER_TEMP/build.log")
+          if [ -n "$cmd" ]; then
+            echo "$cmd"
+            dir=${cmd#cd }; dir=${dir%% && *}
+            run=${cmd#* && }
+            cd "$dir" && eval "lldb --batch -o run -k 'thread backtrace all' -k quit -- $run" || true
+          fi
 
       - name: Upload crash reports (macOS)
         if: failure() && runner.os == 'macOS'
