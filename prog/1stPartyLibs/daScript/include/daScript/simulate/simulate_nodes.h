@@ -674,11 +674,15 @@ namespace das {
         }
         DAS_EVAL_ABI virtual vec4f eval ( Context & context ) override {
             DAS_PROFILE_NODE
+            static_assert(sizeof(TT) * maxLanes == sizeof(vec4f), "the lanes fill a vector");
             auto vec = value->eval(context);
-            vec4f r = v_zero();
-            const TT * s = (const TT *) &vec;
-            TT * d = (TT *) &r;
+            // lanes are copied through arrays: writing a vec4f through a 16-bit pointer breaks strict aliasing, and
+            // GCC then returns the zeroed vector
+            TT s[maxLanes], d[maxLanes] = {};
+            memcpy(s, &vec, sizeof(s));
             for ( int i = 0; i != count; ++i ) d[i] = s[fields[i]];
+            vec4f r;
+            memcpy(&r, d, sizeof(r));
             return r;
         }
         SimNode *   value;
