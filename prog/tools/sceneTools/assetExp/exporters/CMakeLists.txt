@@ -16,13 +16,13 @@ dabuild_plugin(animCharExp
   SOURCES animCharExp.cpp exp_animTree.cpp exp_stateGraph.cpp exp_animChar.cpp
   PRIVATE_INCLUDES ${shared}
   DEPS engine/startup engine/math engine/perfMon tools/libTools/assetMgr tools/libTools/pageAsg engine/lib3d
-    engine/shaders engine/sceneRay engine/gameRes engine/scene engine/drv/drv3d_null tools/libTools/shaderResBuilder
+    engine/shaders engine/gameRes engine/scene engine/drv/drv3d_null tools/libTools/shaderResBuilder
     tools/libTools/dagFileRW tools/libTools/ambientOcclusion)
 dabuild_plugin(collisionExp
   SOURCES exp_tools.cpp exp_collision.cpp
   PRIVATE_INCLUDES ${shared} ${DAGOR_PROG_DIR}/engine/sharedInclude ${DAGOR_PROG_DIR}/gameLibs/publicInclude
     ${DAGOR_PROG_DIR}/3rdPartyLibs/math/vhacd
-  DEPS engine/startup engine/math engine/lib3d engine/drv/drv3d_null engine/gameRes engine/sceneRay engine/scene
+  DEPS engine/startup engine/math engine/lib3d engine/drv/drv3d_null engine/gameRes engine/scene
     engine/coreUtil tools/libTools/assetMgr tools/libTools/dagFileRW tools/libTools/math tools/libTools/collision
     3rdPartyLibs/math/vhacd)
 dabuild_plugin(fastPhysExp
@@ -58,7 +58,7 @@ dabuild_plugin(modelExp
     exp_skeleton.cpp exp_rndGrass.cpp
   PRIVATE_INCLUDES ${shared} ${DAGOR_PROG_DIR}/engine/sharedInclude
   PRIVATE_DEFINES _DEBUG_TAB_
-  DEPS engine/startup engine/math engine/lib3d engine/shaders engine/drv/drv3d_null engine/sceneRay engine/gameRes
+  DEPS engine/startup engine/math engine/lib3d engine/shaders engine/drv/drv3d_null engine/gameRes
     engine/scene engine/perfMon tools/libTools/assetMgr tools/libTools/shaderResBuilder tools/libTools/dagFileRW
     engine/image tools/libTools/ambientOcclusion ${images})
 dabuild_plugin(phObjExp

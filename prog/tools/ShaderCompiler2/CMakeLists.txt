@@ -13,8 +13,8 @@ set(common_sources
   shCode.cpp shTargetStorage.cpp shAssumes.cpp shaderBytecodeCache.cpp cppStcode.cpp cppStcodeAssembly.cpp
   cppStcodePasses.cpp hlslRegisters.cpp globvar.cpp intervals.cpp samplers.cpp boolVar.cpp boolExpr.cpp
   shaderVariant.cpp shaderSave.cpp shLog.cpp shUtils.cpp shFunc.cpp shCompilationInfo.cpp loadShaders.cpp
-  binDumpUtils.cpp makeShBinDump.cpp transcodeShader.cpp namedConst.cpp refinedBlockLayout.cpp
-  refinedBlockRegisterAllocator.cpp codeBlocks.cpp condParser.cpp deSerializationContext.cpp
+  binDumpUtils.cpp makeShBinDump.cpp transcodeShader.cpp namedConst.cpp renderPassObject.cpp framebufferLayout.cpp
+  refinedBlockLayout.cpp refinedBlockRegisterAllocator.cpp codeBlocks.cpp condParser.cpp deSerializationContext.cpp
   linkShaders.cpp parser/bparser.cpp gitRunner.cpp processes.cpp
 )
 if(DAGOR_PLATFORM STREQUAL "windows")
@@ -22,7 +22,7 @@ if(DAGOR_PLATFORM STREQUAL "windows")
 else()
   list(APPEND common_sources processes_unix.cpp)
 endif()
-# the predefined declarations of each target, embedded into namedConst.cpp
+# the predefined declarations of each target, embedded into hwAssembly.cpp
 file(GLOB predefines RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" CONFIGURE_DEPENDS
   "${CMAKE_CURRENT_SOURCE_DIR}/predefines_*.hlsl")
 

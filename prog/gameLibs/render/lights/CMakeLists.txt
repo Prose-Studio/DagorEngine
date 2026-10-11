@@ -6,6 +6,7 @@ set(includes
   ${DAGOR_PROG_DIR}/3rdPartyLibs/binPack2D/include
 )
 set(sources
+  lightsBase.cpp
   clusteredLights.cpp
   clusteredLightsGrid.cpp
   lightsSorter.cpp
@@ -22,6 +23,7 @@ set(sources
   lightsRenderer.cpp
   dynamicLightShadows.cpp
   lightsVisibilityChecker.cpp
+  lightsCounter.cpp
 )
 
 dagor_add_library(SOURCES ${sources} PRIVATE_INCLUDES ${includes})

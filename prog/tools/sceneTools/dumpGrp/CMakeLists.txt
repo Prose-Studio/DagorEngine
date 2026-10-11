@@ -25,7 +25,6 @@ set(deps
   engine/scene
   engine/coreUtil
   engine/shaders
-  engine/sceneRay
   gameLibs/rendInst
 )
 if(DAGOR_PLATFORM STREQUAL "linux")

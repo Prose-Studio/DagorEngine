@@ -18,6 +18,12 @@ if(DAGOR_LINUX_X11)
   list(APPEND sources x11.cpp)
   list(APPEND defines USE_X11)
   list(APPEND libs X11 Xcursor)
+  # XInput2's header (raw mouse motion; libXi itself is loaded at run time, when there)
+  find_path(DAGOR_XINPUT2_INCLUDE_DIR X11/extensions/XInput2.h)
+  if(NOT DAGOR_XINPUT2_INCLUDE_DIR)
+    message(FATAL_ERROR "X11/extensions/XInput2.h not found: install libXi's development package (libxi-dev, "
+      "libXi-devel)")
+  endif()
 endif()
 
 dagor_add_library(STRICT

@@ -109,3 +109,16 @@ The game trees (Phase 3):
   editor tree, on the shared kernel, the editor variant's default now).
 - macOS: the game is an app bundle in its game dir (dagor_apple_bundle; jam's BundleName, plist, icon, ad hoc
   signature); apple_main.mm finds the game dir three levels up, as jam's DAGOR_MACOSX_CONTENTS did.
+
+Upstream sync of 2026/10/11 (ported by hand, checked with parity.py against the merged jamfiles):
+- jam's new windows-arm64ec target (PlatformArch=arm64ec: x64 SDK DLLs, ISPC and Oodle in an ARM64EC image) has no
+  CMake platform yet; it comes with Windows arm64 in Phase 5.
+- StrictCompile's stack frame limit (clang-cl, Dev/Rel/IRel, no sanitizer) is the DAGOR_FRAME_LIMIT target property
+  (dagor_add_*'s FRAME_LIMIT, 32 KiB by default); strict aliasing is on in every fast math build.
+- Linux dedicated servers keep the vendored OpenSSL 3 and libcurl (jam: the system's, UseSystemOpenSSL and now
+  UseSystemLibcurl), so the --exclude-libs of zlib, zstd and brotli (ExcludeStaticLibSymbols) are not needed.
+- jam's opt-in NeedDasJitRuntime (daScript ~jit) and ClangThreadSafety have no CMake options until something uses them;
+  daNetGame's ThreadSafeNetTime is DAGOR_GAME_THREAD_SAFE_NET_TIME.
+- The new tests without a test.blk (touchpadGestures, forceFeedback, websocket, raytracedToroidalStaticShadow) are not
+  run by jam's test runner and wait for the Phase 4 sweep, with the libraries no ported tree uses yet (render/rtdl,
+  collResDebugDraw, videoProductionUI, animTreeEditor).

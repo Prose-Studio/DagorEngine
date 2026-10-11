@@ -14,9 +14,10 @@ dagor_add_library(STRICT
     ../contactSolver.cpp
     ../collisionCache.cpp
   PRIVATE_INCLUDES
+    ${DAGOR_PROG_DIR}
     ${DAGOR_PROG_DIR}/gameLibs/publicInclude
     ${DAGOR_PROG_DIR}/engine/sharedInclude # gameRes/collisionResourceBuilder.h
   PRIVATE_DEFINES VECMATH_NO_FMA # v_madd on NEON is explicit vfmaq that ignores ffp-contract=off
   COMPILE_OPTIONS ${options}
-  DEPS Dagor::Phys engine/sceneRay gameLibs/rendInst gameLibs/physMap gameLibs/fftWater
+  DEPS Dagor::Phys gameLibs/rendInst gameLibs/physMap gameLibs/fftWater
 )

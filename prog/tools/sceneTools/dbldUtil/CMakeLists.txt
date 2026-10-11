@@ -24,7 +24,6 @@ set(deps
   engine/phys/physCommon
   engine/phys/fastPhys
   engine/scene
-  engine/sceneRay
   engine/image
   engine/libFx
   commonFx/commonFxGame:gz

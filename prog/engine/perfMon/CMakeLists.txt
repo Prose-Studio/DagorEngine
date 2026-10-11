@@ -4,7 +4,6 @@
 set(sources
   profilerModes.cpp
   profilerSettings.cpp
-  visClipMesh.cpp
   stat3d.cpp
   tdrProfile.cpp
   statStd.cpp

@@ -116,14 +116,12 @@ dagor_add_library(OBJECT
     engine/baseUtil
     engine/startup
     engine/coreUtil
-    engine/sceneRay
     engine/scene
     engine/imgui/stub
     engine/animChar/stub
     3rdPartyLibs/eastl
     1stPartyLibs/rapidJsonUtils
     1stPartyLibs/daScript
-    1stPartyLibs/daScript/utils/dasFormatter
     1stPartyLibs/daScriptModules/rapidjson
     1stPartyLibs/daScript/modules/dasImgui
     1stPartyLibs/daScript/modules/dasQuirrel

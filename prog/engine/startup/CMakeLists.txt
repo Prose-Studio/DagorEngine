@@ -5,6 +5,7 @@ set(sources
   globals3d.cpp
   initCrt.cpp
   loadSettings.cpp
+  purgeLogs.cpp
   applyCmdline.cpp
   mbReport.cpp
   inpDevClsDrv.cpp

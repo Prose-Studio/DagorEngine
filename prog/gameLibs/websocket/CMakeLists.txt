@@ -1,7 +1,7 @@
 # Websocket client on libcurl
 list(APPEND includes ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/3rdPartyLibs/libb64/include)
 list(APPEND deps 3rdPartyLibs/eastl 3rdPartyLibs/libb64 3rdPartyLibs/hash engine/crypto)
-set(sources websocket.cpp)
+set(sources websocket.cpp websocket_common.cpp websocket_compat.cpp websocket_io.cpp)
 list(APPEND includes ${DAGOR_PROG_DIR}/3rdPartyLibs/libcurl/include)
 list(APPEND deps 3rdPartyLibs/libcurl)
 list(APPEND defines CURL_STATICLIB)

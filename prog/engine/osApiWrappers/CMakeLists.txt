@@ -74,16 +74,16 @@ elseif(DAGOR_PLATFORM MATCHES "^(macOS|iOS|tvOS)$")
     list(APPEND sources macosx/mac_shell.mm)
     list(APPEND deps engine/osApiWrappers/messageBox)
   elseif(DAGOR_PLATFORM STREQUAL "iOS")
-    list(APPEND sources ios/iOS_shell.mm)
+    list(APPEND sources ios/iOS_shell.mm ios/iOS_windowScene.mm)
     list(APPEND deps engine/osApiWrappers/messageBox)
   else()
-    list(APPEND sources ios/iOS_shell.mm tvos/tvOS_storage.mm tvos/tvOS_appstore.mm tvos/tvOS_callbacks.mm
+    list(APPEND sources ios/iOS_shell.mm ios/iOS_windowScene.mm tvos/tvOS_storage.mm tvos/tvOS_appstore.mm tvos/tvOS_callbacks.mm
       tvos/tvOS_logimpl.mm tvos/eventviewcontroller.mm tvos/gamecenterview.mm tvos/inetview.mm
       tvos/matchcontroller.mm tvos/storekitview.mm)
     list(APPEND deps engine/osApiWrappers/messageBox/stub)
   endif()
   list(APPEND sources stackHlpFill.cpp stackHlpGet.cpp macosx/macDbgStr.mm macosx/macSetTitle.mm
-    macosx/macClipboard.mm convertUTF.cpp dynLib.cpp ${posix_async_read} addressWaitStdCondVar.cpp)
+    macosx/macClipboard.mm macosx/addressWaitOsSync.cpp convertUTF.cpp dynLib.cpp ${posix_async_read})
   list(APPEND options -Wno-error)
 elseif(DAGOR_PLATFORM MATCHES "^(linux|android)$")
   list(APPEND sources dbgStr.cpp stackHlpFill.cpp stackHlpGet.cpp dynLib.cpp convertUTF.cpp linux/addressWaitFutex.cpp)

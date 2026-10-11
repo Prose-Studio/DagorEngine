@@ -17,6 +17,7 @@ dagor_add_executable(${name} CONSOLE
     ../../modules/dasUnitTest/bytecode.cpp
     ../../modules/dasUnitTest/test_enum.cpp
     ../../modules/dasUnitTest/test_handles.cpp
+    ../../modules/dasUnitTest/test_crt_math.cpp
   PRIVATE_INCLUDES ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/1stPartyLibs/daScript/include
   PRIVATE_DEFINES DAS_USE_BASE_CRASH_HANDLER=1
   DEPS
@@ -30,7 +31,6 @@ dagor_add_executable(${name} CONSOLE
     engine/math
     3rdPartyLibs/eastl
     1stPartyLibs/daScript
-    1stPartyLibs/daScript/utils/dasFormatter
     engine/daECS/core
     gameLibs/ecs/scripts/das
     gameLibs/dasModules/common

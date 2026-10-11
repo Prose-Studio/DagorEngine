@@ -6,8 +6,6 @@ set(sources
   buildVisTree.cpp
   loadLevel.cpp
   physMat.cpp
-  frtdump.cpp
-  frtdumpMgr.cpp
   renderSceneMgr.cpp
   staticFxObjs.cpp
   visibility.cpp

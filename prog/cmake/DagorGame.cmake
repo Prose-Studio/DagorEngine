@@ -17,6 +17,8 @@ set(DAGOR_GAME_OVERLAY_UI ${DAGOR_GAME_RENDERER})
 set(DAGOR_GAME_DNG_INPUT ${DAGOR_GAME_RENDERER})
 set(DAGOR_GAME_CONTENT_UPDATER ${DAGOR_GAME_RENDERER})
 set(DAGOR_GAME_SOUND_NET ON)
+option(DAGOR_GAME_THREAD_SAFE_NET_TIME "Guard daNetGame's net time manager with a lock (sync time readable from any thread)"
+  OFF)
 # sound needs FMOD, which is not redistributable (DAGOR_SDK_FMOD_DIR)
 option(DAGOR_GAME_SOUND "The game client's sound (FMOD Studio, DAGOR_SDK_FMOD_DIR)" OFF)
 if(DAGOR_DEDICATED)

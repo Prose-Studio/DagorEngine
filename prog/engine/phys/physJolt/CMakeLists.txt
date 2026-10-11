@@ -12,6 +12,7 @@ dagor_add_library(
     joltRayCar.cpp
     shapes/HeightField16Shape.cpp
     shapes/CollisionBlasShape.cpp
+    shapes/FastCollideConvexVsTriangles.cpp
   PRIVATE_INCLUDES
     ${DAGOR_PROG_DIR}/engine/sharedInclude
     ${DAGOR_PROG_DIR}/3rdPartyLibs/phys/joltPhysics

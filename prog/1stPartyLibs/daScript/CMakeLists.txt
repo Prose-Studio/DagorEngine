@@ -9,6 +9,7 @@ set(source_dirs src/ast src/builtin src/runtime src/simulate src/misc src/parser
 # Dagor program supplies itself (games through das_es.cpp + defaultFileAccess.cpp, tools through dagorAdapter/da.cpp),
 # and src/hal/performance_time.cpp the time functions the engine kernel provides: they would be duplicate symbols
 dagor_glob_sources(sources DIRS ${source_dirs} GLOB *.cpp EXCLUDE "project_specific_file_info\\.cpp$" "performance_time\\.cpp$")
+list(APPEND sources dagorAdapter/das_jit_runtime.cpp) # (empty without DAS_JIT_RUNTIME, jam's NeedDasJitRuntime)
 
 # the sources that throw (and the crash handler, which reads the exception in flight): compiled with exceptions
 # whatever the tree's setting
@@ -31,7 +32,8 @@ if(DAGOR_ARCH STREQUAL "e2k")
   list(APPEND source_options src/simulate/simulate_gc.cpp -Wno-overloaded-virtual)
 endif()
 
-set(defines DAS_ENABLE_KEEPALIVE=0 FMT_UNICODE=0 "$<$<CONFIG:Rel,IRel>:DAS_NO_ASSERTIONS=1>")
+# DAS_ENABLE_DYN_INCLUDES: as daScript's own CMake build defines it (src/builtin/jit_runtime.cpp needs its header)
+set(defines DAS_ENABLE_KEEPALIVE=0 FMT_UNICODE=0 DAS_ENABLE_DYN_INCLUDES=1 "$<$<CONFIG:Rel,IRel>:DAS_NO_ASSERTIONS=1>")
 if(DAGOR_DAS_LLVM_AOT)
   list(APPEND defines DAS_LLVM_AOT)
 endif()

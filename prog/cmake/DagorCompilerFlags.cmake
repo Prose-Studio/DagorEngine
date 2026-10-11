@@ -350,7 +350,7 @@ if(DAGOR_MSVC_LIKE)
   # /OPT:REF also folds identical code and data into one address, which breaks code comparing the addresses of
   # distinct functions or objects (daFrameGraph's blob projectors and type tags): lld-link's safe ICF keeps those, by
   # clang's address-significance tables; link.exe cannot tell them apart and does not fold at all
-  if(DAGOR_CC STREQUAL "clang-cl")
+  if(DAGOR_CC STREQUAL "clang-cl" AND NOT DAGOR_SANITIZE STREQUAL "address") # (ASan's instrumentation: no folding)
     _dagor_settings(LINK "$<AND:${_linked},$<NOT:${_dbg}>>" /OPT:SAFEICF)
   else()
     _dagor_settings(LINK "$<AND:${_linked},$<NOT:${_dbg}>>" /OPT:NOICF)
@@ -364,7 +364,7 @@ if(DAGOR_MSVC_LIKE)
     _dagor_settings(LIBS "${_linked}" clang_rt.builtins-x86_64)
   endif()
 elseif(DAGOR_PLATFORM STREQUAL "linux")
-  _dagor_settings(LINK "${_linked}" -pipe -rdynamic LINKER:--gc-sections LINKER:-z,noexecstack)
+  _dagor_settings(LINK "${_linked}" -pipe -rdynamic LINKER:--gc-sections LINKER:-z,noexecstack LINKER:-z,separate-code)
   _dagor_settings(LIBS "${_linked}" rt pthread dl m)
 elseif(DAGOR_PLATFORM STREQUAL "macOS")
   _dagor_settings(LINK "${_linked}" -ObjC LINKER:-headerpad_max_install_names)
@@ -438,8 +438,17 @@ endif()
 # --- warning sets: Dagor::Strict for first-party code, Dagor::Lax for third-party -------------------------------------
 if(DAGOR_CC STREQUAL "clang-cl")
   _dagor_flags(DagorStrict COMPILE "${_cxx}" -Wunused-parameter -Wunused-variable -Wunused-lambda-capture
-    -Wrange-loop-construct -Werror=unused-parameter -Werror=unused-variable -Werror=unused-lambda-capture
-    -Werror=range-loop-construct /permissive-)
+    -Wrange-loop-construct -Wpessimizing-move -Wredundant-move -Wself-move -Werror=unused-parameter
+    -Werror=unused-variable -Werror=unused-lambda-capture -Werror=range-loop-construct -Werror=pessimizing-move
+    -Werror=redundant-move -Werror=self-move /permissive-)
+  # the stack frame limit (the target's DAGOR_FRAME_LIMIT, dagor_add_*'s FRAME_LIMIT; 32 KiB by default) of the shipped
+  # configurations; sanitizer redzones inflate frames, so their size says nothing about the shipped binary
+  if(DAGOR_SANITIZE STREQUAL "none")
+    set(limit "$<IF:$<BOOL:$<TARGET_PROPERTY:DAGOR_FRAME_LIMIT>>,$<TARGET_PROPERTY:DAGOR_FRAME_LIMIT>,32768>")
+    _dagor_flags(DagorStrict COMPILE "$<AND:${_cxx},$<NOT:${_dbg}>>" "/clang:-Wframe-larger-than=${limit}"
+      -Werror=frame-larger-than)
+    unset(limit)
+  endif()
 elseif(DAGOR_CC STREQUAL "msvc")
   set(wd 4514 4061 4820 4668 4619 4365 4127 4302 4242 4244 4265 4101 4201 4625 4626 4800 4018 4710 4245 4291 4389
     4200 4255 4711 4062 4355 4640 4305 4324 4511 4512 4738 4996 4005 4740 4702 4826 4503 4748 4987 4574 4554 4471

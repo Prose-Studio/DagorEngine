@@ -10,4 +10,4 @@ set(includes
 set(sources jsonUtils.cpp decodeJwt.cpp)
 list(APPEND deps 1stPartyLibs/jsoncpp 1stPartyLibs/rapidJsonUtils)
 
-dagor_add_library(STRICT SOURCES ${sources} PRIVATE_INCLUDES ${includes} DEPS ${deps})
+dagor_add_library(STRICT FRAME_LIMIT 262144 SOURCES ${sources} PRIVATE_INCLUDES ${includes} DEPS ${deps})

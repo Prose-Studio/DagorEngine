@@ -10,6 +10,7 @@ set(includes
 set(sources
   giVerifierCapture.cpp
   giVerifierEnvExr.cpp
+  pbrValidationTool.cpp
   cameraPositions.cpp
   bigLightsShadows.cpp
   tdrGpu.cpp
@@ -22,10 +23,6 @@ set(sources
   noiseTexData.cpp
   gpuGrass.cpp
   fast_grass.cpp
-  ssao_common.cpp
-  ssao.cpp
-  gtao.cpp
-  mobile_ssao.cpp
   tireTracks.cpp
   clipmapDecals.cpp
   burningDecals.cpp
@@ -121,4 +118,4 @@ if(DAGOR_PLATFORM STREQUAL "windows")
   list(APPEND libs OleAut32)
 endif()
 
-dagor_add_library(STRICT SOURCES ${sources} PRIVATE_INCLUDES ${includes} DEPS ${deps} SYSTEM_LIBS ${libs})
+dagor_add_library(STRICT FRAME_LIMIT 262144 SOURCES ${sources} PRIVATE_INCLUDES ${includes} DEPS ${deps} SYSTEM_LIBS ${libs})

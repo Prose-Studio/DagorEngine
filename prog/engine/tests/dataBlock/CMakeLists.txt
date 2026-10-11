@@ -17,7 +17,9 @@ dagor_add_catch2_test(datablock-tests
     test_robust.cpp
     test_edge_cases.cpp
     test_malformed_binary.cpp
+    test_malformed_bbf3.cpp
     test_no_includes.cpp
+    test_nesting_depth.cpp
   DEPS
     engine/memory
     engine/kernel

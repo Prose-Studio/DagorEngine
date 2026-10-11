@@ -9,6 +9,7 @@ set(sources
   renderStates.cpp
   shadersBinaryDataDbg2.cpp
   shaderBlock.cpp
+  shaderRenderPass.cpp
   globVarsBlk.cpp
   postFxRenderer.cpp
   shStateBlk.cpp

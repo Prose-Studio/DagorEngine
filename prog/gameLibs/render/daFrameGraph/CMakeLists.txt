@@ -1,6 +1,6 @@
 # daFrameGraph: the render graph (node registry, IR, scheduling of passes, resources and barriers, runtime), with its
-# debug visualization in Dev and Dbg. Flavors combine with '.': das (daScript bindings), ecs (daECS node integration),
-# ut (the unit tests embedded in the sources, for daFrameGraph-tests); e.g. gameLibs/render/daFrameGraph:das.ecs. The
+# debug visualization in Dev and Dbg. Flavors combine with '.': das (daScript bindings), ecs (daECS node integration);
+# e.g. gameLibs/render/daFrameGraph:das.ecs. The
 # default target has the features of DAGOR_DAFG_FEATURES (a game's: das and ecs, DagorGame.cmake).
 
 function(_daFrameGraph flavor)
@@ -30,6 +30,10 @@ function(_daFrameGraph flavor)
     backend/passColoring.cpp
     backend/nodeScheduler.cpp
     backend/resourceScheduling/resourceLifetimes.cpp
+    backend/resourceScheduling/heapLayout.cpp
+    backend/resourceScheduling/layoutOptimizer.cpp
+    backend/resourceScheduling/layoutUpdate.cpp
+    backend/resourceScheduling/heapPolicy.cpp
     backend/resourceScheduling/barrierScheduler.cpp
     backend/resourceScheduling/resourceScheduler.cpp
     backend/resourceScheduling/resourceAllocator.cpp
@@ -43,7 +47,6 @@ function(_daFrameGraph flavor)
     runtime/runtime.cpp
     runtime/bindlessSlotManager.cpp
   )
-  dagor_glob_sources(sources DIRS backend/resourceScheduling/packers GLOB *.cpp)
   _dagor_base_dir(dir)
 
   # the debug tools in Dev and Dbg; the per-node global state validation only with checked containers there too
@@ -89,9 +92,6 @@ function(_daFrameGraph flavor)
         api/das/structureAnnotations.cpp api/das/blobBindings.cpp api/das/blobInterop.cpp)
       list(APPEND includes ${DAGOR_PROG_DIR}/1stPartyLibs/daScript/include)
       list(APPEND deps 1stPartyLibs/daScript)
-    elseif(feature STREQUAL "ut")
-      list(APPEND defines DAFG_UNIT_TESTS=1)
-      list(APPEND includes ${DAGOR_PROG_DIR}/3rdPartyLibs/catch2/src)
     elseif(feature STREQUAL "ecs")
       set(es api/ecs/frameGraphNodeES.cpp.inl)
     else()

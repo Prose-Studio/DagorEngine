@@ -2,6 +2,7 @@
 set(sources
   shaderMeshData.cpp
   shSkinMeshData.cpp
+  corSkinning.cpp
   shaderMeshCacheOpt.cpp
   globalVertexDataConnector.cpp
   meshDataSave.cpp

@@ -199,7 +199,6 @@ list(APPEND deps
   engine/guiBase
   engine/scene
   engine/phys/physCommon
-  engine/sceneRay
   engine/animChar
   engine/anim
   engine/phys/fastPhys
@@ -360,6 +359,15 @@ if(DAGOR_GAME_RENDERER)
 else()
   list(APPEND deps gameLibs/render/animatedSplashScreen/stub)
 endif()
+# the camera manager, ambient occlusion and multi-line debug labels (their _lib.jam)
+if(DAGOR_GAME_RENDERER)
+  list(APPEND deps gameLibs/cameraManager gameLibs/render/ambientOcclusion)
+  list(APPEND pulls framework_cameraManager_pull)
+else()
+  list(APPEND deps gameLibs/cameraManager/stub)
+endif()
+list(APPEND includes ${DAGOR_PROG_DIR}/gameLibs/render/ambientOcclusion)
+list(APPEND deps gameLibs/render/debugMultiTextLabels)
 
 if(DAGOR_GAME_DNG_INPUT)
   list(APPEND deps gameLibs/daInput gameLibs/ecs/input)
@@ -543,11 +551,11 @@ else()
   # keyboard, mouse and game controllers
   list(APPEND deps engine/drv/hid_keyboard engine/drv/hid_mouse)
   if(DAGOR_PLATFORM STREQUAL "windows")
-    list(APPEND deps engine/drv/hid_joystick engine/drv/hid_gamepad_xinput engine/drv/hid_dinput)
+    list(APPEND deps engine/drv/hid_joystick engine/drv/hid_gamepad_xinput engine/drv/hid_dinput engine/drv/hid_dspad_pc)
   elseif(DAGOR_PLATFORM STREQUAL "macOS")
     list(APPEND deps engine/drv/hid_joystick_osx)
   else()
-    list(APPEND deps engine/drv/hid_joystick_linux)
+    list(APPEND deps engine/drv/hid_joystick_linux engine/drv/hid_dspad_pc)
   endif()
 endif()
 if(DAGOR_PLATFORM STREQUAL "windows" AND DAGOR_ARCH STREQUAL "x86_64" AND NOT DAGOR_DEDICATED)
@@ -626,9 +634,16 @@ list(APPEND sources "${gen}/dasAot.cpp")
 # --- the library -----------------------------------------------------------------------------------------------------
 list(REMOVE_DUPLICATES sources)
 list(REMOVE_DUPLICATES es)
+# sources with definitions of their own, which the precompiled header does not have
 set(source_options)
+set(own_defines)
 if(DAGOR_DEDICATED AND DAGOR_PLATFORM STREQUAL "linux")
   list(APPEND source_options net/dedicated/netded.cpp -DNET_PEER_AUTH) # the clients' auth keys (NetPeerAuth)
+  list(APPEND own_defines net/dedicated/netded.cpp)
+endif()
+if(DAGOR_GAME_THREAD_SAFE_NET_TIME)
+  list(APPEND source_options net/time.cpp -DTHREAD_SAFE_NET_TIME)
+  list(APPEND own_defines net/time.cpp)
 endif()
 # the precompiled header (jam: Windows, Dev and Dbg only); not on Apple platforms, whose SDK has no <malloc.h>
 set(pch)
@@ -641,11 +656,13 @@ dagor_add_library(STRICT QUIRREL
   DAS_AOT ${das}
   DAS_AOT_PULL ${das_pull}
   PCH ${pch}
+  FRAME_LIMIT 262144
   PRIVATE_INCLUDES
     ${DAGOR_DNG_INCLUDES}
     ${DAGOR_PROG_DIR}/3rdPartyLibs/openssl-3.x/include
     ${DAGOR_PROG_DIR}/engine/sharedInclude
     ${DAGOR_PROG_DIR}/engine
+    ${DAGOR_PROG_DIR}/gameLibs
     ${includes}
   PRIVATE_DEFINES DISABLE_SYNC_DEBUG # the fork has no gameLibs/syncDebug
   COMPILE_OPTIONS ${DAGOR_DNG_OPTIONS}
@@ -654,8 +671,7 @@ dagor_add_library(STRICT QUIRREL
   SYSTEM_LIBS ${system_libs}
   STRINGIFY ${stringify}
 )
-if(source_options)
-  # its own definition: not with the precompiled header
-  set_source_files_properties(net/dedicated/netded.cpp PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
+if(own_defines)
+  set_source_files_properties(${own_defines} PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
 endif()
 dagor_game_lib(PULLS ${pulls})

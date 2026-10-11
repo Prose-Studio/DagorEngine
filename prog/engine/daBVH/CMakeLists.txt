@@ -11,6 +11,8 @@ set(sources
   soa4EdgeFlags.cpp
   soa4TraversalOOL.cpp
   swTLAS.cpp
+  meshBLAS.cpp
+  meshSoa4BLAS.cpp
 )
 
 dagor_add_library(STRICT SOURCES ${sources} PRIVATE_INCLUDES ${includes})

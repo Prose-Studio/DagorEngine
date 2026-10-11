@@ -11,4 +11,4 @@ set(sources
   flare.cpp
 )
 
-dagor_add_library(STRICT SOURCES ${sources} PRIVATE_INCLUDES ${includes})
+dagor_add_library(STRICT FRAME_LIMIT 262144 SOURCES ${sources} PRIVATE_INCLUDES ${includes})

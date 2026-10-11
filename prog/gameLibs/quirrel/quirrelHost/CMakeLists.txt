@@ -6,8 +6,8 @@ set(includes
   ${DAGOR_PROG_DIR}/1stPartyLibs/quirrel/quirrel/internal
 )
 set(sources memtrace.cpp sqmem_dagor.cpp)
-# no reuse of freed blocks under the sanitizers other than ASan (as jam built it: its condition held for no sanitizer)
-if(NOT DAGOR_SANITIZE MATCHES "^(none|address)$")
+# no reuse of freed blocks under ASan, which then sees use after free
+if(DAGOR_SANITIZE STREQUAL "address")
   list(APPEND source_options sqmem_dagor.cpp -DENABLE_RE_USE=0)
 endif()
 if(DAGOR_SQ_VAR_TRACE)

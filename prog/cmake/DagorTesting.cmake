@@ -270,7 +270,10 @@ function(dagor_add_das_test name)
   endif()
   # dastest stops itself at --timeout; CTest's limit is a backstop for hangs outside of the tests
   list(APPEND command --timeout ${arg_TIMEOUT} --failures-only ${arg_ARGS})
-  add_test(NAME ${name} COMMAND ${command} WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
+  # in a dir of its own in the build tree: daScript writes its module cache (.jitted_scripts) into the working dir
+  set(dir "${CMAKE_BINARY_DIR}/test-artifacts/${name}")
+  file(MAKE_DIRECTORY "${dir}")
+  add_test(NAME ${name} COMMAND ${command} WORKING_DIRECTORY "${dir}")
   math(EXPR backstop "${arg_TIMEOUT} + 60")
   _dagor_test_common_args(common)
   _dagor_test_properties(props das ${common})

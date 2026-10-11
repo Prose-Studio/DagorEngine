@@ -1,6 +1,6 @@
 # Render instances: generated and placed instances (rendinst cells, extra instances, impostors, destruction), their
 # collision, visibility and rendering. Dedicated servers (DAGOR_DEDICATED) have no impostor textures.
-set(includes ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${CMAKE_CURRENT_SOURCE_DIR})
+set(includes ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/engine/sharedInclude ${CMAKE_CURRENT_SOURCE_DIR})
 set(sources
   dumpCollisions.cpp
   dumpScenes.cpp
@@ -71,7 +71,7 @@ set(options)
 # the backend from fusing under fast-math)
 dagor_deterministic_fp(options KEEP_TRAPPING_MATH)
 
-dagor_add_library(STRICT
+dagor_add_library(STRICT FRAME_LIMIT 262144
   SOURCES ${sources}
   PRIVATE_INCLUDES ${includes}
   PRIVATE_DEFINES ${defines}

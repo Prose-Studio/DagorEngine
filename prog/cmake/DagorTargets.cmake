@@ -246,7 +246,7 @@ target_compile_definitions(DagorQuirrel INTERFACE QUIRREL_HOST_HEADER=dagor_quir
 set(DAGOR_QUIRREL_LIBS 1stPartyLibs/quirrel/quirrel 1stPartyLibs/quirrel/quirrel/sqmodules gameLibs/quirrel/quirrelHost)
 
 set(_DAGOR_TARGET_OPTIONS STRICT THIRD_PARTY NO_UNITY CONSOLE NO_CONFIG_POSTFIX QUIRREL QUIRREL_HEADERS CDK)
-set(_DAGOR_TARGET_ONE_VALUE PCH FOLDER OUTPUT_NAME OUTPUT_DIR EXCEPTIONS RTTI CDK_SUBDIR DAS_AOT_PULL)
+set(_DAGOR_TARGET_ONE_VALUE PCH FOLDER OUTPUT_NAME OUTPUT_DIR EXCEPTIONS RTTI CDK_SUBDIR DAS_AOT_PULL FRAME_LIMIT)
 set(_DAGOR_TARGET_MULTI_VALUE SOURCES SOURCE_DIRS GLOB EXCLUDE FORCE_INCLUDES PUBLIC_INCLUDES PRIVATE_INCLUDES PUBLIC_DEFINES
   PRIVATE_DEFINES COMPILE_OPTIONS C_OPTIONS PUBLIC_COMPILE_OPTIONS SOURCE_OPTIONS DEPS PUBLIC_DEPS SYSTEM_LIBS LINK_OPTIONS
   LICENSE_FILES PROPERTIES STRINGIFY STRINGIFY_ARRAY ES_SOURCES DAS_AOT)
@@ -521,6 +521,9 @@ function(_dagor_setup_target target type)
     dagor_check_choice("${target} RTTI" "${arg_RTTI}" ON OFF)
     set_property(TARGET ${target} PROPERTY DAGOR_RTTI "${arg_RTTI}")
   endif()
+  if(arg_FRAME_LIMIT)
+    set_property(TARGET ${target} PROPERTY DAGOR_FRAME_LIMIT "${arg_FRAME_LIMIT}") # STRICT code's stack frame limit
+  endif()
   if(arg_PCH)
     _dagor_abs_paths(pch "${arg_PCH}")
     target_precompile_headers(${target} PRIVATE "${pch}")
@@ -733,7 +736,8 @@ endfunction()
 #   [COMPILE_OPTIONS ...] [C_OPTIONS <options of the C sources>...] [PUBLIC_COMPILE_OPTIONS ...] [SOURCE_OPTIONS <file> <option>...] [DEPS <ref>...]
 #   [PUBLIC_DEPS <ref>...] [SYSTEM_LIBS ...] [LINK_OPTIONS ...] [STRICT] [THIRD_PARTY] [EXCEPTIONS ON|OFF|SEH]
 #   [QUIRREL] (Quirrel's headers and libraries) [QUIRREL_HEADERS] (its headers only)
-#   [RTTI ON|OFF] [FORCE_INCLUDES <header>...] [PCH <header>] [NO_UNITY] [FOLDER <folder>] [LICENSE_FILES ...]
+#   [RTTI ON|OFF] [FRAME_LIMIT <bytes>] [FORCE_INCLUDES <header>...] [PCH <header>] [NO_UNITY] [FOLDER <folder>]
+#   [LICENSE_FILES ...]
 #   [CDK] (programs: installed into tools/dagor_cdk/<platform>-<arch> by the cdk install component)
 #   [CDK_SUBDIR <dir>] (CDK, into <dir> there: plugins/ddsx, ...)
 #   [ES_SOURCES <name>ES.cpp.inl...] (entity systems, compiled through the ES codegen's output; $<cond:path> for those

@@ -1,4 +1,4 @@
-# libcurl (HTTP only) on the vendored OpenSSL, zlib-ng, zstd and brotli
+# libcurl (HTTP and WebSockets) on the vendored OpenSSL 3, zlib-ng, zstd and brotli
 set(includes
   lib
   include
@@ -8,7 +8,7 @@ set(includes
 )
 list(APPEND deps 3rdPartyLibs/arc/zlib-ng 3rdPartyLibs/arc/zstd-1.4.5 3rdPartyLibs/arc/brotli)
 if(DAGOR_PLATFORM STREQUAL "windows")
-  list(APPEND libs Ws2_32 crypt32)
+  list(APPEND libs Ws2_32 crypt32 bcrypt)
 endif()
 if(DAGOR_PLATFORM STREQUAL "macOS")
   list(APPEND options -Wno-deprecated-declarations)
@@ -16,24 +16,28 @@ if(DAGOR_PLATFORM STREQUAL "macOS")
 endif()
 list(APPEND includes ${DAGOR_PROG_DIR}/3rdPartyLibs/openssl-3.x/include)
 list(APPEND deps 3rdPartyLibs/openssl-3.x)
-dagor_glob_sources(sources DIRS lib/vauth lib GLOB *.c)
-list(APPEND sources
-  lib/vtls/openssl.c
-  lib/vtls/keylog.c
-  lib/vtls/hostcheck.c
-  lib/vtls/x509asn1.c
-  lib/vtls/vtls.c
-)
+# the backends compile to nothing unless their USE_* macro is on, so the whole tree is taken
+dagor_glob_sources(sources DIRS lib lib/curlx lib/vauth lib/vdns lib/vquic lib/vssh lib/vtls GLOB *.c)
 set(c_options
-  -DOPENSSL_SUPPRESS_DEPRECATED
   -DCURL_STATICLIB
   -DBUILDING_LIBCURL
-  -DCURL_DISABLE_LDAP
-  -DHTTP_ONLY
   -DHAVE_BROTLI
   -DHAVE_ZSTD
   -DHAVE_LIBZ
-  -DHAVE_ZLIB_H
+  -DCURL_DISABLE_HTTPSIG # no libjose here, and config-win32.h has no slot to say so
+  # the protocols one by one: HTTP_ONLY would switch WebSockets off as well
+  -DCURL_DISABLE_DICT
+  -DCURL_DISABLE_FILE
+  -DCURL_DISABLE_FTP
+  -DCURL_DISABLE_GOPHER
+  -DCURL_DISABLE_IMAP
+  -DCURL_DISABLE_LDAP
+  -DCURL_DISABLE_MQTT
+  -DCURL_DISABLE_POP3
+  -DCURL_DISABLE_RTSP
+  -DCURL_DISABLE_SMTP
+  -DCURL_DISABLE_TELNET
+  -DCURL_DISABLE_TFTP
 )
 if(DAGOR_CC MATCHES "^(clang|clang\-cl)$")
   if(DAGOR_SANITIZE STREQUAL "undefined")

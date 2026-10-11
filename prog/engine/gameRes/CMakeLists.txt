@@ -26,6 +26,8 @@ set(sources
   collisionResourceInstance.cpp
   collisionTraceOOL.cpp
   stubGameResFactories.cpp
+  collResDump.cpp
+  legacy_sceneray.cpp
 )
 set(includes ${DAGOR_PROG_DIR}/engine/sharedInclude)
 list(APPEND deps 3rdPartyLibs/eastl engine/daBVH)
@@ -39,7 +41,7 @@ if(DAGOR_LTO AND DAGOR_CC STREQUAL "msvc" AND DAGOR_ARCH STREQUAL "arm64")
   list(APPEND source_options collisionGameRes.cpp /GL-) # MSVC's arm64 LTO miscompiles it
 endif()
 
-dagor_add_library(STRICT
+dagor_add_library(STRICT FRAME_LIMIT 262144
   SOURCES ${sources}
   PRIVATE_INCLUDES ${includes}
   COMPILE_OPTIONS ${options}

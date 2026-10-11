@@ -1,5 +1,5 @@
 # Ported from prog/gameLibs/gamePhys/collision/stub/jamfile (jam2cmake/skeleton.py)
-set(includes ${DAGOR_PROG_DIR}/gameLibs/publicInclude)
+set(includes ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR})
 set(sources collisionStub.cpp)
 list(APPEND deps Dagor::Phys)
 

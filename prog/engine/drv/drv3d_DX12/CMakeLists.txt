@@ -82,7 +82,7 @@ else()
   list(APPEND sources fsr_wrapper_stub.cpp)
 endif()
 
-dagor_add_library(STRICT
+dagor_add_library(STRICT FRAME_LIMIT 262144
   SOURCES ${sources}
   PRIVATE_INCLUDES
     ${DAGOR_PROG_DIR}/engine/sharedInclude

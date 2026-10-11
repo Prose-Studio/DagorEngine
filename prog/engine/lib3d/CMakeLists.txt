@@ -70,7 +70,7 @@ if(DAGOR_PLATFORM MATCHES "^(windows|linux)$" AND DAGOR_ARCH STREQUAL "x86_64" A
   list(APPEND deps engine/lib3d/moc_avx)
 endif()
 
-dagor_add_library(STRICT
+dagor_add_library(STRICT FRAME_LIMIT 262144
   SOURCES ${sources}
   PRIVATE_INCLUDES ${includes}
   PRIVATE_DEFINES ${defines}

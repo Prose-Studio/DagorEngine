@@ -1,6 +1,5 @@
-# daFrameGraph unit tests: the tests in tests/ and those embedded in the library's sources (flavor ut), with mock
-# shader variables. They run on the stub driver (cases that need a GPU skip themselves); in trees with a real 3d
-# driver also on that one (gameLibs.daFrameGraph, requires a GPU).
+# daFrameGraph unit tests, with mock shader variables. They run on the stub driver (cases that need a GPU skip
+# themselves); in trees with a real 3d driver also on that one (gameLibs.daFrameGraph, requires a GPU).
 set(options)
 if(DAGOR_CC MATCHES "^(clang|clang-cl)$")
   set(options -Wc++11-narrowing -Wswitch -Wbitfield-constant-conversion -Wmissing-field-initializers)
@@ -12,8 +11,6 @@ dagor_add_catch2_test(daFrameGraph-tests STRICT
   SOURCES
     main.cpp
     benchmark.cpp
-    packer.cpp
-    performance.cpp
     runtime.cpp
     multiplexing.cpp
     idContainers.cpp
@@ -24,8 +21,14 @@ dagor_add_catch2_test(daFrameGraph-tests STRICT
     nodeStateDeltas.cpp
     nodeRemap.cpp
     resourceScheduler.cpp
+    heapLayout.cpp
+    layoutUpdate.cpp
+    heapPolicy.cpp
+    layoutOptimizer.cpp
     virtualPassRequest.cpp
     refinedBlock.cpp
+    resourceLruCache.cpp
+    resourceLruCacheBenchmark.cpp
   PRIVATE_INCLUDES .. ${DAGOR_PROG_DIR}/gameLibs/publicInclude
   COMPILE_OPTIONS ${options}
   DEPS
@@ -45,7 +48,7 @@ dagor_add_catch2_test(daFrameGraph-tests STRICT
     engine/drv/drv3d_pc_multi
     engine/osApiWrappers/messageBox
     3rdPartyLibs/eastl
-    gameLibs/render/daFrameGraph:ut
+    gameLibs/render/daFrameGraph
   PROPERTIES DAGOR_SHADER_VARS mock DAGOR_LINUX_GUI ON
 )
 set(real_drivers ${DAGOR_D3D_DRIVERS})

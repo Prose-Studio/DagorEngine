@@ -33,7 +33,7 @@ if(DAGOR_PLATFORM STREQUAL "tvOS")
   list(APPEND sources macosx/iosIdleCycle.mm macosx/initRemoteControl.mm initKeybWin.cpp initMouseWin.cpp)
 endif()
 if(DAGOR_PLATFORM STREQUAL "linux")
-  list(APPEND sources idleCycle.cpp initKeybWin.cpp initMouseWin.cpp initJoystickSteam.cpp)
+  list(APPEND sources idleCycle.cpp initKeybWin.cpp initMouseWin.cpp)
   # the Linux GUI layer comes with engine/osApiWrappers in the programs with DAGOR_LINUX_GUI
 endif()
 if(DAGOR_PLATFORM STREQUAL "android")

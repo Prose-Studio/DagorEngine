@@ -1,0 +1,10 @@
+# DualShock and DualSense pads on PCs (HID on Windows and Linux, Steam's input), with their touchpad gestures
+set(sources dsPadCreate.cpp dsPadClassDrv.cpp dsPadDevice.cpp dsPadProtocol.cpp dsPadSteam.cpp touchpadGestureRecognizer.cpp)
+if(DAGOR_PLATFORM STREQUAL "windows")
+  list(APPEND sources dsPadHidWin.cpp)
+elseif(DAGOR_PLATFORM STREQUAL "linux")
+  list(APPEND sources dsPadHidLinux.cpp)
+else()
+  message(FATAL_ERROR "engine/drv/hid_dspad_pc: no ${DAGOR_PLATFORM} support")
+endif()
+dagor_add_library(SOURCES ${sources} PRIVATE_INCLUDES ${DAGOR_PROG_DIR}/engine/sharedInclude)
