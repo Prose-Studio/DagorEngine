@@ -59,6 +59,8 @@ set(sources
 
   ${P}/1stPartyLibs/daScript/modules/dasStdDlg/src/dasStdDlg.cpp
   ${P}/1stPartyLibs/daScript/modules/dasStdDlg/src/dasStdDlgNotImplemented.cpp
+  ${P}/1stPartyLibs/daScript/modules/dasStdDlg/src/dasStdDlgTray.cpp
+  ${P}/1stPartyLibs/daScript/modules/dasStdDlg/src/dasStdDlgTrayNotImplemented.cpp
 
   # the daScript bindings of libraries (their _aot.jam)
   ${P}/gameLibs/render/outline/dasModules/outline.cpp
