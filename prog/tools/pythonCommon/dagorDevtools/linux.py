@@ -36,12 +36,13 @@ def install_packages():
   if is_rosa_linux:
     pkg_install_cmd = 'dnf install'
     pkg_to_install += ['python3-pip', 'gcc', 'gcc-c++', 'clang', 'lib64ubsan-devel']
-    pkg_to_install += ['lib64x11-devel', 'lib64xrandr-devel', 'lib64xi-devel', 'lib64fltk-devel', 'lib64xkbfile-devel', 'lib64udev-devel', 'lib64pulseaudio-devel', 'lib64alsa-oss-devel']
+    pkg_to_install += ['lib64x11-devel', 'lib64xrandr-devel', 'lib64xi-devel', 'lib64fltk-devel', 'lib64xkbfile-devel', 'lib64udev-devel', 'lib64pulseaudio-devel', 'lib64alsa-oss-devel', 'lib64curl-devel', 'lib64openssl-devel']
   elif is_altlinux:
     pkg_install_cmd = 'apt-get install'
     pkg_to_install += ['python3-module-pip', 'clang21.1', 'libclang21', 'libasan-devel-static']
     pkg_to_install += ['libX11-devel', 'libXrandr-devel', 'libXi-devel', 'libXcursor-devel', 'libfltk-devel', 'libxkbfile-devel', 'libxkbcommon-devel',
-                       'libudev-devel', 'libpulseaudio-devel', 'libalsa-devel', 'libuuid-devel', 'libdbus-devel']
+                       'libudev-devel', 'libpulseaudio-devel', 'libalsa-devel', 'libuuid-devel', 'libdbus-devel',
+                       'libcurl-devel', 'libssl-devel']
   elif is_elbrus_linux:
     pkg_install_cmd = 'apt install'
     pkg_to_install  = ['python3-pip']
@@ -49,18 +50,18 @@ def install_packages():
   elif is_ubuntu:
     pkg_install_cmd = 'apt install'
     pkg_to_install += ['python3-pip', 'gcc', 'clang']
-    pkg_to_install += ['libx11-dev', 'libxrandr-dev', 'libxi-dev', 'libxcursor-dev', 'libxkbcommon-dev', 'libfltk1.3-dev', 'libxkbfile-dev', 'libudev-dev', 'libpulse-dev', 'uuid-dev']
+    pkg_to_install += ['libx11-dev', 'libxrandr-dev', 'libxi-dev', 'libxcursor-dev', 'libxkbcommon-dev', 'libfltk1.3-dev', 'libxkbfile-dev', 'libudev-dev', 'libpulse-dev', 'uuid-dev', 'libcurl4-openssl-dev', 'libssl-dev']
   elif is_astra_linux:
     pkg_install_cmd = 'apt install'
     pkg_to_install += ['python3-pip', 'gcc-mozilla', 'clang-10']
-    pkg_to_install += ['libx11-dev', 'libxrandr-dev', 'libxi-dev', 'libxcursor-dev', 'libxkbcommon-dev', 'libfltk1.3-dev', 'libxkbfile-dev', 'libudev-dev', 'libpulse-dev', 'uuid-dev']
+    pkg_to_install += ['libx11-dev', 'libxrandr-dev', 'libxi-dev', 'libxcursor-dev', 'libxkbcommon-dev', 'libfltk1.3-dev', 'libxkbfile-dev', 'libudev-dev', 'libpulse-dev', 'uuid-dev', 'libcurl4-openssl-dev', 'libssl-dev']
   elif is_centos:
     pkg_install_cmd = 'yum install'
     pkg_to_install += ['python3-pip', 'devtoolset-11', 'llvm-toolset-7.0']
-    pkg_to_install += ['libX11-devel', 'libXrandr-devel', 'libXi-devel', 'libfltk-devel', 'libxkbfile-devel', 'libgudev1-devel', 'pulseaudio-libs-devel', 'alsa-lib-devel']
+    pkg_to_install += ['libX11-devel', 'libXrandr-devel', 'libXi-devel', 'libfltk-devel', 'libxkbfile-devel', 'libgudev1-devel', 'pulseaudio-libs-devel', 'alsa-lib-devel', 'libcurl-devel', 'openssl-devel']
   else:
     pkg_to_install += ['python3-pip', 'gcc', 'gcc-c++', 'clang']
-    pkg_to_install += ['libx11-dev', 'libxrandr-dev', 'libxi-dev', 'libxcursor-dev', 'libxkbcommon-dev', 'libfltk1.3-dev', 'libxkbfile-dev', 'libudev-dev', 'libpulse-dev', 'libalsa-devel']
+    pkg_to_install += ['libx11-dev', 'libxrandr-dev', 'libxi-dev', 'libxcursor-dev', 'libxkbcommon-dev', 'libfltk1.3-dev', 'libxkbfile-dev', 'libudev-dev', 'libpulse-dev', 'libalsa-devel', 'libcurl4-openssl-dev', 'libssl-dev']
 
   if pkg_install_cmd != '':
     print('--- will try to install required packages:\n  '+' '.join(pkg_to_install))
