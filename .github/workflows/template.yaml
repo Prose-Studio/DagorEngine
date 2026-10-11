@@ -175,12 +175,23 @@ jobs:
         shell: bash
         run: if [ -s "$RUNNER_TEMP/processes.txt" ]; then cat "$RUNNER_TEMP/processes.txt"; fi
 
+      - name: Collect crash reports (macOS)
+        if: failure() && runner.os == 'macOS'
+        shell: bash
+        run: |
+          mkdir -p "$RUNNER_TEMP/crashes"
+          for dir in "$HOME/Library/Logs/DiagnosticReports" /Library/Logs/DiagnosticReports; do
+            find "$dir" -type f \( -name '*.ips' -o -name '*.crash' \) -mmin -360 -exec cp {} "$RUNNER_TEMP/crashes/" \; 2>/dev/null || true
+          done
+          ls -la "$RUNNER_TEMP/crashes"
+          for f in "$RUNNER_TEMP/crashes"/*; do [ -f "$f" ] && head -c 20000 "$f"; done || true
+
       - name: Upload crash reports (macOS)
         if: failure() && runner.os == 'macOS'
         uses: actions/upload-artifact@v4
         with:
           name: template-cmake-crashes-${{ matrix.os }}
-          path: ~/Library/Logs/DiagnosticReports
+          path: ${{ runner.temp }}/crashes
           if-no-files-found: ignore
 
       - name: Upload report
