@@ -109,7 +109,7 @@ jobs:
           - os: macos-15 # Xcode 16: the Metal driver needs the macOS 15 SDK (MTLResidencySet)
             deps: /Users/runner/dagor-deps
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 240
+    timeout-minutes: 360 # client, dedicated, AOT compiler and the host tools/content for package verification
     env:
       DAGOR_DEPS_DIR: ${{ matrix.deps }}
       DAGOR_COMPILER_LAUNCHER: sccache
@@ -192,6 +192,16 @@ jobs:
           python prog/_jBuild/jam2cmake/codegen_parity.py "$PROJECT_DIR/build/$host-client" \
             "$PROJECT_DIR/build/$host-dedicated"
 
+      - name: Build game content
+        shell: bash
+        run: python "$PROJECT_DIR/project.py" build shaders vromfs assets
+
+      - name: Package and verify the game
+        shell: bash
+        run: |
+          python "$PROJECT_DIR/project.py" package --config Dev --no-build
+          python prog/cmake/scripts/verify_game_packages.py "$PROJECT_DIR"
+
       - name: Processes of a hung build
         if: always()
         shell: bash
@@ -239,5 +249,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: template-cmake-report-${{ matrix.os }}
-          path: test-results.xml
+          path: |
+            test-results.xml
+            ${{ env.PROJECT_DIR }}/build/package-checks
           if-no-files-found: ignore
