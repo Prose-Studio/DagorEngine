@@ -136,6 +136,7 @@ struct Scripts
     AotMode aot_mode, AotModeIsRequired aot_mode_is_required);
 
   void unloadAllScripts(UnloadDebugAgents unload_debug_agents);
+  void releaseLoadedScripts() { scripts.clear(); } // their contexts only, daScript's modules are left as they are
   size_t dumpMemory();
 };
 } // namespace bind_dascript

@@ -241,8 +241,9 @@ function(dagor_add_exec_test name)
     ENVIRONMENT "DAGOR_TEST_OUT=${CMAKE_BINARY_DIR}/test-artifacts/${name}")
 endfunction()
 
-# dagor_add_das_test(<name> PATHS <dir or file>... [PROJECT <.das_project>] [ISOLATED] <common options>): runs dastest
-# on the tests with the engine's das interpreter (prog/1stPartyLibs/daScript/utils/daScript)
+# dagor_add_das_test(<name> PATHS <dir or file>... [PROJECT <.das_project>] [ISOLATED] [WORKING_DIRECTORY <dir>]
+#   <common options>): runs dastest on the tests with the engine's das interpreter
+#   (prog/1stPartyLibs/daScript/utils/daScript), in a dir of the build tree or WORKING_DIRECTORY
 function(dagor_add_das_test name)
   cmake_parse_arguments(PARSE_ARGV 1 arg "${_DAGOR_TEST_OPTIONS}" "${_DAGOR_TEST_ONE_VALUE}"
                         "${_DAGOR_TEST_MULTI_VALUE};PATHS")
@@ -270,9 +271,14 @@ function(dagor_add_das_test name)
   endif()
   # dastest stops itself at --timeout; CTest's limit is a backstop for hangs outside of the tests
   list(APPEND command --timeout ${arg_TIMEOUT} --failures-only ${arg_ARGS})
-  # in a dir of its own in the build tree: daScript writes its module cache (.jitted_scripts) into the working dir
-  set(dir "${CMAKE_BINARY_DIR}/test-artifacts/${name}")
-  file(MAKE_DIRECTORY "${dir}")
+  # in a dir of its own in the build tree unless the tests need theirs (a project resolving modules relative to the
+  # working dir): daScript writes its module cache (.jitted_scripts) into the working dir
+  if(arg_WORKING_DIRECTORY)
+    _dagor_abs_paths(dir "${arg_WORKING_DIRECTORY}")
+  else()
+    set(dir "${CMAKE_BINARY_DIR}/test-artifacts/${name}")
+    file(MAKE_DIRECTORY "${dir}")
+  endif()
   add_test(NAME ${name} COMMAND ${command} WORKING_DIRECTORY "${dir}")
   math(EXPR backstop "${arg_TIMEOUT} + 60")
   _dagor_test_common_args(common)

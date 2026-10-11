@@ -165,6 +165,9 @@ void bind_das_events(SqModules *modules_mgr);
 // environment is rebound when bound funcs are called from threads without a live one
 void bind_das(SqModules *modules_mgr, das::daScriptEnvironment *environment);
 void unload_all_das_scripts_without_debug_agents();
+// destroys the contexts of the loaded scripts and leaves daScript's modules alone: for hosts that shut daScript down
+// themselves (the AOT compiler), before the static destructors run (the contexts lock a mutex of daScript's own)
+void release_loaded_scripts();
 void das_load_ecs_templates();
 
 void set_loading_profiling_enabled(bool enabled);

@@ -19,3 +19,6 @@
 *.das.inl
 *.dshl.log
 ShaderLog-*
+
+# daScript's module cache and JIT output, written into the working dir of a das run
+.jitted_scripts/

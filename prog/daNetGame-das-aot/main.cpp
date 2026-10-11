@@ -199,9 +199,10 @@ int DagorWinMain(bool debugmode)
 
   const int res = aot_main(dgs_argc, (char **)dgs_argv);
 
-  // the scripts are unloaded here, not by the static destructors at exit: their contexts lock daScript's debug agent
-  // mutex, which another translation unit's destructor may have destroyed by then (macOS throws on it)
-  bind_dascript::shutdown_systems();
+  // the loaded scripts are released here, not by the static destructors at exit: their contexts lock daScript's debug
+  // agent mutex, which another translation unit's destructor may have destroyed by then (macOS throws on it).
+  // aot_main has shut daScript's modules down already.
+  bind_dascript::release_loaded_scripts();
 
   if (vrom)
     remove_vromfs(vrom);

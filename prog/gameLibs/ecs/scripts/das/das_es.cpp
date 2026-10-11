@@ -3475,6 +3475,8 @@ void unload_all_das_scripts_without_debug_agents()
   scripts.unloadAllScripts(UnloadDebugAgents::NO);
 }
 
+void release_loaded_scripts() { scripts.releaseLoadedScripts(); }
+
 void das_load_ecs_templates()
 {
   scripts.postProcessModuleGroups(); // currently module groups contains only templates

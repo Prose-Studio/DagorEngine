@@ -25,3 +25,6 @@
 # CMake build trees (cmake --preset ...) and local presets
 /build/
 /CMakeUserPresets.json
+
+# daScript's module cache and JIT output, written into the working dir of a das run
+.jitted_scripts/
