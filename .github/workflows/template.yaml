@@ -153,11 +153,27 @@ jobs:
 
       - name: Build the game
         shell: bash
-        run: python "$PROJECT_DIR/project.py" build code
+        run: |
+          # a build that hangs leaves the processes it was running after 150 minutes (shown by the last step)
+          ( sleep 9000
+            if [ "$RUNNER_OS" = Windows ]; then
+              powershell -NoProfile -Command "Get-CimInstance Win32_Process | Select-Object ProcessId, ParentProcessId, Name, CommandLine | Format-List | Out-String -Width 400"
+            else
+              ps auxww
+            fi ) > "$RUNNER_TEMP/processes.txt" 2>&1 &
+          watchdog=$!
+          python "$PROJECT_DIR/project.py" build code && status=0 || status=$?
+          kill $watchdog 2>/dev/null || true
+          exit $status
 
       - name: Run the tests
         shell: bash
         run: python "$PROJECT_DIR/project.py" test --ci --output-junit "$GITHUB_WORKSPACE/test-results.xml"
+
+      - name: Processes of a hung build
+        if: always()
+        shell: bash
+        run: if [ -s "$RUNNER_TEMP/processes.txt" ]; then cat "$RUNNER_TEMP/processes.txt"; fi
 
       - name: Upload report
         if: always()
