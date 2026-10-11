@@ -142,3 +142,31 @@ dagor_sdk(ispc 1.23.0
     SHA256 9c5893cbb5fd0b04cf5109a027bcbe8f8ca54bc8f7eaf468ce0bc13a9b0e06bd
     EXTRACT */bin/ispc */LICENSE.txt
 )
+
+# AMD GPU Services (AGS): the DX12 driver's AMD extensions, crash markers and Radeon GPU Profiler capture (x64)
+dagor_sdk(ags 6.3.0
+  any
+    URL https://github.com/GPUOpen-LibrariesAndSDKs/AGS_SDK/archive/refs/tags/v6.3.0.zip
+    SHA256 292c5ce0c7f51d44a1e56f2a73d82f1e7304bb14d2b8e39a05708877210de884
+    FILE AGS_SDK-6.3.0.zip
+    EXTRACT */ags_lib/inc/* */ags_lib/lib/amd_ags_x64.dll */ags_lib/lib/amd_ags_x64.lib */ags_lib/LICENSE.txt
+)
+
+# NVIDIA Nsight Aftermath: the DX11 and DX12 drivers' GPU crash dumps (x64)
+dagor_sdk(aftermath 2025.5.0.25317
+  any
+    URL https://developer.nvidia.com/downloads/assets/tools/secure/nsight-aftermath-sdk/2025_5_0/windows_x64/NVIDIA_Nsight_Aftermath_SDK_2025.5.0.25317-windows_x64.zip
+    SHA256 6e2ff1d8e0b926a17c5152c8ab93cd6ec68e2238a319b3f92eed45e7162fca33
+    FILE NVIDIA_Nsight_Aftermath_SDK_2025.5.0.25317-windows_x64.zip
+    EXTRACT include/* lib/x64/* LICENSE
+)
+
+# AMD FidelityFX SDK: the DX12 driver's FSR upscaler and frame generation (headers and the signed runtime, x64)
+dagor_sdk(fidelityfx 2.1.1
+  any
+    URL https://github.com/GPUOpen-LibrariesAndSDKs/FidelityFX-SDK/archive/refs/tags/v2.1.1.zip
+    SHA256 4acd1ef850f39a2769e31d894a2f0994cc905707b0b280f87c9b1e48e35b22d7
+    FILE FidelityFX-SDK-2.1.1.zip
+    EXTRACT */Kits/FidelityFX/api/include/* */Kits/FidelityFX/framegeneration/* */Kits/FidelityFX/upscalers/*
+      */Kits/FidelityFX/signedbin/* */Kits/FidelityFX/docs/license.md
+)

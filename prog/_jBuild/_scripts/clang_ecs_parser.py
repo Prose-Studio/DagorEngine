@@ -5,6 +5,7 @@ import cymbal
 import re
 import sys
 import os
+import glob
 import subprocess
 import ctypes
 
@@ -361,6 +362,12 @@ def parse_ecs_functions(input_filename, search_filename, clang_args, should_pars
         if not '-isystem' in clang_args: # for clang-specific headers (e.g. intrinsics) when building with msvc
             clangver = clanglibpath[clanglibpath.rfind('-')+1:]
             clang_args = ['-isystem', os.path.join(clanglibpath, "lib/clang", clangver[:2] if clangver[:2] > "15" else clangver, "include")] + clang_args
+    elif os.environ.get('DAGOR_CLANG_DIR') and glob.glob(os.path.join(os.environ['DAGOR_CLANG_DIR'], 'lib', 'libclang.*')):
+        # the LLVM the CMake build fetched: its libclang and its own resource dir (clang's builtin headers)
+        llvm = os.environ['DAGOR_CLANG_DIR']
+        soext = {'darwin':'dylib'}.get(sys.platform, 'so')
+        clang.cindex.conf.set_library_file(os.path.join(llvm, 'lib', 'libclang.%s' % soext))
+        clang_args += ["-resource-dir", sorted(glob.glob(os.path.join(llvm, 'lib', 'clang', '*')))[-1]]
     else:
         p = subprocess.Popen(['clang -print-resource-dir'], shell=True, stdout=subprocess.PIPE)
         resDir = p.communicate()[0][:-1].decode("utf-8")

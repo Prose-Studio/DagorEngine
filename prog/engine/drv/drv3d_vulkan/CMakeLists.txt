@@ -1,0 +1,214 @@
+# The Vulkan driver (Windows, Linux, Android), with FSR upscaling on x64 (3rdPartyLibs/fsr3.1) and the RenderDoc
+# capture module outside Rel; DLSS and XeSS have their stubs (the fork has neither SDK).
+set(dev "$<NOT:$<CONFIG:Rel>>")
+set(dir ${CMAKE_CURRENT_SOURCE_DIR})
+set(sources
+  util/backtrace.cpp
+  util/fault_report.cpp
+  util/unsafe_call.cpp
+  d3d/resource_update_buffer.cpp
+  d3d/framebuffer.cpp
+  d3d/render_pass.cpp
+  d3d/bindless.cpp
+  d3d/resource_heap.cpp
+  d3d/screen_capture.cpp
+  d3d/global_const_buffer.cpp
+  d3d/unimplemented.cpp
+  d3d/init.cpp
+  d3d/clear.cpp
+  d3d/command.cpp
+  d3d/compute.cpp
+  d3d/conditional.cpp
+  d3d/debug.cpp
+  d3d/draw.cpp
+  d3d/error_code.cpp
+  d3d/event_query.cpp
+  d3d/format.cpp
+  d3d/frame_state_tm.cpp
+  d3d/info.cpp
+  d3d/resources.cpp
+  d3d/screen.cpp
+  d3d/shaders.cpp
+  d3d/state.cpp
+  d3d/sync.cpp
+  d3d/transfer.cpp
+  d3d/ddsx_texture.cpp
+  init_d3di.cpp
+  buffer.cpp
+  buffer_locktransfer.cpp
+  buffer_ref.cpp
+  texture.cpp
+  globals.cpp
+  backend.cpp
+  frontend.cpp
+  driver_config.cpp
+  driver.cpp
+  swapchain.cpp
+  device_featureset.cpp
+  vulkan_loader.cpp
+  vulkan_instance.cpp
+  vulkan_device.cpp
+  format_store.cpp
+  vk_to_string.cpp
+  physical_device_set.cpp
+  device_context.cpp
+  device_context_fault_report.cpp
+  backend/context.cpp
+  backend/render_pass.cpp
+  render_work.cpp
+  timelines.cpp
+  frame_info.cpp
+  temp_buffers.cpp
+  cleanup_queue.cpp
+  execution_sync.cpp
+  execution_sync_capture.cpp
+  execution_sync_buffer.cpp
+  execution_sync_image.cpp
+  execution_sync_acceleration_structure.cpp
+  device_execution_tracker.cpp
+  wrapped_command_buffer.cpp
+  resource_readbacks.cpp
+  backend/cmd_buffer.cpp
+  backend/cmd/buffers.cpp
+  backend/cmd/debug.cpp
+  backend/cmd/draw_dispatch.cpp
+  backend/cmd/framebuffer.cpp
+  backend/cmd/misc.cpp
+  backend/cmd/query.cpp
+  backend/cmd/raytrace.cpp
+  backend/cmd/renderpass.cpp
+  backend/cmd/resources.cpp
+  backend/cmd/state.cpp
+  backend/cmd/screen.cpp
+  backend/cmd/sync.cpp
+  backend/cmd/transfer.cpp
+  backend/cmd/vendor_exts.cpp
+  backend/cmd_param_to_string.cpp
+  shader/program.cpp
+  shader/pipeline_description.cpp
+  shader/program_database.cpp
+  shader/spirv_extractor.cpp
+  shader/debug_program.cpp
+  shader/rotate_program.cpp
+  shader/shader_info.cpp
+  shader/module.cpp
+  raytrace/pipeline.cpp
+  pipeline/base_pipeline.cpp
+  pipeline/manager.cpp
+  pipeline/stage_state_base.cpp
+  pipeline/main_pipelines.cpp
+  pipeline/variated_graphics.cpp
+  pipeline/compiler.cpp
+  render_state_system.cpp
+  pipeline_cache.cpp
+  bindless.cpp
+  device_memory.cpp
+  device_memory_pages.cpp
+  device_resource.cpp
+  resource_manager.cpp
+  resource_allocators.cpp
+  image_resource.cpp
+  buffer_resource.cpp
+  raytrace_as_resource.cpp
+  render_pass_resource.cpp
+  render_pass_resource_fb.cpp
+  render_pass_resource_convert.cpp
+  sampler_resource.cpp
+  memory_heap_resource.cpp
+  dummy_resources.cpp
+  sampler_cache.cpp
+  debug_ui.cpp
+  debug_ui_memory.cpp
+  debug_ui_resources.cpp
+  debug_ui_sync.cpp
+  debug_naming.cpp
+  debug_callbacks.cpp
+  vulkan_allocation_callbacks.cpp
+  graphics_state.cpp
+  compute_state.cpp
+  pipeline_state.cpp
+  pipeline_state_pending_references.cpp
+  dynamic_graphics_state.cpp
+  front_framebuffer_state.cpp
+  front_render_pass_state.cpp
+  back_scope_state.cpp
+  execution_state.cpp
+  state_field_compute.cpp
+  state_field_graphics.cpp
+  state_field_execution_context.cpp
+  state_field_resource_binds.cpp
+  state_field_framebuffer.cpp
+  state_field_render_pass.cpp
+  pipeline_barrier.cpp
+  device_queue.cpp
+  subpass_dependency.cpp
+  pipeline_cache_file.cpp
+  logic_address.cpp
+  vk_format_utils.cpp
+  vk_error.cpp
+  buffer_props.cpp
+  fence_manager.cpp
+  queries.cpp
+  query_pools.cpp
+  render_pass.cpp
+  descriptor_set.cpp
+  device_memory_report.cpp
+  predicted_latency_waiter.cpp
+  resource_upload_limit.cpp
+  copy_info.cpp
+  amd_anti_lag.cpp
+)
+list(APPEND sources d3d/raytrace.cpp dlss_stub.cpp xess_stub.cpp)
+set(defines INSIDE_DRIVER)
+if(DAGOR_STREAMLINE)
+  list(APPEND defines HAS_STREAMLINE)
+endif()
+set(includes
+  ${DAGOR_PROG_DIR}/engine/sharedInclude
+  ${DAGOR_PROG_DIR}/engine/drv/drv3d_commonCode
+  ${DAGOR_PROG_DIR}/engine/drv/drv3d_vulkan
+  ${DAGOR_PROG_DIR}/3rdPartyLibs/vulkan/include
+  ${DAGOR_PROG_DIR}/3rdPartyLibs/vulkan/smol-v/source
+  ${DAGOR_PROG_DIR}/3rdPartyLibs/vulkan/spirv-tools/include
+  ${DAGOR_PROG_DIR}/dagorInclude
+  ${DAGOR_PROG_DIR}/3rdPartyLibs/imgui
+  ${DAGOR_PROG_DIR}/3rdPartyLibs/imgui-node-editor
+)
+# jam linked engine/imgui's stub in Rel; its programs all link engine/imgui, whose objects came first in jam's order
+set(deps engine/drv/drv3d_commonCode engine/drv/shadersMetaData/spirv 3rdPartyLibs/vulkan/smol-v engine/imgui)
+dagor_use(3rdPartyLibs/imgui-node-editor)
+list(APPEND deps "$<${dev}:3rdPartyLibs.imgui-node-editor>")
+set(libs)
+if(DAGOR_PLATFORM MATCHES "^(android|windows|linux)$")
+  list(APPEND sources "$<IF:${dev},${dir}/renderDoc_capture_module.cpp,${dir}/renderDoc_capture_module_stub.cpp>")
+else()
+  list(APPEND sources renderDoc_capture_module_stub.cpp)
+endif()
+if(DAGOR_PLATFORM STREQUAL "windows")
+  list(APPEND sources os/win32.cpp)
+  list(APPEND libs Wintrust)
+  dagor_require_sdk(nvapi OPTIONAL)
+  if(TARGET sdk::nvapi)
+    list(APPEND deps sdk::nvapi)
+  endif()
+elseif(DAGOR_PLATFORM STREQUAL "linux")
+  list(APPEND sources os/linux.cpp)
+  list(APPEND deps engine/osApiWrappers/linuxGUI)
+elseif(DAGOR_PLATFORM STREQUAL "android")
+  list(APPEND sources os/android.cpp)
+endif()
+if(DAGOR_PLATFORM MATCHES "^(windows|linux)$" AND DAGOR_ARCH STREQUAL "x86_64")
+  list(APPEND sources amdFsrVulkan.cpp)
+  list(APPEND includes ${DAGOR_PROG_DIR}/3rdPartyLibs/fsr3.1/include)
+else()
+  list(APPEND sources amdFsrArmAsrVulkan_stub.cpp)
+endif()
+
+dagor_add_library(STRICT
+  SOURCES ${sources}
+  PRIVATE_INCLUDES ${includes}
+  PRIVATE_DEFINES ${defines}
+  FORCE_INCLUDES ${dir}/d3d/config.h ${dir}/driver_defs.h
+  DEPS ${deps}
+  SYSTEM_LIBS ${libs}
+)

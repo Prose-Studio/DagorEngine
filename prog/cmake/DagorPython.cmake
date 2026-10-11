@@ -29,7 +29,8 @@ function(dagor_python out)
       file(REMOVE_RECURSE "${venv}")
       execute_process(COMMAND "${Python3_EXECUTABLE}" -m venv "${venv}" RESULT_VARIABLE result)
       if(NOT result EQUAL 0)
-        message(FATAL_ERROR "Creating a venv with ${Python3_EXECUTABLE} failed")
+        message(FATAL_ERROR "Creating a venv with ${Python3_EXECUTABLE} failed (on Debian and Ubuntu the venv module is "
+                            "a package of its own: apt install python3-venv)")
       endif()
       execute_process(COMMAND "${python}" -m pip install --disable-pip-version-check --no-input --require-hashes
                               -r "${requirements}" RESULT_VARIABLE result)
