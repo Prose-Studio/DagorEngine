@@ -1,5 +1,5 @@
 # The build-tree options of the engine. One build tree is one variant: everything here applies to every target in the
-# tree, and presets (CMakePresets.json) name the combinations that are used.
+# tree, and dng.py / project.py (prog/tools/pythonCommon/dagorCMake) set the combinations that are used.
 include_guard(GLOBAL)
 
 include(DagorValidate)

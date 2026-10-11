@@ -24,8 +24,17 @@ function(run)
   endif()
 endfunction()
 
+# a tree configured for another source dir (the engine root before prog/CMakeLists.txt) is made anew
+if(EXISTS "${tree}/CMakeCache.txt")
+  file(STRINGS "${tree}/CMakeCache.txt" home REGEX "^CMAKE_HOME_DIRECTORY:INTERNAL=")
+  string(REGEX REPLACE "^[^=]*=" "" home "${home}")
+  cmake_path(COMPARE "${home}" EQUAL "${ENGINE_ROOT}/prog" same)
+  if(NOT same)
+    file(REMOVE_RECURSE "${tree}")
+  endif()
+endif()
 if(NOT EXISTS "${tree}/CMakeCache.txt")
-  set(args -S "${ENGINE_ROOT}" -B "${tree}" -G "Ninja Multi-Config" -DDAGOR_VARIANT=cdk
+  set(args -S "${ENGINE_ROOT}/prog" -B "${tree}" -G "Ninja Multi-Config" -DDAGOR_VARIANT=cdk
     "-DCMAKE_INSTALL_PREFIX=${ENGINE_ROOT}")
   if(DEPS_DIR)
     list(APPEND args "-DDAGOR_DEPS_DIR=${DEPS_DIR}")

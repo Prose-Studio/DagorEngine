@@ -1,7 +1,7 @@
 name: cmake
 
 # The CMake build, which replaces jam step by step (see prog/cmake). It runs next to the jam-based tests.yaml until the
-# port is complete: configure, build and test with the ci-<preset> workflow presets (hosted runners have no GPU, so
+# port is complete: dng.py configures, builds and tests each tree (dng.py test --ci: hosted runners have no GPU, so
 # tests labeled requires-gpu or requires-display are excluded). The deps cache (SDKs, LLVM) is keyed on the manifest.
 # Weekly (and on demand) the Visual Studio and Xcode generators configure the tests tree and build one test program.
 
@@ -23,42 +23,62 @@ permissions:
 
 jobs:
   tests:
-    name: ${{ matrix.preset }}
+    name: ${{ matrix.name }}
     strategy:
       fail-fast: false
       matrix:
         include:
           - os: windows-2022
-            preset: windows-tests
+            tree: tests
+            name: windows-tests
+            args: ""
             deps: D:/dagor-deps
           - os: windows-2022
-            preset: windows-msvc-tests
+            tree: tests
+            name: windows-msvc-tests
+            args: "--compiler msvc"
             deps: D:/dagor-deps
           - os: ubuntu-22.04
-            preset: linux-tests
+            tree: tests
+            name: linux-tests
+            args: ""
             deps: /home/runner/dagor-deps
           - os: macos-15 # Xcode 16: the Metal driver needs the macOS 15 SDK (MTLResidencySet)
-            preset: macos-tests
+            tree: tests
+            name: macos-tests
+            args: ""
             deps: /Users/runner/dagor-deps
           # the CDK (shader compilers, packers, converters) and the GUI shaders they compile
           - os: windows-2022
-            preset: windows-cdk
+            tree: cdk
+            name: windows-cdk
+            args: ""
             deps: D:/dagor-deps
           - os: ubuntu-22.04
-            preset: linux-cdk
+            tree: cdk
+            name: linux-cdk
+            args: ""
             deps: /home/runner/dagor-deps
           - os: macos-15
-            preset: macos-cdk
+            tree: cdk
+            name: macos-cdk
+            args: ""
             deps: /Users/runner/dagor-deps
           # the tools on daKernel: daBuild with its exporter plugins, ddsxCvt2
           - os: windows-2022
-            preset: windows-editor
+            tree: editor
+            name: windows-editor
+            args: ""
             deps: D:/dagor-deps
           - os: ubuntu-22.04
-            preset: linux-editor
+            tree: editor
+            name: linux-editor
+            args: ""
             deps: /home/runner/dagor-deps
           - os: macos-15
-            preset: macos-editor
+            tree: editor
+            name: macos-editor
+            args: ""
             deps: /Users/runner/dagor-deps
     runs-on: ${{ matrix.os }}
     timeout-minutes: 120
@@ -88,14 +108,20 @@ jobs:
           key: dagor-deps-${{ matrix.os }}-${{ hashFiles('prog/cmake/sdk/manifest.cmake') }}
 
       - name: Configure, build and test
-        run: cmake --workflow --preset ci-${{ matrix.preset }}
+        shell: bash
+        run: |
+          if [ "${{ matrix.tree }}" = tests ]; then
+            python dng.py test --ci ${{ matrix.args }}
+          else
+            python dng.py build ${{ matrix.tree }} ${{ matrix.args }}
+          fi
 
       - name: Upload test artifacts
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: test-artifacts-${{ matrix.preset }}
-          path: build/${{ matrix.preset }}/test-artifacts
+          name: test-artifacts-${{ matrix.name }}
+          path: build/${{ matrix.name }}/test-artifacts
           if-no-files-found: ignore
 
   ide-generators:
@@ -106,11 +132,11 @@ jobs:
       matrix:
         include:
           - os: windows-2022
-            preset: windows-msvc-tests
+            args: --compiler msvc
             generator: Visual Studio 17 2022
             deps: D:/dagor-deps
           - os: macos-15
-            preset: macos-tests
+            args: ""
             generator: Xcode
             deps: /Users/runner/dagor-deps
     runs-on: ${{ matrix.os }}
@@ -133,8 +159,5 @@ jobs:
           path: ${{ matrix.deps }}/sdk
           key: dagor-deps-${{ matrix.os }}-${{ hashFiles('prog/cmake/sdk/manifest.cmake') }}
 
-      - name: Configure
-        run: cmake --preset ${{ matrix.preset }} -B build/ide -G "${{ matrix.generator }}"
-
-      - name: Build datablock-tests
-        run: cmake --build build/ide --config Dev --target datablock-tests --parallel
+      - name: Configure and build datablock-tests
+        run: python dng.py build tests ${{ matrix.args }} --generator "${{ matrix.generator }}" --target datablock-tests

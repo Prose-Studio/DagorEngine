@@ -6,7 +6,7 @@ is in brackets). Kept until jam is deleted; the lasting rules move to `_docs/sou
 
 ## The trees and their global settings
 
-jam settings that are global per root become per-tree options set by presets:
+jam settings that are global per root become per-tree options (set by dng.py / project.py, prog/tools/pythonCommon/dagorCMake):
 
 | Tree (`DAGOR_VARIANT`) | jam output dir of its roots | CMake tree settings |
 |---|---|---|
@@ -66,11 +66,13 @@ The tool trees (Phase 2):
   outerSpace is identical except riDesc.bin, which jam's own daBuild writes differently on every run.
 
 The game trees (Phase 3):
-- A project's top-level CMakeLists.txt reads the engine root from engine.blk (DAGOR_ENGINE_ROOT overrides it), includes
-  the engine's DagorBootstrap.cmake and adds its prog/. The project's presets are self-contained (<platform>-client,
-  <platform>-dedicated): they set cache variables only, so they never name the engine's path.
+- The entry points are dng.py for the engine and project.py for projects (no CMakeLists.txt or CMakePresets.json at
+  their roots, and no presets): the top-level CMakeLists.txt is the prog/ one of the engine or the project, and
+  pythonCommon/dagorCMake holds what presets did (the variants, platforms, compilers and their cache variables) and
+  names the trees build/<platform>[-<compiler>]-<variant> of the root. A project's prog/CMakeLists.txt reads the
+  engine root from ../engine.blk (DAGOR_ENGINE_ROOT overrides it) and includes the engine's DagorBootstrap.cmake.
 - As with jam, the executables go to <project>/game/<platform>-<arch> and the built content into <project>/game; only
-  intermediates are in build/<preset>.
+  intermediates are in build/<tree>.
 - daNetGame's switches (setup.jam's Have*, BVH, the D3D drivers, exceptions off, -march=haswell on Linux x86_64,
   TIME_PROFILER_ENABLED=0 on the Linux servers) are tree settings (DagorOptions.cmake, DagorGame.cmake). Those jam
   turned off in Rel only (the editor, webui, ImGui, the console) are generator expressions: daNetGame and the libraries

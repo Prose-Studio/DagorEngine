@@ -1,4 +1,4 @@
-"""dng.py build: the engine tools (cdk), dargbox, the project template and, when named, the samples."""
+"""dng.py build --jam: the jam build of the engine tools (cdk), dargbox, the project template and the samples."""
 import argparse
 import os
 import sys
@@ -86,7 +86,7 @@ def main(argv):
         print('ERROR: building the engine tools failed, stopping', flush=True)
         return 1
       continue
-    cmd = [sys.executable, 'build.py'] + components + (['arch:' + args.arch] if args.arch else [])
+    cmd = [sys.executable, 'build.py', '--jam'] + components + (['arch:' + args.arch] if args.arch else [])
     if not runner.run(cmd + (['--dry-run'] if args.dry_run else []), os.path.normpath(os.path.join(ENGINE_ROOT, build_dir))):
       failed.append(p)
   if failed:

@@ -1,8 +1,9 @@
 # The engine's own build: its unit tests (DAGOR_VARIANT=tests), tools (cdk, editor, maxplug), dargbox, or all of it.
-# Games and samples are separate projects with their own top-level CMakeLists.txt (see templates/dng-empty).
-# Configure with a preset: cmake --preset windows-tests (cmake --list-presets shows them).
+# Games and samples are separate projects, each with the top-level CMakeLists.txt of its prog/ (see templates/dng-empty).
+# dng.py configures and builds the trees (python dng.py build -h): in build/<platform>[-<compiler>]-<variant> of the
+# engine root, with the cache variables of the variant (prog/tools/pythonCommon/dagorCMake).
 cmake_minimum_required(VERSION 4.0)
-include(prog/cmake/DagorBootstrap.cmake)
+include(cmake/DagorBootstrap.cmake)
 project(DagorEngine LANGUAGES C CXX)
 include(DagorEngine)
 
@@ -36,7 +37,7 @@ if(DAGOR_VARIANT MATCHES "^(cdk|all)$")
     tools/sceneTools/guiShaders_commonData
   )
   # the data the tools load that is not built (prog/tools/toolsData/README.md), with the cdk-data component
-  install(DIRECTORY prog/tools/toolsData/ DESTINATION tools COMPONENT cdk-data PATTERN README.md EXCLUDE)
+  install(DIRECTORY tools/toolsData/ DESTINATION tools COMPONENT cdk-data PATTERN README.md EXCLUDE)
 endif()
 # the tools on the shared kernel (daKernel): daBuild with its exporter plugins, ddsxCvt2
 if(DAGOR_VARIANT MATCHES "^(editor|all)$")

@@ -1,4 +1,4 @@
-# cmake -DSOURCE_DIR=<game> -DTREE=<tree> -DTARGET=<game>-aot -DENGINE_ROOT=<engine> [-DDEPS_DIR=<dir>]
+# cmake -DSOURCE_DIR=<game>/prog -DTREE=<tree> -DTARGET=<game>-aot -DENGINE_ROOT=<engine> [-DDEPS_DIR=<dir>]
 #       [-DMAKE_PROGRAM=<ninja>] -P build_das_aot_compiler.cmake
 # Builds the daScript AOT compiler of a game (see DagorDas.cmake): configures the game's source tree for the host with
 # DAGOR_DAS_AOT_COMPILER once (<tree>), and builds the compiler in Dev, into <tree>/bin. A lock keeps the game's trees
@@ -23,6 +23,15 @@ function(run)
   endif()
 endfunction()
 
+# a tree configured for another source dir (the engine root before prog/CMakeLists.txt) is made anew
+if(EXISTS "${TREE}/CMakeCache.txt")
+  file(STRINGS "${TREE}/CMakeCache.txt" home REGEX "^CMAKE_HOME_DIRECTORY:INTERNAL=")
+  string(REGEX REPLACE "^[^=]*=" "" home "${home}")
+  cmake_path(COMPARE "${home}" EQUAL "${SOURCE_DIR}" same)
+  if(NOT same)
+    file(REMOVE_RECURSE "${TREE}")
+  endif()
+endif()
 if(NOT EXISTS "${TREE}/CMakeCache.txt")
   set(args -S "${SOURCE_DIR}" -B "${TREE}" -G "Ninja Multi-Config" -DDAGOR_VARIANT=game -DDAGOR_DAS_AOT_COMPILER=ON
     "-DDAGOR_ENGINE_ROOT=${ENGINE_ROOT}")

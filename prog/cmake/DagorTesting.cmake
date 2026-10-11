@@ -1,4 +1,4 @@
-# Tests, run by CTest (ctest --preset <preset>). Each test gets the CTest labels of its layer (cpp, das, exec), its
+# Tests, run by CTest (python dng.py test). Each test gets the CTest labels of its layer (cpp, das, exec), its
 # TAGS and its REQUIRES as requires-<what>, so a run selects with -L / -LE: CI excludes requires-gpu|requires-display.
 #
 #   dagor_add_catch2_test(<name> ...)  a Catch2 program (main from <unittest/mainCatch2.inc.cpp>); each test case is

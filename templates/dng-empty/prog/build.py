@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Builds the game: python build.py [code] [shaders] [vromfs] [tools] [assets] [arch:<arch>] [--dry-run]
+"""Builds the game: python build.py [code] [shaders] [vromfs] [tools] [assets] [arch:<arch>] [--jam] [--dry-run]
 (all of them when none is given, in this order).
 
-  code     the client and the dedicated server (with their das AOT compiler) into ../game/<platform>-<arch>
+  code     the client and the dedicated server (with their das AOT compiler) into ../game/<platform>-<arch>: with
+           CMake (prog/CMakeLists.txt, trees in ../build), with jam given --jam
   shaders  the game shaders into ../game/compiledShaders, the tool shaders into ../tools
   vromfs   prog.vromfs.blk into ../game/dng_empty.vromfs.bin
   tools    the snapshot of shaders, vromfs and tools/*.das daEditor renders levels with (../tools/snapshot)
@@ -28,7 +29,9 @@ os.chdir(PROG_DIR)
 if not b.dry_run:
   dagorProject.setup(PROJECT)  # the generated engine glue is current before anything is built
 
-if 'code' in b.components:
+if 'code' in b.components and not b.jam:
+  b.game(PROJECT.root, defines=['DAGOR_DAS_AOT=ON'])  # CMake: build/<platform>-client, -dedicated (prog/CMakeLists.txt)
+elif 'code' in b.components:
   JAM = ['jam', '-sNeedDasAotCompile=yes'] + b.jam_arch
   if HOST == 'windows' and not b.arch:
     JAM += ['-sPlatformArch=' + HOST_ARCH]

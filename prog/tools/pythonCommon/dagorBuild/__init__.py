@@ -65,9 +65,10 @@ FONTGEN = tool('fontgen2-dev')
 class Build:
   """One build: what to build and how; run() records failures, exit_code reports them."""
 
-  def __init__(self, components, arch='', dry_run=False):
+  def __init__(self, components, arch='', dry_run=False, jam=False):
     self.components = components
     self.arch = arch
+    self.jam = jam  # the code with jam instead of CMake
     self.jam_arch = ['-sPlatformArch=' + arch] if arch else []
     self.dry_run = dry_run
     self.ok = True
@@ -91,6 +92,19 @@ class Build:
     """Runs the host's commands in order, stopping at the first failure."""
     return all(self.run(c, cwd) for c in {'windows': windows, 'macOS': macOS, 'linux': linux}[HOST])
 
+  def game(self, project_root, variants=('client', 'dedicated'), defines=()):
+    """Builds the project's code with CMake (prog/CMakeLists.txt): a tree per variant in build/<platform>-<variant>,
+    the programs into game/<platform>-<arch>."""
+    from pythonCommon import dagorCMake
+    target = dagorCMake.Target(arch=self.arch or None, defines=defines)
+    for variant in variants:
+      tree = dagorCMake.game_tree(project_root, variant, target, self.dry_run)
+      if not (tree.configure() and tree.build()):
+        print('FAILED: the {} of {}'.format(variant, project_root), flush=True)
+        self.ok = False
+        return False
+    return True
+
   @property
   def exit_code(self):
     return 0 if self.ok else 1
@@ -98,14 +112,16 @@ class Build:
 
 def parse(argv, components):
   """The build a project's build.py is asked for; components: the ones the project has, the default when none is named."""
-  arch, dry_run, named = '', False, []
+  arch, dry_run, jam, named = '', False, False, []
   for a in argv:
     if a in ('--dry-run', '-dry-run'):
       dry_run = True
+    elif a == '--jam':
+      jam = True
     elif a.startswith('arch:'):
       arch = a[len('arch:'):]
     elif a in components or a in COMPONENTS:
       named.append(a)
     else:
-      sys.exit('unknown build argument "{}": expected {}, arch:<arch> or --dry-run'.format(a, ' '.join(components)))
-  return Build([c for c in components if c in named] if named else list(components), arch, dry_run)
+      sys.exit('unknown build argument "{}": expected {}, arch:<arch>, --jam or --dry-run'.format(a, ' '.join(components)))
+  return Build([c for c in components if c in named] if named else list(components), arch, dry_run, jam)

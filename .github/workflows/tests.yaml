@@ -58,7 +58,7 @@ jobs:
       - name: Run tests
         shell: bash
         run: |
-          python dng.py test run --gpu no -j 4 --out _output/test_results/ci \
+          python dng.py test --jam run --gpu no -j 4 --out _output/test_results/ci \
             --junit test-results.xml --summary-md "$GITHUB_STEP_SUMMARY"
 
       - name: Upload report

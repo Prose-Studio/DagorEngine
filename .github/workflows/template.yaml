@@ -76,7 +76,7 @@ jobs:
 
       - name: Build the game
         shell: bash
-        run: python "$PROJECT_DIR/project.py" build code
+        run: python "$PROJECT_DIR/project.py" build code --jam
 
       - name: Run the tests
         shell: bash

@@ -130,7 +130,7 @@ function(dagor_vs_generator toolset)
     message(FATAL_ERROR "The Visual Studio generator with clang-cl needs MSBuild's ClangCL toolset, which '${instance}' "
       "does not have. Install it with the Visual Studio Installer (component "
       "Microsoft.VisualStudio.Component.VC.Llvm.ClangToolset; the build still uses the pinned LLVM), or use the "
-      "windows-msvc-* presets or the default Ninja generator.")
+      "dng.py's --compiler msvc or the default Ninja generator.")
   endif()
   set(host x64)
   if(DAGOR_HOST_ARCH STREQUAL "arm64")

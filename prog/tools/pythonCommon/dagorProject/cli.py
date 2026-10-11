@@ -12,6 +12,7 @@ EPILOG = '''examples:
   python project.py setup                  regenerate the engine glue after changing prog/danetgamelibs.txt
   python project.py relink ../DagorEngine  build with another engine checkout
   python project.py build                  code, shaders and vromfs (python project.py build code builds only code)
+  python project.py build code --jam       the code with jam instead of CMake
   python project.py test --layer ecs       build and run the project tests (any dng.py test run option)'''
 
 
@@ -63,7 +64,8 @@ def main(project: Project, argv):
       return _run([sys.executable, 'build.py'] + args.args, cwd=project.prog)
     if args.command == 'test':
       engine_root = project.engine_root()
-      return _run([sys.executable, os.path.join(engine_root, 'dng.py'), 'test', 'run', '--project', project.root, '--no-engine']
+      return _run([sys.executable, os.path.join(engine_root, 'dng.py'), 'test', '--jam', 'run', '--project', project.root,
+                   '--no-engine']
                   + args.args, cwd=engine_root)
   except ProjectError as e:
     print('ERROR: {}'.format(e), file=sys.stderr)

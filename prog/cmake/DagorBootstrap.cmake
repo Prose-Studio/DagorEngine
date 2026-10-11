@@ -19,6 +19,8 @@ cmake_path(GET CMAKE_CURRENT_LIST_DIR PARENT_PATH DAGOR_ENGINE_ROOT) # prog/cmak
 cmake_path(GET DAGOR_ENGINE_ROOT PARENT_PATH DAGOR_ENGINE_ROOT)
 set(DAGOR_ENGINE_ROOT "${DAGOR_ENGINE_ROOT}" CACHE INTERNAL "Dagor engine checkout")
 set(DAGOR_CMAKE_DIR "${DAGOR_ENGINE_ROOT}/prog/cmake" CACHE INTERNAL "Dagor CMake modules")
+# the root of the engine or the project being built: the top-level CMakeLists.txt is its prog/'s (build/ is there)
+cmake_path(GET CMAKE_SOURCE_DIR PARENT_PATH DAGOR_TOP_DIR)
 list(PREPEND CMAKE_MODULE_PATH "${DAGOR_CMAKE_DIR}")
 
 include("${DAGOR_CMAKE_DIR}/DagorHost.cmake")
@@ -41,7 +43,7 @@ if(NOT DAGOR_DEPS_DIR)
   unset(_dagor_deps)
 endif()
 
-# target selection; presets set these, the defaults build for the host
+# target selection; dng.py and project.py set these, the defaults build for the host
 set(DAGOR_PLATFORM "${DAGOR_HOST_PLATFORM}" CACHE STRING "Target platform")
 set_property(CACHE DAGOR_PLATFORM PROPERTY STRINGS windows linux macOS iOS tvOS android)
 set(DAGOR_ARCH "${DAGOR_HOST_ARCH}" CACHE STRING "Target architecture")
