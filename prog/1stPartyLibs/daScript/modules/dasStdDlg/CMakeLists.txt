@@ -1,6 +1,8 @@
 # daScript's standard dialogs (open/save file, message boxes) on the platform's API (replaces the upstream
 # CMakeLists.txt of daScript's own build)
-set(sources src/dasStdDlg.cpp)
+# the tray backends are not wired on any platform (as in the jamfile): Dagor hosts no tray icon, and tray_* is bound
+# either way, TrayPlatformCreate returning null
+set(sources src/dasStdDlg.cpp src/dasStdDlgTray.cpp src/dasStdDlgTrayNotImplemented.cpp)
 if(DAGOR_PLATFORM STREQUAL "windows")
   list(APPEND sources src/dasStdDlgWin.cpp)
 elseif(DAGOR_PLATFORM STREQUAL "linux")
