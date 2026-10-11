@@ -118,6 +118,14 @@ The game trees (Phase 3):
   `codegen_parity.py` (line endings normalized). Project sources are excluded because scaffolding changes their
   location relative to the engine. Windows: 321 outputs compared without differences. macOS verification is CI-only;
   a manual macOS rendering check remains pending until a Mac is available.
+- CI compiler caching is on all three hosts: `DAGOR_COMPILER_LAUNCHER=sccache` (a cache option, defaultable through
+  the environment) fetches Mozilla's sccache 0.18.0 through the SHA256-pinned SDK manifest. CMake and template jobs
+  restore disk caches per tree/host, retain new entries with a per-commit cache key, and report statistics even when
+  a build fails. Windows already selects `/Z7` when a launcher is active. For clang-cl the cache cannot parse the
+  separated `/vctoolsdir` and `/winsdkdir` arguments, so cached trees use the same explicit system header search
+  order and the selected cl.exe's compatibility version instead. Checked: real cache hits on Windows and Linux,
+  identical Windows preprocessor macros with and without the cache, and the 15 unitTest cases under the cached
+  Windows toolchain. macOS caching requires CI verification.
 
 Upstream sync of 2026/10/11 (ported by hand, checked with parity.py against the merged jamfiles):
 - jam's new windows-arm64ec target (PlatformArch=arm64ec: x64 SDK DLLs, ISPC and Oodle in an ARM64EC image) has no

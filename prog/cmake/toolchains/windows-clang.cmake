@@ -2,7 +2,8 @@
 # machine. No developer prompt (vcvars) is needed: the toolset and SDK are passed to the tools on their command lines.
 include("${CMAKE_CURRENT_LIST_DIR}/_common.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/detect/msvc.cmake")
-dagor_toolchain_forward(DAGOR_LLVM_DIR DAGOR_MSVC_DIR DAGOR_MSVC_TOOLSET DAGOR_WINSDK_DIR DAGOR_WINSDK_VERSION)
+dagor_toolchain_forward(DAGOR_LLVM_DIR DAGOR_MSVC_DIR DAGOR_MSVC_TOOLSET DAGOR_WINSDK_DIR DAGOR_WINSDK_VERSION
+  CMAKE_CXX_COMPILER_LAUNCHER DAGOR_MSVC_COMPILER_VERSION DAGOR_MSVC_COMPILER_VERSION_DIR)
 
 dagor_toolchain_llvm()
 dagor_detect_msvc()
@@ -38,6 +39,44 @@ set(_dagor_sdk_inc "${DAGOR_WINSDK_DIR}/Include/${DAGOR_WINSDK_RESOLVED_VERSION}
 string(REGEX MATCH "^[0-9]+" _dagor_clang_major "${DAGOR_LLVM_VERSION}")
 set(DAGOR_TOOLCHAIN_C_FLAGS
   "/vctoolsdir \"${DAGOR_MSVC_DIR}\" /winsdkdir \"${DAGOR_WINSDK_DIR}\" /winsdkversion ${DAGOR_WINSDK_RESOLVED_VERSION}")
+if(CMAKE_CXX_COMPILER_LAUNCHER AND NOT CMAKE_GENERATOR MATCHES "^Visual Studio")
+  set(_dagor_native_flags "${DAGOR_TOOLCHAIN_C_FLAGS}")
+  # sccache does not recognize /vctoolsdir and /winsdkdir: their separate values look like source files. Spell the
+  # same header search order explicitly, and preserve the selected cl.exe's version macros (not another installed VS).
+  if(NOT DAGOR_MSVC_COMPILER_VERSION OR NOT DAGOR_MSVC_COMPILER_VERSION_DIR STREQUAL DAGOR_MSVC_DIR)
+    set(_dagor_cl_host Hostx64)
+    if(DAGOR_HOST_ARCH STREQUAL "arm64")
+      set(_dagor_cl_host Hostarm64)
+    endif()
+    execute_process(COMMAND "${DAGOR_MSVC_DIR}/bin/${_dagor_cl_host}/${_dagor_msvc_arch}/cl.exe"
+      OUTPUT_VARIABLE _dagor_cl_out ERROR_VARIABLE _dagor_cl_err)
+    if(NOT "${_dagor_cl_out}${_dagor_cl_err}" MATCHES "([0-9]+\\.[0-9]+\\.[0-9]+)")
+      message(FATAL_ERROR "Cannot determine the selected MSVC compiler version: ${_dagor_cl_out}${_dagor_cl_err}")
+    endif()
+    set(DAGOR_MSVC_COMPILER_VERSION "${CMAKE_MATCH_1}" CACHE INTERNAL "MSVC compatibility version for clang-cl")
+    set(DAGOR_MSVC_COMPILER_VERSION_DIR "${DAGOR_MSVC_DIR}" CACHE INTERNAL "Toolset of the compatibility version")
+    unset(_dagor_cl_host)
+    unset(_dagor_cl_out)
+    unset(_dagor_cl_err)
+  endif()
+  set(DAGOR_TOOLCHAIN_C_FLAGS "/X /clang:-fms-compatibility-version=${DAGOR_MSVC_COMPILER_VERSION}")
+  foreach(_dagor_inc IN ITEMS "${DAGOR_LLVM_DIR}/lib/clang/${_dagor_clang_major}/include"
+      "${DAGOR_MSVC_DIR}/include" "${DAGOR_MSVC_DIR}/atlmfc/include"
+      "${_dagor_sdk_inc}/ucrt" "${_dagor_sdk_inc}/shared" "${_dagor_sdk_inc}/um"
+      "${_dagor_sdk_inc}/winrt" "${_dagor_sdk_inc}/cppwinrt")
+    string(APPEND DAGOR_TOOLCHAIN_C_FLAGS " -imsvc \"${_dagor_inc}\"")
+  endforeach()
+  unset(_dagor_inc)
+  # CMake initializes FLAGS from FLAGS_INIT only once. Upgrade trees configured before caching was selected,
+  # while leaving explicit user flags alone.
+  foreach(_dagor_lang C CXX)
+    if(DEFINED CMAKE_${_dagor_lang}_FLAGS AND "${CMAKE_${_dagor_lang}_FLAGS}" STREQUAL "${_dagor_native_flags}")
+      set(CMAKE_${_dagor_lang}_FLAGS "${DAGOR_TOOLCHAIN_C_FLAGS}" CACHE STRING "Compiler flags" FORCE)
+    endif()
+  endforeach()
+  unset(_dagor_lang)
+  unset(_dagor_native_flags)
+endif()
 set(DAGOR_TOOLCHAIN_CXX_FLAGS "${DAGOR_TOOLCHAIN_C_FLAGS}")
 set(DAGOR_TOOLCHAIN_LINKER_FLAGS
   "/machine:${_dagor_msvc_arch} /vctoolsdir:\"${DAGOR_MSVC_DIR}\" /winsdkdir:\"${DAGOR_WINSDK_DIR}\" /winsdkversion:${DAGOR_WINSDK_RESOLVED_VERSION} /libpath:\"${DAGOR_LLVM_DIR}/lib/clang/${_dagor_clang_major}/lib/windows\"")

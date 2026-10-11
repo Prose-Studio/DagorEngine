@@ -84,6 +84,9 @@ jobs:
     timeout-minutes: 120
     env:
       DAGOR_DEPS_DIR: ${{ matrix.deps }}
+      DAGOR_COMPILER_LAUNCHER: sccache
+      SCCACHE_DIR: ${{ matrix.deps }}/compiler-cache
+      SCCACHE_CACHE_SIZE: 1G
     steps:
       - uses: actions/checkout@v4
 
@@ -106,6 +109,18 @@ jobs:
         with:
           path: ${{ matrix.deps }}/sdk
           key: dagor-deps-${{ matrix.os }}-${{ hashFiles('prog/cmake/sdk/manifest.cmake') }}
+          restore-keys: dagor-deps-${{ matrix.os }}-
+
+      - name: Cache compiler objects
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.SCCACHE_DIR }}
+          key: dagor-objects-v1-${{ matrix.name }}-${{ hashFiles('prog/cmake/sdk/manifest.cmake') }}-${{ github.sha }}
+          restore-keys: dagor-objects-v1-${{ matrix.name }}-${{ hashFiles('prog/cmake/sdk/manifest.cmake') }}-
+
+      - name: Prepare compiler cache
+        id: compiler-cache
+        run: cmake -P prog/cmake/scripts/compiler_cache.cmake
 
       - name: Configure, build and test
         shell: bash
@@ -115,6 +130,10 @@ jobs:
           else
             python dng.py build ${{ matrix.tree }} ${{ matrix.args }}
           fi
+
+      - name: Compiler cache statistics
+        if: always() && steps.compiler-cache.outcome == 'success'
+        run: cmake -DSTATS=ON -P prog/cmake/scripts/compiler_cache.cmake
 
       - name: Upload test artifacts
         if: failure()

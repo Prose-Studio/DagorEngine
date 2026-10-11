@@ -41,6 +41,30 @@ unset(_llvm_win_tools)
 unset(_llvm_unix)
 unset(_llvm_unix_tools)
 
+# Compiler cache: fetched only when DAGOR_COMPILER_LAUNCHER=sccache is selected (CI).
+set(_sccache https://github.com/mozilla/sccache/releases/download/v0.18.0)
+dagor_sdk(sccache 0.18.0
+  windows-x86_64
+    URL ${_sccache}/sccache-v0.18.0-x86_64-pc-windows-msvc.tar.gz
+    SHA256 1a63c1be2beab3f04d27e4cc145443e092e02d3dd83a51030989829d7023091b
+  windows-arm64
+    URL ${_sccache}/sccache-v0.18.0-aarch64-pc-windows-msvc.tar.gz
+    SHA256 9c1f3ecaeeae2e69171ff704867aa99813d2d68ae4d172dd34b11a07037ddd27
+  linux-x86_64
+    URL ${_sccache}/sccache-v0.18.0-x86_64-unknown-linux-musl.tar.gz
+    SHA256 45f1447fbe231e3037bde351ef70677dd212216c8d62ae7ca409fecc4d6acc89
+  linux-arm64
+    URL ${_sccache}/sccache-v0.18.0-aarch64-unknown-linux-musl.tar.gz
+    SHA256 2b3284d5da3b46a47dc4229e75bb7b88ac4aa99c8d754fb7d2f84997e5a4354a
+  macOS-x86_64
+    URL ${_sccache}/sccache-v0.18.0-x86_64-apple-darwin.tar.gz
+    SHA256 1dade83cc49eeb42337565eccd534b05982820a8e44b851bd7937467a18c7aef
+  macOS-arm64
+    URL ${_sccache}/sccache-v0.18.0-aarch64-apple-darwin.tar.gz
+    SHA256 308184519b646f5125289e8515b36f6ca65a13a041923994aebe702348674e8e
+)
+unset(_sccache)
+
 # Linux uses the distro's nasm
 dagor_sdk(nasm 2.16
   windows-x86_64
