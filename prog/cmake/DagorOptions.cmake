@@ -188,10 +188,11 @@ endif()
 option(DAGOR_BUILDING_TOOLS "The tree builds the editor tools (jam's BuildingTools: a second bindump, ...)" ${_dagor_tools_default})
 unset(_dagor_tools_default)
 set(_dagor_cam_stub ON)
-if(_dagor_game)
+if(_dagor_game AND NOT DAGOR_DEDICATED AND NOT DAGOR_DAS_AOT_COMPILER)
   set(_dagor_cam_stub OFF)
 endif()
-option(DAGOR_SHADERS_CAM_STUB "engine/shaders brings its camera stub (off in games, which have their own)" ${_dagor_cam_stub})
+option(DAGOR_SHADERS_CAM_STUB "engine/shaders brings its camera stub (off in game clients, which have their own)"
+  ${_dagor_cam_stub})
 unset(_dagor_cam_stub)
 # (jam's default was 'both': its test 'if $(CppStcode) in enable both' holds for an unset variable)
 dagor_option(DAGOR_CPP_STCODE both "Shader state code as C++ (both: with the interpreted code as fallback), validate, disable"

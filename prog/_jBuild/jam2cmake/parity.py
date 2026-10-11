@@ -13,10 +13,12 @@ python parity.py <build dir> [--config Dev] [--root <substring of a root id>...]
 """
 import argparse
 import collections
+import glob
 import json
 import os
 import re
 import shlex
+import subprocess
 import sys
 
 ENGINE = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', '..'))
@@ -83,15 +85,71 @@ def cmake_compiles(build_dir, config):
     return '/' + e.get('output', '').replace('\\', '/').lower()
 
   multi_config = any(marker in output(e) for e in entries)  # Ninja Multi-Config lists every configuration
+  entries = [e for e in entries if not multi_config or marker in output(e)]
+  owners = object_dir_targets(build_dir, config, entries)
   result = collections.defaultdict(list)
   for e in entries:
-    if multi_config and marker not in output(e):
-      continue
     args = e['arguments'] if 'arguments' in e else split(e['command'])
     m = TARGET_DIR.search(e.get('output', ''))
-    target = m.group(1) if m else '?'
-    result[norm_path(e['file'], e['directory'])].append((target,) + flags(args, e['directory']))
+    target = m.group(1) if m else owners.get(object_dir(e), '?')
+    result[committed_es(norm_path(e['file'], e['directory']))].append((target,) + flags(args, e['directory']))
   return result
+
+
+def committed_es(path):
+  """a <name>.gen.es.cpp the ES codegen made in the build tree as the committed one next to its source, which jam
+  compiled (the forwarding file next to it includes the source)"""
+  if not path.endswith('.gen.es.cpp') or '/es/' not in path:
+    return path
+  d, name = os.path.split(path)
+  if not os.path.isdir(d):
+    return path
+  for f in os.listdir(d):
+    if f.endswith('.gen.es.cpp') or f.startswith('args-') or re.sub(r'\.[^.]+$', '.gen.es.cpp', f).lower() != name:
+      continue
+    m = re.search(r'#include "([^"]+)"', open(os.path.join(d, f), encoding='utf-8', errors='replace').read())
+    if m:
+      return norm_path(re.sub(r'\.[^./]+$', '.gen.es.cpp', m.group(1)), d)
+  return path
+
+
+def object_dir(e):
+  """the dir of a compile's object: one per target and configuration"""
+  return os.path.dirname(os.path.join(e['directory'], e.get('output', '')).replace('\\', '/')).lower()
+
+
+def object_dir_targets(build_dir, config, entries):
+  """{object dir: CMake target} from the CMake file API's codemodel (CMake's SHORT intermediate dirs name the object
+  dirs after hashes): the target that has every source of the dir"""
+  query = os.path.join(build_dir, '.cmake', 'api', 'v1', 'query', 'codemodel-v2')
+  reply = os.path.join(build_dir, '.cmake', 'api', 'v1', 'reply')
+  if not os.path.isdir(reply) or not glob.glob(os.path.join(reply, 'codemodel-v2-*.json')):
+    os.makedirs(os.path.dirname(query), exist_ok=True)
+    open(query, 'w').close()
+    subprocess.run(['cmake', build_dir], check=True, stdout=subprocess.DEVNULL)
+  model = json.load(open(max(glob.glob(os.path.join(reply, 'codemodel-v2-*.json')), key=os.path.getmtime)))
+  source_dir = model['paths']['source']
+  configs = [c for c in model['configurations'] if c['name'].lower() == config.lower()] or model['configurations']
+  of_source = collections.defaultdict(set)
+  for t in configs[0]['targets']:
+    target = json.load(open(os.path.join(reply, t['jsonFile'])))
+    for s in target.get('sources', []):
+      of_source[norm_path(s['path'], source_dir)].add(target['name'])
+  groups = collections.defaultdict(list)
+  for e in entries:
+    groups[object_dir(e)].append(norm_path(e['file'], e['directory']))
+  owners = {}
+  for d, files in groups.items():
+    candidates = None
+    for f in files:
+      if of_source.get(f):
+        candidates = set(of_source[f]) if candidates is None else candidates & of_source[f]
+    if candidates and len(candidates) == 1:
+      owners[d] = candidates.pop()
+    elif candidates:
+      # flavors with the same sources: the comparison of the flags tells them apart, each dir stays a group of its own
+      owners[d] = '|'.join(sorted(candidates)) + '@' + os.path.basename(os.path.dirname(d))
+  return owners
 
 
 def load_allowlist(build_dir):

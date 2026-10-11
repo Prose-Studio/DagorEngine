@@ -437,8 +437,10 @@ function(dagor_add_dng_game target)
     ${forward}
   )
   set_property(TARGET ${target} APPEND PROPERTY DAGOR_GAME_PULLS ${arg_PULLS})
+  # daNetGame's settings (jam: the game's jamfile included setup.jam): its include dirs, options and physics
   target_include_directories(${target} PRIVATE ${DAGOR_DNG_INCLUDES})
   target_compile_options(${target} PRIVATE ${DAGOR_DNG_OPTIONS})
+  _dagor_link(${target} PRIVATE Dagor::Phys)
   # main/main.cpp, compiled here, shows the splash screen
   set(splash gameLibs/render/animatedSplashScreen)
   if(NOT DAGOR_GAME_RENDERER)
