@@ -27,7 +27,9 @@ set(CMAKE_C_COMPILER_TARGET ${_dagor_triple})
 set(CMAKE_CXX_COMPILER_TARGET ${_dagor_triple})
 set(CMAKE_LINKER "${DAGOR_LLVM_DIR}/bin/lld-link.exe")
 set(CMAKE_AR "${DAGOR_LLVM_DIR}/bin/llvm-lib.exe")
-set(CMAKE_RC_COMPILER "${DAGOR_WINSDK_BIN}/rc.exe")
+# LLVM's resource compiler on clang-cl's preprocessor (CMake's cmake_llvm_rc): the SDK's rc.exe hung on hosted
+# Windows runners compiling a game's resources after clang-cl had preprocessed them
+set(CMAKE_RC_COMPILER "${DAGOR_LLVM_DIR}/bin/llvm-rc.exe")
 set(CMAKE_MT "${DAGOR_WINSDK_BIN}/mt.exe")
 set(CMAKE_ASM_MASM_COMPILER "${DAGOR_MSVC_DIR}/bin/Hostx64/${_dagor_msvc_arch}/ml64.exe")
 
