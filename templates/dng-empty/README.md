@@ -12,19 +12,24 @@ game/client.cmd                      # or game/client.sh: runs the game on the s
 game/server.cmd                      # the dedicated server; clients join with client.cmd -connect:localhost
 ```
 
-The engine's tools have to be built first (`python dng.py build cdk` in the engine): the shader
-compilers, vromfsPacker and dabuild find the engine through `engine.blk` too.
+The build is CMake's (`prog/CMakeLists.txt`): a tree per game in `build/<platform>-client` and
+`build/<platform>-dedicated`, the programs into `game/<platform>-<arch>`. The content (shaders, vromfs, the editor
+snapshot, assets) is made by targets of the client's tree with the engine's tools (shader compilers, vromfsPacker,
+daBuild), which it builds in the engine's own cdk and editor trees when they are missing or out of date.
+`python project.py build code --jam` builds the code with jam instead (the content then with the tools of
+`python dng.py build --jam`).
 
 ## Layout
 
 ```text
 engine.blk          the engine checkout this project is built with
-project.py          setup, relink, build, test, info (python project.py -h)
+project.py          setup, relink, build, test, package, info (python project.py -h)
 application.blk     the tools' setup (daEditor, daViewer, dabuild, impostorBaker)
 develop/            tool scripts (daEditor, daViewer, dabuild, daImpostor), assets/ and levels/
 game/               what ships: executables, compiledShaders, vromfs, content (all built), run scripts
 prog/
-  jamfile           the game executables (jam; -sDedicated=yes for the server)
+  CMakeLists.txt    the game: its executables, content steps, package and tests
+  jamfile           the game executables with jam (-sDedicated=yes for the server)
   build.py          the build steps of python project.py build
   danetgamelibs.txt engine libs the game uses (prog/daNetGameLibs), gamelibs.txt likewise for prog/gameLibs
   prog.vromfs.blk   what goes into game/dng_empty.vromfs.bin

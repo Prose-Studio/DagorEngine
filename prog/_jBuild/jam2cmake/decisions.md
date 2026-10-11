@@ -101,3 +101,11 @@ The game trees (Phase 3):
   built by the target tests, not by default.
 - Packages: dagor_package_game() installs a game (its program, LICENSE, the runtime files of its libraries, the built
   data and a launcher) into the component game or dedicated, and CPack packs it (zip on Windows, .tar.gz elsewhere).
+- A game's content (shaders, vromfs, the daEditor snapshot, assets) is made by targets of its client's tree
+  (dagor_add_content_step): they run their tool whenever they are built, the tools tracking what changed themselves
+  (dsc2's object cache, daBuild's, vromfsPacker), as build.py ran them; the shader blks include the engine's, which
+  CMake could not follow. The tools come from dagor_host_tool(): the engine's cdk and editor trees of the host, the
+  same build/<platform>-cdk and -editor that python dng.py build makes (daBuild with its plugins needs the whole
+  editor tree, on the shared kernel, the editor variant's default now).
+- macOS: the game is an app bundle in its game dir (dagor_apple_bundle; jam's BundleName, plist, icon, ad hoc
+  signature); apple_main.mm finds the game dir three levels up, as jam's DAGOR_MACOSX_CONTENTS did.
