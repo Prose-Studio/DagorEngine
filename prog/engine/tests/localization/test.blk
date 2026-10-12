@@ -1,7 +1,0 @@
-target{
-  name:t="engine.localization"
-  layer:t="cpp"
-  tag:t="engine"
-  jamfile:t="jamfile"
-  exe:t="localization-tests"
-}

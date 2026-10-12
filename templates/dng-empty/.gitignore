@@ -1,4 +1,4 @@
-# written by "python project.py setup" from engine.blk and prog/*libs.txt
+# written by the CMake configure from prog/*libs.txt (and by the jam glue until jam is gone)
 /_engine.cmd
 /_engine.sh
 /prog/_engine.jam
@@ -11,7 +11,7 @@
 /prog/tools/_libs_init.das
 /stubs/
 
-# build outputs (python project.py build)
+# build outputs (cmake --build --preset ...)
 /_output/
 /tools/
 /game/*

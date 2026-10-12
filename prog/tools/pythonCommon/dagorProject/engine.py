@@ -19,7 +19,7 @@ class ProjectError(Exception):
 
 
 def is_engine_root(path: str) -> bool:
-  return os.path.isfile(os.path.join(path, 'prog', '_jBuild', 'defaults.jam'))
+  return os.path.isfile(os.path.join(path, 'prog', 'cmake', 'DagorConfig.cmake'))
 
 
 def norm(path: str) -> str:
@@ -44,8 +44,8 @@ def read_engine_root(project_dir: str) -> str:
   ref = read_engine_ref(project_dir)
   root = norm(os.path.join(project_dir, ref))
   if not is_engine_root(root):
-    raise ProjectError('{}: engineRoot "{}" is not a Dagor Engine checkout (no {} in it); fix it with "python project.py relink <engine dir>"'
-                       .format(os.path.join(project_dir, ENGINE_BLK), ref, 'prog/_jBuild/defaults.jam'))
+    raise ProjectError('{}: engineRoot "{}" is not a Dagor Engine checkout (no {} in it); fix it with "python <engine>/dng.py relink <project dir>"'
+                       .format(os.path.join(project_dir, ENGINE_BLK), ref, 'prog/cmake/DagorConfig.cmake'))
   return root
 
 
@@ -62,9 +62,9 @@ def relative_or_absolute(path: str, start: str, absolute=False) -> str:
 
 def write_engine_blk(project_dir: str, engine_root: str, absolute=False):
   if not is_engine_root(engine_root):
-    raise ProjectError('{} is not a Dagor Engine checkout (no prog/_jBuild/defaults.jam in it)'.format(engine_root))
+    raise ProjectError('{} is not a Dagor Engine checkout (no prog/cmake/DagorConfig.cmake in it)'.format(engine_root))
   ref = relative_or_absolute(engine_root, project_dir, absolute)
   with open(os.path.join(project_dir, ENGINE_BLK), 'w', encoding='utf-8', newline='\n') as f:
     f.write('// The Dagor Engine checkout this project is built with: relative to this file or absolute.\n'
-            '// Change it with "python project.py relink <engine dir>".\n'
+            '// Change it with "python <engine>/dng.py relink <project dir>" (prog/CMakePresets.json too).\n'
             'engineRoot:t="{}"\n'.format(escapeBlkString(ref)))

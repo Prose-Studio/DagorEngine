@@ -1,4 +1,4 @@
-// Shader descriptions dabuild exports assets with: python ../build.py shaders
+// Shader descriptions dabuild exports assets with: cmake --build --preset <host>-client-content
 include "%engine/prog/daNetGame/shaders/_build/shaders_tools_exp.blk"
 mountPoint:t="%engine/prog/daNetGame/shaders" // see game_common.blk
 "@override:source" {

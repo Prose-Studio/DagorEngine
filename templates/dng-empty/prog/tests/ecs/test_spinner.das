@@ -4,7 +4,7 @@ require math.base
 require DagorMath
 require danetlibs/test_harness/ecs_test
 
-// In-game tests: python project.py test -k dng_empty.ecs (see test.blk next to this file)
+// In-game tests: ctest --preset <host>-dedicated -R dng_empty.ecs (see CMakeLists.txt next to this file)
 
 [ecs_test]
 def spinner_turns_at_its_speed(t : T?) {

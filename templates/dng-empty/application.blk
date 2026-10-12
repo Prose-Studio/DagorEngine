@@ -1,9 +1,9 @@
 // Setup of the tools for this project: daEditor, daViewer (assetViewer), dabuild and impostorBaker (develop/*).
 // Paths are relative to this dir. See <engine>/_docs/source/assets/all-about-blk/application_blk.md
 collision:t="Unigine"
-shaders:t="tools/tools"                              // tool shaders: python prog/build.py shaders
+shaders:t="tools/tools"                              // tool shaders: cmake --build --preset <host>-client-content
 dngShaders:t="game/compiledShaders/game"             // the game's shaders, for rendering levels like the game does
-dngSnapshot:t="tools/snapshot"                       // the game's scripts and vromfs for the editor: python prog/build.py tools
+dngSnapshot:t="tools/snapshot"                       // the game's scripts and vromfs for the editor: cmake --build --preset <host>-client-content
 impostorbakerDriver:t="dx12"
 impostorbakerShaders:t="tools/tools.impostorbaker"
 useDynrend:b=yes

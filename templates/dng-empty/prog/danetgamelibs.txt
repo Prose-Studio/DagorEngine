@@ -1,5 +1,5 @@
 # daNetGameLibs this game uses (dirs in <engine>/prog/daNetGameLibs), one per line.
-# Run "python ../project.py setup" (or build) after changing it: it regenerates the _libs* files.
+# The CMake configure regenerates the _libs* files from it.
 native_dasevents
 frame_graph_renderer
 render_debug

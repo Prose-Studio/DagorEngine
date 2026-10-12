@@ -1,4 +1,4 @@
-// The game's scripts and data packed into ../game/dng_empty.vromfs.bin: python build.py vromfs
+// The game's scripts and data packed into ../game/dng_empty.vromfs.bin: cmake --build --preset <host>-client-content
 // Engine sources are named through the %engine mount (found through ../engine.blk). In development the game can read
 // all of it from the sources instead: -config:debug/useAddonVromSrc:b=yes (the mountPoints in settings.blk).
 platform:t="PC"

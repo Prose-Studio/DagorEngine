@@ -5,8 +5,8 @@
 # sets <out-var> to the program to run and <out-var>_DEPENDS to what a custom command running it depends on:
 #   - DAGOR_HOST_TOOLS_DIR (a CDK, e.g. tools/dagor_cdk/windows-x86_64 of a prebuilt engine): the program there;
 #   - an engine tree that is not cross-compiling: the tree's own target;
-#   - otherwise (games, cross builds) the engine's CDK for the host, built on demand: target dagor.hostTools configures
-#     and builds the engine's <host>-cdk preset (the editor tools, daBuild and its plugins: <host>-editor), the trees
+#   - otherwise (games, cross builds) the engine's CDK for the host, built on demand: target dagor.hostTools.<variant>
+#     configures and builds the engine's <host>-cdk preset (the editor tools, daBuild and its plugins: <host>-editor), the trees
 #     cmake --preset makes in <engine>/build, and installs them into <engine>/tools/dagor_cdk/<host>. Trees sharing it
 #     build it under a lock, one at a time; when it is up to date that is a quick check.
 #
@@ -47,22 +47,19 @@ function(dagor_host_tool tool out)
   if(tool IN_LIST _DAGOR_EDITOR_HOST_TOOLS)
     set(variant editor)
   endif()
-  if(NOT TARGET dagor.hostTools)
-    add_custom_target(dagor.hostTools COMMENT "The engine's host tools (${DAGOR_HOST_TAG})" USES_TERMINAL)
-    set_property(TARGET dagor.hostTools PROPERTY FOLDER "dagor")
-  endif()
-  get_property(variants TARGET dagor.hostTools PROPERTY DAGOR_VARIANTS)
-  if(NOT variant IN_LIST variants)
-    set_property(TARGET dagor.hostTools APPEND PROPERTY DAGOR_VARIANTS ${variant})
+  if(NOT TARGET dagor.hostTools.${variant})
     string(TOLOWER "${DAGOR_HOST_PLATFORM}" host)
-    add_custom_command(TARGET dagor.hostTools POST_BUILD
+    add_custom_target(dagor.hostTools.${variant}
       COMMAND "${CMAKE_COMMAND}" -E env DAGOR_DEPS_DIR=${DAGOR_DEPS_DIR}
         "${CMAKE_COMMAND}" -DSOURCE_DIR=${DAGOR_PROG_DIR} -DPRESET=${host}-${variant} -DCOMPONENT=cdk
         -P "${DAGOR_CMAKE_DIR}/scripts/build_preset.cmake"
+      COMMENT "The engine's host tools (${host}-${variant})"
+      USES_TERMINAL
       VERBATIM)
+    set_property(TARGET dagor.hostTools.${variant} PROPERTY FOLDER "dagor")
   endif()
   set(${out} "${DAGOR_ENGINE_ROOT}/tools/dagor_cdk/${DAGOR_HOST_TAG}/${file}" PARENT_SCOPE)
-  set(${out}_DEPENDS dagor.hostTools PARENT_SCOPE)
+  set(${out}_DEPENDS dagor.hostTools.${variant} PARENT_SCOPE)
 endfunction()
 
 function(dagor_install_cdk target)

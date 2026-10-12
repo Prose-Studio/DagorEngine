@@ -3,7 +3,7 @@ require dastest/testing_boost public
 require math
 require dng_empty.spinner
 
-// python ../../../project.py test -k dng_empty.das
+// ctest --preset <host>-dedicated -R dng_empty.das
 
 def close(a, b : float3) : bool {
   return length(a - b) < 1e-5

@@ -1,8 +1,0 @@
-target{
-  name:t="gameLibs.sepClient"
-  layer:t="cpp"
-  tag:t="gameLibs"
-  tag:t="net"
-  jamfile:t="jamfile"
-  exe:t="sepClient-tests"
-}

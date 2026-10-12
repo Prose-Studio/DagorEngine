@@ -1,4 +1,4 @@
-"""Game projects built with this engine, wherever they are: engine.blk, the generated engine glue (setup) and the
-project.py commands (cli). New projects are created from templates/ by dng.py new in the engine root (create)."""
+"""Game projects built with this engine, wherever they are: engine.blk (how the project and its programs find the
+engine), the project's CMakePresets.json (presets), and creating and relinking them (create: dng.py new and relink in
+the engine root)."""
 from .engine import ENGINE_BLK, ProjectError, read_engine_root, write_engine_blk
-from .glue import Project, setup

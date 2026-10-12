@@ -1,4 +1,4 @@
-"""Tests of dagorProject: engine.blk, the generated engine glue and project creation from templates/dng-empty."""
+"""Tests of dagorProject: engine.blk, the project presets and project creation from templates/dng-empty."""
 import os
 import re
 import shutil
@@ -8,7 +8,7 @@ import unittest
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.normpath(os.path.join(HERE, '..', '..', '..')))  # prog/tools: pythonCommon is importable
-from pythonCommon.dagorProject import create, engine, glue  # noqa: E402
+from pythonCommon.dagorProject import create, engine, presets  # noqa: E402
 from pythonCommon.dagorProject.engine import ProjectError  # noqa: E402
 
 ENGINE = create.engine_root()
@@ -63,44 +63,6 @@ class EngineBlkTest(unittest.TestCase):
   def test_relative_or_absolute(self):
     self.assertEqual(engine.relative_or_absolute('C:/a/b/c', 'C:/a/d'), '../b/c') if os.name == 'nt' else None
     self.assertEqual(engine.relative_or_absolute(ENGINE, ENGINE + '/x', absolute=True), ENGINE)
-
-
-class GlueTest(unittest.TestCase):
-  def setUp(self):
-    self.dir = tempfile.mkdtemp()
-
-  def tearDown(self):
-    shutil.rmtree(self.dir, ignore_errors=True)
-
-  def test_libs_list_comments_and_blank_lines(self):
-    fn = os.path.join(self.dir, 'libs.txt')
-    with open(fn, 'w') as f:
-      f.write('# a comment\n\nrender_debug  # trailing\n  bloom\n')
-    self.assertEqual(glue.read_libs_list(fn), ['render_debug', 'bloom'])
-    self.assertEqual(glue.read_libs_list(os.path.join(self.dir, 'missing.txt')), [])
-
-  def test_write_if_changed(self):
-    fn = os.path.join(self.dir, 'sub', 'f.cmd')
-    self.assertTrue(glue.write_if_changed(fn, 'a\nb\n', newline='\r\n'))
-    self.assertFalse(glue.write_if_changed(fn, 'a\nb\n', newline='\r\n'))
-    with open(fn, 'rb') as f:
-      self.assertEqual(f.read(), b'a\r\nb\r\n')
-    self.assertTrue(glue.write_if_changed(fn, 'a\n', newline='\r\n'))
-
-  def test_engine_jam_names_root_and_location(self):
-    project = glue.Project(self.dir, 'x')
-    text = glue.engine_jam(project, ENGINE)
-    self.assertIn('EngineRoot = {} ;'.format(ENGINE), text)
-    self.assertIn('ProjectProgDir = {}/prog ;'.format(engine.norm(self.dir)), text)
-    self.assertIn('Root ?= $(EngineRoot) ;', text)
-
-  def test_unknown_lib_fails_clearly(self):
-    os.makedirs(os.path.join(self.dir, 'prog'))
-    engine.write_engine_blk(self.dir, ENGINE)
-    with open(os.path.join(self.dir, 'prog', 'danetgamelibs.txt'), 'w') as f:
-      f.write('no_such_lib\n')
-    with self.assertRaisesRegex(ProjectError, 'no_such_lib is not a lib'):
-      glue.setup(glue.Project(self.dir, 'x'))
 
 
 class NamesTest(unittest.TestCase):
@@ -166,9 +128,9 @@ class CreateTest(unittest.TestCase):
       return f.read()
 
   def test_names_are_replaced(self):
-    self.assertIn("CODENAME = 'my_game'", self.read('project.py'))
     self.assertIn('windowTitle:t="My Game"', self.read('prog/gameBase/config/settings.blk'))
-    self.assertIn('BundleID   = org.test.MyGame ;', self.read('prog/jamfile'))
+    self.assertIn('dagor_add_dng_game(my_game GAME my_game', self.read('prog/CMakeLists.txt'))
+    self.assertIn('ID org.test.MyGame', self.read('prog/CMakeLists.txt'))
     self.assertTrue(os.path.isfile(self.path('prog/scripts/my_game/my_game.das')))
     self.assertTrue(os.path.isfile(self.path('prog/platform/windows/my_game.rc')))
     self.assertFalse(os.path.exists(self.path('template.blk')))
@@ -183,12 +145,13 @@ class CreateTest(unittest.TestCase):
         if b'\0' not in data:
           self.assertNotRegex(data.decode('utf-8'), 'dng_empty|DngEmpty|Dng Empty|com\\.dagor\\.', full)
 
-  def test_engine_glue_is_written(self):
+  def test_engine_link_is_written(self):
     self.assertEqual(engine.read_engine_root(self.dest), ENGINE)
-    jam = self.read('prog/_engine.jam')
-    self.assertIn('ProjectProgDir = {}/prog ;'.format(engine.norm(self.dest)), jam)
-    self.assertIn('include $(Root)/prog/daNetGameLibs/frame_graph_renderer/_lib.jam ;', self.read('prog/_libs.jam'))
-    self.assertIn('%engine/prog/daNetGameLibs/', self.read('prog/_libs.vromfs.blk'))
+    prog = presets.engine_prog_path(self.dest, ENGINE)
+    text = self.read('prog/CMakePresets.json')
+    self.assertIn('"{}/cmake/presets/base.json"'.format(prog), text)
+    self.assertIn('"DAGOR_ENGINE_ROOT": "${{sourceDir}}/{}/.."'.format(prog), text)
+    self.assertTrue(os.path.isfile(os.path.normpath(os.path.join(self.dest, 'prog', prog, 'cmake', 'presets', 'base.json'))))
 
   def test_generated_and_build_files_are_not_copied(self):
     for rel in ('game/windows-x86_64', 'game/compiledShaders', 'tools', 'develop/.cache'):

@@ -2,7 +2,7 @@ options gen2
 require ecs
 require danetlibs/test_harness/scenario
 
-// python ../../../project.py test -k dng_empty.scenarios
+// ctest --preset <host>-client -R dng_empty.scenarios
 // References are in references/; recreate them with --update-references after an intended visual change and review them.
 
 [ecs_test]

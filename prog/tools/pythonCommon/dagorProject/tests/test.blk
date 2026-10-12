@@ -1,8 +1,0 @@
-// tests of the project tools (engine.blk, project glue, dng.py new)
-target{
-  name:t="tools.dagorProject"
-  layer:t="exec"
-  tag:t="tools"
-  timeout:r=600
-  command:t="{python} -m unittest -v test_dagorProject"
-}

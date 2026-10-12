@@ -14,9 +14,8 @@ ENGINE = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)
 
 ROOTS = ('prog/engine', 'prog/gameLibs', 'prog/daNetGame', 'prog/tools/dargbox', 'prog/tools/pythonCommon',
          'prog/tools/toolsData', 'prog/1stPartyLibs/yuplay2auth', 'templates', '.github', 'prog/cmake')
-ROOT_FILES = ('dng.py', 'prog/CMakeLists.txt')
-BUILD_SCRIPTS = ('.github/', 'prog/tools/pythonCommon/dagorDevtools/', 'prog/tools/pythonCommon/dagorCMake/', 'dng.py',
-                 'prog/cmake/', 'prog/CMakeLists.txt')  # the downloads of the toolkit
+ROOT_FILES = ('dng.py', 'prog/CMakeLists.txt', 'prog/CMakePresets.json')
+BUILD_SCRIPTS = ('.github/', 'dng.py', 'prog/cmake/', 'prog/CMakeLists.txt', 'prog/CMakePresets.json')  # what downloads
 PRUNED_DIRS = {'.git', '_output', '__pycache__', '3rdPartyLibs', 'node_modules', '.test_results', 'build'}
 ANY_GAIJIN = re.compile(rb'gaijin', re.IGNORECASE)  # cheap check before decoding and scanning a file
 

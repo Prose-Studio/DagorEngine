@@ -1,8 +1,10 @@
-"""Creating a game project from a template in <engine>/templates (dng.py new in the engine root).
+"""Creating a game project from a template in <engine>/templates (dng.py new in the engine root), and relinking one to
+this engine (dng.py relink).
 
-A template is a buildable project with its own engine.blk; its template.blk lists the name tokens (tokens{}) that are
-replaced in file names and text files. Only files git tracks (or would track) are copied: build outputs and generated
-files of the template stay behind.
+A template is a buildable project with its own engine.blk and prog/CMakePresets.json; its template.blk lists the name
+tokens (tokens{}) that are replaced in file names and text files. Only files git tracks (or would track) are copied:
+build outputs and generated files of the template stay behind. The new project's engine.blk and CMakePresets.json name
+this engine.
 """
 import argparse
 import fnmatch
@@ -13,7 +15,7 @@ import subprocess
 import sys
 from typing import Dict, List, Tuple
 
-from . import engine, glue
+from . import engine, presets
 from .engine import ProjectError
 
 TEMPLATE_BLK = 'template.blk'
@@ -206,17 +208,23 @@ def create(template_id: str, name: str, dest: str, codename=None, title=None, co
   if leftovers:
     raise ProjectError('template tokens are left in: {}'.format(', '.join(leftovers)))
 
-  engine.write_engine_blk(dest, engine_root(), absolute=absolute_engine_path)
-  glue.setup(glue.Project(dest, codename))
+  relink(dest, absolute=absolute_engine_path)
   if git_init and shutil.which('git') and not os.path.isdir(os.path.join(dest, '.git')):
     subprocess.run(['git', 'init', '-q'], cwd=dest, check=True)
     log('initialized a git repository (nothing committed)')
   return dest
 
 
+def relink(project_dir: str, absolute=False):
+  """points the project's engine.blk and prog/CMakePresets.json at this engine"""
+  engine.write_engine_blk(project_dir, engine_root(), absolute=absolute)
+  presets.write(project_dir, engine_root())
+
+
 def make_parser():
   p = argparse.ArgumentParser(prog='dng.py new', description='Creates a game project from a template in templates/. '
-                              'The project can be anywhere: it finds this engine through its engine.blk.',
+                              'The project can be anywhere: it finds this engine through its engine.blk and '
+                              'CMakePresets.json.',
                               epilog=EPILOG, formatter_class=argparse.RawDescriptionHelpFormatter)
   p.add_argument('--template', default='dng-empty', help='template id (default: dng-empty)')
   p.add_argument('--name', help='PascalCase name, e.g. MyGame')
@@ -250,11 +258,28 @@ def main(argv):
     print('ERROR: {}'.format(e), file=sys.stderr)
     return 2
   if not args.dry_run:
+    host = {'win32': 'windows', 'darwin': 'macos'}.get(sys.platform, 'linux')
     print('''
-Next steps, in {0}:
-  python project.py build          code, shaders, vromfs, editor snapshot, assets (python project.py build code: just code)
-  game/client{1}                   run the game
-  develop/daEditor{1}              open the editor
-  python project.py test           build and run the tests
-See README.md there.'''.format(dest, '.cmd' if sys.platform.startswith('win') else '.sh'))
+Next steps, in {0}/prog (cmake --list-presets lists the trees):
+  cmake --workflow --preset {2}-dedicated-test   the dedicated server and its tests
+  cmake --preset {2}-client
+  cmake --build --preset {2}-client              the client
+  cmake --build --preset {2}-client-content      its content: shaders, vromfs, editor snapshot, assets
+  ../game/client{1}                               run the game
+  ../develop/daEditor{1}                          open the editor
+See README.md there.'''.format(dest, '.cmd' if sys.platform.startswith('win') else '.sh', host))
+  return 0
+
+
+def relink_main(argv):
+  p = argparse.ArgumentParser(prog='dng.py relink', description="Points a game project's engine.blk and "
+                              'prog/CMakePresets.json at this engine (after either moved).')
+  p.add_argument('project', help='the project dir')
+  p.add_argument('--absolute-engine-path', action='store_true', help='store the engine path as absolute')
+  args = p.parse_args(argv)
+  try:
+    relink(args.project, absolute=args.absolute_engine_path)
+  except ProjectError as e:
+    print('ERROR: {}'.format(e), file=sys.stderr)
+    return 2
   return 0
