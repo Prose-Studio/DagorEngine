@@ -1,5 +1,7 @@
 # Data cache: the web (HTTP) backend
-add_subdirectory(tests)
+if(DAGOR_ENGINE_TESTS)
+  add_subdirectory(tests)
+endif()
 
 set(includes ${DAGOR_PROG_DIR}/engine/dagorInclude ${DAGOR_PROG_DIR}/gameLibs/publicInclude)
 set(deps 3rdPartyLibs.eastl gameLibs.datacache.common gameLibs.datacache.file gameLibs.streamIO)

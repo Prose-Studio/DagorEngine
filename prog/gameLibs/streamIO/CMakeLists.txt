@@ -1,5 +1,7 @@
 # HTTP streaming of files
-add_subdirectory(tests)
+if(DAGOR_ENGINE_TESTS)
+  add_subdirectory(tests)
+endif()
 
 set(includes ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/3rdPartyLibs/ska_hash_map)
 set(deps gameLibs.asyncHTTPClient 3rdPartyLibs.eastl)

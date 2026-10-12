@@ -1,5 +1,7 @@
 # ISO 8601 time parsing and formatting
-add_subdirectory(tests)
+if(DAGOR_ENGINE_TESTS)
+  add_subdirectory(tests)
+endif()
 
 set(includes ${DAGOR_PROG_DIR}/engine/sharedInclude ${DAGOR_PROG_DIR}/gameLibs/publicInclude)
 set(sources iso8601Time.cpp)

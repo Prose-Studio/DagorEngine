@@ -1,7 +1,9 @@
 # daFrameGraph: the render graph (node registry, IR, scheduling of passes, resources and barriers, runtime), with its
 # debug visualization in Dev and Dbg, and the features of DAGOR_DAFG_FEATURES: das (daScript bindings), ecs (daECS
 # node integration); a game's has both (DagorGame.cmake).
-add_subdirectory(tests)
+if(DAGOR_ENGINE_TESTS)
+  add_subdirectory(tests)
+endif()
 
 set(sources
   api/cpp/detail/virtualResourceHandleBase.cpp

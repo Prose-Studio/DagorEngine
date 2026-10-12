@@ -1,6 +1,8 @@
 # daNet: the ENet based network transport
 add_subdirectory(delta)
-add_subdirectory(tests)
+if(DAGOR_ENGINE_TESTS)
+  add_subdirectory(tests)
+endif()
 
 set(includes ${DAGOR_PROG_DIR}/3rdPartyLibs/arc/zlib-ng ${DAGOR_PROG_DIR}/3rdPartyLibs/enet/include)
 file(GLOB AllSources RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")

@@ -1,7 +1,10 @@
 # daBuild, the asset build of the content pipeline: daBuild (the program), daBuild-job (its worker processes) and the
 # daBuild library that the editors load, all on daKernel (the editor tree, DAGOR_KERNEL_LINKAGE dynamic). The exporters
 # and reference providers are plugins (exporters/, refProviders/, plugins/dabuild of the CDK).
-add_subdirectory(ddsxConv)
+add_subdirectory(ddsxConv) # the DDSx converters of the CDK, on the static kernel too
+if(NOT DAGOR_KERNEL_LINKAGE STREQUAL "dynamic" OR DAGOR_SANITIZE STREQUAL "address") # daKernel has no ASan build
+  return()
+endif()
 add_subdirectory(exporters)
 add_subdirectory(refProviders)
 

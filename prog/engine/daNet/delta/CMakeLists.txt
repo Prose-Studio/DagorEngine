@@ -1,5 +1,7 @@
 # daNet delta compression (RLE, history buffers)
-add_subdirectory(tests)
+if(DAGOR_ENGINE_TESTS)
+  add_subdirectory(tests)
+endif()
 
 set(sources rle.cpp history.cpp buffer.cpp deltaCompression.cpp)
 list(APPEND deps engine.daNet)

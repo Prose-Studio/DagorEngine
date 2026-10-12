@@ -1,2 +1,4 @@
 # the dirs of prog/tools/pythonCommon/dagorProject
-add_subdirectory(tests)
+if(DAGOR_ENGINE_TESTS)
+  add_subdirectory(tests)
+endif()

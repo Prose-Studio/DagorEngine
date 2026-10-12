@@ -1,5 +1,7 @@
 # JSON RPC over persistent websocket connections
-add_subdirectory(tests)
+if(DAGOR_ENGINE_TESTS)
+  add_subdirectory(tests)
+endif()
 
 list(APPEND includes
   ${DAGOR_PROG_DIR}/gameLibs/publicInclude

@@ -1,5 +1,7 @@
 # SEP client: JSON RPC over websockets with hostname resolution through c-ares
-add_subdirectory(tests)
+if(DAGOR_ENGINE_TESTS)
+  add_subdirectory(tests)
+endif()
 
 list(APPEND includes
   ${DAGOR_PROG_DIR}/dagorInclude
