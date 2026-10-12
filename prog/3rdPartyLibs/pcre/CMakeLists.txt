@@ -1,14 +1,14 @@
 # PCRE 8.31 (classic PCRE1) with the JIT compiler and the C++ wrapper; per-platform generated character tables
-if(DAGOR_PLATFORM STREQUAL "windows")
+if(WIN32)
   set(includes win32)
   set(sources win32/pcre_chartables.c)
-elseif(DAGOR_PLATFORM STREQUAL "android")
+elseif(ANDROID)
   set(includes linux32)
   set(sources linux32/pcre_chartables.c)
-elseif(DAGOR_PLATFORM STREQUAL "linux")
+elseif(LINUX)
   set(includes linux64)
   set(sources linux64/pcre_chartables.c)
-elseif(DAGOR_PLATFORM MATCHES "^(iOS|macOS|tvOS)$")
+elseif(APPLE)
   set(includes macosx)
   set(sources macosx/pcre_chartables.c)
 endif()
@@ -42,13 +42,12 @@ list(APPEND sources
 )
 set(defines HAVE_CONFIG_H)
 set(c_options -DHAVE_CONFIG_H)
-if(DAGOR_CC MATCHES "^(clang|clang\-cl|gcc)$")
+if(CMAKE_CXX_COMPILER_ID MATCHES "^(Clang|AppleClang|GNU)$")
   list(APPEND options -Wno-unused-parameter)
 endif()
 
-dagor_add_library(SOURCES ${sources}
-  PRIVATE_INCLUDES ${includes}
-  PRIVATE_DEFINES ${defines}
-  COMPILE_OPTIONS ${options}
-  C_OPTIONS ${c_options}
-)
+dagor_add_library(3rdPartyLibs.pcre LAX ${sources})
+target_include_directories(3rdPartyLibs.pcre PRIVATE ${includes})
+target_compile_definitions(3rdPartyLibs.pcre PRIVATE ${defines})
+target_compile_options(3rdPartyLibs.pcre PRIVATE ${options})
+target_compile_options(3rdPartyLibs.pcre PRIVATE "$<$<COMPILE_LANGUAGE:C>:${c_options}>")

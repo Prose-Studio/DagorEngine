@@ -15,4 +15,5 @@ set(sources
   meshSoa4BLAS.cpp
 )
 
-dagor_add_library(STRICT SOURCES ${sources} PRIVATE_INCLUDES ${includes})
+dagor_add_library(engine.daBVH ${sources})
+target_include_directories(engine.daBVH PRIVATE ${includes})

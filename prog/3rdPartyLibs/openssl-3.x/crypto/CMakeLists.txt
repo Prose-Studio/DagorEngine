@@ -1,4 +1,6 @@
 # OpenSSL 3 libcrypto (without SHA, which is crypto/sha)
+add_subdirectory(sha)
+
 include(../openssl.cmake)
 
 set(sources)
@@ -36,11 +38,10 @@ else()
 endif()
 
 set(c_options ${OPENSSL_C_OPTIONS})
-set(source_options)
-if(DAGOR_PLATFORM STREQUAL "windows")
+if(WIN32)
   list(APPEND sources ${OPENSSL_DIR}/crypto/threads_win.c ${OPENSSL_DIR}/crypto/async/arch/async_win.c)
 else()
-  if(DAGOR_PLATFORM MATCHES "^(iOS|android)$")
+  if(CMAKE_SYSTEM_NAME MATCHES "^(Android|iOS)$")
     list(APPEND sources ${OPENSSL_DIR}/crypto/async/arch/async_null.c)
   else()
     list(APPEND sources ${OPENSSL_DIR}/crypto/async/arch/async_posix.c)
@@ -49,13 +50,13 @@ else()
   list(TRANSFORM ec_int128 PREPEND "${OPENSSL_DIR}/crypto/ec/")
   list(APPEND sources ${ec_int128})
 endif()
-if(DAGOR_CC STREQUAL "gcc")
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   # false positive of gcc 13: "rsaz_exp_x2.c:496:16: error: iteration 19 invokes undefined behavior"
   list(APPEND c_options -Wno-aggressive-loop-optimizations -Wno-discarded-qualifiers)
   if(DAGOR_SANITIZE STREQUAL "thread")
     list(APPEND c_options -fno-sanitize=thread)
   endif()
-elseif(DAGOR_CC MATCHES "^(clang|clang-cl)$")
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   list(APPEND c_options -Wno-incompatible-pointer-types-discards-qualifiers)
   if(DAGOR_SANITIZE STREQUAL "undefined")
     list(APPEND c_options -fno-sanitize=undefined)
@@ -63,15 +64,12 @@ elseif(DAGOR_CC MATCHES "^(clang|clang-cl)$")
 endif()
 if(DAGOR_ARCH STREQUAL "e2k")
   list(APPEND c_options -Wno-reduced-alignment)
-  list(APPEND source_options ${OPENSSL_DIR}/crypto/async/arch/async_posix.c -Dmakecontext=makecontext_e2k)
+  set_property(SOURCE ${OPENSSL_DIR}/crypto/async/arch/async_posix.c APPEND PROPERTY COMPILE_OPTIONS -Dmakecontext=makecontext_e2k)
 endif()
 
-dagor_add_library(
-  SOURCES ${sources}
-  PRIVATE_INCLUDES ${OPENSSL_INCLUDES}
-  PRIVATE_DEFINES ${OPENSSL_C_DEFINES}
-  C_OPTIONS ${c_options}
-  SOURCE_OPTIONS ${source_options}
-  DEPS 3rdPartyLibs/openssl-3.x/crypto/sha
-  LICENSE_FILES ${OPENSSL_DIR}/LICENSE.txt
-)
+dagor_add_library(3rdPartyLibs.openssl-3.x.crypto LAX ${sources})
+target_include_directories(3rdPartyLibs.openssl-3.x.crypto PRIVATE ${OPENSSL_INCLUDES})
+target_compile_definitions(3rdPartyLibs.openssl-3.x.crypto PRIVATE ${OPENSSL_C_DEFINES})
+target_compile_options(3rdPartyLibs.openssl-3.x.crypto PRIVATE "$<$<COMPILE_LANGUAGE:C>:${c_options}>")
+target_link_libraries(3rdPartyLibs.openssl-3.x.crypto PRIVATE 3rdPartyLibs.openssl-3.x.crypto.sha)
+dagor_target_licenses(3rdPartyLibs.openssl-3.x.crypto ${OPENSSL_DIR}/LICENSE.txt)

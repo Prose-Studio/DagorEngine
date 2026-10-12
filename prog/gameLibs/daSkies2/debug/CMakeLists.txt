@@ -1,6 +1,7 @@
-# Ported from prog/gameLibs/daSkies2/debug/jamfile (jam2cmake/skeleton.py)
 set(includes ${DAGOR_PROG_DIR}/gameLibs/publicInclude)
 set(sources cloudsFieldDebug.cpp)
-list(APPEND deps gameLibs/render/daFrameGraph)
+list(APPEND deps gameLibs.render.daFrameGraph)
 
-dagor_add_library(STRICT SOURCES ${sources} PRIVATE_INCLUDES ${includes} DEPS ${deps})
+dagor_add_library(gameLibs.daSkies2.debug ${sources})
+target_include_directories(gameLibs.daSkies2.debug PRIVATE ${includes})
+target_link_libraries(gameLibs.daSkies2.debug PRIVATE ${deps})

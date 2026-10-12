@@ -1,4 +1,4 @@
 # Decoding of the DX11 shader metadata (compiled shader headers)
 set(sources unpack.cpp)
 
-dagor_add_library(SOURCES ${sources})
+dagor_add_library(engine.drv.shadersMetaData.dx11 LAX ${sources})

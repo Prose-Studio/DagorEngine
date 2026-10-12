@@ -2,4 +2,5 @@
 set(includes ${DAGOR_PROG_DIR}/gameLibs/publicInclude)
 set(sources primitiveObjects.cpp)
 
-dagor_add_library(STRICT SOURCES ${sources} PRIVATE_INCLUDES ${includes})
+dagor_add_library(gameLibs.render.primitiveObjects ${sources})
+target_include_directories(gameLibs.render.primitiveObjects PRIVATE ${includes})

@@ -20,8 +20,11 @@ set(sources
   src/utils.c
   src/write.c
 )
-list(APPEND deps 3rdPartyLibs/codecs/dav1d)
+list(APPEND deps 3rdPartyLibs.codecs.dav1d)
 set(includes include ${DAGOR_PROG_DIR}/3rdPartyLibs/codecs/dav1d/include)
 set(defines AVIF_CODEC_DAV1D)
 
-dagor_add_library(SOURCES ${sources} PRIVATE_INCLUDES ${includes} PRIVATE_DEFINES ${defines} DEPS ${deps})
+dagor_add_library(3rdPartyLibs.image.avif LAX ${sources})
+target_include_directories(3rdPartyLibs.image.avif PRIVATE ${includes})
+target_compile_definitions(3rdPartyLibs.image.avif PRIVATE ${defines})
+target_link_libraries(3rdPartyLibs.image.avif PRIVATE ${deps})

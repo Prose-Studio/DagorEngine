@@ -2,4 +2,5 @@
 set(sources riLandClass.cpp)
 set(includes ${DAGOR_PROG_DIR}/gameLibs/publicInclude)
 
-dagor_add_library(SOURCES ${sources} PRIVATE_INCLUDES ${includes})
+dagor_add_library(gameLibs.landMesh.rendinstIntegration LAX ${sources})
+target_include_directories(gameLibs.landMesh.rendinstIntegration PRIVATE ${includes})

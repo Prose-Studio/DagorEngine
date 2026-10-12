@@ -1,4 +1,3 @@
-# Ported from prog/gameLibs/projectiveDecals/jamfile (jam2cmake/skeleton.py)
 set(includes ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${CMAKE_CURRENT_SOURCE_DIR})
 set(sources
   defaultDecalData.cpp
@@ -7,6 +6,8 @@ set(sources
   resizableProjectiveDecals.cpp
   ringBufferProjectiveDecals.cpp
 )
-list(APPEND deps engine/lib3d gameLibs/render)
+list(APPEND deps engine.lib3d gameLibs.render)
 
-dagor_add_library(STRICT SOURCES ${sources} PRIVATE_INCLUDES ${includes} DEPS ${deps})
+dagor_add_library(gameLibs.projectiveDecals ${sources})
+target_include_directories(gameLibs.projectiveDecals PRIVATE ${includes})
+target_link_libraries(gameLibs.projectiveDecals PRIVATE ${deps})

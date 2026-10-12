@@ -1,5 +1,8 @@
 # The land mesh (heightmap terrain with clipmap texturing, micro details and the weight atlas); its clipmap debug UI
 # (ImGui) in Dev and Dbg
+add_subdirectory(rendinstIntegration)
+add_subdirectory(stub)
+
 set(sources
   landMicroDetails.cpp
   lmeshManager.cpp
@@ -27,27 +30,19 @@ set(includes
   ${DAGOR_PROG_DIR}/engine/lib3d
   ${DAGOR_PROG_DIR}/3rdPartyLibs
 )
-set(deps
-  gameLibs/landMesh/rendinstIntegration
-  gameLibs/heightmap
-  gameLibs/physMap
-  3rdPartyLibs/eastl
-  engine/daBVH
-  3rdPartyLibs/convert/fastDXT
-)
+set(deps gameLibs.landMesh.rendinstIntegration gameLibs.heightmap gameLibs.physMap 3rdPartyLibs.eastl engine.daBVH
+  3rdPartyLibs.convert.fastDXT)
 set(dir "${CMAKE_CURRENT_SOURCE_DIR}")
 set(debug "$<CONFIG:Dev,Dbg>")
 list(APPEND sources "$<IF:${debug},${dir}/clipmapDebug.cpp,${dir}/clipmapDebugStub.cpp>")
-dagor_use(3rdPartyLibs/imgui engine/imgui)
 list(APPEND deps "$<${debug}:3rdPartyLibs.imgui>" "$<${debug}:engine.imgui>")
 set(options)
 # no fused multiply-adds and no unsafe math: the land heights must match on every platform
 dagor_deterministic_fp(options)
 list(APPEND defines VECMATH_NO_FMA) # v_madd on NEON is explicit vfmaq that ignores ffp-contract=off
 
-dagor_add_library(SOURCES ${sources}
-  PRIVATE_INCLUDES ${includes}
-  PRIVATE_DEFINES ${defines}
-  COMPILE_OPTIONS ${options}
-  DEPS ${deps}
-)
+dagor_add_library(gameLibs.landMesh LAX ${sources})
+target_include_directories(gameLibs.landMesh PRIVATE ${includes})
+target_compile_definitions(gameLibs.landMesh PRIVATE ${defines})
+target_compile_options(gameLibs.landMesh PRIVATE ${options})
+target_link_libraries(gameLibs.landMesh PRIVATE ${deps})

@@ -1,4 +1,3 @@
-# Ported from prog/gameLibs/quirrel/clientLog/jamfile (jam2cmake/skeleton.py)
 set(includes
   ${DAGOR_PROG_DIR}/gameLibs/publicInclude
   ${DAGOR_PROG_DIR}/gameLibs/publicInclude/quirrel
@@ -6,4 +5,6 @@ set(includes
 )
 set(sources clientLog.cpp)
 
-dagor_add_library(STRICT QUIRREL SOURCES ${sources} PRIVATE_INCLUDES ${includes})
+dagor_add_library(gameLibs.quirrel.clientLog ${sources})
+target_include_directories(gameLibs.quirrel.clientLog PRIVATE ${includes})
+target_link_libraries(gameLibs.quirrel.clientLog PRIVATE Dagor::Quirrel)

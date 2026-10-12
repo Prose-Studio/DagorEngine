@@ -18,6 +18,8 @@ set(includes
   ${DAGOR_PROG_DIR}/3rdPartyLibs/freetype/harfbuzz-2.6.4/src
   ${DAGOR_PROG_DIR}/3rdPartyLibs/binPack2D/include
 )
-set(deps 3rdPartyLibs/freetype/freetype-2.8 3rdPartyLibs/freetype/harfbuzz-2.6.4 3rdPartyLibs/binPack2D)
+set(deps 3rdPartyLibs.freetype.freetype-2.8 3rdPartyLibs.freetype.harfbuzz-2.6.4 3rdPartyLibs.binPack2D)
 
-dagor_add_library(STRICT SOURCES ${sources} PRIVATE_INCLUDES ${includes} DEPS ${deps})
+dagor_add_library(engine.guiBase ${sources})
+target_include_directories(engine.guiBase PRIVATE ${includes})
+target_link_libraries(engine.guiBase PRIVATE ${deps})

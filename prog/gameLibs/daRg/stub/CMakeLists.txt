@@ -1,4 +1,4 @@
-# Ported from prog/gameLibs/daRg/stub/jamfile (jam2cmake/skeleton.py)
 set(sources daRgStub.cpp)
 
-dagor_add_library(STRICT QUIRREL SOURCES ${sources})
+dagor_add_library(gameLibs.daRg.stub ${sources})
+target_link_libraries(gameLibs.daRg.stub PRIVATE Dagor::Quirrel)

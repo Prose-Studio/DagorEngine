@@ -1,10 +1,10 @@
 # The Direct3D 11 driver (Windows), with NVAPI, AMD's ADL and DX extensions when their SDKs are there, and Aftermath
 set(includes ${DAGOR_PROG_DIR}/engine/sharedInclude ${DAGOR_PROG_DIR}/engine/drv/drv3d_commonCode)
 set(defines INSIDE_DRIVER)
-set(deps engine/drv/drv3d_commonCode engine/drv/shadersMetaData/dx11)
-dagor_require_sdk(nvapi OPTIONAL)
-if(TARGET sdk::nvapi)
-  list(APPEND deps sdk::nvapi)
+set(deps engine.drv.drv3d_commonCode engine.drv.shadersMetaData.dx11)
+find_package(NVAPI)
+if(TARGET NVAPI::NVAPI)
+  list(APPEND deps NVAPI::NVAPI)
 endif()
 if(DAGOR_ARCH STREQUAL "x86_64")
   if(IS_DIRECTORY "${DAGOR_PROG_DIR}/3rdPartyLibs/adl_sdk")
@@ -15,30 +15,15 @@ if(DAGOR_ARCH STREQUAL "x86_64")
     list(APPEND includes ${DAGOR_PROG_DIR}/3rdPartyLibs/AmdDxExt)
     list(APPEND defines HAS_AMD_DX_EXT)
   endif()
-  dagor_require_sdk(aftermath)
-  list(APPEND deps sdk::aftermath)
+  find_package(Aftermath REQUIRED)
+  list(APPEND deps Aftermath::Aftermath)
 endif()
 
-dagor_add_library(
-  SOURCES
-    init.cpp
-    drvmain.cpp
-    states.cpp
-    rtarget.cpp
-    texture.cpp
-    shaders.cpp
-    buffers.cpp
-    sampler.cpp
-    genericBuffer.cpp
-    init_d3di.cpp
-    basetex.cpp
-    immediateConst.cpp
-    helpers.cpp
-    memory_metrics.cpp
-    clear.cpp
-  PRIVATE_INCLUDES ${includes}
-  PRIVATE_DEFINES ${defines}
-  FORCE_INCLUDES d3d_config.h
-  DEPS ${deps}
-  SYSTEM_LIBS Version
-)
+dagor_add_library(engine.drv.drv3d_DX11 LAX init.cpp drvmain.cpp states.cpp rtarget.cpp texture.cpp shaders.cpp
+  buffers.cpp sampler.cpp genericBuffer.cpp init_d3di.cpp basetex.cpp immediateConst.cpp helpers.cpp memory_metrics.cpp
+  clear.cpp)
+target_include_directories(engine.drv.drv3d_DX11 PRIVATE ${includes})
+target_compile_definitions(engine.drv.drv3d_DX11 PRIVATE ${defines})
+target_link_libraries(engine.drv.drv3d_DX11 PRIVATE ${deps})
+target_link_libraries(engine.drv.drv3d_DX11 PUBLIC System::version)
+dagor_target_force_include(engine.drv.drv3d_DX11 d3d_config.h)

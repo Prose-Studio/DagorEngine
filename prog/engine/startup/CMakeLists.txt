@@ -22,13 +22,15 @@ set(sources
   kbd_data.cpp
   ms_data.cpp
 )
-if(DAGOR_PLATFORM STREQUAL "windows")
+if(WIN32)
   list(APPEND sources mbWinReport.cpp)
 endif()
 set(includes ${DAGOR_PROG_DIR}/engine/sharedInclude ${DAGOR_PROG_DIR}/3rdPartyLibs)
 if(DAGOR_KERNEL_LINKAGE STREQUAL "dynamic")
-  set(deps engine/memory/rtlOverride)
+  set(deps engine.memory.rtlOverride)
 endif()
-list(APPEND deps 3rdPartyLibs/eastl)
+list(APPEND deps 3rdPartyLibs.eastl)
 
-dagor_add_library(SOURCES ${sources} PRIVATE_INCLUDES ${includes} DEPS ${deps})
+dagor_add_library(engine.startup LAX ${sources})
+target_include_directories(engine.startup PRIVATE ${includes})
+target_link_libraries(engine.startup PRIVATE ${deps})

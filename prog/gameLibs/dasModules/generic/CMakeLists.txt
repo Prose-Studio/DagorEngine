@@ -1,4 +1,3 @@
-# Ported from prog/gameLibs/dasModules/generic/jamfile (jam2cmake/skeleton.py)
 set(includes
   ${DAGOR_PROG_DIR}/gameLibs/publicInclude
   ${DAGOR_PROG_DIR}/1stPartyLibs/daScript/include
@@ -9,18 +8,16 @@ file(GLOB AllSources RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" CONFIGURE_DEPENDS "$
 set(sources ${AllSources})
 set(SourceDAS animchar.das zones.das dagorFindFiles.das grid.das)
 list(APPEND stringify ${SourceDAS})
-if(DAGOR_PLATFORM STREQUAL "windows")
+if(WIN32)
   list(APPEND options /wd4548)
   list(APPEND defines "$<$<NOT:$<CONFIG:Rel>>:ANIM_PBC_HOT_RELOAD_ENABLED>") # jam had it on Windows only
 endif()
-set(deps 1stPartyLibs/daScript gameLibs/gameMath)
+set(deps 1stPartyLibs.daScript gameLibs.gameMath)
 list(APPEND deps Dagor::Phys)
 
-dagor_add_library(STRICT
-  SOURCES ${sources}
-  PRIVATE_INCLUDES ${includes}
-  PRIVATE_DEFINES ${defines}
-  COMPILE_OPTIONS ${options}
-  DEPS ${deps}
-  STRINGIFY ${stringify}
-)
+dagor_add_library(gameLibs.dasModules.generic ${sources})
+target_include_directories(gameLibs.dasModules.generic PRIVATE ${includes})
+target_compile_definitions(gameLibs.dasModules.generic PRIVATE ${defines})
+target_compile_options(gameLibs.dasModules.generic PRIVATE ${options})
+target_link_libraries(gameLibs.dasModules.generic PRIVATE ${deps})
+dagor_target_stringify(gameLibs.dasModules.generic ${stringify})

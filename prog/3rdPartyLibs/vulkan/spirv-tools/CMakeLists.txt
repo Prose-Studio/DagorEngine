@@ -234,16 +234,15 @@ set(sources
   source/val/validation_state.cpp
 )
 set(defines NDEBUG _CONSOLE GENERIC_COMPILER YYDEBUG=0)
-if(DAGOR_PLATFORM STREQUAL "windows")
+if(WIN32)
   list(APPEND defines WIN32)
   list(APPEND options /d2Zi+)
 endif()
-if(DAGOR_PLATFORM STREQUAL "macOS")
+if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
   list(APPEND options -Wno-deprecated-declarations)
 endif()
 
-dagor_add_library(SOURCES ${sources}
-  PRIVATE_INCLUDES ${includes}
-  PRIVATE_DEFINES ${defines}
-  COMPILE_OPTIONS ${options}
-)
+dagor_add_library(3rdPartyLibs.vulkan.spirv-tools LAX ${sources})
+target_include_directories(3rdPartyLibs.vulkan.spirv-tools PRIVATE ${includes})
+target_compile_definitions(3rdPartyLibs.vulkan.spirv-tools PRIVATE ${defines})
+target_compile_options(3rdPartyLibs.vulkan.spirv-tools PRIVATE ${options})

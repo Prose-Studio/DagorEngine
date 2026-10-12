@@ -1,4 +1,3 @@
-# Ported from prog/gameLibs/quirrel/sqConsole/jamfile (jam2cmake/skeleton.py)
 set(includes
   ${DAGOR_PROG_DIR}/gameLibs/publicInclude
   ${DAGOR_PROG_DIR}/gameLibs/publicInclude/quirrel
@@ -7,4 +6,6 @@ set(includes
 )
 set(sources sqConsole.cpp)
 
-dagor_add_library(STRICT QUIRREL SOURCES ${sources} PRIVATE_INCLUDES ${includes})
+dagor_add_library(gameLibs.quirrel.sqConsole ${sources})
+target_include_directories(gameLibs.quirrel.sqConsole PRIVATE ${includes})
+target_link_libraries(gameLibs.quirrel.sqConsole PRIVATE Dagor::Quirrel)

@@ -19,4 +19,6 @@ set(sources
 set(includes ${DAGOR_PROG_DIR}/3rdPartyLibs/uriparser/include ${DAGOR_PROG_DIR}/3rdPartyLibs/uriparser/src)
 list(APPEND defines URI_STATIC_BUILD URI_NO_UNICODE)
 
-dagor_add_library(SOURCES ${sources} PRIVATE_INCLUDES ${includes} PRIVATE_DEFINES ${defines})
+dagor_add_library(3rdPartyLibs.uriparser LAX ${sources})
+target_include_directories(3rdPartyLibs.uriparser PRIVATE ${includes})
+target_compile_definitions(3rdPartyLibs.uriparser PRIVATE ${defines})

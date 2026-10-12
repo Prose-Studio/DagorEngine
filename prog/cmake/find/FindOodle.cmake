@@ -1,0 +1,26 @@
+# Oodle (RAD Game Tools), user-provided: it cannot be redistributed. Oodle_ROOT is the unpacked Oodle 2 SDK (the dir
+# with include/ and lib/ or static_lib/); without it, its codecs are stubs in engine/ioSys.
+#   Oodle::Oodle  oodle2.h and the core library of the target
+if(WIN32 AND DAGOR_ARCH STREQUAL "arm64")
+  set(_oodle_lib static_lib/oo2core_winuwparm64.lib)
+elseif(WIN32)
+  set(_oodle_lib static_lib/oo2core_win64.lib)
+elseif(IOS)
+  set(_oodle_lib lib/ios/liboo2coreios.a)
+elseif(APPLE)
+  set(_oodle_lib lib/liboo2coremac64.a)
+elseif(ANDROID)
+  set(_oodle_lib lib/android/arm64-v8a/liboo2coreandroid.a)
+else()
+  set(_oodle_lib lib/liboo2corelinux64.a)
+endif()
+find_path(Oodle_INCLUDE_DIR oodle2.h PATH_SUFFIXES include)
+find_file(Oodle_LIBRARY ${_oodle_lib})
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(Oodle REQUIRED_VARS Oodle_LIBRARY Oodle_INCLUDE_DIR)
+if(Oodle_FOUND AND NOT TARGET Oodle::Oodle)
+  add_library(Oodle::Oodle STATIC IMPORTED GLOBAL)
+  set_target_properties(Oodle::Oodle PROPERTIES IMPORTED_LOCATION "${Oodle_LIBRARY}"
+    INTERFACE_INCLUDE_DIRECTORIES "${Oodle_INCLUDE_DIR}")
+endif()
+unset(_oodle_lib)

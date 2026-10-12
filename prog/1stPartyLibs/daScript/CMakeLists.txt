@@ -3,6 +3,11 @@
 #   1stPartyLibs.daScript.console   stdout output and daScript's own crash handler, for the console tools (the das
 #                                   interpreter) that set the DAGOR_DAS_CONSOLE target property
 # Libraries depend on 1stPartyLibs/daScript, which links the one of the program they end up in.
+if(DAGOR_DAS_AOT) # the daslib scripts compiled ahead of time
+  add_subdirectory(daslib)
+endif()
+add_subdirectory(modules)
+add_subdirectory(utils/daScript)
 
 set(source_dirs src/ast src/builtin src/runtime src/simulate src/misc src/parser src/modules/uriparser src/hal)
 # project_specific_file_info.cpp provides fallbacks of get_file_access / get_context / get_clone_context that every
@@ -14,22 +19,21 @@ list(APPEND sources dagorAdapter/das_jit_runtime.cpp) # (empty without DAS_JIT_R
 # the sources that throw (and the crash handler, which reads the exception in flight): compiled with exceptions
 # whatever the tree's setting
 set(exceptions)
-if(DAGOR_MSVC_LIKE)
+if(MSVC)
   set(exceptions /EHsc -D_HAS_EXCEPTIONS=1 -DDAS_ENABLE_EXCEPTIONS)
 else()
   set(exceptions -fexceptions -DDAS_ENABLE_EXCEPTIONS)
 endif()
-if(DAGOR_CC MATCHES "^(clang|clang-cl)$")
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   list(APPEND exceptions -Wno-macro-redefined)
 endif()
-set(source_options)
 foreach(source IN LISTS sources)
   if(source MATCHES "(_exceptions|_ast_serialize|runtime_string|format|crash_handler)\\.cpp$")
-    list(APPEND source_options "${source}" ${exceptions})
+    set_property(SOURCE "${source}" APPEND PROPERTY COMPILE_OPTIONS ${exceptions})
   endif()
 endforeach()
 if(DAGOR_ARCH STREQUAL "e2k")
-  list(APPEND source_options src/simulate/simulate_gc.cpp -Wno-overloaded-virtual)
+  set_property(SOURCE src/simulate/simulate_gc.cpp APPEND PROPERTY COMPILE_OPTIONS -Wno-overloaded-virtual)
 endif()
 
 # DAS_ENABLE_DYN_INCLUDES: as daScript's own CMake build defines it (src/builtin/jit_runtime.cpp needs its header)
@@ -38,7 +42,7 @@ if(DAGOR_DAS_LLVM_AOT)
   list(APPEND defines DAS_LLVM_AOT)
 endif()
 set(options)
-if(NOT DAGOR_MSVC_LIKE)
+if(NOT MSVC)
   # the language's floats are IEEE: its comparisons and isnan/isinf see NaN and infinity (-ffinite-math-only would let
   # the compiler assume them away, and arm64 code then answers wrongly)
   list(APPEND options -fno-finite-math-only)
@@ -47,35 +51,30 @@ if(NOT DAGOR_MSVC_LIKE)
     list(APPEND defines DAS_FAST_INTEGER_MOD=0)
   endif()
 endif()
-if(DAGOR_CC STREQUAL "gcc")
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   list(APPEND options -Wno-stringop-overflow)
-elseif(DAGOR_PLATFORM STREQUAL "macOS")
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
   list(APPEND options -Wno-deprecated-declarations)
 endif()
 
 set(aot_deps)
 if(DAGOR_DAS_AOT)
-  set(aot_deps 1stPartyLibs/daScript/daslib) # daslib's scripts compiled ahead of time
+  set(aot_deps 1stPartyLibs.daScript.daslib) # daslib's scripts compiled ahead of time
 endif()
 foreach(build standard console)
   set(build_defines ${defines})
   if(build STREQUAL "console")
     list(APPEND build_defines DAS_DEFAULT_STDOUT DAS_USE_BASE_CRASH_HANDLER=1)
   endif()
-  dagor_add_library(1stPartyLibs.daScript.${build}
-    SOURCES ${sources}
-    PRIVATE_INCLUDES
-      include
-      include/das_hash_map
-      include/modules/uriparser
-      ${DAGOR_PROG_DIR}/3rdPartyLibs/uriparser/include
-      ${DAGOR_PROG_DIR}/3rdPartyLibs/fmt/include
-    PRIVATE_DEFINES ${build_defines}
-    COMPILE_OPTIONS ${options}
-    SOURCE_OPTIONS ${source_options}
-    DEPS 3rdPartyLibs/eastl 3rdPartyLibs/uriparser 3rdPartyLibs/fmt ${aot_deps}
-    LICENSE_FILES LICENSE
-  )
+  dagor_add_library(1stPartyLibs.daScript.${build} LAX ${sources})
+  target_include_directories(1stPartyLibs.daScript.${build} PRIVATE include include/das_hash_map
+    include/modules/uriparser ${DAGOR_PROG_DIR}/3rdPartyLibs/uriparser/include
+    ${DAGOR_PROG_DIR}/3rdPartyLibs/fmt/include)
+  target_compile_definitions(1stPartyLibs.daScript.${build} PRIVATE ${build_defines})
+  target_compile_options(1stPartyLibs.daScript.${build} PRIVATE ${options})
+  target_link_libraries(1stPartyLibs.daScript.${build} PRIVATE 3rdPartyLibs.eastl 3rdPartyLibs.uriparser
+    3rdPartyLibs.fmt ${aot_deps})
+  dagor_target_licenses(1stPartyLibs.daScript.${build} LICENSE)
 endforeach()
 dagor_add_link_choice(1stPartyLibs.daScript PROPERTY DAGOR_DAS_CONSOLE
   ON 1stPartyLibs.daScript.console OFF 1stPartyLibs.daScript.standard)

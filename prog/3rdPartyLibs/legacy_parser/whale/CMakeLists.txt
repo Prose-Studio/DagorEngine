@@ -2,24 +2,22 @@
 # into the source tree; here it is a program of the tree that the parser generation runs.
 file(GLOB sources CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
 set(options)
-if(DAGOR_PLATFORM MATCHES "^(linux|macOS)$")
+if(CMAKE_SYSTEM_NAME MATCHES "^(Darwin|Linux)$")
   list(APPEND options -funsigned-char)
 endif()
-if(DAGOR_CC MATCHES "^(clang|clang-cl)$")
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   list(APPEND options -Wno-potentially-evaluated-expression)
-  if(DAGOR_PLATFORM MATCHES "^(linux|macOS)$")
+  if(CMAKE_SYSTEM_NAME MATCHES "^(Darwin|Linux)$")
     list(APPEND options -Wno-logical-op-parentheses -Wno-dangling-else)
   endif()
-  if(DAGOR_PLATFORM STREQUAL "linux")
+  if(LINUX)
     list(APPEND options -Wno-deprecated-declarations -Wno-sometimes-uninitialized)
   endif()
 endif()
 
-dagor_add_executable(whale CONSOLE CDK NO_CONFIG_POSTFIX
-  EXCEPTIONS SEH
-  RTTI ON
-  SOURCES nstl/stl.cpp ${sources}
-  PRIVATE_INCLUDES nstl hash
-  PRIVATE_DEFINES NO_PCRE LR0_SUPPRESS_PROFILING __B_NO_MEM_BASE_INCLUDE
-  COMPILE_OPTIONS ${options}
-)
+dagor_add_executable(whale LAX NO_CONFIG_POSTFIX nstl/stl.cpp ${sources})
+target_include_directories(whale PRIVATE nstl hash)
+target_compile_definitions(whale PRIVATE NO_PCRE LR0_SUPPRESS_PROFILING __B_NO_MEM_BASE_INCLUDE)
+target_compile_options(whale PRIVATE ${options})
+set_target_properties(whale PROPERTIES DAGOR_EXCEPTIONS SEH DAGOR_RTTI ON)
+dagor_install_cdk(whale)

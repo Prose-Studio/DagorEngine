@@ -1,0 +1,6 @@
+// The game's network auth keys, made by dagor_add_dng_game() (prog/cmake/DagorGame.cmake): the client's own, and the
+// dedicated server's for the clients it checks
+#include "net/userid.h"
+
+@PLATFORM_KEY@
+@SERVER_KEYS@

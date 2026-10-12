@@ -11,38 +11,21 @@ set(includes
   ${DAGOR_PROG_DIR}/tools/sharedInclude
 )
 set(sources shaderInfo.cpp rga.cpp rgaPipelineState.cpp main.cpp)
-set(deps
-  engine/osApiWrappers
-  engine/kernel
-  engine/memory
-  engine/ioSys
-  engine/startup
-  engine/baseUtil
-  engine/math
-  engine/lib3d
-  engine/drv/drv3d_null
-  engine/drv/shadersMetaData
-  gameLibs/shaderBlobUnpack
-  3rdPartyLibs/eastl
-  3rdPartyLibs/hash/BLAKE3
-  engine/shaders
-  engine/perfMon/daProfilerStub
-  tools/ShaderCompiler2/shaderBlobDisassembler
-  tools/libTools/util
-)
-if(DAGOR_PLATFORM STREQUAL "linux")
-  list(APPEND deps engine/osApiWrappers/messageBox/stub)
+set(deps engine.osApiWrappers engine.kernel engine.memory engine.ioSys engine.startup engine.baseUtil engine.math
+  engine.lib3d engine.drv.drv3d_null engine.drv.shadersMetaData gameLibs.shaderBlobUnpack 3rdPartyLibs.eastl
+  3rdPartyLibs.hash.BLAKE3 engine.shaders engine.perfMon.daProfilerStub tools.ShaderCompiler2.shaderBlobDisassembler
+  tools.libTools.util)
+if(LINUX)
+  list(APPEND deps engine.osApiWrappers.messageBox.stub)
 endif()
 set(libs)
-if(DAGOR_PLATFORM STREQUAL "windows")
-  list(APPEND libs d3dcompiler)
+if(WIN32)
+  list(APPEND libs System::d3dcompiler)
 endif()
 
-dagor_add_executable(shaderInfo CONSOLE
-  CDK
-  SOURCES ${sources}
-  PRIVATE_INCLUDES ${includes}
-  PRIVATE_DEFINES ${defines}
-  DEPS ${deps}
-  SYSTEM_LIBS ${libs}
-)
+dagor_add_executable(shaderInfo LAX ${sources})
+target_include_directories(shaderInfo PRIVATE ${includes})
+target_compile_definitions(shaderInfo PRIVATE ${defines})
+target_link_libraries(shaderInfo PRIVATE ${deps})
+target_link_libraries(shaderInfo PUBLIC ${libs})
+dagor_install_cdk(shaderInfo)

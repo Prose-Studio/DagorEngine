@@ -1,1 +1,1 @@
-dagor_game_lib(DEPS daNetGameLibs/frame_graph_renderer)
+dagor_game_lib(LINK daNetGameLibs.frame_graph_renderer)

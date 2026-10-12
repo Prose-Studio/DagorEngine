@@ -12,6 +12,8 @@ set(includes
   ${DAGOR_PROG_DIR}/3rdPartyLibs/rapidjson/include
   ${DAGOR_PROG_DIR}/3rdPartyLibs/arc/zstd-1.4.5
 )
-set(deps 1stPartyLibs/jsoncpp 3rdPartyLibs/arc/zstd-1.4.5)
+set(deps 1stPartyLibs.jsoncpp 3rdPartyLibs.arc.zstd-1.4.5)
 
-dagor_add_library(STRICT QUIRREL SOURCES ${sources} PRIVATE_INCLUDES ${includes} DEPS ${deps})
+dagor_add_library(gameLibs.quirrel.quirrel_json ${sources})
+target_include_directories(gameLibs.quirrel.quirrel_json PRIVATE ${includes})
+target_link_libraries(gameLibs.quirrel.quirrel_json PRIVATE Dagor::Quirrel ${deps})

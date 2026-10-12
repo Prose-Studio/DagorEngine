@@ -22,4 +22,6 @@ set(sources
 set(includes ${DAGOR_PROG_DIR}/3rdPartyLibs/meshoptimizer/include)
 list(APPEND defines _RELEASE)
 
-dagor_add_library(SOURCES ${sources} PRIVATE_INCLUDES ${includes} PRIVATE_DEFINES ${defines})
+dagor_add_library(3rdPartyLibs.meshoptimizer LAX ${sources})
+target_include_directories(3rdPartyLibs.meshoptimizer PRIVATE ${includes})
+target_compile_definitions(3rdPartyLibs.meshoptimizer PRIVATE ${defines})

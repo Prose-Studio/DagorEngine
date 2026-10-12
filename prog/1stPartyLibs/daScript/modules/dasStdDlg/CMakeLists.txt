@@ -2,18 +2,19 @@
 # CMakeLists.txt of daScript's own build)
 # the tray backends are not wired on any platform (as in the jamfile): Dagor hosts no tray icon, and tray_* is bound
 # either way, TrayPlatformCreate returning null
+add_subdirectory(stub)
+
 set(sources src/dasStdDlg.cpp src/dasStdDlgTray.cpp src/dasStdDlgTrayNotImplemented.cpp)
-if(DAGOR_PLATFORM STREQUAL "windows")
+if(WIN32)
   list(APPEND sources src/dasStdDlgWin.cpp)
-elseif(DAGOR_PLATFORM STREQUAL "linux")
+elseif(LINUX)
   list(APPEND sources src/dasStdDlgGtk.cpp)
-elseif(DAGOR_PLATFORM STREQUAL "macOS")
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
   list(APPEND sources src/dasStdDlgOsx.mm)
 else()
   list(APPEND sources src/dasStdDlgNotImplemented.cpp)
 endif()
-dagor_add_library(STRICT
-  SOURCES ${sources}
-  PRIVATE_INCLUDES ${DAGOR_PROG_DIR}/1stPartyLibs/daScript/include
-  DEPS 1stPartyLibs/daScript
-)
+dagor_add_library(1stPartyLibs.daScript.modules.dasStdDlg ${sources})
+target_include_directories(1stPartyLibs.daScript.modules.dasStdDlg PRIVATE
+  ${DAGOR_PROG_DIR}/1stPartyLibs/daScript/include)
+target_link_libraries(1stPartyLibs.daScript.modules.dasStdDlg PRIVATE 1stPartyLibs.daScript)

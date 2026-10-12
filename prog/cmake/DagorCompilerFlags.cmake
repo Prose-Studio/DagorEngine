@@ -1,33 +1,21 @@
-# Dagor::BuildSettings: the compile and link settings every engine and project target gets (dagor_add_* link it), and
-# Dagor::Strict / Dagor::Lax, the warning sets of first-party and third-party code. CMake's own default flags are
-# dropped (DagorFlagOverrides.cmake), so what is here is the whole command line apart from the toolchain's paths.
+# The compile and link settings of every target in the tree: directory properties of the top-level directory
+# (add_compile_options, add_compile_definitions, add_link_options, link_libraries), which the targets below it start
+# with, so a target's own options come after them. The toolchain's flag overrides drop CMake's defaults
+# (toolchains/flag-overrides.cmake): what is here is the whole command line apart from the toolchain's paths.
+#
+# Per-target choices are target properties the settings read through generator expressions:
+#   DAGOR_EXCEPTIONS  ON, OFF or SEH (also structured exceptions); unset: the tree's DAGOR_EXCEPTIONS_CONFIGS
+#   DAGOR_RTTI        ON or OFF; unset: DAGOR_RTTI
+#   DAGOR_FRAME_LIMIT the stack frame limit of strict code in bytes (clang-cl; 32768 by default)
+# The warnings of first-party and third-party code are the lists DAGOR_STRICT_OPTIONS and DAGOR_LAX_OPTIONS, which
+# dagor_add_library() and dagor_add_executable() add to each target (LAX picks the second).
 include_guard(GLOBAL)
-
-if(MSVC)
-  if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    set(DAGOR_CC clang-cl)
-  else()
-    set(DAGOR_CC msvc)
-  endif()
-elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  set(DAGOR_CC clang)
-elseif(CMAKE_CXX_COMPILER_ID STREQUAL "LCC")
-  set(DAGOR_CC lcc)
-elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-  set(DAGOR_CC gcc)
-else()
-  message(FATAL_ERROR "Unsupported compiler ${CMAKE_CXX_COMPILER_ID}")
-endif()
-set(DAGOR_MSVC_LIKE OFF)
-if(DAGOR_CC MATCHES "^(clang-cl|msvc)$")
-  set(DAGOR_MSVC_LIKE ON)
-endif()
 
 set(CMAKE_CXX_STANDARD ${DAGOR_CPP_STD})
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_SCAN_FOR_MODULES OFF) # the engine has no C++20 modules
-if(NOT DAGOR_MSVC_LIKE)
+if(NOT MSVC)
   set(CMAKE_C_STANDARD 99)
   set(CMAKE_C_EXTENSIONS OFF)
 endif()
@@ -38,43 +26,39 @@ else()
   set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT ProgramDatabase)
 endif()
 set_property(GLOBAL PROPERTY DEBUG_CONFIGURATIONS Dbg)
-foreach(cfg DEV REL IREL)
-  set(CMAKE_MAP_IMPORTED_CONFIG_${cfg} Release RelWithDebInfo MinSizeRel "")
+foreach(_cfg DEV REL IREL)
+  set(CMAKE_MAP_IMPORTED_CONFIG_${_cfg} Release RelWithDebInfo MinSizeRel "")
 endforeach()
 set(CMAKE_MAP_IMPORTED_CONFIG_DBG Debug "")
-if(DAGOR_PLATFORM STREQUAL "linux" AND DAGOR_KERNEL_LINKAGE STREQUAL "dynamic")
+if(LINUX AND DAGOR_KERNEL_LINKAGE STREQUAL "dynamic")
   set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 endif()
-if(DAGOR_PLATFORM STREQUAL "linux")
-  # the engine's static libraries depend on each other in cycles (kernel <-> osApiWrappers, ...): as jam did, the GNU
-  # linkers get them in one group that they rescan
-  foreach(lang C CXX)
-    set(CMAKE_${lang}_LINK_EXECUTABLE
-      "<CMAKE_${lang}_COMPILER> <FLAGS> <CMAKE_${lang}_LINK_FLAGS> <LINK_FLAGS> <OBJECTS> -o <TARGET> -Wl,--start-group <LINK_LIBRARIES> -Wl,--end-group")
-    set(CMAKE_${lang}_CREATE_SHARED_LIBRARY
-      "<CMAKE_${lang}_COMPILER> <CMAKE_SHARED_LIBRARY_${lang}_FLAGS> <LANGUAGE_COMPILE_FLAGS> <LINK_FLAGS> <CMAKE_SHARED_LIBRARY_CREATE_${lang}_FLAGS> <SONAME_FLAG><TARGET_SONAME> -o <TARGET> <OBJECTS> -Wl,--start-group <LINK_LIBRARIES> -Wl,--end-group")
-  endforeach()
+if(DAGOR_UNITY_BUILD)
+  set(CMAKE_UNITY_BUILD ON)
+endif()
+if(NOT DAGOR_LTO STREQUAL "OFF")
+  include(CheckIPOSupported)
+  check_ipo_supported(RESULT _ipo OUTPUT _ipo_error LANGUAGES C CXX)
+  if(NOT _ipo)
+    message(FATAL_ERROR "DAGOR_LTO=${DAGOR_LTO}: the compiler has no link-time optimization: ${_ipo_error}")
+  endif()
+  set(CMAKE_INTERPROCEDURAL_OPTIMIZATION ON)
+  unset(_ipo)
+  unset(_ipo_error)
 endif()
 
-add_library(DagorBuildSettings INTERFACE)
-add_library(Dagor::BuildSettings ALIAS DagorBuildSettings)
-add_library(DagorStrict INTERFACE)
-add_library(Dagor::Strict ALIAS DagorStrict)
-add_library(DagorLax INTERFACE)
-add_library(Dagor::Lax ALIAS DagorLax)
-
 # conditions
-set(_always 1)
-# Objective-C(++) sources get the settings of C(++)
-set(_c_cxx "$<COMPILE_LANGUAGE:C,CXX,OBJC,OBJCXX>")
+set(_c_cxx "$<COMPILE_LANGUAGE:C,CXX,OBJC,OBJCXX>") # Objective-C(++) sources get the settings of C(++)
 set(_cxx "$<COMPILE_LANGUAGE:CXX,OBJCXX>")
 set(_dev "$<CONFIG:Dev>")
 set(_rel "$<CONFIG:Rel>")
 set(_dbg "$<CONFIG:Dbg>")
 set(_release "$<CONFIG:Rel,IRel>")
 set(_exe "$<STREQUAL:$<TARGET_PROPERTY:TYPE>,EXECUTABLE>")
-set(_linked "$<IN_LIST:$<TARGET_PROPERTY:TYPE>,EXECUTABLE;SHARED_LIBRARY;MODULE_LIBRARY>")
-function(_dagor_configs_cond out)
+# (no list in a generator expression here: the commands taking these would split it at its semicolons)
+set(_linked "$<OR:${_exe},$<STREQUAL:$<TARGET_PROPERTY:TYPE>,SHARED_LIBRARY>,$<STREQUAL:$<TARGET_PROPERTY:TYPE>,MODULE_LIBRARY>>")
+# _dagor_configs(<out> <config>...): the condition of a list of configurations (0 for none)
+function(_dagor_configs out)
   if(ARGN)
     list(JOIN ARGN "," joined)
     set(${out} "$<CONFIG:${joined}>" PARENT_SCOPE)
@@ -82,407 +66,322 @@ function(_dagor_configs_cond out)
     set(${out} 0 PARENT_SCOPE)
   endif()
 endfunction()
-_dagor_configs_cond(_exceptions ${DAGOR_EXCEPTIONS_CONFIGS})
-_dagor_configs_cond(_checked ${DAGOR_CHECKED_CONTAINERS_CONFIGS})
-_dagor_configs_cond(_stack_protection ${DAGOR_STACK_PROTECTION_CONFIGS})
+_dagor_configs(_checked ${DAGOR_CHECKED_CONTAINERS_CONFIGS})
+_dagor_configs(_stack_protection ${DAGOR_STACK_PROTECTION_CONFIGS})
 if(DAGOR_SANITIZE STREQUAL "address")
   set(_stack_protection 0)
 endif()
-# per-target overrides of the tree defaults: the DAGOR_EXCEPTIONS (ON, OFF, or SEH: also structured exceptions) and
-# DAGOR_RTTI (ON or OFF) target properties, set by the EXCEPTIONS / RTTI options of dagor_add_*; unset means the default
+_dagor_configs(_exceptions ${DAGOR_EXCEPTIONS_CONFIGS})
 set(_exc_prop "$<TARGET_PROPERTY:DAGOR_EXCEPTIONS>")
 set(_exceptions
   "$<IF:$<STREQUAL:${_exc_prop},>,${_exceptions},$<OR:$<STREQUAL:${_exc_prop},ON>,$<STREQUAL:${_exc_prop},SEH>>>")
-set(_no_exceptions "$<NOT:${_exceptions}>")
 if(DAGOR_CATCH_SEH)
   set(_seh "$<AND:${_exceptions},$<NOT:$<STREQUAL:${_exc_prop},ON>>>")
 else()
   set(_seh "$<STREQUAL:${_exc_prop},SEH>")
 endif()
+set(_rtti_default 0)
 if(DAGOR_RTTI)
   set(_rtti_default 1)
-else()
-  set(_rtti_default 0)
 endif()
 set(_rtti "$<IF:$<STREQUAL:$<TARGET_PROPERTY:DAGOR_RTTI>,>,${_rtti_default},$<STREQUAL:$<TARGET_PROPERTY:DAGOR_RTTI>,ON>>")
-set(_no_rtti "$<NOT:${_rtti}>")
 set(_cxx_exceptions "$<AND:${_cxx},${_exceptions}>")
-set(_cxx_no_exceptions "$<AND:${_cxx},${_no_exceptions}>")
-set(_cxx_no_rtti "$<AND:${_cxx},${_no_rtti}>")
+set(_cxx_no_exceptions "$<AND:${_cxx},$<NOT:${_exceptions}>>")
+set(_opt "$<AND:${_c_cxx},$<NOT:${_dbg}>>")
+set(_unopt "$<AND:${_c_cxx},${_dbg}>")
+set(_sp "$<AND:${_c_cxx},${_stack_protection}>")
+set(_no_sp "$<AND:${_c_cxx},$<NOT:${_stack_protection}>>")
 
-# _dagor_flags(<target> <kind> <condition> <value>...): adds the values, as one list under the condition, as
-# compile options (COMPILE), definitions (DEFINE), link options (LINK) or link libraries (LIBS) of the interface target
-function(_dagor_flags target kind cond)
-  set(values ${ARGN})
-  if(NOT values)
-    return()
-  endif()
-  if(cond STREQUAL "1")
-    set(item "${values}")
-  else()
-    set(item "$<${cond}:${values}>")
-  endif()
-  if(kind STREQUAL "COMPILE")
-    # recorded, not an interface option: every target adds them ahead of its own (_dagor_add_compile_sets), so that
-    # its options come after them, as in jam (CMake puts the interface options of linked targets after a target's own)
-    string(REPLACE ";" "$<SEMICOLON>" item "${item}")
-    set_property(GLOBAL APPEND PROPERTY DAGOR_COMPILE_SET_${target} "${item}")
-  elseif(kind STREQUAL "DEFINE")
-    # not for the assemblers: jam passed them only include dirs and their own options
-    target_compile_definitions(${target} INTERFACE "$<$<COMPILE_LANGUAGE:C,CXX,OBJC,OBJCXX,RC>:${item}>")
-  elseif(kind STREQUAL "LINK")
-    target_link_options(${target} INTERFACE "${item}")
-  elseif(kind STREQUAL "LIBS")
-    target_link_libraries(${target} INTERFACE "${item}")
-  else()
-    message(FATAL_ERROR "_dagor_flags: unknown kind ${kind}")
-  endif()
+# dagor_compile_options(<condition> <option>...), dagor_compile_definitions(<condition> <definition>...),
+# dagor_link_options(<condition> <option>...): tree settings under a condition (1: always). The definitions are not
+# passed to the assemblers, as in jam.
+function(dagor_compile_options cond)
+  foreach(value IN LISTS ARGN)
+    if(cond STREQUAL "1")
+      add_compile_options("${value}")
+    else()
+      add_compile_options("$<${cond}:${value}>")
+    endif()
+  endforeach()
 endfunction()
-macro(_dagor_settings kind cond)
-  _dagor_flags(DagorBuildSettings ${kind} "${cond}" ${ARGN})
-endmacro()
+function(dagor_compile_definitions cond)
+  foreach(value IN LISTS ARGN)
+    add_compile_definitions("$<$<AND:$<COMPILE_LANGUAGE:C,CXX,OBJC,OBJCXX,RC>,${cond}>:${value}>")
+  endforeach()
+endfunction()
+function(dagor_link_options cond)
+  foreach(value IN LISTS ARGN)
+    add_link_options("$<${cond}:${value}>")
+  endforeach()
+endfunction()
 
-# --- definitions -----------------------------------------------------------------------------------------------------
-_dagor_settings(DEFINE 1 "DAGOR_DBGLEVEL=$<IF:${_dbg},2,$<IF:${_dev},1,$<IF:${_rel},0,-1>>>")
-_dagor_settings(DEFINE "${_release}" NDEBUG)
-_dagor_settings(DEFINE "${_checked}" _DEBUG_TAB_ EASTL_DEBUG EASTL_DEBUGPARAMS_LEVEL=0 EASTL_NAME_ENABLED=0)
-_dagor_settings(DEFINE "${_cxx_exceptions}" DAGOR_EXCEPTIONS_ENABLED)
+# --- definitions ------------------------------------------------------------------------------------------------------
+dagor_compile_definitions(1 "DAGOR_DBGLEVEL=$<IF:${_dbg},2,$<IF:${_dev},1,$<IF:${_rel},0,-1>>>")
+dagor_compile_definitions("${_release}" NDEBUG)
+dagor_compile_definitions("${_checked}" _DEBUG_TAB_ EASTL_DEBUG EASTL_DEBUGPARAMS_LEVEL=0 EASTL_NAME_ENABLED=0)
+dagor_compile_definitions("${_cxx_exceptions}" DAGOR_EXCEPTIONS_ENABLED)
 if(DAGOR_KERNEL_LINKAGE STREQUAL "static")
-  _dagor_settings(DEFINE 1 _TARGET_STATIC_LIB)
+  dagor_compile_definitions(1 _TARGET_STATIC_LIB)
 endif()
 if(DAGOR_FORCE_LOGS)
-  _dagor_settings(DEFINE "${_release}" DAGOR_FORCE_LOGS)
+  dagor_compile_definitions("${_release}" DAGOR_FORCE_LOGS)
 endif()
 if(DAGOR_D3D_MULTI)
-  _dagor_settings(DEFINE 1 _TARGET_D3D_MULTI)
+  dagor_compile_definitions(1 _TARGET_D3D_MULTI)
 endif()
 if(NOT DAGOR_TIME_PROFILER)
-  _dagor_settings(DEFINE 1 TIME_PROFILER_ENABLED=0)
+  dagor_compile_definitions(1 TIME_PROFILER_ENABLED=0)
 endif()
-if(DAGOR_ARCH MATCHES "^(x86_64|e2k)$" AND NOT DAGOR_PLATFORM STREQUAL "macOS")
-  _dagor_settings(DEFINE 1 _TARGET_SIMD_SSE=${DAGOR_SSE})
-endif()
-
-if(DAGOR_PLATFORM STREQUAL "windows")
-  _dagor_settings(DEFINE 1 _TARGET_PC=1 _TARGET_PC_WIN=1 WIN64 _TARGET_64BIT WIN32_LEAN_AND_MEAN= _USE_MATH_DEFINES
-    NOMINMAX _ALLOW_KEYWORD_MACROS= DELAYIMP_INSECURE_WRITABLE_HOOKS)
-  _dagor_settings(DEFINE "${_release}" _SECURE_SCL=0)
-  _dagor_settings(DEFINE "${_cxx_no_exceptions}" _HAS_EXCEPTIONS=0)
-  if(DAGOR_ARCH STREQUAL "x86_64")
-    _dagor_settings(DEFINE 1 _TARGET_ARCH_X86_64)
-  else()
-    _dagor_settings(DEFINE 1 _TARGET_ARCH_ARM64 _TARGET_SIMD_NEON)
-  endif()
-elseif(DAGOR_PLATFORM STREQUAL "linux")
-  _dagor_settings(DEFINE 1 _TARGET_PC=3 _TARGET_PC_LINUX=3 _TARGET_64BIT _TARGET_ARCH_X86_64 __LINUX__=64
-    _POSIX_C_SOURCE=200809L _GNU_SOURCE __STDC_CONSTANT_MACROS)
-  if(DAGOR_CC STREQUAL "clang")
-    _dagor_settings(DEFINE 1 __vectorcall=)
-  endif()
-  if(DAGOR_ARCH STREQUAL "e2k")
-    _dagor_settings(DEFINE 1 _XM_NO_INTRINSICS_)
-  endif()
-  if(DAGOR_SANITIZE STREQUAL "thread" AND DAGOR_CC STREQUAL "gcc")
-    _dagor_settings(DEFINE 1 __SANITIZE_THREAD__) # gcc defines __SANITIZE_ADDRESS__ but not this one
-  endif()
-elseif(DAGOR_PLATFORM STREQUAL "macOS")
-  _dagor_settings(DEFINE 1 _TARGET_PC=2 _TARGET_PC_MACOSX=2 _TARGET_APPLE=1 _TARGET_64BIT __MACOSX__)
-  if(CMAKE_GENERATOR STREQUAL "Xcode")
-    # Xcode's default build settings add warnings of their own; the one clang does not enable anyway is turned off, so
-    # the project builds as it does with Ninja
-    set(CMAKE_XCODE_ATTRIBUTE_GCC_WARN_64_TO_32_BIT_CONVERSION NO)
-  endif()
-  _dagor_settings(DEFINE "${_dbg}" DAS_FUSION=0)
-  # a universal binary compiles each file for both archs, so the arch settings go to one -arch each
-  set(_x64 -D_TARGET_ARCH_X86_64 -D_TARGET_SIMD_SSE=${DAGOR_SSE} -msse4.1)
-  set(_a64 -D_TARGET_ARCH_ARM64 -D_TARGET_SIMD_NEON -DARM_NEON_GCC_COMPATIBILITY)
-  if(DAGOR_ARCH STREQUAL "universal")
-    list(TRANSFORM _x64 PREPEND "SHELL:-Xarch_x86_64 ")
-    list(TRANSFORM _a64 PREPEND "SHELL:-Xarch_arm64 ")
-    _dagor_settings(COMPILE "${_c_cxx}" ${_x64} ${_a64})
-  elseif(DAGOR_ARCH STREQUAL "x86_64")
-    _dagor_settings(COMPILE "${_c_cxx}" ${_x64})
-  else()
-    _dagor_settings(COMPILE "${_c_cxx}" ${_a64})
-  endif()
+if(DAGOR_ARCH MATCHES "^(x86_64|e2k)$" AND NOT APPLE)
+  dagor_compile_definitions(1 _TARGET_SIMD_SSE=${DAGOR_SSE})
 endif()
 
-# --- include dirs and the forced includes ---------------------------------------------------------------------------
+# --- include dirs and the forced includes -----------------------------------------------------------------------------
 # the base include dirs come before a target's own, as in jam: headers like daScript/das_config.h resolve to the
-# engine's (prog/1stPartyLibs/daScript) rather than to a library's include dir; dagor_add_* adds them with BEFORE
-set(DAGOR_BASE_INCLUDES
-  "${DAGOR_ENGINE_ROOT}/prog/dagorInclude"
-  "${DAGOR_ENGINE_ROOT}/prog/1stPartyLibs"
-  "${DAGOR_ENGINE_ROOT}/prog/3rdPartyLibs"
-  "$<${_cxx}:${DAGOR_ENGINE_ROOT}/prog/3rdPartyLibs/eastl/include>")
-# the headers every C++ compile starts with (also for the code generators that parse the sources)
-if(DAGOR_MSVC_LIKE)
+# engine's (prog/1stPartyLibs/daScript) rather than to a library's include dir
+include_directories(BEFORE
+  "${DAGOR_PROG_DIR}/dagorInclude"
+  "${DAGOR_PROG_DIR}/1stPartyLibs"
+  "${DAGOR_PROG_DIR}/3rdPartyLibs"
+  "$<${_cxx}:${DAGOR_PROG_DIR}/3rdPartyLibs/eastl/include>")
+# the headers every C++ compile starts with (also for the code generators that parse the sources); the compatibility
+# defines (__forceinline, ...) first: dag_memBase.h uses them
+if(MSVC)
   set(DAGOR_FORCED_INCLUDES memory/dag_memBase.h)
+  dagor_compile_options("${_cxx}" /FImemory/dag_memBase.h)
 else()
   set(DAGOR_FORCED_INCLUDES supp/dag_compatibility_defines_posix.h memory/dag_memBase.h)
-endif()
-if(DAGOR_MSVC_LIKE)
-  _dagor_settings(COMPILE "${_cxx}" /FImemory/dag_memBase.h)
-else()
-  # the compatibility defines (__forceinline, ...) first: dag_memBase.h uses them
-  _dagor_settings(COMPILE "${_c_cxx}" "SHELL:-include supp/dag_compatibility_defines_posix.h")
-  _dagor_settings(COMPILE "${_cxx}" "SHELL:-include memory/dag_memBase.h")
+  dagor_compile_options("${_c_cxx}" "SHELL:-include supp/dag_compatibility_defines_posix.h")
+  dagor_compile_options("${_cxx}" "SHELL:-include memory/dag_memBase.h")
 endif()
 
-# --- compiler flags --------------------------------------------------------------------------------------------------
-set(_opt_cond "$<AND:${_c_cxx},$<NOT:${_dbg}>>")
-set(_dbg_cond "$<AND:${_c_cxx},${_dbg}>")
-set(_sp_cond "$<AND:${_c_cxx},${_stack_protection}>")
-set(_no_sp_cond "$<AND:${_c_cxx},$<NOT:${_stack_protection}>>")
-
-if(DAGOR_MSVC_LIKE)
-  _dagor_settings(COMPILE "${_c_cxx}" /Zc:forScope /J /Zc:inline /Zc:wchar_t /FS /fp:${DAGOR_FP_MODEL})
-  _dagor_settings(COMPILE "${_dbg_cond}" /Od /RTC1)
-  _dagor_settings(COMPILE "${_no_sp_cond}" /GS-)
-  _dagor_settings(COMPILE "$<AND:${_cxx_exceptions},${_seh}>" /EHa)
-  _dagor_settings(COMPILE "$<AND:${_cxx_exceptions},$<NOT:${_seh}>>" /EHsc)
-  _dagor_settings(COMPILE "${_cxx_no_rtti}" /GR-)
+# --- compiler flags ---------------------------------------------------------------------------------------------------
+if(MSVC)
+  dagor_compile_options("${_c_cxx}" /Zc:forScope /J /Zc:inline /Zc:wchar_t /FS /fp:${DAGOR_FP_MODEL})
+  dagor_compile_options("${_unopt}" /Od /RTC1)
+  dagor_compile_options("${_no_sp}" /GS-)
+  dagor_compile_options("$<AND:${_cxx_exceptions},${_seh}>" /EHa)
+  dagor_compile_options("$<AND:${_cxx_exceptions},$<NOT:${_seh}>>" /EHsc)
+  dagor_compile_options("$<AND:${_cxx},$<NOT:${_rtti}>>" /GR-)
 endif()
 
-if(DAGOR_CC STREQUAL "clang-cl")
-  _dagor_settings(COMPILE "${_c_cxx}" /Zc:dllexportInlines- "SHELL:-Xclang -mrecip=none" -fms-extensions
+if(MSVC AND CMAKE_CXX_COMPILER_ID STREQUAL "Clang") # clang-cl
+  dagor_compile_options("${_c_cxx}" /Zc:dllexportInlines- "SHELL:-Xclang -mrecip=none" -fms-extensions
     -fms-compatibility -fdiagnostics-absolute-paths -Wno-c++11-narrowing -Wno-trigraphs -Wno-argument-outside-range
     -Wno-nonportable-include-path -Wno-ignored-attributes -Wno-invalid-offsetof -Wno-multichar -Wno-unused-function
     -Wno-inconsistent-missing-override -Wno-invalid-token-paste -Wno-ignored-pragma-intrinsic -Wno-pragma-pack
     -Wno-microsoft -Wno-int-to-void-pointer-cast -Wno-expansion-to-defined -Wno-deprecated-declarations
     -Wno-constant-conversion -Wno-unused-local-typedef -Wno-ignored-pragmas -Wno-switch -Wno-deprecated-builtins
     -Wno-nontrivial-memcall -Werror=invalid-noreturn -Werror=return-type)
-  _dagor_settings(COMPILE "${_opt_cond}" /clang:-O3 /Gy /Gw)
+  dagor_compile_options("${_opt}" /clang:-O3 /Gy /Gw)
   if(DAGOR_FP_MODEL STREQUAL "fast")
-    _dagor_settings(COMPILE "${_c_cxx}" -Wno-nan-infinity-disabled)
+    dagor_compile_options("${_c_cxx}" -Wno-nan-infinity-disabled)
   endif()
   if(DAGOR_ARCH STREQUAL "arm64")
-    _dagor_settings(COMPILE "${_c_cxx}" -Wno-pointer-to-int-cast)
+    dagor_compile_options("${_c_cxx}" -Wno-pointer-to-int-cast)
   elseif(DAGOR_SSE EQUAL 4)
-    _dagor_settings(COMPILE "${_c_cxx}" -msse4.1 -mpopcnt -mcx16)
+    dagor_compile_options("${_c_cxx}" -msse4.1 -mpopcnt -mcx16)
   else()
-    _dagor_settings(COMPILE "${_c_cxx}" -msse2)
+    dagor_compile_options("${_c_cxx}" -msse2)
   endif()
   if(DAGOR_STRICT_ALIASING)
-    _dagor_settings(COMPILE "${_c_cxx}" /clang:-fstrict-aliasing)
+    dagor_compile_options("${_c_cxx}" /clang:-fstrict-aliasing)
   endif()
-elseif(DAGOR_CC STREQUAL "msvc")
-  # /X: only the toolchain's include dirs, never those of an INCLUDE environment variable (except under MSBuild,
-  # which passes the toolset's and SDK's dirs that way)
+elseif(MSVC) # cl
+  # /X: only the toolchain's include dirs, never those of an INCLUDE environment variable (except under MSBuild, which
+  # passes the toolset's and SDK's dirs that way)
   if(NOT CMAKE_GENERATOR MATCHES "^Visual Studio")
-    _dagor_settings(COMPILE "${_c_cxx}" /X)
+    dagor_compile_options("${_c_cxx}" /X)
   endif()
-  _dagor_settings(COMPILE "${_c_cxx}" /bigobj)
-  _dagor_settings(COMPILE "${_opt_cond}" /Ox /GF /Gy /Gw /Oi /Ot /Oy-)
+  dagor_compile_options("${_c_cxx}" /bigobj)
+  dagor_compile_options("${_opt}" /Ox /GF /Gy /Gw /Oi /Ot /Oy-)
   if(DAGOR_ARCH STREQUAL "arm64")
-    _dagor_settings(COMPILE "${_c_cxx}" /wd4746)
+    dagor_compile_options("${_c_cxx}" /wd4746)
   endif()
-else()
-  # gcc, clang and lcc on Linux and Apple
-  _dagor_settings(COMPILE "${_c_cxx}" -pipe -ffunction-sections -fdata-sections -Wno-trigraphs -Wno-multichar -Wformat)
-  _dagor_settings(COMPILE "${_opt_cond}" -O3)
-  _dagor_settings(COMPILE "${_sp_cond}" -fstack-protector)
-  _dagor_settings(COMPILE "${_no_sp_cond}" -fno-stack-protector)
-  _dagor_settings(COMPILE "${_cxx}" -Wno-invalid-offsetof)
-  _dagor_settings(COMPILE "${_cxx_exceptions}" -fexceptions)
-  _dagor_settings(COMPILE "${_cxx_no_exceptions}" -fno-exceptions)
+else() # gcc, clang and lcc
+  dagor_compile_options("${_c_cxx}" -pipe -ffunction-sections -fdata-sections -Wno-trigraphs -Wno-multichar -Wformat)
+  dagor_compile_options("${_opt}" -O3)
+  dagor_compile_options("${_sp}" -fstack-protector)
+  dagor_compile_options("${_no_sp}" -fno-stack-protector)
+  dagor_compile_options("${_cxx}" -Wno-invalid-offsetof)
+  dagor_compile_options("${_cxx_exceptions}" -fexceptions)
+  dagor_compile_options("${_cxx_no_exceptions}" -fno-exceptions)
   # C++ only: Objective-C++ keeps the compiler's default RTTI, as jam compiled it (the Metal driver's dynamic_casts)
-  _dagor_settings(COMPILE "$<AND:$<COMPILE_LANGUAGE:CXX>,${_rtti}>" -frtti)
-  _dagor_settings(COMPILE "$<AND:$<COMPILE_LANGUAGE:CXX>,${_no_rtti}>" -fno-rtti)
+  dagor_compile_options("$<AND:$<COMPILE_LANGUAGE:CXX>,${_rtti}>" -frtti)
+  dagor_compile_options("$<AND:$<COMPILE_LANGUAGE:CXX>,$<NOT:${_rtti}>>" -fno-rtti)
   if(DAGOR_FP_MODEL STREQUAL "fast")
-    _dagor_settings(COMPILE "${_c_cxx}" -ffast-math -ffinite-math-only)
-    if(DAGOR_CC STREQUAL "clang")
-      _dagor_settings(COMPILE "${_c_cxx}" -mrecip=none -Wno-nan-infinity-disabled)
+    dagor_compile_options("${_c_cxx}" -ffast-math -ffinite-math-only)
+    if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+      dagor_compile_options("${_c_cxx}" -mrecip=none -Wno-nan-infinity-disabled)
     elseif(DAGOR_ARCH STREQUAL "x86_64")
-      _dagor_settings(COMPILE "${_c_cxx}" -mno-recip)
+      dagor_compile_options("${_c_cxx}" -mno-recip)
     endif()
   endif()
   if(NOT DAGOR_STRICT_ALIASING)
-    _dagor_settings(COMPILE "${_c_cxx}" -fno-strict-aliasing)
+    dagor_compile_options("${_c_cxx}" -fno-strict-aliasing)
   endif()
-
   if(DAGOR_MARCH)
-    _dagor_settings(COMPILE "${_c_cxx}" -march=${DAGOR_MARCH})
+    dagor_compile_options("${_c_cxx}" -march=${DAGOR_MARCH})
   endif()
-  if(DAGOR_PLATFORM STREQUAL "linux")
-    _dagor_settings(COMPILE "${_c_cxx}" -msse${DAGOR_SSE} -fno-omit-frame-pointer -Wuninitialized)
-    _dagor_settings(COMPILE "${_cxx}" -fvisibility-inlines-hidden)
-    if(DAGOR_CC STREQUAL "clang")
-      _dagor_settings(COMPILE "${_opt_cond}" -g)
-      _dagor_settings(COMPILE "${_dbg_cond}" -ggdb3)
-    else()
-      _dagor_settings(COMPILE "${_c_cxx}" -g)
-    endif()
+  if(LINUX OR ANDROID)
     if(DAGOR_ARCH STREQUAL "x86_64")
-      _dagor_settings(COMPILE "${_c_cxx}" -minline-all-stringops)
+      dagor_compile_options("${_c_cxx}" -msse${DAGOR_SSE} -minline-all-stringops)
+    endif()
+    dagor_compile_options("${_c_cxx}" -fno-omit-frame-pointer -Wuninitialized)
+    dagor_compile_options("${_cxx}" -fvisibility-inlines-hidden)
+    if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+      dagor_compile_options("${_opt}" -g)
+      dagor_compile_options("${_unopt}" -ggdb3)
+    else()
+      dagor_compile_options("${_c_cxx}" -g)
     endif()
   else()
-    _dagor_settings(COMPILE "${_c_cxx}" -g)
+    dagor_compile_options("${_c_cxx}" -g)
   endif()
 
-  if(DAGOR_CC STREQUAL "gcc")
-    _dagor_settings(COMPILE "${_c_cxx}" -Wno-format-extra-args -Wno-ignored-attributes -Wno-deprecated
+  if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    dagor_compile_options("${_c_cxx}" -Wno-format-extra-args -Wno-ignored-attributes -Wno-deprecated
       -Wno-format-truncation -Wno-nonnull -Werror=uninitialized -Wno-deprecated-declarations -Wno-maybe-uninitialized
       -Wno-stringop-overflow -Wno-stringop-overread)
-  elseif(DAGOR_CC STREQUAL "lcc")
-    _dagor_settings(COMPILE "${_c_cxx}" -w2620 -w2189 -w826 -Wno-unused-parameter)
-  elseif(DAGOR_PLATFORM STREQUAL "linux")
-    _dagor_settings(COMPILE "${_c_cxx}" -Wno-unused-value -Wabsolute-value -Wno-inline-new-delete
-      -Wno-unknown-warning-option -Wno-deprecated-register -Wno-address-of-packed-member -Wno-expansion-to-defined
-      -Wno-logical-not-parentheses -Wno-c++1z-compat -Wno-undefined-var-template -Wno-inconsistent-missing-override
-      -Wno-deprecated-builtins -Wno-nontrivial-memcall -fdiagnostics-absolute-paths)
-  else()
-    _dagor_settings(COMPILE "$<COMPILE_LANGUAGE:OBJC,OBJCXX>" -fno-objc-exceptions)
-    _dagor_settings(COMPILE "$<COMPILE_LANGUAGE:OBJCXX>" -Wno-c99-designator -Wno-deprecated-enum-enum-conversion)
+  elseif(CMAKE_CXX_COMPILER_ID STREQUAL "LCC")
+    dagor_compile_options("${_c_cxx}" -w2620 -w2189 -w826 -Wno-unused-parameter)
+  elseif(APPLE)
+    dagor_compile_options("$<COMPILE_LANGUAGE:OBJC,OBJCXX>" -fno-objc-exceptions)
+    dagor_compile_options("$<COMPILE_LANGUAGE:OBJCXX>" -Wno-c99-designator -Wno-deprecated-enum-enum-conversion)
     # Apple clang: the Apple builds have always been warning-free
-    _dagor_settings(COMPILE "${_c_cxx}" -Werror -Wno-unused-value -Wno-uninitialized -Wno-inline-new-delete
+    set(CMAKE_COMPILE_WARNING_AS_ERROR ON)
+    dagor_compile_options("${_c_cxx}" -Wno-unused-value -Wno-uninitialized -Wno-inline-new-delete
       -Wno-unknown-warning-option -Wno-deprecated-register -Wno-nonportable-include-path -Wno-null-dereference
       -Wno-undefined-var-template -Wno-constant-conversion -Wno-inconsistent-missing-override -Wno-deprecated-builtins
       -Wno-unused-command-line-argument -Wno-nontrivial-memcall)
+  else() # clang on Linux and Android
+    dagor_compile_options("${_c_cxx}" -Wno-unused-value -Wabsolute-value -Wno-inline-new-delete
+      -Wno-unknown-warning-option -Wno-deprecated-register -Wno-address-of-packed-member -Wno-expansion-to-defined
+      -Wno-logical-not-parentheses -Wno-c++1z-compat -Wno-undefined-var-template -Wno-inconsistent-missing-override
+      -Wno-deprecated-builtins -Wno-nontrivial-memcall -fdiagnostics-absolute-paths)
   endif()
 endif()
 
-# --- link flags ------------------------------------------------------------------------------------------------------
-if(DAGOR_MSVC_LIKE)
-  _dagor_settings(LINK "${_linked}" /DEBUG /INCREMENTAL:NO /NODEFAULTLIB:LIBMMT /NODEFAULTLIB:LIBIRC /NODEFAULTLIB:LIBC
+# --- the platform: definitions, system libraries, link settings (platform/<CMAKE_SYSTEM_NAME>.cmake) ------------------
+include("${DAGOR_PLATFORM_FILE}")
+
+# --- link settings of the compilers -----------------------------------------------------------------------------------
+if(MSVC)
+  # the static CRT (CMAKE_MSVC_RUNTIME_LIBRARY) and never the DLL one a third-party object might ask for
+  dagor_link_options("${_linked}" /DEBUG /INCREMENTAL:NO /NODEFAULTLIB:LIBMMT /NODEFAULTLIB:LIBIRC /NODEFAULTLIB:LIBC
     /NODEFAULTLIB:MSVCRT /NODEFAULTLIB:MSVCPRT /NODEFAULTLIB:UCRT /NODEFAULTLIB:VCRUNTIME)
-  _dagor_settings(LINK "$<AND:${_linked},$<NOT:${_dbg}>>" /OPT:REF /NODEFAULTLIB:LIBCMTD /NODEFAULTLIB:LIBCPMTD)
+  dagor_link_options("$<AND:${_linked},$<NOT:${_dbg}>>" /OPT:REF /NODEFAULTLIB:LIBCMTD /NODEFAULTLIB:LIBCPMTD)
+  dagor_link_options("$<AND:${_linked},${_dbg}>" /NODEFAULTLIB:LIBCMT /NODEFAULTLIB:LIBCPMT)
   # /OPT:REF also folds identical code and data into one address, which breaks code comparing the addresses of
   # distinct functions or objects (daFrameGraph's blob projectors and type tags): lld-link's safe ICF keeps those, by
-  # clang's address-significance tables; link.exe cannot tell them apart and does not fold at all
-  if(DAGOR_CC STREQUAL "clang-cl" AND NOT DAGOR_SANITIZE STREQUAL "address") # (ASan's instrumentation: no folding)
-    _dagor_settings(LINK "$<AND:${_linked},$<NOT:${_dbg}>>" /OPT:SAFEICF)
+  # clang's address-significance tables; link.exe cannot tell them apart and does not fold at all. ASan: no folding.
+  if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND DAGOR_SANITIZE STREQUAL "none")
+    dagor_link_options("$<AND:${_linked},$<NOT:${_dbg}>>" /OPT:SAFEICF)
   else()
-    _dagor_settings(LINK "$<AND:${_linked},$<NOT:${_dbg}>>" /OPT:NOICF)
+    dagor_link_options("$<AND:${_linked},$<NOT:${_dbg}>>" /OPT:NOICF)
   endif()
-  _dagor_settings(LINK "$<AND:${_linked},${_dbg}>" /NODEFAULTLIB:LIBCMT /NODEFAULTLIB:LIBCPMT)
-  _dagor_settings(LINK "${_exe}" /FILEALIGN:512)
-  _dagor_settings(LIBS "${_linked}" kernel32 user32 gdi32 ole32 winmm dbghelp)
-  _dagor_settings(LIBS "$<AND:${_linked},$<NOT:${_dbg}>>" libcmt libcpmt libucrt libvcruntime)
-  _dagor_settings(LIBS "$<AND:${_linked},${_dbg}>" libcmtd libcpmtd libucrtd libvcruntimed)
-  if(DAGOR_CC STREQUAL "clang-cl" AND DAGOR_ARCH STREQUAL "x86_64")
-    _dagor_settings(LIBS "${_linked}" clang_rt.builtins-x86_64)
-  endif()
-elseif(DAGOR_PLATFORM STREQUAL "linux")
-  _dagor_settings(LINK "${_linked}" -pipe -rdynamic LINKER:--gc-sections LINKER:-z,noexecstack LINKER:-z,separate-code)
-  _dagor_settings(LIBS "${_linked}" rt pthread dl m)
-elseif(DAGOR_PLATFORM STREQUAL "macOS")
-  _dagor_settings(LINK "${_linked}" -ObjC LINKER:-headerpad_max_install_names)
-  foreach(framework Foundation QuartzCore CoreLocation Cocoa IOKit CoreFoundation Security Carbon SystemConfiguration Metal)
-    _dagor_settings(LIBS "${_linked}" "-Wl,-framework,${framework}") # programs and shared libraries (daKernel)
-  endforeach()
+  dagor_link_options("${_exe}" /FILEALIGN:512)
 endif()
 
-# --- sanitizers, coverage, LTO ---------------------------------------------------------------------------------------
+# --- sanitizers and coverage ------------------------------------------------------------------------------------------
 if(NOT DAGOR_SANITIZE STREQUAL "none")
-  if(DAGOR_CC STREQUAL "msvc")
+  if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     if(NOT DAGOR_SANITIZE STREQUAL "address")
       message(FATAL_ERROR "MSVC supports only DAGOR_SANITIZE=address")
     endif()
-    _dagor_settings(COMPILE "${_c_cxx}" /fsanitize=address)
+    dagor_compile_options("${_c_cxx}" /fsanitize=address)
   else()
-    set(san -fsanitize=${DAGOR_SANITIZE})
+    set(_san -fsanitize=${DAGOR_SANITIZE})
     if(DAGOR_SANITIZE STREQUAL "address")
-      list(APPEND san -fsanitize-address-use-after-scope -fsanitize-address-use-after-return=always)
+      list(APPEND _san -fsanitize-address-use-after-scope -fsanitize-address-use-after-return=always)
     elseif(DAGOR_SANITIZE STREQUAL "undefined")
-      list(APPEND san -fsanitize-ignorelist=${DAGOR_ENGINE_ROOT}/prog/ubsan.ignore)
+      list(APPEND _san -fsanitize-ignorelist=${DAGOR_PROG_DIR}/ubsan.ignore)
     endif()
-    _dagor_settings(COMPILE "${_c_cxx}" ${san})
-    if(DAGOR_CC STREQUAL "clang-cl")
+    dagor_compile_options("${_c_cxx}" ${_san})
+    if(MSVC) # clang-cl
       if(NOT DAGOR_SANITIZE STREQUAL "address" OR NOT DAGOR_ARCH STREQUAL "x86_64")
         message(FATAL_ERROR "clang-cl builds support only DAGOR_SANITIZE=address on x86_64")
       endif()
       # lld-link has no /INFERASANLIBS: the runtime (clang_rt.asan_dynamic-x86_64.dll at run time) is linked explicitly
-      _dagor_settings(LIBS "${_linked}" clang_rt.asan_dynamic-x86_64)
-      _dagor_settings(LINK "${_linked}" /WHOLEARCHIVE:clang_rt.asan_static_runtime_thunk-x86_64.lib)
+      link_libraries("$<${_linked}:System::clang_rt.asan_dynamic-x86_64>")
+      dagor_link_options("${_linked}" /WHOLEARCHIVE:clang_rt.asan_static_runtime_thunk-x86_64.lib)
     else()
-      _dagor_settings(LINK "${_linked}" -fsanitize=${DAGOR_SANITIZE})
+      dagor_link_options("${_linked}" -fsanitize=${DAGOR_SANITIZE})
     endif()
+    unset(_san)
   endif()
-  if(DAGOR_MSVC_LIKE)
-    _dagor_settings(LINK "${_linked}" /OPT:NOICF) # string-literal folding trips the asan ODR checks
+  if(MSVC)
+    dagor_link_options("${_linked}" /OPT:NOICF) # string-literal folding trips the asan ODR checks
   endif()
 endif()
 
 if(DAGOR_COVERAGE)
-  _dagor_settings(COMPILE "${_c_cxx}" -fprofile-instr-generate -fcoverage-mapping)
-  if(DAGOR_MSVC_LIKE)
-    _dagor_settings(LIBS "${_linked}" clang_rt.profile-x86_64)
+  dagor_compile_options("${_c_cxx}" -fprofile-instr-generate -fcoverage-mapping)
+  if(MSVC)
+    link_libraries("$<${_linked}:System::clang_rt.profile-x86_64>")
   else()
-    _dagor_settings(LINK "${_linked}" -fprofile-instr-generate)
+    dagor_link_options("${_linked}" -fprofile-instr-generate)
   endif()
 endif()
 
-if(NOT DAGOR_LTO STREQUAL "OFF")
-  if(DAGOR_CC STREQUAL "msvc")
-    _dagor_settings(COMPILE "${_c_cxx}" /GL)
-    _dagor_settings(LINK "${_linked}" /LTCG)
-    string(APPEND CMAKE_STATIC_LINKER_FLAGS " /LTCG")
-  elseif(DAGOR_CC STREQUAL "gcc" OR DAGOR_CC STREQUAL "lcc")
-    _dagor_settings(COMPILE "${_c_cxx}" -flto=auto)
-    _dagor_settings(LINK "${_linked}" -flto=auto)
-  else()
-    _dagor_settings(COMPILE "${_c_cxx}" -flto=${DAGOR_LTO})
-    if(DAGOR_LTO_DEVIRT)
-      _dagor_settings(COMPILE "${_cxx}" -fwhole-program-vtables)
+# link-time optimization (CMAKE_INTERPROCEDURAL_OPTIMIZATION above): clang's ThinLTO and whole-program devirtualization
+if(NOT DAGOR_LTO STREQUAL "OFF" AND CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  if(DAGOR_LTO STREQUAL "thin")
+    dagor_compile_options("${_c_cxx}" -flto=thin)
+    if(NOT MSVC)
+      dagor_link_options("${_linked}" -flto=thin)
     endif()
-    if(NOT DAGOR_MSVC_LIKE)
-      _dagor_settings(LINK "${_linked}" -flto=${DAGOR_LTO})
-      if(DAGOR_LTO_DEVIRT)
-        _dagor_settings(LINK "${_linked}" -fwhole-program-vtables)
-      endif()
+  endif()
+  if(DAGOR_LTO_DEVIRT)
+    dagor_compile_options("${_cxx}" -fwhole-program-vtables)
+    if(NOT MSVC)
+      dagor_link_options("${_linked}" -fwhole-program-vtables)
     endif()
   endif()
 endif()
 
-# --- warning sets: Dagor::Strict for first-party code, Dagor::Lax for third-party -------------------------------------
-if(DAGOR_CC STREQUAL "clang-cl")
-  _dagor_flags(DagorStrict COMPILE "${_cxx}" -Wunused-parameter -Wunused-variable -Wunused-lambda-capture
-    -Wrange-loop-construct -Wpessimizing-move -Wredundant-move -Wself-move -Werror=unused-parameter
-    -Werror=unused-variable -Werror=unused-lambda-capture -Werror=range-loop-construct -Werror=pessimizing-move
-    -Werror=redundant-move -Werror=self-move /permissive-)
-  # the stack frame limit (the target's DAGOR_FRAME_LIMIT, dagor_add_*'s FRAME_LIMIT; 32 KiB by default) of the shipped
-  # configurations; sanitizer redzones inflate frames, so their size says nothing about the shipped binary
+# --- warning sets: DAGOR_STRICT_OPTIONS for first-party code, DAGOR_LAX_OPTIONS for third-party ------------------------
+set(DAGOR_STRICT_OPTIONS)
+set(DAGOR_LAX_OPTIONS)
+if(MSVC AND CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+  foreach(_w unused-parameter unused-variable unused-lambda-capture range-loop-construct pessimizing-move redundant-move
+             self-move)
+    list(APPEND DAGOR_STRICT_OPTIONS "$<${_cxx}:-W${_w}>" "$<${_cxx}:-Werror=${_w}>")
+  endforeach()
+  list(APPEND DAGOR_STRICT_OPTIONS "$<${_cxx}:/permissive->")
+  # the stack frame limit of the shipped configurations; sanitizer redzones inflate frames, so their size says nothing
+  # about the shipped binary
   if(DAGOR_SANITIZE STREQUAL "none")
-    set(limit "$<IF:$<BOOL:$<TARGET_PROPERTY:DAGOR_FRAME_LIMIT>>,$<TARGET_PROPERTY:DAGOR_FRAME_LIMIT>,32768>")
-    _dagor_flags(DagorStrict COMPILE "$<AND:${_cxx},$<NOT:${_dbg}>>" "/clang:-Wframe-larger-than=${limit}"
-      -Werror=frame-larger-than)
-    unset(limit)
+    set(_limit "$<IF:$<BOOL:$<TARGET_PROPERTY:DAGOR_FRAME_LIMIT>>,$<TARGET_PROPERTY:DAGOR_FRAME_LIMIT>,32768>")
+    list(APPEND DAGOR_STRICT_OPTIONS "$<$<AND:${_cxx},$<NOT:${_dbg}>>:/clang:-Wframe-larger-than=${_limit}>"
+      "$<$<AND:${_cxx},$<NOT:${_dbg}>>:-Werror=frame-larger-than>")
+    unset(_limit)
   endif()
-elseif(DAGOR_CC STREQUAL "msvc")
-  set(wd 4514 4061 4820 4668 4619 4365 4127 4302 4242 4244 4265 4101 4201 4625 4626 4800 4018 4710 4245 4291 4389
+elseif(MSVC)
+  set(_wd 4514 4061 4820 4668 4619 4365 4127 4302 4242 4244 4265 4101 4201 4625 4626 4800 4018 4710 4245 4291 4389
     4200 4255 4711 4062 4355 4640 4305 4324 4511 4512 4738 4996 4005 4740 4702 4826 4503 4748 4987 4574 4554 4471
     4350 4370 4371 4316 4388 4091 5026 5027 4774 4312 4334 5220 5219 4464 4463 4589 4595 4435 4319 4311 4267 4477
     4777 4548 5039 5045 4623 5038 4768 4456 5052 5204 4577 4643 4866 4868 5245 5246 5264)
-  list(TRANSFORM wd PREPEND /wd)
-  _dagor_flags(DagorStrict COMPILE "${_c_cxx}" -Wall -WX ${wd} /permissive-)
-  set(wd 4244 4101 4800 4018 4291 4200 4355 4305 4996 4005 4740 4748 4324 4503 4574 4554 4316 4388 4091 5026 5027
+  list(TRANSFORM _wd PREPEND /wd)
+  list(APPEND DAGOR_STRICT_OPTIONS -Wall ${_wd} /permissive-)
+  set(_wd 4244 4101 4800 4018 4291 4200 4355 4305 4996 4005 4740 4748 4324 4503 4574 4554 4316 4388 4091 5026 5027
     4334 4595 4838 4312 4302 4311 4319 4477 5039 5045 4623 5038 4768 5204 4577 4267 4643 4723 4866)
-  list(TRANSFORM wd PREPEND /wd)
-  _dagor_flags(DagorLax COMPILE "${_c_cxx}" -W3 ${wd})
-elseif(DAGOR_CC STREQUAL "gcc" OR DAGOR_CC STREQUAL "lcc")
-  _dagor_flags(DagorStrict COMPILE "${_cxx}" -Wunused-parameter)
-elseif(DAGOR_PLATFORM STREQUAL "linux")
-  _dagor_flags(DagorStrict COMPILE "${_cxx}" -Wunused-parameter -Wunused-lambda-capture -Wrange-loop-construct
-    -Werror=unused-lambda-capture -Werror=range-loop-construct)
-else()
-  _dagor_flags(DagorStrict COMPILE "${_cxx}" -Wunused-lambda-capture -Wrange-loop-construct
-    -Werror=unused-lambda-capture -Werror=range-loop-construct)
-endif()
-
-unset(san)
-unset(wd)
-
-# _dagor_add_compile_sets(<target> <set>...): the compile options of the sets (DagorBuildSettings, DagorStrict,
-# DagorLax), added to the target before its own
-function(_dagor_add_compile_sets target)
-  foreach(set IN LISTS ARGN)
-    get_property(options GLOBAL PROPERTY DAGOR_COMPILE_SET_${set})
-    if(options)
-      target_compile_options(${target} PRIVATE ${options})
-    endif()
+  list(TRANSFORM _wd PREPEND /wd)
+  list(APPEND DAGOR_LAX_OPTIONS -W3 ${_wd})
+  list(TRANSFORM DAGOR_STRICT_OPTIONS REPLACE "^(.*)$" "$<${_c_cxx}:\\1>")
+  list(TRANSFORM DAGOR_LAX_OPTIONS REPLACE "^(.*)$" "$<${_c_cxx}:\\1>")
+  unset(_wd)
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "^(GNU|LCC)$")
+  list(APPEND DAGOR_STRICT_OPTIONS "$<${_cxx}:-Wunused-parameter>")
+else() # clang
+  foreach(_w unused-lambda-capture range-loop-construct)
+    list(APPEND DAGOR_STRICT_OPTIONS "$<${_cxx}:-W${_w}>" "$<${_cxx}:-Werror=${_w}>")
   endforeach()
-endfunction()
+  if(NOT APPLE)
+    list(APPEND DAGOR_STRICT_OPTIONS "$<${_cxx}:-Wunused-parameter>")
+  endif()
+endif()
+unset(_w)
 
 # dagor_deterministic_fp(<options-var> [KEEP_TRAPPING_MATH]): appends to <options-var> the options that give floating
 # point the same results with every compiler and platform, for the code the network or the content depend on
@@ -491,19 +390,19 @@ endfunction()
 # (NEON's vfmaq ignores contraction).
 function(dagor_deterministic_fp var)
   cmake_parse_arguments(PARSE_ARGV 1 arg "KEEP_TRAPPING_MATH" "" "")
-  if(NOT DAGOR_CC MATCHES "^(clang|clang-cl|gcc)$")
+  if(NOT CMAKE_CXX_COMPILER_ID MATCHES "^(Clang|AppleClang|GNU)$")
     return()
   endif()
   set(x -)
-  if(DAGOR_CC STREQUAL "clang-cl")
+  if(MSVC)
     set(x /clang:-)
   endif()
   set(options ${${var}})
-  if(DAGOR_CC MATCHES "^(clang|clang-cl)$")
+  if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     list(APPEND options -Wno-overriding-option) # -fno-trapping-math after -fno-unsafe-math-optimizations
-  endif()
-  if(DAGOR_PLATFORM MATCHES "^(iOS|linux|macOS)$")
-    list(APPEND options -Wno-overriding-t-option) # the same, for older clang
+    if(NOT WIN32)
+      list(APPEND options -Wno-overriding-t-option) # the same, for older clang
+    endif()
   endif()
   list(APPEND options ${x}fno-unsafe-math-optimizations)
   if(NOT arg_KEEP_TRAPPING_MATH)
@@ -515,3 +414,9 @@ function(dagor_deterministic_fp var)
   endif()
   set(${var} "${options}" PARENT_SCOPE)
 endfunction()
+
+foreach(_var c_cxx cxx dev rel dbg release exe linked checked stack_protection exceptions exc_prop seh rtti_default rtti
+             cxx_exceptions cxx_no_exceptions opt unopt sp no_sp cfg)
+  unset(_${_var})
+endforeach()
+unset(_var)

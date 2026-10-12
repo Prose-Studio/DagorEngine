@@ -49,18 +49,17 @@ set(sources
   jmemdagor.c
 )
 set(defines NO_GETENV)
-if(DAGOR_CC MATCHES "^(clang|clang\-cl)$")
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   list(APPEND options -Wno-shift-negative-value)
 endif()
-if(DAGOR_CC MATCHES "^(clang|clang\-cl|gcc)$")
+if(CMAKE_CXX_COMPILER_ID MATCHES "^(Clang|AppleClang|GNU)$")
   list(APPEND options -Wno-unused-parameter)
 endif()
-if(DAGOR_PLATFORM STREQUAL "macOS")
+if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
   list(APPEND options -Wno-deprecated-declarations -Wno-shift-negative-value)
 endif()
 
-dagor_add_library(SOURCES ${sources}
-  PRIVATE_INCLUDES ${includes}
-  PRIVATE_DEFINES ${defines}
-  COMPILE_OPTIONS ${options}
-)
+dagor_add_library(3rdPartyLibs.image.jpeg-6b LAX ${sources})
+target_include_directories(3rdPartyLibs.image.jpeg-6b PRIVATE ${includes})
+target_compile_definitions(3rdPartyLibs.image.jpeg-6b PRIVATE ${defines})
+target_compile_options(3rdPartyLibs.image.jpeg-6b PRIVATE ${options})

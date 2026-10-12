@@ -1,4 +1,3 @@
-# Ported from prog/gameLibs/gamePhys/common/jamfile (jam2cmake/skeleton.py)
 set(includes ${DAGOR_PROG_DIR}/gameLibs/publicInclude)
 set(sources
   loc.cpp
@@ -9,8 +8,9 @@ set(sources
   chainIKSolver.cpp
   constraintChainIKSolver.cpp
 )
-if(DAGOR_CC MATCHES "^(clang|clang\-cl)$" AND DAGOR_PLATFORM STREQUAL "linux" AND DAGOR_ARCH STREQUAL "x86_64")
-  list(APPEND source_options chainIKSolver.cpp -mno-avx2)
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND LINUX AND DAGOR_ARCH STREQUAL "x86_64")
+  set_property(SOURCE chainIKSolver.cpp APPEND PROPERTY COMPILE_OPTIONS -mno-avx2)
 endif()
 
-dagor_add_library(STRICT SOURCES ${sources} PRIVATE_INCLUDES ${includes} SOURCE_OPTIONS ${source_options})
+dagor_add_library(gameLibs.gamePhys.common ${sources})
+target_include_directories(gameLibs.gamePhys.common PRIVATE ${includes})

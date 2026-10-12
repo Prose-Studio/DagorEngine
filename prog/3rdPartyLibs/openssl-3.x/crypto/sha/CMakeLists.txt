@@ -10,15 +10,13 @@ else()
   list(APPEND sources ${OPENSSL_DIR}/crypto/mem_clr.c ${OPENSSL_DIR}/crypto/sha/keccak1600.c)
 endif()
 set(libs)
-if(DAGOR_PLATFORM STREQUAL "windows")
-  set(libs Ws2_32 Advapi32)
+if(WIN32)
+  set(libs System::ws2_32 System::advapi32)
 endif()
 
-dagor_add_library(
-  SOURCES ${sources}
-  PRIVATE_INCLUDES ${OPENSSL_INCLUDES}
-  PRIVATE_DEFINES ${OPENSSL_C_DEFINES}
-  C_OPTIONS ${OPENSSL_C_OPTIONS}
-  SYSTEM_LIBS ${libs}
-  LICENSE_FILES ${OPENSSL_DIR}/LICENSE.txt
-)
+dagor_add_library(3rdPartyLibs.openssl-3.x.crypto.sha LAX ${sources})
+target_include_directories(3rdPartyLibs.openssl-3.x.crypto.sha PRIVATE ${OPENSSL_INCLUDES})
+target_compile_definitions(3rdPartyLibs.openssl-3.x.crypto.sha PRIVATE ${OPENSSL_C_DEFINES})
+target_compile_options(3rdPartyLibs.openssl-3.x.crypto.sha PRIVATE "$<$<COMPILE_LANGUAGE:C>:${OPENSSL_C_OPTIONS}>")
+target_link_libraries(3rdPartyLibs.openssl-3.x.crypto.sha PUBLIC ${libs})
+dagor_target_licenses(3rdPartyLibs.openssl-3.x.crypto.sha ${OPENSSL_DIR}/LICENSE.txt)

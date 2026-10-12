@@ -1,6 +1,10 @@
 # Data cache: the file backend
+add_subdirectory(tests)
+
 set(includes ${DAGOR_PROG_DIR}/engine/dagorInclude ${DAGOR_PROG_DIR}/gameLibs/publicInclude)
-set(deps 3rdPartyLibs/eastl gameLibs/datacache/common)
+set(deps 3rdPartyLibs.eastl gameLibs.datacache.common)
 set(sources filebackend.cpp fileentry.cpp fileutil.cpp)
 
-dagor_add_library(STRICT SOURCES ${sources} PRIVATE_INCLUDES ${includes} DEPS ${deps})
+dagor_add_library(gameLibs.datacache.file ${sources})
+target_include_directories(gameLibs.datacache.file PRIVATE ${includes})
+target_link_libraries(gameLibs.datacache.file PRIVATE ${deps})

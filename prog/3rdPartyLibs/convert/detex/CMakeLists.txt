@@ -16,8 +16,9 @@ set(sources
   raw.c
   texture.c
 )
-if(DAGOR_CC MATCHES "^(clang|clang\-cl|gcc)$")
+if(CMAKE_CXX_COMPILER_ID MATCHES "^(Clang|AppleClang|GNU)$")
   list(APPEND c_options -Wno-unused-parameter)
 endif()
 
-dagor_add_library(SOURCES ${sources} C_OPTIONS ${c_options})
+dagor_add_library(3rdPartyLibs.convert.detex LAX ${sources})
+target_compile_options(3rdPartyLibs.convert.detex PRIVATE "$<$<COMPILE_LANGUAGE:C>:${c_options}>")

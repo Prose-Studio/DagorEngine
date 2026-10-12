@@ -1,4 +1,3 @@
-# Ported from prog/engine/drv/hid_nulldrv/jamfile (jam2cmake/skeleton.py)
 set(sources
   kbd_null.cpp
   kbd_null_gen.cpp
@@ -11,4 +10,4 @@ set(sources
   dx_null.cpp
 )
 
-dagor_add_library(SOURCES ${sources})
+dagor_add_library(engine.drv.hid_nulldrv LAX ${sources})

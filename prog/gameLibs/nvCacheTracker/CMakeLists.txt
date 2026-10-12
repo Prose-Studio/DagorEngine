@@ -1,10 +1,13 @@
-# Ported from prog/gameLibs/nvCacheTracker/jamfile (jam2cmake/skeleton.py)
+add_subdirectory(stub)
+
 set(includes
   ${DAGOR_PROG_DIR}/engine/dagorInclude
   ${DAGOR_PROG_DIR}/gameLibs/publicInclude
   ${DAGOR_PROG_DIR}/3rdPartyLibs/minhook/Include
 )
 set(sources nvCacheTracker.cpp)
-set(deps 3rdPartyLibs/minhook gameLibs/statsd)
+set(deps 3rdPartyLibs.minhook gameLibs.statsd)
 
-dagor_add_library(STRICT SOURCES ${sources} PRIVATE_INCLUDES ${includes} DEPS ${deps})
+dagor_add_library(gameLibs.nvCacheTracker ${sources})
+target_include_directories(gameLibs.nvCacheTracker PRIVATE ${includes})
+target_link_libraries(gameLibs.nvCacheTracker PRIVATE ${deps})

@@ -31,23 +31,15 @@ set(sources
   dxtCompress.cpp
 )
 set(options)
-if(DAGOR_CC STREQUAL "gcc")
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   list(APPEND options -Wno-uninitialized) # false positives of gcc 11
 endif()
 
-dagor_add_library(
-  SOURCES ${sources}
-  PRIVATE_INCLUDES
-    ${DAGOR_PROG_DIR}/engine/sharedInclude
-    ${DAGOR_PROG_DIR}/3rdPartyLibs/arc/zlib-ng
-    ${DAGOR_PROG_DIR}/3rdPartyLibs/binPack2D/include
-    ${DAGOR_PROG_DIR}/3rdPartyLibs/image/avif/include
-    ${DAGOR_PROG_DIR}/3rdPartyLibs/convert/fastDXT
-  COMPILE_OPTIONS ${options}
-  DEPS
-    3rdPartyLibs/convert/fastDXT
-    3rdPartyLibs/image/jpeg-6b
-    3rdPartyLibs/image/libpng-1.4.22
-    3rdPartyLibs/image/imageresampler
-  LICENSE_FILES ${DAGOR_PROG_DIR}/3rdPartyLibs/nanosvg
-)
+dagor_add_library(engine.image LAX ${sources})
+target_include_directories(engine.image PRIVATE ${DAGOR_PROG_DIR}/engine/sharedInclude
+  ${DAGOR_PROG_DIR}/3rdPartyLibs/arc/zlib-ng ${DAGOR_PROG_DIR}/3rdPartyLibs/binPack2D/include
+  ${DAGOR_PROG_DIR}/3rdPartyLibs/image/avif/include ${DAGOR_PROG_DIR}/3rdPartyLibs/convert/fastDXT)
+target_compile_options(engine.image PRIVATE ${options})
+target_link_libraries(engine.image PRIVATE 3rdPartyLibs.convert.fastDXT 3rdPartyLibs.image.jpeg-6b
+  3rdPartyLibs.image.libpng-1.4.22 3rdPartyLibs.image.imageresampler)
+dagor_target_licenses(engine.image ${DAGOR_PROG_DIR}/3rdPartyLibs/nanosvg)

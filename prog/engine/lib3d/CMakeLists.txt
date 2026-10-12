@@ -1,5 +1,7 @@
 # The engine's 3d layer above the driver: texture and buffer managers, DDSx loading, debug drawing, occlusion
 # (masked occlusion culling), texture streaming
+add_subdirectory(moc_avx)
+
 set(sources
   texMgr.cpp
   bufMgr.cpp
@@ -51,14 +53,13 @@ set(includes
   ${DAGOR_PROG_DIR}/engine/drv/drv3d_commonCode
 )
 set(defines)
-set(deps 3rdPartyLibs/eastl "$<$<CONFIG:Dev,Dbg>:engine.consoleProc>")
-dagor_use(engine/consoleProc)
-if(DAGOR_PLATFORM STREQUAL "windows")
+set(deps 3rdPartyLibs.eastl "$<$<CONFIG:Dev,Dbg>:engine.consoleProc>")
+if(WIN32)
   list(APPEND sources gpu_pipeline_serialization.cpp)
-  dagor_require_sdk(agility)
-  list(APPEND deps sdk::agility)
+  find_package(Agility REQUIRED)
+  list(APPEND deps Agility::Agility)
   list(APPEND defines D3DX12_NO_STATE_OBJECT_HELPERS) # no wrl
-  list(APPEND deps 3rdPartyLibs/convert/detex)
+  list(APPEND deps 3rdPartyLibs.convert.detex)
 endif()
 if(DAGOR_BUILDING_TOOLS)
   list(APPEND defines _TARGET_PC_TOOLS_BUILD)
@@ -66,13 +67,12 @@ endif()
 if(DAGOR_FORCE_LINK_DEBUG_LINES)
   list(APPEND defines "$<$<CONFIG:Rel,IRel>:FORCE_LINK_DEBUG_LINES>")
 endif()
-if(DAGOR_PLATFORM MATCHES "^(windows|linux)$" AND DAGOR_ARCH STREQUAL "x86_64" AND DAGOR_SSE EQUAL 4)
-  list(APPEND deps engine/lib3d/moc_avx)
+if(CMAKE_SYSTEM_NAME MATCHES "^(Linux|Windows)$" AND DAGOR_ARCH STREQUAL "x86_64" AND DAGOR_SSE EQUAL 4)
+  list(APPEND deps engine.lib3d.moc_avx)
 endif()
 
-dagor_add_library(STRICT FRAME_LIMIT 262144
-  SOURCES ${sources}
-  PRIVATE_INCLUDES ${includes}
-  PRIVATE_DEFINES ${defines}
-  DEPS ${deps}
-)
+dagor_add_library(engine.lib3d ${sources})
+target_include_directories(engine.lib3d PRIVATE ${includes})
+target_compile_definitions(engine.lib3d PRIVATE ${defines})
+target_link_libraries(engine.lib3d PRIVATE ${deps})
+set_target_properties(engine.lib3d PROPERTIES DAGOR_FRAME_LIMIT 262144)

@@ -14,4 +14,7 @@ set(sources
 set(includes ${DAGOR_PROG_DIR}/engine/sharedInclude)
 set(defines __B_KERNEL_LIB)
 
-dagor_add_library(STRICT FRAME_LIMIT 262144 SOURCES ${sources} PRIVATE_INCLUDES ${includes} PRIVATE_DEFINES ${defines})
+dagor_add_library(engine.ioSys.dataBlock ${sources})
+target_include_directories(engine.ioSys.dataBlock PRIVATE ${includes})
+target_compile_definitions(engine.ioSys.dataBlock PRIVATE ${defines})
+set_target_properties(engine.ioSys.dataBlock PROPERTIES DAGOR_FRAME_LIMIT 262144)

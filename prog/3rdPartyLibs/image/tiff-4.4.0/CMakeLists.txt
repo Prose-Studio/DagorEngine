@@ -43,10 +43,10 @@ set(sources
   tif_zstd.c
   tif_stream.cxx
 )
-if(DAGOR_PLATFORM STREQUAL "windows")
+if(WIN32)
   list(APPEND sources tif_win32.c)
 endif()
-if(DAGOR_PLATFORM MATCHES "^(linux|macOS)$")
+if(CMAKE_SYSTEM_NAME MATCHES "^(Darwin|Linux)$")
   list(APPEND sources tif_unix.c)
 endif()
 set(includes
@@ -54,14 +54,17 @@ set(includes
   ${DAGOR_PROG_DIR}/3rdPartyLibs/image/jpeg-6b
   ${DAGOR_PROG_DIR}/3rdPartyLibs/arc/zlib-ng
 )
-set(deps 3rdPartyLibs/image/jpeg-6b 3rdPartyLibs/arc/zlib-ng)
-if(DAGOR_CC MATCHES "^(clang|clang\-cl)$")
+set(deps 3rdPartyLibs.image.jpeg-6b 3rdPartyLibs.arc.zlib-ng)
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   list(APPEND c_options -Wno-format-extra-args)
 endif()
-if(NOT DAGOR_PLATFORM MATCHES "^(android|linux|macOS|windows)$")
-  if(DAGOR_CC MATCHES "^(clang|clang\-cl)$")
+if(NOT CMAKE_SYSTEM_NAME MATCHES "^(Android|Darwin|Linux|Windows)$")
+  if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     list(APPEND c_options -include stdlib_stub.h)
   endif()
 endif()
 
-dagor_add_library(SOURCES ${sources} PRIVATE_INCLUDES ${includes} C_OPTIONS ${c_options} DEPS ${deps})
+dagor_add_library(3rdPartyLibs.image.tiff-4.4.0 LAX ${sources})
+target_include_directories(3rdPartyLibs.image.tiff-4.4.0 PRIVATE ${includes})
+target_compile_options(3rdPartyLibs.image.tiff-4.4.0 PRIVATE "$<$<COMPILE_LANGUAGE:C>:${c_options}>")
+target_link_libraries(3rdPartyLibs.image.tiff-4.4.0 PRIVATE ${deps})

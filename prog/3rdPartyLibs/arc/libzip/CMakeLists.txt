@@ -117,7 +117,7 @@ set(sources
   lib/zip_unchange_data.c
   lib/zip_utf-8.c
 )
-if(DAGOR_PLATFORM STREQUAL "windows")
+if(WIN32)
   list(APPEND sources
     lib/zip_random_win32.c
     lib/zip_source_win32handle.c
@@ -129,12 +129,11 @@ else()
   list(APPEND sources lib/zip_random_unix.c)
 endif()
 set(defines ZIP_STATIC)
-if(DAGOR_CC MATCHES "^(clang|clang\-cl|gcc)$")
+if(CMAKE_CXX_COMPILER_ID MATCHES "^(Clang|AppleClang|GNU)$")
   list(APPEND options -Wno-unused-parameter)
 endif()
 
-dagor_add_library(SOURCES ${sources}
-  PRIVATE_INCLUDES ${includes}
-  PRIVATE_DEFINES ${defines}
-  COMPILE_OPTIONS ${options}
-)
+dagor_add_library(3rdPartyLibs.arc.libzip LAX ${sources})
+target_include_directories(3rdPartyLibs.arc.libzip PRIVATE ${includes})
+target_compile_definitions(3rdPartyLibs.arc.libzip PRIVATE ${defines})
+target_compile_options(3rdPartyLibs.arc.libzip PRIVATE ${options})

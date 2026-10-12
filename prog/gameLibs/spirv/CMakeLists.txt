@@ -19,16 +19,16 @@ list(APPEND includes
   ${DAGOR_PROG_DIR}/3rdPartyLibs/vulkan/spirv-tools/include
   ${DAGOR_PROG_DIR}/gameLibs/publicInclude
 )
-dagor_require_sdk(dxc)
-list(APPEND deps 3rdPartyLibs/vulkan/spirv-tools sdk::dxc)
-if(DAGOR_PLATFORM STREQUAL "windows")
-  list(APPEND libs Ole32)
+find_package(DXC REQUIRED)
+list(APPEND deps 3rdPartyLibs.vulkan.spirv-tools DXC::DXC)
+if(WIN32)
+  list(APPEND libs System::ole32)
 endif()
 set(defines _CROSS_TARGET_SPIRV)
-if(DAGOR_PLATFORM STREQUAL "macOS")
+if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
   list(APPEND options -Wno-switch -Wno-ambiguous-reversed-operator -Wno-deprecated-declarations)
 endif()
-if(DAGOR_PLATFORM STREQUAL "linux" AND DAGOR_CC MATCHES "^(clang|clang\-cl)$")
+if(LINUX AND CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   list(APPEND defines __EMULATE_UUID)
   list(APPEND options
     -Wno-sometimes-uninitialized
@@ -38,10 +38,9 @@ if(DAGOR_PLATFORM STREQUAL "linux" AND DAGOR_CC MATCHES "^(clang|clang\-cl)$")
   )
 endif()
 
-dagor_add_library(SOURCES ${sources}
-  PRIVATE_INCLUDES ${includes}
-  PRIVATE_DEFINES ${defines}
-  COMPILE_OPTIONS ${options}
-  DEPS ${deps}
-  SYSTEM_LIBS ${libs}
-)
+dagor_add_library(gameLibs.spirv LAX ${sources})
+target_include_directories(gameLibs.spirv PRIVATE ${includes})
+target_compile_definitions(gameLibs.spirv PRIVATE ${defines})
+target_compile_options(gameLibs.spirv PRIVATE ${options})
+target_link_libraries(gameLibs.spirv PRIVATE ${deps})
+target_link_libraries(gameLibs.spirv PUBLIC ${libs})

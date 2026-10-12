@@ -1,0 +1,36 @@
+// The game's identity for daNetGame (gameproj::), made by dagor_add_dng_game() (prog/cmake/DagorGame.cmake)
+#include <stddef.h>
+#include <string.h>
+
+namespace gameproj
+{
+const char *game_codename() { return "@GAME@"; }
+const char *main_vromfs_fpath() { return "@MAIN_VROM@"; }
+const char *main_vromfs_mount_dir() { return "@VROM_DIR@"; }
+const char *game_user_dir_name() { return "@USER_DIR@"; }
+const char *config_name_prefix() { return "@GAME@.config"; }
+const char *game_window_title() { return "@WINDOW_TITLE@"; }
+const char *game_telemetry_name() { return "@GAME@"; }
+const char *game_yup_name() { return ""; }
+const char *default_statsd_url() { return nullptr; }
+const char *crash_report_url() { return nullptr; }
+const char *statsd_key() { return "@GAME@"; }
+const char *eventlog_agent() { return "@GAME@"; }
+const char *default_eventlog_project() { return ""; }
+void before_init_video() {}
+void init_before_main_loop() {}
+void update_before_dagor_work_cycle() {}
+void post_shutdown_handler() {}
+void reset_game_resources() {}
+// no game public key, no partner keys, no anti-cheat key
+static const unsigned char pubkey_DER[292] = {0};
+const unsigned char *public_key_DER() { return pubkey_DER; }
+unsigned public_key_DER_len() { return sizeof(pubkey_DER); }
+const unsigned char *partner_public_key_DER(int) { return nullptr; }
+unsigned partner_public_key_DER_len(int) { return 0; }
+unsigned partner_public_keys_count() { return 0; }
+static const unsigned char beacSecretServerKey[] = "BEAC_KEY_NOT_DEFINED";
+const unsigned char *beac_secret_server_key() { return beacSecretServerKey; }
+unsigned beac_secret_server_key_len() { return sizeof(beacSecretServerKey); }
+} // namespace gameproj
+@CLIENT_ONLY@

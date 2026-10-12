@@ -6,4 +6,5 @@ set(includes
 )
 set(sources gpuProfilerStub.cpp)
 
-dagor_add_library(STRICT SOURCES ${sources} PRIVATE_INCLUDES ${includes})
+dagor_add_library(engine.perfMon.gpuProfilerStub ${sources})
+target_include_directories(engine.perfMon.gpuProfilerStub PRIVATE ${includes})

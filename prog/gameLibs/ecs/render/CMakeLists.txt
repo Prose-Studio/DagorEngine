@@ -1,7 +1,8 @@
-# Ported from prog/gameLibs/ecs/render/jamfile (jam2cmake/skeleton.py)
+add_subdirectory(weather_effects)
+
 set(includes ${DAGOR_PROG_DIR}/engine/dagorInclude ${DAGOR_PROG_DIR}/gameLibs/publicInclude)
 set(sources animCharUtils.cpp)
-list(APPEND deps 3rdPartyLibs/eastl gameLibs/resourcePool)
+list(APPEND deps 3rdPartyLibs.eastl gameLibs.resourcePool)
 set(SourceES
   decalsES.cpp.inl
   animCharNodeDebugES.cpp.inl
@@ -26,10 +27,8 @@ list(APPEND SourceES "$<$<NOT:$<CONFIG:Rel>>:${CMAKE_CURRENT_SOURCE_DIR}/animCha
 list(APPEND deps Dagor::Phys)
 list(APPEND es_sources ${SourceES})
 
-dagor_add_library(STRICT
-  SOURCES ${sources}
-  PRIVATE_INCLUDES ${includes}
-  PRIVATE_DEFINES ${defines}
-  DEPS ${deps}
-  ES_SOURCES ${es_sources}
-)
+dagor_add_library(gameLibs.ecs.render ${sources})
+target_include_directories(gameLibs.ecs.render PRIVATE ${includes})
+target_compile_definitions(gameLibs.ecs.render PRIVATE ${defines})
+target_link_libraries(gameLibs.ecs.render PRIVATE ${deps})
+dagor_target_es_sources(gameLibs.ecs.render ${es_sources})

@@ -1,0 +1,116 @@
+{
+  "version": 10,
+  "$comment": [
+    "The hidden presets the engine's and projects' CMakePresets.json build on: the generator, the build dir, and one",
+    "base per target (platform, compiler, arch) that selects its toolchain file. A presets file that includes this one",
+    "sets DAGOR_ENGINE_ROOT in the environment of its presets (the engine checkout); Dagor_DIR points find_package(Dagor)",
+    "at the engine's prog/cmake. Variants (DAGOR_VARIANT) and options are cache variables of the visible presets."
+  ],
+  "configurePresets": [
+    {
+      "name": "dagor",
+      "hidden": true,
+      "generator": "Ninja Multi-Config",
+      "binaryDir": "${sourceDir}/../build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_CONFIGURATION_TYPES": "Dev;Rel;IRel;Dbg",
+        "CMAKE_DEFAULT_BUILD_TYPE": "Dev",
+        "Dagor_DIR": "$env{DAGOR_ENGINE_ROOT}/prog/cmake"
+      }
+    },
+    {
+      "name": "windows",
+      "hidden": true,
+      "inherits": "dagor",
+      "toolchainFile": "$env{DAGOR_ENGINE_ROOT}/prog/cmake/toolchains/windows-clang.cmake",
+      "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Windows" }
+    },
+    {
+      "name": "windows-msvc",
+      "hidden": true,
+      "inherits": "windows",
+      "toolchainFile": "$env{DAGOR_ENGINE_ROOT}/prog/cmake/toolchains/windows-msvc.cmake"
+    },
+    {
+      "name": "windows-vc16",
+      "$comment": "MSVC 14.29 (VS 2019 16.11), the toolset of the 3ds Max 2023 and 2024 SDKs",
+      "hidden": true,
+      "inherits": "windows-msvc",
+      "cacheVariables": { "DAGOR_MSVC_TOOLSET": "14.29" }
+    },
+    {
+      "name": "windows-arm64",
+      "hidden": true,
+      "inherits": "windows",
+      "cacheVariables": { "DAGOR_ARCH": "arm64" }
+    },
+    {
+      "name": "linux",
+      "hidden": true,
+      "inherits": "dagor",
+      "toolchainFile": "$env{DAGOR_ENGINE_ROOT}/prog/cmake/toolchains/linux-gcc.cmake",
+      "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Linux" }
+    },
+    {
+      "name": "linux-clang",
+      "hidden": true,
+      "inherits": "linux",
+      "toolchainFile": "$env{DAGOR_ENGINE_ROOT}/prog/cmake/toolchains/linux-clang.cmake"
+    },
+    {
+      "name": "linux-e2k",
+      "hidden": true,
+      "inherits": "linux",
+      "toolchainFile": "$env{DAGOR_ENGINE_ROOT}/prog/cmake/toolchains/linux-lcc.cmake",
+      "cacheVariables": { "DAGOR_ARCH": "e2k", "DAGOR_WARNINGS_AS_ERRORS": "OFF" }
+    },
+    {
+      "name": "macos",
+      "hidden": true,
+      "inherits": "dagor",
+      "toolchainFile": "$env{DAGOR_ENGINE_ROOT}/prog/cmake/toolchains/macos.cmake",
+      "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Darwin" }
+    },
+    {
+      "name": "macos-universal",
+      "hidden": true,
+      "inherits": "macos",
+      "cacheVariables": { "DAGOR_ARCH": "universal" }
+    },
+    {
+      "name": "ios",
+      "hidden": true,
+      "inherits": "dagor",
+      "toolchainFile": "$env{DAGOR_ENGINE_ROOT}/prog/cmake/toolchains/ios.cmake",
+      "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Darwin" }
+    },
+    {
+      "name": "android",
+      "hidden": true,
+      "inherits": "dagor",
+      "toolchainFile": "$env{DAGOR_ENGINE_ROOT}/prog/cmake/toolchains/android.cmake"
+    },
+    { "name": "asan", "hidden": true, "cacheVariables": { "DAGOR_SANITIZE": "address" } },
+    { "name": "ubsan", "hidden": true, "cacheVariables": { "DAGOR_SANITIZE": "undefined" } },
+    { "name": "tsan", "hidden": true, "cacheVariables": { "DAGOR_SANITIZE": "thread" } },
+    { "name": "coverage", "hidden": true, "cacheVariables": { "DAGOR_COVERAGE": "ON" } },
+    { "name": "lto", "hidden": true, "cacheVariables": { "DAGOR_LTO": "thin" } }
+  ],
+  "testPresets": [
+    {
+      "name": "dagor",
+      "hidden": true,
+      "configuration": "Dev",
+      "output": { "outputOnFailure": true },
+      "execution": { "noTestsAction": "error" }
+    },
+    {
+      "name": "dagor-ci",
+      "$comment": "hosted CI runners have no GPU and no display",
+      "hidden": true,
+      "inherits": "dagor",
+      "filter": { "exclude": { "label": "requires-gpu|requires-display" } },
+      "execution": { "jobs": 4, "noTestsAction": "error" }
+    }
+  ]
+}

@@ -6,4 +6,6 @@ set(includes
 )
 set(sources asyncRuntimeBindings.cpp)
 
-dagor_add_library(STRICT QUIRREL SOURCES ${sources} PRIVATE_INCLUDES ${includes})
+dagor_add_library(gameLibs.quirrel.asyncRuntime ${sources})
+target_include_directories(gameLibs.quirrel.asyncRuntime PRIVATE ${includes})
+target_link_libraries(gameLibs.quirrel.asyncRuntime PRIVATE Dagor::Quirrel)

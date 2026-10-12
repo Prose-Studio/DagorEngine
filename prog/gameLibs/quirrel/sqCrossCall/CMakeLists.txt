@@ -6,4 +6,6 @@ set(includes
 )
 set(sources sqCrossCall.cpp)
 
-dagor_add_library(STRICT QUIRREL SOURCES ${sources} PRIVATE_INCLUDES ${includes})
+dagor_add_library(gameLibs.quirrel.sqCrossCall ${sources})
+target_include_directories(gameLibs.quirrel.sqCrossCall PRIVATE ${includes})
+target_link_libraries(gameLibs.quirrel.sqCrossCall PRIVATE Dagor::Quirrel)

@@ -7,4 +7,5 @@ set(includes
 set(sources daProfilerStub.cpp)
 
 # jam named the library engine/daProfilerStub.lib; dependents use the directory name
-dagor_add_library(STRICT SOURCES ${sources} PRIVATE_INCLUDES ${includes})
+dagor_add_library(engine.perfMon.daProfilerStub ${sources})
+target_include_directories(engine.perfMon.daProfilerStub PRIVATE ${includes})

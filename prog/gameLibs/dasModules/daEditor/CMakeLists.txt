@@ -1,16 +1,12 @@
-# Ported from prog/gameLibs/dasModules/daEditor/jamfile (jam2cmake/skeleton.py)
 set(includes ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/1stPartyLibs/daScript/include)
 file(GLOB AllSources RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
 set(sources ${AllSources})
-if(DAGOR_PLATFORM STREQUAL "windows")
+if(WIN32)
   list(APPEND options /wd4548)
 endif()
-set(deps 1stPartyLibs/daScript gameLibs/daEditorE)
+set(deps 1stPartyLibs.daScript gameLibs.daEditorE)
 
-dagor_add_library(STRICT
-  QUIRREL
-  SOURCES ${sources}
-  PRIVATE_INCLUDES ${includes}
-  COMPILE_OPTIONS ${options}
-  DEPS ${deps}
-)
+dagor_add_library(gameLibs.dasModules.daEditor ${sources})
+target_include_directories(gameLibs.dasModules.daEditor PRIVATE ${includes})
+target_compile_options(gameLibs.dasModules.daEditor PRIVATE ${options})
+target_link_libraries(gameLibs.dasModules.daEditor PRIVATE Dagor::Quirrel ${deps})

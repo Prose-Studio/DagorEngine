@@ -2,4 +2,5 @@
 set(includes ${DAGOR_PROG_DIR}/engine/dagorInclude ${DAGOR_PROG_DIR}/gameLibs/publicInclude)
 set(sources volumetricLightsStub.cpp)
 
-dagor_add_library(SOURCES ${sources} PRIVATE_INCLUDES ${includes})
+dagor_add_library(gameLibs.render.volumetricLights.stub LAX ${sources})
+target_include_directories(gameLibs.render.volumetricLights.stub PRIVATE ${includes})

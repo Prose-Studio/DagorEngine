@@ -11,4 +11,6 @@ set(AllSrcFolder_C common compress decompress dictBuilder legacy src/builtin src
 dagor_glob_sources(sources DIRS ${AllSrcFolder_C} GLOB *.c)
 set(c_options -DZSTD_LEGACY_SUPPORT -DXXH_CPU_LITTLE_ENDIAN)
 
-dagor_add_library(SOURCES ${sources} PRIVATE_INCLUDES ${includes} C_OPTIONS ${c_options})
+dagor_add_library(3rdPartyLibs.arc.zstd-1.4.5 LAX ${sources})
+target_include_directories(3rdPartyLibs.arc.zstd-1.4.5 PRIVATE ${includes})
+target_compile_options(3rdPartyLibs.arc.zstd-1.4.5 PRIVATE "$<$<COMPILE_LANGUAGE:C>:${c_options}>")

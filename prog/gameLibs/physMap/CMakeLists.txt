@@ -2,4 +2,5 @@
 set(includes ${DAGOR_PROG_DIR}/gameLibs/publicInclude)
 set(sources physMap.cpp physMatHtTex.cpp physMapLoad.cpp physMapCompactDecals.cpp)
 
-dagor_add_library(STRICT SOURCES ${sources} PRIVATE_INCLUDES ${includes})
+dagor_add_library(gameLibs.physMap ${sources})
+target_include_directories(gameLibs.physMap PRIVATE ${includes})

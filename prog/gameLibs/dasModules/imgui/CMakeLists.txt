@@ -1,4 +1,3 @@
-# Ported from prog/gameLibs/dasModules/imgui/jamfile (jam2cmake/skeleton.py)
 set(includes
   ${DAGOR_PROG_DIR}/gameLibs/publicInclude
   ${DAGOR_PROG_DIR}/1stPartyLibs/daScript/include
@@ -6,17 +5,14 @@ set(includes
 )
 file(GLOB AllSources RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
 set(sources ${AllSources})
-set(SourceDAS )
 list(APPEND stringify ${SourceDAS})
-if(DAGOR_PLATFORM STREQUAL "windows")
+if(WIN32)
   list(APPEND options /wd4548)
 endif()
-set(deps 1stPartyLibs/daScript)
+set(deps 1stPartyLibs.daScript)
 
-dagor_add_library(STRICT
-  SOURCES ${sources}
-  PRIVATE_INCLUDES ${includes}
-  COMPILE_OPTIONS ${options}
-  DEPS ${deps}
-  STRINGIFY ${stringify}
-)
+dagor_add_library(gameLibs.dasModules.imgui ${sources})
+target_include_directories(gameLibs.dasModules.imgui PRIVATE ${includes})
+target_compile_options(gameLibs.dasModules.imgui PRIVATE ${options})
+target_link_libraries(gameLibs.dasModules.imgui PRIVATE ${deps})
+dagor_target_stringify(gameLibs.dasModules.imgui ${stringify})

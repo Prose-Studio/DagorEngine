@@ -13,4 +13,5 @@ set(sources
   daBuildDLL.cpp
 )
 
-dagor_add_library(SOURCES ${sources} PRIVATE_INCLUDES ${includes})
+dagor_add_library(tools.libTools.assetMgr LAX ${sources})
+target_include_directories(tools.libTools.assetMgr PRIVATE ${includes})

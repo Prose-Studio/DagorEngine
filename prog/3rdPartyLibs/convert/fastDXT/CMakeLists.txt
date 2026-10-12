@@ -5,4 +5,6 @@ if(DAGOR_ARCH MATCHES "^(e2k|x86_64)$")
 endif()
 set(includes ${DAGOR_PROG_DIR}/3rdPartyLibs/convert/fastDXT)
 
-dagor_add_library(SOURCES ${sources} PRIVATE_INCLUDES ${includes} PRIVATE_DEFINES ${defines})
+dagor_add_library(3rdPartyLibs.convert.fastDXT LAX ${sources})
+target_include_directories(3rdPartyLibs.convert.fastDXT PRIVATE ${includes})
+target_compile_definitions(3rdPartyLibs.convert.fastDXT PRIVATE ${defines})

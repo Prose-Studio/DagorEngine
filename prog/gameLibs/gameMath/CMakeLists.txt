@@ -2,4 +2,5 @@
 set(includes ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/3rdPartyLibs/)
 set(sources constructConvex.cpp convexUtils.cpp interpolateTabUtils.cpp mathUtils.cpp collResUtils.cpp)
 
-dagor_add_library(STRICT SOURCES ${sources} PRIVATE_INCLUDES ${includes})
+dagor_add_library(gameLibs.gameMath ${sources})
+target_include_directories(gameLibs.gameMath PRIVATE ${includes})

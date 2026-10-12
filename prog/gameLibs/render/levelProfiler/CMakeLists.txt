@@ -1,4 +1,3 @@
-# Ported from prog/gameLibs/render/levelProfiler/jamfile (jam2cmake/skeleton.py)
 set(includes
   ${DAGOR_PROG_DIR}/gameLibs/publicInclude
   ${DAGOR_PROG_DIR}/gameLibs/rendInst
@@ -15,4 +14,5 @@ set(sources levelProfiler.cpp src/levelProfilerExporter.cpp src/levelProfilerUI.
 list(TRANSFORM sources REPLACE "^(.+)$" "$<$<NOT:$<CONFIG:Rel>>:${CMAKE_CURRENT_SOURCE_DIR}/\\1>")
 list(APPEND sources "$<$<CONFIG:Rel>:${CMAKE_CURRENT_SOURCE_DIR}/levelProfilerStub.cpp>")
 
-dagor_add_library(STRICT SOURCES ${sources} PRIVATE_INCLUDES ${includes})
+dagor_add_library(gameLibs.render.levelProfiler ${sources})
+target_include_directories(gameLibs.render.levelProfiler PRIVATE ${includes})

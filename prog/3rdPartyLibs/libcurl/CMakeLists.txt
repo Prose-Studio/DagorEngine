@@ -6,16 +6,16 @@ set(includes
   ${DAGOR_PROG_DIR}/3rdPartyLibs/arc/zstd-1.4.5
   ${DAGOR_PROG_DIR}/3rdPartyLibs/arc/brotli/include
 )
-list(APPEND deps 3rdPartyLibs/arc/zlib-ng 3rdPartyLibs/arc/zstd-1.4.5 3rdPartyLibs/arc/brotli)
-if(DAGOR_PLATFORM STREQUAL "windows")
-  list(APPEND libs Ws2_32 crypt32 bcrypt)
+list(APPEND deps 3rdPartyLibs.arc.zlib-ng 3rdPartyLibs.arc.zstd-1.4.5 3rdPartyLibs.arc.brotli)
+if(WIN32)
+  list(APPEND libs System::ws2_32 System::crypt32 System::bcrypt)
 endif()
-if(DAGOR_PLATFORM STREQUAL "macOS")
+if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
   list(APPEND options -Wno-deprecated-declarations)
-  list(APPEND libs -Wl,-framework,SystemConfiguration)
+  list(APPEND libs "$<LINK_LIBRARY:FRAMEWORK,SystemConfiguration>")
 endif()
 list(APPEND includes ${DAGOR_PROG_DIR}/3rdPartyLibs/openssl-3.x/include)
-list(APPEND deps 3rdPartyLibs/openssl-3.x)
+list(APPEND deps 3rdPartyLibs.openssl-3.x)
 # the backends compile to nothing unless their USE_* macro is on, so the whole tree is taken
 dagor_glob_sources(sources DIRS lib lib/curlx lib/vauth lib/vdns lib/vquic lib/vssh lib/vtls GLOB *.c)
 set(c_options
@@ -39,24 +39,23 @@ set(c_options
   -DCURL_DISABLE_TELNET
   -DCURL_DISABLE_TFTP
 )
-if(DAGOR_CC MATCHES "^(clang|clang\-cl)$")
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   if(DAGOR_SANITIZE STREQUAL "undefined")
     list(APPEND c_options -fno-sanitize=undefined)
   endif()
   list(APPEND c_options -Wno-incompatible-pointer-types-discards-qualifiers)
 endif()
-if(DAGOR_CC STREQUAL "gcc")
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   list(APPEND c_options -Wno-discarded-qualifiers)
 endif()
-if(DAGOR_PLATFORM MATCHES "^(android|iOS|linux|macOS|tvOS)$")
+if(CMAKE_SYSTEM_NAME MATCHES "^(Android|Darwin|Linux|iOS|tvOS)$")
   list(APPEND defines HAVE_CONFIG_H)
 endif()
 
-dagor_add_library(SOURCES ${sources}
-  PRIVATE_INCLUDES ${includes}
-  PRIVATE_DEFINES ${defines}
-  COMPILE_OPTIONS ${options}
-  C_OPTIONS ${c_options}
-  DEPS ${deps}
-  SYSTEM_LIBS ${libs}
-)
+dagor_add_library(3rdPartyLibs.libcurl LAX ${sources})
+target_include_directories(3rdPartyLibs.libcurl PRIVATE ${includes})
+target_compile_definitions(3rdPartyLibs.libcurl PRIVATE ${defines})
+target_compile_options(3rdPartyLibs.libcurl PRIVATE ${options})
+target_compile_options(3rdPartyLibs.libcurl PRIVATE "$<$<COMPILE_LANGUAGE:C>:${c_options}>")
+target_link_libraries(3rdPartyLibs.libcurl PRIVATE ${deps})
+target_link_libraries(3rdPartyLibs.libcurl PUBLIC ${libs})

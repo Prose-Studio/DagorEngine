@@ -1,0 +1,1261 @@
+{
+  "version": 10,
+  "cmakeMinimumRequired": {
+    "major": 4,
+    "minor": 0,
+    "patch": 0
+  },
+  "$comment": [
+    "The engine's trees: cmake --list-presets in prog/. <host>[-<compiler>|-<arch>|-<sanitizer>]-<variant>, e.g.",
+    "cmake --workflow --preset windows-tests (configure, build, test), cmake --workflow --preset linux-cdk (the tools,",
+    "installed into tools/dagor_cdk). The bases are in cmake/presets/base.json; local ones go in CMakeUserPresets.json."
+  ],
+  "include": [
+    "cmake/presets/base.json"
+  ],
+  "configurePresets": [
+    {
+      "name": "engine",
+      "hidden": true,
+      "$comment": "the engine's trees: in build/<preset>, the tools installed into the engine root (tools/dagor_cdk)",
+      "environment": {
+        "DAGOR_ENGINE_ROOT": "${sourceDir}/.."
+      },
+      "installDir": "${sourceDir}/.."
+    },
+    {
+      "name": "variant-tests",
+      "hidden": true,
+      "cacheVariables": {
+        "DAGOR_VARIANT": "tests"
+      }
+    },
+    {
+      "name": "variant-cdk",
+      "hidden": true,
+      "cacheVariables": {
+        "DAGOR_VARIANT": "cdk"
+      }
+    },
+    {
+      "name": "variant-editor",
+      "hidden": true,
+      "cacheVariables": {
+        "DAGOR_VARIANT": "editor"
+      }
+    },
+    {
+      "name": "variant-maxplug",
+      "hidden": true,
+      "cacheVariables": {
+        "DAGOR_VARIANT": "maxplug"
+      }
+    },
+    {
+      "name": "variant-dargbox",
+      "hidden": true,
+      "cacheVariables": {
+        "DAGOR_VARIANT": "dargbox"
+      }
+    },
+    {
+      "name": "windows-tests",
+      "inherits": [
+        "engine",
+        "windows",
+        "variant-tests"
+      ]
+    },
+    {
+      "name": "windows-cdk",
+      "inherits": [
+        "engine",
+        "windows",
+        "variant-cdk"
+      ]
+    },
+    {
+      "name": "windows-editor",
+      "inherits": [
+        "engine",
+        "windows",
+        "variant-editor"
+      ]
+    },
+    {
+      "name": "windows-dargbox",
+      "inherits": [
+        "engine",
+        "windows",
+        "variant-dargbox"
+      ]
+    },
+    {
+      "name": "windows-maxplug",
+      "inherits": [
+        "engine",
+        "windows",
+        "variant-maxplug"
+      ]
+    },
+    {
+      "name": "windows-msvc-tests",
+      "inherits": [
+        "engine",
+        "windows-msvc",
+        "variant-tests"
+      ]
+    },
+    {
+      "name": "windows-msvc-cdk",
+      "inherits": [
+        "engine",
+        "windows-msvc",
+        "variant-cdk"
+      ]
+    },
+    {
+      "name": "windows-vc16-maxplug",
+      "inherits": [
+        "engine",
+        "windows-vc16",
+        "variant-maxplug"
+      ]
+    },
+    {
+      "name": "windows-arm64-tests",
+      "inherits": [
+        "engine",
+        "windows-arm64",
+        "variant-tests"
+      ]
+    },
+    {
+      "name": "windows-arm64-cdk",
+      "inherits": [
+        "engine",
+        "windows-arm64",
+        "variant-cdk"
+      ]
+    },
+    {
+      "name": "linux-tests",
+      "inherits": [
+        "engine",
+        "linux",
+        "variant-tests"
+      ]
+    },
+    {
+      "name": "linux-cdk",
+      "inherits": [
+        "engine",
+        "linux",
+        "variant-cdk"
+      ]
+    },
+    {
+      "name": "linux-editor",
+      "inherits": [
+        "engine",
+        "linux",
+        "variant-editor"
+      ]
+    },
+    {
+      "name": "linux-dargbox",
+      "inherits": [
+        "engine",
+        "linux",
+        "variant-dargbox"
+      ]
+    },
+    {
+      "name": "linux-clang-tests",
+      "inherits": [
+        "engine",
+        "linux-clang",
+        "variant-tests"
+      ]
+    },
+    {
+      "name": "linux-clang-cdk",
+      "inherits": [
+        "engine",
+        "linux-clang",
+        "variant-cdk"
+      ]
+    },
+    {
+      "name": "linux-e2k-tests",
+      "inherits": [
+        "engine",
+        "linux-e2k",
+        "variant-tests"
+      ]
+    },
+    {
+      "name": "linux-e2k-cdk",
+      "inherits": [
+        "engine",
+        "linux-e2k",
+        "variant-cdk"
+      ]
+    },
+    {
+      "name": "macos-tests",
+      "inherits": [
+        "engine",
+        "macos",
+        "variant-tests"
+      ]
+    },
+    {
+      "name": "macos-cdk",
+      "inherits": [
+        "engine",
+        "macos",
+        "variant-cdk"
+      ]
+    },
+    {
+      "name": "macos-editor",
+      "inherits": [
+        "engine",
+        "macos",
+        "variant-editor"
+      ]
+    },
+    {
+      "name": "macos-dargbox",
+      "inherits": [
+        "engine",
+        "macos",
+        "variant-dargbox"
+      ]
+    },
+    {
+      "name": "macos-universal-cdk",
+      "inherits": [
+        "engine",
+        "macos-universal",
+        "variant-cdk"
+      ]
+    },
+    {
+      "name": "windows-asan-tests",
+      "inherits": [
+        "engine",
+        "windows",
+        "asan",
+        "variant-tests"
+      ]
+    },
+    {
+      "name": "linux-asan-tests",
+      "inherits": [
+        "engine",
+        "linux-clang",
+        "asan",
+        "variant-tests"
+      ]
+    },
+    {
+      "name": "linux-ubsan-tests",
+      "inherits": [
+        "engine",
+        "linux-clang",
+        "ubsan",
+        "variant-tests"
+      ]
+    },
+    {
+      "name": "linux-tsan-tests",
+      "inherits": [
+        "engine",
+        "linux-clang",
+        "tsan",
+        "variant-tests"
+      ]
+    },
+    {
+      "name": "linux-coverage-tests",
+      "inherits": [
+        "engine",
+        "linux-clang",
+        "coverage",
+        "variant-tests"
+      ]
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "windows-tests",
+      "configurePreset": "windows-tests",
+      "configuration": "Dev"
+    },
+    {
+      "name": "windows-cdk",
+      "configurePreset": "windows-cdk",
+      "configuration": "Dev"
+    },
+    {
+      "name": "windows-cdk-install",
+      "configurePreset": "windows-cdk",
+      "configuration": "Dev",
+      "targets": [
+        "install"
+      ]
+    },
+    {
+      "name": "windows-editor",
+      "configurePreset": "windows-editor",
+      "configuration": "Dev"
+    },
+    {
+      "name": "windows-editor-install",
+      "configurePreset": "windows-editor",
+      "configuration": "Dev",
+      "targets": [
+        "install"
+      ]
+    },
+    {
+      "name": "windows-dargbox",
+      "configurePreset": "windows-dargbox",
+      "configuration": "Dev"
+    },
+    {
+      "name": "windows-maxplug",
+      "configurePreset": "windows-maxplug",
+      "configuration": "Dev"
+    },
+    {
+      "name": "windows-msvc-tests",
+      "configurePreset": "windows-msvc-tests",
+      "configuration": "Dev"
+    },
+    {
+      "name": "windows-msvc-cdk",
+      "configurePreset": "windows-msvc-cdk",
+      "configuration": "Dev"
+    },
+    {
+      "name": "windows-msvc-cdk-install",
+      "configurePreset": "windows-msvc-cdk",
+      "configuration": "Dev",
+      "targets": [
+        "install"
+      ]
+    },
+    {
+      "name": "windows-vc16-maxplug",
+      "configurePreset": "windows-vc16-maxplug",
+      "configuration": "Dev"
+    },
+    {
+      "name": "windows-arm64-tests",
+      "configurePreset": "windows-arm64-tests",
+      "configuration": "Dev"
+    },
+    {
+      "name": "windows-arm64-cdk",
+      "configurePreset": "windows-arm64-cdk",
+      "configuration": "Dev"
+    },
+    {
+      "name": "windows-arm64-cdk-install",
+      "configurePreset": "windows-arm64-cdk",
+      "configuration": "Dev",
+      "targets": [
+        "install"
+      ]
+    },
+    {
+      "name": "linux-tests",
+      "configurePreset": "linux-tests",
+      "configuration": "Dev"
+    },
+    {
+      "name": "linux-cdk",
+      "configurePreset": "linux-cdk",
+      "configuration": "Dev"
+    },
+    {
+      "name": "linux-cdk-install",
+      "configurePreset": "linux-cdk",
+      "configuration": "Dev",
+      "targets": [
+        "install"
+      ]
+    },
+    {
+      "name": "linux-editor",
+      "configurePreset": "linux-editor",
+      "configuration": "Dev"
+    },
+    {
+      "name": "linux-editor-install",
+      "configurePreset": "linux-editor",
+      "configuration": "Dev",
+      "targets": [
+        "install"
+      ]
+    },
+    {
+      "name": "linux-dargbox",
+      "configurePreset": "linux-dargbox",
+      "configuration": "Dev"
+    },
+    {
+      "name": "linux-clang-tests",
+      "configurePreset": "linux-clang-tests",
+      "configuration": "Dev"
+    },
+    {
+      "name": "linux-clang-cdk",
+      "configurePreset": "linux-clang-cdk",
+      "configuration": "Dev"
+    },
+    {
+      "name": "linux-clang-cdk-install",
+      "configurePreset": "linux-clang-cdk",
+      "configuration": "Dev",
+      "targets": [
+        "install"
+      ]
+    },
+    {
+      "name": "linux-e2k-tests",
+      "configurePreset": "linux-e2k-tests",
+      "configuration": "Dev"
+    },
+    {
+      "name": "linux-e2k-cdk",
+      "configurePreset": "linux-e2k-cdk",
+      "configuration": "Dev"
+    },
+    {
+      "name": "linux-e2k-cdk-install",
+      "configurePreset": "linux-e2k-cdk",
+      "configuration": "Dev",
+      "targets": [
+        "install"
+      ]
+    },
+    {
+      "name": "macos-tests",
+      "configurePreset": "macos-tests",
+      "configuration": "Dev"
+    },
+    {
+      "name": "macos-cdk",
+      "configurePreset": "macos-cdk",
+      "configuration": "Dev"
+    },
+    {
+      "name": "macos-cdk-install",
+      "configurePreset": "macos-cdk",
+      "configuration": "Dev",
+      "targets": [
+        "install"
+      ]
+    },
+    {
+      "name": "macos-editor",
+      "configurePreset": "macos-editor",
+      "configuration": "Dev"
+    },
+    {
+      "name": "macos-editor-install",
+      "configurePreset": "macos-editor",
+      "configuration": "Dev",
+      "targets": [
+        "install"
+      ]
+    },
+    {
+      "name": "macos-dargbox",
+      "configurePreset": "macos-dargbox",
+      "configuration": "Dev"
+    },
+    {
+      "name": "macos-universal-cdk",
+      "configurePreset": "macos-universal-cdk",
+      "configuration": "Dev"
+    },
+    {
+      "name": "macos-universal-cdk-install",
+      "configurePreset": "macos-universal-cdk",
+      "configuration": "Dev",
+      "targets": [
+        "install"
+      ]
+    },
+    {
+      "name": "windows-asan-tests",
+      "configurePreset": "windows-asan-tests",
+      "configuration": "Dev"
+    },
+    {
+      "name": "linux-asan-tests",
+      "configurePreset": "linux-asan-tests",
+      "configuration": "Dev"
+    },
+    {
+      "name": "linux-ubsan-tests",
+      "configurePreset": "linux-ubsan-tests",
+      "configuration": "Dev"
+    },
+    {
+      "name": "linux-tsan-tests",
+      "configurePreset": "linux-tsan-tests",
+      "configuration": "Dev"
+    },
+    {
+      "name": "linux-coverage-tests",
+      "configurePreset": "linux-coverage-tests",
+      "configuration": "Dev"
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "windows-tests",
+      "configurePreset": "windows-tests",
+      "inherits": "dagor"
+    },
+    {
+      "name": "windows-tests-ci",
+      "configurePreset": "windows-tests",
+      "inherits": "dagor-ci"
+    },
+    {
+      "name": "windows-msvc-tests",
+      "configurePreset": "windows-msvc-tests",
+      "inherits": "dagor"
+    },
+    {
+      "name": "windows-msvc-tests-ci",
+      "configurePreset": "windows-msvc-tests",
+      "inherits": "dagor-ci"
+    },
+    {
+      "name": "windows-arm64-tests",
+      "configurePreset": "windows-arm64-tests",
+      "inherits": "dagor"
+    },
+    {
+      "name": "windows-arm64-tests-ci",
+      "configurePreset": "windows-arm64-tests",
+      "inherits": "dagor-ci"
+    },
+    {
+      "name": "linux-tests",
+      "configurePreset": "linux-tests",
+      "inherits": "dagor"
+    },
+    {
+      "name": "linux-tests-ci",
+      "configurePreset": "linux-tests",
+      "inherits": "dagor-ci"
+    },
+    {
+      "name": "linux-clang-tests",
+      "configurePreset": "linux-clang-tests",
+      "inherits": "dagor"
+    },
+    {
+      "name": "linux-clang-tests-ci",
+      "configurePreset": "linux-clang-tests",
+      "inherits": "dagor-ci"
+    },
+    {
+      "name": "linux-e2k-tests",
+      "configurePreset": "linux-e2k-tests",
+      "inherits": "dagor"
+    },
+    {
+      "name": "linux-e2k-tests-ci",
+      "configurePreset": "linux-e2k-tests",
+      "inherits": "dagor-ci"
+    },
+    {
+      "name": "macos-tests",
+      "configurePreset": "macos-tests",
+      "inherits": "dagor"
+    },
+    {
+      "name": "macos-tests-ci",
+      "configurePreset": "macos-tests",
+      "inherits": "dagor-ci"
+    },
+    {
+      "name": "windows-asan-tests",
+      "configurePreset": "windows-asan-tests",
+      "inherits": "dagor"
+    },
+    {
+      "name": "windows-asan-tests-ci",
+      "configurePreset": "windows-asan-tests",
+      "inherits": "dagor-ci"
+    },
+    {
+      "name": "linux-asan-tests",
+      "configurePreset": "linux-asan-tests",
+      "inherits": "dagor"
+    },
+    {
+      "name": "linux-asan-tests-ci",
+      "configurePreset": "linux-asan-tests",
+      "inherits": "dagor-ci"
+    },
+    {
+      "name": "linux-ubsan-tests",
+      "configurePreset": "linux-ubsan-tests",
+      "inherits": "dagor"
+    },
+    {
+      "name": "linux-ubsan-tests-ci",
+      "configurePreset": "linux-ubsan-tests",
+      "inherits": "dagor-ci"
+    },
+    {
+      "name": "linux-tsan-tests",
+      "configurePreset": "linux-tsan-tests",
+      "inherits": "dagor"
+    },
+    {
+      "name": "linux-tsan-tests-ci",
+      "configurePreset": "linux-tsan-tests",
+      "inherits": "dagor-ci"
+    },
+    {
+      "name": "linux-coverage-tests",
+      "configurePreset": "linux-coverage-tests",
+      "inherits": "dagor"
+    },
+    {
+      "name": "linux-coverage-tests-ci",
+      "configurePreset": "linux-coverage-tests",
+      "inherits": "dagor-ci"
+    }
+  ],
+  "workflowPresets": [
+    {
+      "name": "windows-tests",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "windows-tests"
+        },
+        {
+          "type": "build",
+          "name": "windows-tests"
+        },
+        {
+          "type": "test",
+          "name": "windows-tests"
+        }
+      ]
+    },
+    {
+      "name": "windows-tests-ci",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "windows-tests"
+        },
+        {
+          "type": "build",
+          "name": "windows-tests"
+        },
+        {
+          "type": "test",
+          "name": "windows-tests-ci"
+        }
+      ]
+    },
+    {
+      "name": "windows-cdk",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "windows-cdk"
+        },
+        {
+          "type": "build",
+          "name": "windows-cdk-install"
+        }
+      ]
+    },
+    {
+      "name": "windows-editor",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "windows-editor"
+        },
+        {
+          "type": "build",
+          "name": "windows-editor-install"
+        }
+      ]
+    },
+    {
+      "name": "windows-dargbox",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "windows-dargbox"
+        },
+        {
+          "type": "build",
+          "name": "windows-dargbox"
+        }
+      ]
+    },
+    {
+      "name": "windows-maxplug",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "windows-maxplug"
+        },
+        {
+          "type": "build",
+          "name": "windows-maxplug"
+        }
+      ]
+    },
+    {
+      "name": "windows-msvc-tests",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "windows-msvc-tests"
+        },
+        {
+          "type": "build",
+          "name": "windows-msvc-tests"
+        },
+        {
+          "type": "test",
+          "name": "windows-msvc-tests"
+        }
+      ]
+    },
+    {
+      "name": "windows-msvc-tests-ci",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "windows-msvc-tests"
+        },
+        {
+          "type": "build",
+          "name": "windows-msvc-tests"
+        },
+        {
+          "type": "test",
+          "name": "windows-msvc-tests-ci"
+        }
+      ]
+    },
+    {
+      "name": "windows-msvc-cdk",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "windows-msvc-cdk"
+        },
+        {
+          "type": "build",
+          "name": "windows-msvc-cdk-install"
+        }
+      ]
+    },
+    {
+      "name": "windows-vc16-maxplug",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "windows-vc16-maxplug"
+        },
+        {
+          "type": "build",
+          "name": "windows-vc16-maxplug"
+        }
+      ]
+    },
+    {
+      "name": "windows-arm64-tests",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "windows-arm64-tests"
+        },
+        {
+          "type": "build",
+          "name": "windows-arm64-tests"
+        },
+        {
+          "type": "test",
+          "name": "windows-arm64-tests"
+        }
+      ]
+    },
+    {
+      "name": "windows-arm64-tests-ci",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "windows-arm64-tests"
+        },
+        {
+          "type": "build",
+          "name": "windows-arm64-tests"
+        },
+        {
+          "type": "test",
+          "name": "windows-arm64-tests-ci"
+        }
+      ]
+    },
+    {
+      "name": "windows-arm64-cdk",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "windows-arm64-cdk"
+        },
+        {
+          "type": "build",
+          "name": "windows-arm64-cdk-install"
+        }
+      ]
+    },
+    {
+      "name": "linux-tests",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "linux-tests"
+        },
+        {
+          "type": "build",
+          "name": "linux-tests"
+        },
+        {
+          "type": "test",
+          "name": "linux-tests"
+        }
+      ]
+    },
+    {
+      "name": "linux-tests-ci",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "linux-tests"
+        },
+        {
+          "type": "build",
+          "name": "linux-tests"
+        },
+        {
+          "type": "test",
+          "name": "linux-tests-ci"
+        }
+      ]
+    },
+    {
+      "name": "linux-cdk",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "linux-cdk"
+        },
+        {
+          "type": "build",
+          "name": "linux-cdk-install"
+        }
+      ]
+    },
+    {
+      "name": "linux-editor",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "linux-editor"
+        },
+        {
+          "type": "build",
+          "name": "linux-editor-install"
+        }
+      ]
+    },
+    {
+      "name": "linux-dargbox",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "linux-dargbox"
+        },
+        {
+          "type": "build",
+          "name": "linux-dargbox"
+        }
+      ]
+    },
+    {
+      "name": "linux-clang-tests",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "linux-clang-tests"
+        },
+        {
+          "type": "build",
+          "name": "linux-clang-tests"
+        },
+        {
+          "type": "test",
+          "name": "linux-clang-tests"
+        }
+      ]
+    },
+    {
+      "name": "linux-clang-tests-ci",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "linux-clang-tests"
+        },
+        {
+          "type": "build",
+          "name": "linux-clang-tests"
+        },
+        {
+          "type": "test",
+          "name": "linux-clang-tests-ci"
+        }
+      ]
+    },
+    {
+      "name": "linux-clang-cdk",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "linux-clang-cdk"
+        },
+        {
+          "type": "build",
+          "name": "linux-clang-cdk-install"
+        }
+      ]
+    },
+    {
+      "name": "linux-e2k-tests",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "linux-e2k-tests"
+        },
+        {
+          "type": "build",
+          "name": "linux-e2k-tests"
+        },
+        {
+          "type": "test",
+          "name": "linux-e2k-tests"
+        }
+      ]
+    },
+    {
+      "name": "linux-e2k-tests-ci",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "linux-e2k-tests"
+        },
+        {
+          "type": "build",
+          "name": "linux-e2k-tests"
+        },
+        {
+          "type": "test",
+          "name": "linux-e2k-tests-ci"
+        }
+      ]
+    },
+    {
+      "name": "linux-e2k-cdk",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "linux-e2k-cdk"
+        },
+        {
+          "type": "build",
+          "name": "linux-e2k-cdk-install"
+        }
+      ]
+    },
+    {
+      "name": "macos-tests",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "macos-tests"
+        },
+        {
+          "type": "build",
+          "name": "macos-tests"
+        },
+        {
+          "type": "test",
+          "name": "macos-tests"
+        }
+      ]
+    },
+    {
+      "name": "macos-tests-ci",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "macos-tests"
+        },
+        {
+          "type": "build",
+          "name": "macos-tests"
+        },
+        {
+          "type": "test",
+          "name": "macos-tests-ci"
+        }
+      ]
+    },
+    {
+      "name": "macos-cdk",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "macos-cdk"
+        },
+        {
+          "type": "build",
+          "name": "macos-cdk-install"
+        }
+      ]
+    },
+    {
+      "name": "macos-editor",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "macos-editor"
+        },
+        {
+          "type": "build",
+          "name": "macos-editor-install"
+        }
+      ]
+    },
+    {
+      "name": "macos-dargbox",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "macos-dargbox"
+        },
+        {
+          "type": "build",
+          "name": "macos-dargbox"
+        }
+      ]
+    },
+    {
+      "name": "macos-universal-cdk",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "macos-universal-cdk"
+        },
+        {
+          "type": "build",
+          "name": "macos-universal-cdk-install"
+        }
+      ]
+    },
+    {
+      "name": "windows-asan-tests",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "windows-asan-tests"
+        },
+        {
+          "type": "build",
+          "name": "windows-asan-tests"
+        },
+        {
+          "type": "test",
+          "name": "windows-asan-tests"
+        }
+      ]
+    },
+    {
+      "name": "windows-asan-tests-ci",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "windows-asan-tests"
+        },
+        {
+          "type": "build",
+          "name": "windows-asan-tests"
+        },
+        {
+          "type": "test",
+          "name": "windows-asan-tests-ci"
+        }
+      ]
+    },
+    {
+      "name": "linux-asan-tests",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "linux-asan-tests"
+        },
+        {
+          "type": "build",
+          "name": "linux-asan-tests"
+        },
+        {
+          "type": "test",
+          "name": "linux-asan-tests"
+        }
+      ]
+    },
+    {
+      "name": "linux-asan-tests-ci",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "linux-asan-tests"
+        },
+        {
+          "type": "build",
+          "name": "linux-asan-tests"
+        },
+        {
+          "type": "test",
+          "name": "linux-asan-tests-ci"
+        }
+      ]
+    },
+    {
+      "name": "linux-ubsan-tests",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "linux-ubsan-tests"
+        },
+        {
+          "type": "build",
+          "name": "linux-ubsan-tests"
+        },
+        {
+          "type": "test",
+          "name": "linux-ubsan-tests"
+        }
+      ]
+    },
+    {
+      "name": "linux-ubsan-tests-ci",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "linux-ubsan-tests"
+        },
+        {
+          "type": "build",
+          "name": "linux-ubsan-tests"
+        },
+        {
+          "type": "test",
+          "name": "linux-ubsan-tests-ci"
+        }
+      ]
+    },
+    {
+      "name": "linux-tsan-tests",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "linux-tsan-tests"
+        },
+        {
+          "type": "build",
+          "name": "linux-tsan-tests"
+        },
+        {
+          "type": "test",
+          "name": "linux-tsan-tests"
+        }
+      ]
+    },
+    {
+      "name": "linux-tsan-tests-ci",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "linux-tsan-tests"
+        },
+        {
+          "type": "build",
+          "name": "linux-tsan-tests"
+        },
+        {
+          "type": "test",
+          "name": "linux-tsan-tests-ci"
+        }
+      ]
+    },
+    {
+      "name": "linux-coverage-tests",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "linux-coverage-tests"
+        },
+        {
+          "type": "build",
+          "name": "linux-coverage-tests"
+        },
+        {
+          "type": "test",
+          "name": "linux-coverage-tests"
+        }
+      ]
+    },
+    {
+      "name": "linux-coverage-tests-ci",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "linux-coverage-tests"
+        },
+        {
+          "type": "build",
+          "name": "linux-coverage-tests"
+        },
+        {
+          "type": "test",
+          "name": "linux-coverage-tests-ci"
+        }
+      ]
+    }
+  ]
+}

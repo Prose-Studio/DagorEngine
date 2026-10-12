@@ -1,4 +1,3 @@
-# Ported from prog/gameLibs/fftWater/jamfile (jam2cmake/skeleton.py)
 set(sources
   wake.cpp
   waterRenderCommon.cpp
@@ -19,6 +18,8 @@ set(sources
   fftCPU/FFT_CPU_Simulation.cpp
 )
 set(includes ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/gameLibs/fftWater/fftCPU)
-set(deps gameLibs/heightmap engine/lib3d)
+set(deps gameLibs.heightmap engine.lib3d)
 
-dagor_add_library(SOURCES ${sources} PRIVATE_INCLUDES ${includes} DEPS ${deps})
+dagor_add_library(gameLibs.fftWater LAX ${sources})
+target_include_directories(gameLibs.fftWater PRIVATE ${includes})
+target_link_libraries(gameLibs.fftWater PRIVATE ${deps})

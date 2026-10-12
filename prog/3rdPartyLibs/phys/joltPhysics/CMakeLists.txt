@@ -1,5 +1,5 @@
 # Jolt Physics (https://github.com/jrouwe/JoltPhysics.git, rev 7b9fbc356e83e3faaef36311f2d7fd6cc9720916)
-if(NOT DAGOR_PLATFORM MATCHES "^(windows|linux|android|macOS|iOS|tvOS)$")
+if(NOT CMAKE_SYSTEM_NAME MATCHES "^(Android|Darwin|Linux|Windows|iOS|tvOS)$")
   message(FATAL_ERROR "Jolt: ${DAGOR_PLATFORM} is not supported")
 endif()
 set(dirs
@@ -36,26 +36,23 @@ foreach(file IN LISTS renderer)
 endforeach()
 
 set(defines)
-if(DAGOR_PLATFORM STREQUAL "windows")
+if(WIN32)
   list(APPEND defines _CRT_SECURE_NO_WARNINGS _CRT_SECURE_NO_DEPRECATE _SCL_SECURE_NO_WARNINGS)
 endif()
 set(options)
-if(DAGOR_CC STREQUAL "gcc")
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   list(APPEND options -Wno-uninitialized) # on `index` in UnorderedMap.h
 endif()
 dagor_deterministic_fp(options)
-set(source_options)
-if(DAGOR_CC STREQUAL "msvc")
-  list(APPEND source_options Jolt/Physics/Vehicle/MotorcycleController.cpp -wd4756) # overflow in constant arithmetic
+if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+  set_property(SOURCE Jolt/Physics/Vehicle/MotorcycleController.cpp APPEND PROPERTY COMPILE_OPTIONS -wd4756) # overflow in constant arithmetic
   if(DAGOR_ARCH STREQUAL "arm64")
-    list(APPEND source_options Jolt/Math/Vec3.cpp /Od) # for a correct Vec3::sUnitSphere
+    set_property(SOURCE Jolt/Math/Vec3.cpp APPEND PROPERTY COMPILE_OPTIONS /Od) # for a correct Vec3::sUnitSphere
   endif()
 endif()
 
-dagor_add_library(SOURCES ${sources}
-  PRIVATE_INCLUDES ${CMAKE_CURRENT_SOURCE_DIR}
-  PRIVATE_DEFINES ${defines}
-  COMPILE_OPTIONS ${options}
-  SOURCE_OPTIONS ${source_options}
-  DEPS Dagor::JoltSettings
-)
+dagor_add_library(3rdPartyLibs.phys.joltPhysics LAX ${sources})
+target_include_directories(3rdPartyLibs.phys.joltPhysics PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_compile_definitions(3rdPartyLibs.phys.joltPhysics PRIVATE ${defines})
+target_compile_options(3rdPartyLibs.phys.joltPhysics PRIVATE ${options})
+target_link_libraries(3rdPartyLibs.phys.joltPhysics PRIVATE Dagor::JoltSettings)

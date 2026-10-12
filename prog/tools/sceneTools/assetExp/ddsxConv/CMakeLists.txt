@@ -7,10 +7,10 @@ foreach(plugin pc ios and)
   elseif(plugin STREQUAL "and")
     set(defines TEGRA_EXP BUILD_FOR_MOBILE_TEXFMT)
   endif()
-  dagor_add_shared_library(${plugin}DdsxConv CDK_SUBDIR plugins/ddsx NO_CONFIG_POSTFIX
-    OUTPUT_DIR ${CMAKE_BINARY_DIR}/bin/plugins/ddsx
-    SOURCES ddsxConvPc.cpp main_mem.cpp
-    PRIVATE_INCLUDES ${DAGOR_PROG_DIR}/engine/sharedInclude ${DAGOR_PROG_DIR}/tools/sharedInclude
-    PRIVATE_DEFINES ${defines}
-  )
+  dagor_add_library(${plugin}DdsxConv SHARED LAX OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/plugins/ddsx NO_CONFIG_POSTFIX
+    ddsxConvPc.cpp main_mem.cpp)
+  target_include_directories(${plugin}DdsxConv PRIVATE ${DAGOR_PROG_DIR}/engine/sharedInclude
+    ${DAGOR_PROG_DIR}/tools/sharedInclude)
+  target_compile_definitions(${plugin}DdsxConv PRIVATE ${defines})
+  dagor_install_cdk(${plugin}DdsxConv SUBDIR plugins/ddsx)
 endforeach()

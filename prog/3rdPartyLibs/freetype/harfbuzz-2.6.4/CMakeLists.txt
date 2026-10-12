@@ -53,15 +53,14 @@ set(includes
   ${DAGOR_PROG_DIR}/3rdPartyLibs/freetype/freetype-2.8/include
 )
 set(defines __B_NO_MEM_BASE_INCLUDE _CRT_SECURE_NO_WARNINGS HAVE_FREETYPE HB_NO_GETENV HB_USE_ATEXIT)
-if("${DAGOR_PLATFORM}-${DAGOR_ARCH}" STREQUAL "windows-x86_64")
+if(WIN32 AND DAGOR_ARCH STREQUAL "x86_64")
   list(APPEND options -wd4267)
 endif()
-if(DAGOR_PLATFORM MATCHES "^(android|linux)$")
+if(CMAKE_SYSTEM_NAME MATCHES "^(Android|Linux)$")
   list(APPEND defines HAVE_PTHREAD)
 endif()
 
-dagor_add_library(SOURCES ${sources}
-  PRIVATE_INCLUDES ${includes}
-  PRIVATE_DEFINES ${defines}
-  COMPILE_OPTIONS ${options}
-)
+dagor_add_library(3rdPartyLibs.freetype.harfbuzz-2.6.4 LAX ${sources})
+target_include_directories(3rdPartyLibs.freetype.harfbuzz-2.6.4 PRIVATE ${includes})
+target_compile_definitions(3rdPartyLibs.freetype.harfbuzz-2.6.4 PRIVATE ${defines})
+target_compile_options(3rdPartyLibs.freetype.harfbuzz-2.6.4 PRIVATE ${options})

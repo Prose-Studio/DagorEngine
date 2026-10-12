@@ -5,7 +5,9 @@ set(includes
   ${DAGOR_PROG_DIR}/1stPartyLibs/jsoncpp/include
   ${DAGOR_PROG_DIR}/3rdPartyLibs/rapidjson/include
 )
-set(deps gameLibs/quirrel/sqCrossCall)
+set(deps gameLibs.quirrel.sqCrossCall)
 set(sources sqEventBus.cpp bind.cpp)
 
-dagor_add_library(STRICT QUIRREL SOURCES ${sources} PRIVATE_INCLUDES ${includes} DEPS ${deps})
+dagor_add_library(gameLibs.quirrel.sqEventBus ${sources})
+target_include_directories(gameLibs.quirrel.sqEventBus PRIVATE ${includes})
+target_link_libraries(gameLibs.quirrel.sqEventBus PRIVATE Dagor::Quirrel ${deps})

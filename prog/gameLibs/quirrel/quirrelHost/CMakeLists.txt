@@ -8,15 +8,13 @@ set(includes
 set(sources memtrace.cpp sqmem_dagor.cpp)
 # no reuse of freed blocks under ASan, which then sees use after free
 if(DAGOR_SANITIZE STREQUAL "address")
-  list(APPEND source_options sqmem_dagor.cpp -DENABLE_RE_USE=0)
+  set_property(SOURCE sqmem_dagor.cpp APPEND PROPERTY COMPILE_OPTIONS -DENABLE_RE_USE=0)
 endif()
 if(DAGOR_SQ_VAR_TRACE)
   list(APPEND defines SQ_VAR_TRACE_ENABLED)
 endif()
 
-dagor_add_library(QUIRREL_HEADERS
-  SOURCES ${sources}
-  PRIVATE_INCLUDES ${includes}
-  PRIVATE_DEFINES ${defines}
-  SOURCE_OPTIONS ${source_options}
-)
+dagor_add_library(gameLibs.quirrel.quirrelHost LAX ${sources})
+target_include_directories(gameLibs.quirrel.quirrelHost PRIVATE ${includes})
+target_compile_definitions(gameLibs.quirrel.quirrelHost PRIVATE ${defines})
+target_link_libraries(gameLibs.quirrel.quirrelHost PRIVATE Dagor::QuirrelHeaders)

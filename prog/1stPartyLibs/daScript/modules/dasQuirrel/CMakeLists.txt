@@ -1,16 +1,12 @@
-# Ported from prog/1stPartyLibs/daScript/modules/dasQuirrel/jamfile (jam2cmake/skeleton.py)
 set(includes ${DAGOR_PROG_DIR}/1stPartyLibs/daScript/include ${DAGOR_PROG_DIR}/gameLibs/publicInclude/quirrel)
-if(DAGOR_PLATFORM STREQUAL "macOS")
+if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
   list(APPEND options -Wno-deprecated-declarations)
 endif()
 set(AllSrcFolder_CPP src)
 dagor_glob_sources(sources DIRS ${AllSrcFolder_CPP} GLOB *.cpp)
-list(APPEND deps 3rdPartyLibs/eastl 1stPartyLibs/daScript)
+list(APPEND deps 3rdPartyLibs.eastl 1stPartyLibs.daScript)
 
-dagor_add_library(STRICT
-  QUIRREL
-  SOURCES ${sources}
-  PRIVATE_INCLUDES ${includes}
-  COMPILE_OPTIONS ${options}
-  DEPS ${deps}
-)
+dagor_add_library(1stPartyLibs.daScript.modules.dasQuirrel ${sources})
+target_include_directories(1stPartyLibs.daScript.modules.dasQuirrel PRIVATE ${includes})
+target_compile_options(1stPartyLibs.daScript.modules.dasQuirrel PRIVATE ${options})
+target_link_libraries(1stPartyLibs.daScript.modules.dasQuirrel PRIVATE Dagor::Quirrel ${deps})

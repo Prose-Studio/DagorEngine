@@ -1,4 +1,3 @@
-# Ported from prog/gameLibs/render/shaderCacheWarmup/jamfile (jam2cmake/skeleton.py)
 set(includes
   ${DAGOR_PROG_DIR}/engine
   ${DAGOR_PROG_DIR}/engine/sharedInclude
@@ -7,4 +6,5 @@ set(includes
 )
 set(sources shaderCacheWarmup.cpp startup.cpp)
 
-dagor_add_library(SOURCES ${sources} PRIVATE_INCLUDES ${includes})
+dagor_add_library(gameLibs.render.shaderCacheWarmup LAX ${sources})
+target_include_directories(gameLibs.render.shaderCacheWarmup PRIVATE ${includes})

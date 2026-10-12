@@ -1,4 +1,3 @@
-# Ported from prog/gameLibs/webui/plugins/dagor/jamfile (jam2cmake/skeleton.py)
 set(includes
   ${DAGOR_PROG_DIR}/gameLibs/publicInclude
   ${DAGOR_PROG_DIR}/gameLibs/webui
@@ -12,9 +11,7 @@ else()
   list(APPEND sources memmap.cpp)
 endif()
 
-dagor_add_library(STRICT
-  SOURCES ${sources}
-  PRIVATE_INCLUDES ${includes}
-  PRIVATE_DEFINES ${defines}
-  STRINGIFY_ARRAY ${stringify_array}
-)
+dagor_add_library(gameLibs.webui.plugins.dagor ${sources})
+target_include_directories(gameLibs.webui.plugins.dagor PRIVATE ${includes})
+target_compile_definitions(gameLibs.webui.plugins.dagor PRIVATE ${defines})
+dagor_target_stringify(gameLibs.webui.plugins.dagor ARRAY ${stringify_array})

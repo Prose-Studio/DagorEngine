@@ -2,4 +2,5 @@
 set(includes ${DAGOR_PROG_DIR}/tools/sharedInclude ${DAGOR_PROG_DIR}/gameLibs/publicInclude)
 set(sources ambientOcclusion.cpp)
 
-dagor_add_library(SOURCES ${sources} PRIVATE_INCLUDES ${includes})
+dagor_add_library(tools.libTools.ambientOcclusion LAX ${sources})
+target_include_directories(tools.libTools.ambientOcclusion PRIVATE ${includes})

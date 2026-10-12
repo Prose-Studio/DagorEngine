@@ -1,10 +1,11 @@
-# Ported from prog/gameLibs/webui/plugins/screenshot/jamfile (jam2cmake/skeleton.py)
 set(includes
   ${DAGOR_PROG_DIR}/gameLibs/publicInclude
   ${DAGOR_PROG_DIR}/gameLibs/webui
   ${DAGOR_PROG_DIR}/dagorInclude
 )
 set(sources screenshotPlugin.cpp)
-set(deps engine/screenShotSystem)
+set(deps engine.screenShotSystem)
 
-dagor_add_library(STRICT SOURCES ${sources} PRIVATE_INCLUDES ${includes} DEPS ${deps})
+dagor_add_library(gameLibs.webui.plugins.screenshot ${sources})
+target_include_directories(gameLibs.webui.plugins.screenshot PRIVATE ${includes})
+target_link_libraries(gameLibs.webui.plugins.screenshot PRIVATE ${deps})

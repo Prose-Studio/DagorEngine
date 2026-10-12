@@ -6,17 +6,17 @@ set(includes
   ${DAGOR_PROG_DIR}/3rdPartyLibs/math/MathLib
   ${DAGOR_PROG_DIR}/3rdPartyLibs/NRD
 )
-if(NOT DAGOR_GAME_BVH OR DAGOR_CC STREQUAL "msvc")
-  dagor_add_library(STRICT SOURCES denoiser_stub.cpp PRIVATE_INCLUDES ${includes})
+if(NOT DAGOR_GAME_BVH OR CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+  dagor_add_library(gameLibs.render.denoiser denoiser_stub.cpp)
+  target_include_directories(gameLibs.render.denoiser PRIVATE ${includes})
   return()
 endif()
 set(options)
-if(DAGOR_PLATFORM STREQUAL "linux" AND DAGOR_SSE LESS 4)
+if(LINUX AND DAGOR_SSE LESS 4)
   list(APPEND options -msse4) # one binary for the Linux clients: this lib is always SSE4
 endif()
-dagor_add_library(STRICT
-  SOURCES denoiser.cpp
-  PRIVATE_INCLUDES ${includes}
-  PRIVATE_DEFINES SSE2NEON_SUPPRESS_WARNINGS # sse2neon's advisory #warning is fatal as an error
-  COMPILE_OPTIONS ${options}
+dagor_add_library(gameLibs.render.denoiser denoiser.cpp)
+target_include_directories(gameLibs.render.denoiser PRIVATE ${includes})
+target_compile_definitions(gameLibs.render.denoiser PRIVATE SSE2NEON_SUPPRESS_WARNINGS # sse2neon's advisory #warning is fatal as an error
 )
+target_compile_options(gameLibs.render.denoiser PRIVATE ${options})

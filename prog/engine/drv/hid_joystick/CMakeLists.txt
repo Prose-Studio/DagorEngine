@@ -1,4 +1,3 @@
-# Ported from prog/engine/drv/hid_joystick/jamfile (jam2cmake/skeleton.py)
 set(sources
   joy_classdrv.cpp
   joy_device.cpp
@@ -9,4 +8,5 @@ set(sources
 )
 set(includes ${DAGOR_PROG_DIR}/engine/sharedInclude)
 
-dagor_add_library(SOURCES ${sources} PRIVATE_INCLUDES ${includes})
+dagor_add_library(engine.drv.hid_joystick LAX ${sources})
+target_include_directories(engine.drv.hid_joystick PRIVATE ${includes})

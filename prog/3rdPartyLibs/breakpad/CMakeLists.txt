@@ -1,14 +1,16 @@
 # Google Breakpad's crash handling client: minidump writing and the exception handler
+add_subdirectory(common)
+
 set(includes
   ${DAGOR_PROG_DIR}/3rdPartyLibs/breakpad
   ${DAGOR_PROG_DIR}/3rdPartyLibs/arc/zlib-ng
   ${DAGOR_PROG_DIR}/engine/sharedInclude
   ${DAGOR_PROG_DIR}/engine/kernel
 )
-set(deps 3rdPartyLibs/arc/zlib-ng)
-if(DAGOR_PLATFORM STREQUAL "windows")
+set(deps 3rdPartyLibs.arc.zlib-ng)
+if(WIN32)
   list(APPEND defines UNICODE)
-  list(APPEND deps 3rdPartyLibs/breakpad/common/windows)
+  list(APPEND deps 3rdPartyLibs.breakpad.common.windows)
   set(sources
     client/windows/crash_generation/minidump_generator.cc
     client/windows/crash_generation/client_info.cc
@@ -16,8 +18,8 @@ if(DAGOR_PLATFORM STREQUAL "windows")
     client/windows/handler/exception_handler.cc
   )
 endif()
-if(DAGOR_PLATFORM STREQUAL "linux")
-  list(APPEND deps 3rdPartyLibs/breakpad/common 3rdPartyLibs/breakpad/common/linux)
+if(LINUX)
+  list(APPEND deps 3rdPartyLibs.breakpad.common 3rdPartyLibs.breakpad.common.linux)
   set(sources
     client/linux/crash_generation/crash_generation_client.cc
     client/linux/minidump_writer/linux_dumper.cc
@@ -34,8 +36,8 @@ if(DAGOR_PLATFORM STREQUAL "linux")
     client/minidump_file_writer.cc
   )
 endif()
-if(DAGOR_PLATFORM STREQUAL "macOS")
-  list(APPEND deps 3rdPartyLibs/breakpad/common 3rdPartyLibs/breakpad/common/mac)
+if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+  list(APPEND deps 3rdPartyLibs.breakpad.common 3rdPartyLibs.breakpad.common.mac)
   set(sources
     client/mac/handler/breakpad_nlist_64.cc
     client/mac/handler/dynamic_images.cc
@@ -44,16 +46,15 @@ if(DAGOR_PLATFORM STREQUAL "macOS")
     client/mac/handler/protected_memory_allocator.cc
     client/minidump_file_writer.cc
   )
-  list(APPEND libs pthread)
+  list(APPEND libs System::pthread)
 endif()
-if(DAGOR_CC MATCHES "^(clang|clang\-cl)$")
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   list(APPEND options -Wno-stack-protector)
 endif()
 
-dagor_add_library(SOURCES ${sources}
-  PRIVATE_INCLUDES ${includes}
-  PRIVATE_DEFINES ${defines}
-  COMPILE_OPTIONS ${options}
-  DEPS ${deps}
-  SYSTEM_LIBS ${libs}
-)
+dagor_add_library(3rdPartyLibs.breakpad LAX ${sources})
+target_include_directories(3rdPartyLibs.breakpad PRIVATE ${includes})
+target_compile_definitions(3rdPartyLibs.breakpad PRIVATE ${defines})
+target_compile_options(3rdPartyLibs.breakpad PRIVATE ${options})
+target_link_libraries(3rdPartyLibs.breakpad PRIVATE ${deps})
+target_link_libraries(3rdPartyLibs.breakpad PUBLIC ${libs})

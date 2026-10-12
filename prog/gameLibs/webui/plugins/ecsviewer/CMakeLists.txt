@@ -1,4 +1,3 @@
-# Ported from prog/gameLibs/webui/plugins/ecsviewer/jamfile (jam2cmake/skeleton.py)
 set(includes
   ${DAGOR_PROG_DIR}/gameLibs/publicInclude
   ${DAGOR_PROG_DIR}/gameLibs
@@ -8,4 +7,6 @@ set(sources ecsViewerPlugin.cpp ecsViewerPluginListener.cpp)
 set(SourceHTML ecsViewer.html)
 list(APPEND stringify ${SourceHTML})
 
-dagor_add_library(STRICT SOURCES ${sources} PRIVATE_INCLUDES ${includes} STRINGIFY ${stringify})
+dagor_add_library(gameLibs.webui.plugins.ecsviewer ${sources})
+target_include_directories(gameLibs.webui.plugins.ecsviewer PRIVATE ${includes})
+dagor_target_stringify(gameLibs.webui.plugins.ecsviewer ${stringify})

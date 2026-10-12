@@ -1,11 +1,11 @@
 # The physics engine of the tree (jam's PhysName, prog/3rdPartyLibs/phys/setup-phys.jam): Dagor::Phys, which the
-# libraries that use it link, carries its definitions, include dir and engine/phys library. DAGOR_PHYS is Jolt, or
-# Bullet in the tool trees.
+# libraries that use it link, carries its definitions, include dir and engine/phys library (engine.phys.physJolt or
+# engine.phys.physBullet). DAGOR_PHYS is Jolt, or Bullet in the tool trees.
 include_guard(GLOBAL)
 
 add_library(DagorPhys INTERFACE)
 add_library(Dagor::Phys ALIAS DagorPhys)
-_dagor_configs_cond(_dagor_phys_checked ${DAGOR_CHECKED_CONTAINERS_CONFIGS})
+_dagor_configs(_dagor_phys_checked ${DAGOR_CHECKED_CONTAINERS_CONFIGS})
 # Jolt's own settings (joltPhysics/setup.jam), for Jolt, engine/phys/physJolt and the users of Dagor::Phys
 add_library(DagorJoltSettings INTERFACE)
 add_library(Dagor::JoltSettings ALIAS DagorJoltSettings)
@@ -31,19 +31,16 @@ if(DAGOR_PHYS STREQUAL "Jolt")
   target_compile_definitions(DagorPhys INTERFACE USE_JOLT_PHYSICS)
   target_include_directories(DagorPhys INTERFACE "${DAGOR_PROG_DIR}/3rdPartyLibs/phys/joltPhysics")
   target_link_libraries(DagorPhys INTERFACE Dagor::JoltSettings)
-  set(DAGOR_PHYS_DIR engine/phys/physJolt)
+  target_link_libraries(DagorPhys INTERFACE engine.phys.physJolt)
 else()
   target_compile_definitions(DagorPhys INTERFACE USE_BULLET_PHYSICS BT_THREADSAFE "$<${_dagor_phys_checked}:BT_DEBUG>")
-  if(NOT DAGOR_PLATFORM STREQUAL "macOS")
+  if(NOT CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     target_compile_definitions(DagorPhys INTERFACE B3_USE_CLEW)
   endif()
-  if(DAGOR_PLATFORM STREQUAL "android")
+  if(ANDROID)
     target_compile_definitions(DagorPhys INTERFACE BT_USE_NEON BT_USE_SIMD_VECTOR3 BT_NO_SYSCTL)
   endif()
   target_include_directories(DagorPhys INTERFACE "${DAGOR_PROG_DIR}/3rdPartyLibs/phys/bullet-3/src")
-  set(DAGOR_PHYS_DIR engine/phys/physBullet)
+  target_link_libraries(DagorPhys INTERFACE engine.phys.physBullet)
 endif()
-# the engine's physics library, added to the tree when a target links Dagor::Phys (see _dagor_link)
-dagor_ref_target("${DAGOR_PHYS_DIR}" _dagor_phys_lib)
-target_link_libraries(DagorPhys INTERFACE ${_dagor_phys_lib})
-unset(_dagor_phys_lib)
+unset(_dagor_phys_checked)

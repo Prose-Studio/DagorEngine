@@ -1,4 +1,6 @@
 # sha1/sha256/sha3/md5/xxhash/crc32/rijndael; the SHA-2 implementation comes from OpenSSL's sha module
+add_subdirectory(BLAKE3)
+
 set(sources
   sha1.cpp
   sha256.cpp
@@ -13,24 +15,20 @@ set(sources
   SHA3IUF/sha3.c
 )
 set(c_options)
-set(source_options)
-if(DAGOR_CC STREQUAL "msvc")
+if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
   # warning 6386: Buffer overrun: accessing 'argument 1', the writable size is '64' bytes, but '746' bytes might be written
   list(APPEND c_options /wd6386)
-elseif(DAGOR_CC STREQUAL "clang-cl" AND DAGOR_ARCH STREQUAL "x86_64")
-  list(APPEND source_options crc32c.c -mcrc32)
+elseif((MSVC AND CMAKE_CXX_COMPILER_ID STREQUAL "Clang") AND DAGOR_ARCH STREQUAL "x86_64")
+  set_property(SOURCE crc32c.c APPEND PROPERTY COMPILE_OPTIONS -mcrc32)
 endif()
 set(options)
 if(DAGOR_ARCH STREQUAL "e2k")
   list(APPEND options -Wno-reduced-alignment)
 endif()
 
-dagor_add_library(
-  SOURCES ${sources}
-  PRIVATE_INCLUDES . SHA3IUF ${DAGOR_PROG_DIR}/3rdPartyLibs/openssl-3.x/include
-  PRIVATE_DEFINES OPENSSL_SUPPRESS_DEPRECATED
-  COMPILE_OPTIONS ${options}
-  C_OPTIONS ${c_options}
-  SOURCE_OPTIONS ${source_options}
-  DEPS 3rdPartyLibs/openssl-3.x/crypto/sha
-)
+dagor_add_library(3rdPartyLibs.hash LAX ${sources})
+target_include_directories(3rdPartyLibs.hash PRIVATE . SHA3IUF ${DAGOR_PROG_DIR}/3rdPartyLibs/openssl-3.x/include)
+target_compile_definitions(3rdPartyLibs.hash PRIVATE OPENSSL_SUPPRESS_DEPRECATED)
+target_compile_options(3rdPartyLibs.hash PRIVATE ${options})
+target_compile_options(3rdPartyLibs.hash PRIVATE "$<$<COMPILE_LANGUAGE:C>:${c_options}>")
+target_link_libraries(3rdPartyLibs.hash PRIVATE 3rdPartyLibs.openssl-3.x.crypto.sha)

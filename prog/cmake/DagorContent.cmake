@@ -1,9 +1,9 @@
 # Content built by the tree's tools: dagor_add_shaders() (tracked by CMake), dagor_add_content_step() (tracked by its
 # tool).
 #
-# dagor_add_shaders(<name> COMPILER <dsc2 target> BLK <shaders.blk> OUTPUT <dir>/<base> [ARGS <compiler args>...]
+# dagor_add_shaders(<name> COMPILER <dsc2 tool> BLK <shaders.blk> OUTPUT <dir>/<base> [ARGS <compiler args>...]
 #                   [INSTALL <dir> COMPONENT <component>])
-# A target that compiles the shaders of <shaders.blk> with a shader compiler of the tree (dsc2-dx12, ...) into the
+# A target that compiles the shaders of <shaders.blk> with a shader compiler (dsc2-dx12, ...: dagor_host_tool) into the
 # dumps <dir>/<base>.<profile>.shdump.bin, when the compiler or a shader source changes (the .dshl/.hlsl files of the
 # blk's dir and of its incDir dirs). It runs in the blk's dir, as the shader scripts did; the intermediate files go to
 # the build dir. INSTALL also installs the dumps into <dir> of the install prefix.
@@ -20,7 +20,7 @@ function(dagor_add_shaders name)
       message(FATAL_ERROR "dagor_add_shaders(${name}): ${required} is required")
     endif()
   endforeach()
-  _dagor_abs_paths(blk "${arg_BLK}")
+  cmake_path(ABSOLUTE_PATH arg_BLK NORMALIZE OUTPUT_VARIABLE blk)
   cmake_path(GET blk PARENT_PATH blk_dir)
   cmake_path(GET arg_OUTPUT PARENT_PATH out_dir)
   cmake_path(GET arg_OUTPUT FILENAME out_base)
@@ -40,15 +40,16 @@ function(dagor_add_shaders name)
   endforeach()
   file(GLOB_RECURSE shader_sources CONFIGURE_DEPENDS ${patterns})
 
+  dagor_host_tool(${arg_COMPILER} compiler)
   set(work "${CMAKE_CURRENT_BINARY_DIR}/shaders/${name}")
   set(stamp "${work}/${name}.stamp")
   add_custom_command(OUTPUT "${stamp}"
     COMMAND "${CMAKE_COMMAND}" -E make_directory "${out_dir}"
-    COMMAND "$<TARGET_FILE:${arg_COMPILER}>" "${blk}" -out "${arg_OUTPUT}" -q -shaderOn -nodisassembly -commentPP
+    COMMAND "${compiler}" "${blk}" -out "${arg_OUTPUT}" -q -shaderOn -nodisassembly -commentPP
       -codeDumpErr ${arg_ARGS} -o "${work}/obj"
     COMMAND "${CMAKE_COMMAND}" -E touch "${stamp}"
     WORKING_DIRECTORY "${blk_dir}"
-    DEPENDS "${blk}" ${shader_sources} ${arg_COMPILER}
+    DEPENDS "${blk}" ${shader_sources} ${compiler_DEPENDS}
     COMMENT "Compiling the shaders of ${name} (${arg_COMPILER})"
     JOB_POOL dagor_content
     VERBATIM)
@@ -65,8 +66,7 @@ endfunction()
 
 # dagor_add_content_step(<name> (TOOL <engine tool> | COMMAND <command>...) [ARGS <argument>...]
 #                        [WORKING_DIRECTORY <dir>] [GROUP <target>] [DEPENDS <target>...] [COMMENT <text>])
-# A target that runs an engine tool (dagor_host_tool: the tree's own, a CDK's or the host CDK built on demand) or a
-# command whenever it is built, for content whose tool keeps track of what changed itself (the shader compilers'
+# A target that runs an engine tool (dagor_host_tool) or a command whenever it is built, for content whose tool keeps track of what changed itself (the shader compilers'
 # caches, daBuild's, vromfsPacker): a game's shaders, vromfs and assets. It is not part of the default build; GROUP
 # (a target made on first use) builds it with the other steps of that group, DEPENDS after other steps.
 function(dagor_add_content_step name)
@@ -83,7 +83,7 @@ function(dagor_add_content_step name)
   endif()
   set(dir "${CMAKE_CURRENT_SOURCE_DIR}")
   if(arg_WORKING_DIRECTORY)
-    _dagor_abs_paths(dir "${arg_WORKING_DIRECTORY}")
+    cmake_path(ABSOLUTE_PATH arg_WORKING_DIRECTORY NORMALIZE OUTPUT_VARIABLE dir)
   endif()
   set(comment "${arg_COMMENT}")
   if(NOT comment)

@@ -18,8 +18,11 @@ set(sources
   pngwutil.c
 )
 set(defines PNG_NO_CONSOLE_IO PNG_NO_WRITE_FLUSH)
-if(DAGOR_ARCH STREQUAL "x86_64" AND DAGOR_PLATFORM STREQUAL "windows")
+if(DAGOR_ARCH STREQUAL "x86_64" AND WIN32)
   list(APPEND c_options /wd4267)
 endif()
 
-dagor_add_library(SOURCES ${sources} PRIVATE_INCLUDES ${includes} PRIVATE_DEFINES ${defines} C_OPTIONS ${c_options})
+dagor_add_library(3rdPartyLibs.image.libpng-1.4.22 LAX ${sources})
+target_include_directories(3rdPartyLibs.image.libpng-1.4.22 PRIVATE ${includes})
+target_compile_definitions(3rdPartyLibs.image.libpng-1.4.22 PRIVATE ${defines})
+target_compile_options(3rdPartyLibs.image.libpng-1.4.22 PRIVATE "$<$<COMPILE_LANGUAGE:C>:${c_options}>")

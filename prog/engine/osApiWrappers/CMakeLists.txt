@@ -4,6 +4,9 @@
 # stubs otherwise. A program chooses with the DAGOR_LINUX_GUI target property (dagor_add_executable(... PROPERTIES
 # DAGOR_LINUX_GUI ON)), or gets ON from a library that sets INTERFACE_DAGOR_LINUX_GUI (the Vulkan driver); see
 # dagor_add_link_choice().
+add_subdirectory(linuxGUI)
+add_subdirectory(messageBox)
+
 set(sources
   critsec.cpp
   timedCritsec.cpp
@@ -46,7 +49,7 @@ set(sources
   versionQuery.cpp
   winVersionQuery.cpp
 )
-if(DAGOR_PLATFORM STREQUAL "windows" AND DAGOR_ARCH STREQUAL "x86_64")
+if(WIN32 AND DAGOR_ARCH STREQUAL "x86_64")
   list(APPEND sources fastStackCapture.cpp)
 else()
   list(APPEND sources fastStackCaptureStub.cpp)
@@ -64,52 +67,48 @@ else()
   set(posix_async_read posix/posixAIOAsyncRead.cpp)
 endif()
 
-if(DAGOR_PLATFORM STREQUAL "windows")
+if(WIN32)
   list(APPEND sources dbgStr.cpp findFile.cpp winSetTitle.cpp stackHlpFill.cpp stackHlpGet.cpp addressWaitWinApi.cpp
     winClipboard.cpp winHwExceptUtils.cpp winXStateFeatures.cpp winapiAsyncRead.cpp dynLib.cpp)
-  list(APPEND deps engine/osApiWrappers/messageBox)
-  list(APPEND libs Shell32 Version)
-elseif(DAGOR_PLATFORM MATCHES "^(macOS|iOS|tvOS)$")
-  if(DAGOR_PLATFORM STREQUAL "macOS")
+  list(APPEND deps engine.osApiWrappers.messageBox)
+  list(APPEND libs System::shell32 System::version)
+elseif(APPLE)
+  if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     list(APPEND sources macosx/mac_shell.mm)
-    list(APPEND deps engine/osApiWrappers/messageBox)
-  elseif(DAGOR_PLATFORM STREQUAL "iOS")
+    list(APPEND deps engine.osApiWrappers.messageBox)
+  elseif(IOS)
     list(APPEND sources ios/iOS_shell.mm ios/iOS_windowScene.mm)
-    list(APPEND deps engine/osApiWrappers/messageBox)
+    list(APPEND deps engine.osApiWrappers.messageBox)
   else()
     list(APPEND sources ios/iOS_shell.mm ios/iOS_windowScene.mm tvos/tvOS_storage.mm tvos/tvOS_appstore.mm tvos/tvOS_callbacks.mm
       tvos/tvOS_logimpl.mm tvos/eventviewcontroller.mm tvos/gamecenterview.mm tvos/inetview.mm
       tvos/matchcontroller.mm tvos/storekitview.mm)
-    list(APPEND deps engine/osApiWrappers/messageBox/stub)
+    list(APPEND deps engine.osApiWrappers.messageBox.stub)
   endif()
   list(APPEND sources stackHlpFill.cpp stackHlpGet.cpp macosx/macDbgStr.mm macosx/macSetTitle.mm
     macosx/macClipboard.mm macosx/addressWaitOsSync.cpp convertUTF.cpp dynLib.cpp ${posix_async_read})
   list(APPEND options -Wno-error)
-elseif(DAGOR_PLATFORM MATCHES "^(linux|android)$")
+elseif(CMAKE_SYSTEM_NAME MATCHES "^(Android|Linux)$")
   list(APPEND sources dbgStr.cpp stackHlpFill.cpp stackHlpGet.cpp dynLib.cpp convertUTF.cpp linux/addressWaitFutex.cpp)
-  if(DAGOR_PLATFORM STREQUAL "android")
+  if(ANDROID)
     list(APPEND sources posix/posixThreadAsyncRead.cpp android/androidClipboard.cpp)
     list(APPEND includes ${DAGOR_PROG_DIR}/3rdPartyLibs/libunwind/include)
-    list(APPEND deps engine/osApiWrappers/messageBox/stub 3rdPartyLibs/libunwind)
+    list(APPEND deps engine.osApiWrappers.messageBox.stub 3rdPartyLibs.libunwind)
   else()
     list(APPEND sources ${posix_async_read})
     # the GUI or the stubs, by the DAGOR_LINUX_GUI property of the program this ends up in
-    dagor_use(engine/osApiWrappers/linuxGUI)
-    dagor_add_library(engine.osApiWrappers.noGUI STRICT
-      SOURCES linux/linuxSetTitleStub.cpp linux/linuxClipboardStub.cpp
-      PRIVATE_INCLUDES ${includes}
-      PRIVATE_DEFINES __B_KERNEL_LIB)
+    dagor_add_library(engine.osApiWrappers.noGUI linux/linuxSetTitleStub.cpp linux/linuxClipboardStub.cpp)
+    target_include_directories(engine.osApiWrappers.noGUI PRIVATE ${includes})
+    target_compile_definitions(engine.osApiWrappers.noGUI PRIVATE __B_KERNEL_LIB)
     dagor_add_link_choice(engine.osApiWrappers.linuxShell PROPERTY DAGOR_LINUX_GUI
       ON engine.osApiWrappers.linuxGUI OFF engine.osApiWrappers.noGUI)
     list(APPEND deps engine.osApiWrappers.linuxShell)
   endif()
 endif()
 
-dagor_add_library(STRICT
-  SOURCES ${sources}
-  PRIVATE_INCLUDES ${includes}
-  PRIVATE_DEFINES __B_KERNEL_LIB
-  COMPILE_OPTIONS ${options}
-  DEPS ${deps}
-  SYSTEM_LIBS ${libs}
-)
+dagor_add_library(engine.osApiWrappers ${sources})
+target_include_directories(engine.osApiWrappers PRIVATE ${includes})
+target_compile_definitions(engine.osApiWrappers PRIVATE __B_KERNEL_LIB)
+target_compile_options(engine.osApiWrappers PRIVATE ${options})
+target_link_libraries(engine.osApiWrappers PRIVATE ${deps})
+target_link_libraries(engine.osApiWrappers PUBLIC ${libs})

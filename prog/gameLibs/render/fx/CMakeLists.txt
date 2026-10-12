@@ -11,4 +11,6 @@ set(sources
   flare.cpp
 )
 
-dagor_add_library(STRICT FRAME_LIMIT 262144 SOURCES ${sources} PRIVATE_INCLUDES ${includes})
+dagor_add_library(gameLibs.render.fx ${sources})
+target_include_directories(gameLibs.render.fx PRIVATE ${includes})
+set_target_properties(gameLibs.render.fx PROPERTIES DAGOR_FRAME_LIMIT 262144)

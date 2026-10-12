@@ -2,4 +2,5 @@
 set(includes ${DAGOR_PROG_DIR}/gameLibs/publicInclude)
 set(sources dxtcompress.cpp bcCompressor.cpp)
 
-dagor_add_library(STRICT SOURCES ${sources} PRIVATE_INCLUDES ${includes})
+dagor_add_library(gameLibs.render.texcompressors ${sources})
+target_include_directories(gameLibs.render.texcompressors PRIVATE ${includes})

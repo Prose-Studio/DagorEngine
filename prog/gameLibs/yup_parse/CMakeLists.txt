@@ -5,6 +5,8 @@ set(includes
   ${DAGOR_PROG_DIR}/engine/dagorInclude
 )
 set(sources yup.cpp)
-list(APPEND deps 3rdPartyLibs/bencode)
+list(APPEND deps 3rdPartyLibs.bencode)
 
-dagor_add_library(STRICT SOURCES ${sources} PRIVATE_INCLUDES ${includes} DEPS ${deps})
+dagor_add_library(gameLibs.yup_parse ${sources})
+target_include_directories(gameLibs.yup_parse PRIVATE ${includes})
+target_link_libraries(gameLibs.yup_parse PRIVATE ${deps})

@@ -1,6 +1,7 @@
-# Ported from prog/gameLibs/gamePhys/collision/rendinst/jamfile (jam2cmake/skeleton.py)
 set(includes ${DAGOR_PROG_DIR}/gameLibs/publicInclude)
 set(sources rendinstCollisionWrapper.cpp rendinstCollisionUserInfo.cpp rendinstContactResultWrapper.cpp)
 list(APPEND deps Dagor::Phys)
 
-dagor_add_library(STRICT SOURCES ${sources} PRIVATE_INCLUDES ${includes} DEPS ${deps})
+dagor_add_library(gameLibs.gamePhys.collision.rendinst ${sources})
+target_include_directories(gameLibs.gamePhys.collision.rendinst PRIVATE ${includes})
+target_link_libraries(gameLibs.gamePhys.collision.rendinst PRIVATE ${deps})

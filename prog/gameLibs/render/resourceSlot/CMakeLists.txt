@@ -1,4 +1,3 @@
-# Ported from prog/gameLibs/render/resourceSlot/jamfile (jam2cmake/skeleton.py)
 set(includes
   ${DAGOR_PROG_DIR}/1stPartyLibs/daScript/include
   ${DAGOR_PROG_DIR}/gameLibs/publicInclude
@@ -19,4 +18,5 @@ set(sources
   das/actionList.cpp
 )
 
-dagor_add_library(STRICT SOURCES ${sources} PRIVATE_INCLUDES ${includes})
+dagor_add_library(gameLibs.render.resourceSlot ${sources})
+target_include_directories(gameLibs.render.resourceSlot PRIVATE ${includes})

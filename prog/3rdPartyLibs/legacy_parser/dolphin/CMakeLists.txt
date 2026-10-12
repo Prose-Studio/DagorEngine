@@ -2,24 +2,22 @@
 # the source tree; here it is a program of the tree that the parser generation runs, and part of the CDK.
 file(GLOB sources CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
 set(options)
-if(DAGOR_PLATFORM MATCHES "^(linux|macOS)$")
+if(CMAKE_SYSTEM_NAME MATCHES "^(Darwin|Linux)$")
   list(APPEND options -funsigned-char)
 endif()
-if(DAGOR_CC MATCHES "^(clang|clang-cl)$")
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   list(APPEND options -Wno-potentially-evaluated-expression)
-  if(DAGOR_PLATFORM MATCHES "^(linux|macOS)$")
+  if(CMAKE_SYSTEM_NAME MATCHES "^(Darwin|Linux)$")
     list(APPEND options -Wno-deprecated-declarations)
   endif()
-  if(DAGOR_PLATFORM STREQUAL "linux")
+  if(LINUX)
     list(APPEND options -Wno-sometimes-uninitialized)
   endif()
 endif()
 
-dagor_add_executable(dolphin CONSOLE CDK NO_CONFIG_POSTFIX
-  EXCEPTIONS SEH
-  RTTI ON
-  SOURCES ${sources}
-  PRIVATE_INCLUDES nstl hash
-  PRIVATE_DEFINES __B_NO_MEM_BASE_INCLUDE
-  COMPILE_OPTIONS ${options}
-)
+dagor_add_executable(dolphin LAX NO_CONFIG_POSTFIX ${sources})
+target_include_directories(dolphin PRIVATE nstl hash)
+target_compile_definitions(dolphin PRIVATE __B_NO_MEM_BASE_INCLUDE)
+target_compile_options(dolphin PRIVATE ${options})
+set_target_properties(dolphin PROPERTIES DAGOR_EXCEPTIONS SEH DAGOR_RTTI ON)
+dagor_install_cdk(dolphin)

@@ -2,4 +2,5 @@
 set(includes ${DAGOR_PROG_DIR}/tools/sharedInclude)
 set(sources fp_edActions.cpp fp_edbone.cpp fp_edclipper.cpp fp_edpoint.cpp fp_export.cpp)
 
-dagor_add_library(SOURCES ${sources} PRIVATE_INCLUDES ${includes})
+dagor_add_library(tools.libTools.fastPhysData LAX ${sources})
+target_include_directories(tools.libTools.fastPhysData PRIVATE ${includes})

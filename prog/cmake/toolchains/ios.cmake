@@ -1,0 +1,31 @@
+# iOS (arm64 devices) with the Xcode clang selected by xcode-select (or DEVELOPER_DIR), on a macOS host.
+# DAGOR_IOS_MIN_VERSION is the deployment target; CMake's own iOS support does the rest (CMAKE_SYSTEM_NAME iOS).
+include("${CMAKE_CURRENT_LIST_DIR}/_common.cmake")
+dagor_toolchain_forward(DAGOR_IOS_MIN_VERSION)
+
+if(NOT CMAKE_HOST_APPLE)
+  message(FATAL_ERROR "iOS builds need a macOS host with Xcode")
+endif()
+execute_process(COMMAND xcrun --sdk iphoneos --find clang OUTPUT_VARIABLE _dagor_clang OUTPUT_STRIP_TRAILING_WHITESPACE
+                RESULT_VARIABLE _dagor_result ERROR_QUIET)
+if(NOT _dagor_result EQUAL 0 OR NOT _dagor_clang)
+  message(FATAL_ERROR "Xcode with the iOS SDK was not found: install Xcode and run 'xcode-select -s /Applications/Xcode.app'")
+endif()
+execute_process(COMMAND xcrun --sdk iphoneos --find clang++ OUTPUT_VARIABLE _dagor_clangxx OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+set(CMAKE_SYSTEM_NAME iOS)
+set(CMAKE_SYSTEM_PROCESSOR arm64)
+set(CMAKE_OSX_SYSROOT iphoneos)
+set(CMAKE_OSX_ARCHITECTURES arm64 CACHE STRING "")
+if(NOT DAGOR_IOS_MIN_VERSION)
+  set(DAGOR_IOS_MIN_VERSION 15.0)
+endif()
+set(CMAKE_OSX_DEPLOYMENT_TARGET "${DAGOR_IOS_MIN_VERSION}" CACHE STRING "Minimum iOS version")
+set(CMAKE_C_COMPILER "${_dagor_clang}")
+set(CMAKE_CXX_COMPILER "${_dagor_clangxx}")
+set(CMAKE_OBJC_COMPILER "${_dagor_clang}")
+set(CMAKE_OBJCXX_COMPILER "${_dagor_clangxx}")
+set(DAGOR_ARCH arm64 CACHE STRING "Target architecture" FORCE)
+unset(_dagor_clang)
+unset(_dagor_clangxx)
+unset(_dagor_result)

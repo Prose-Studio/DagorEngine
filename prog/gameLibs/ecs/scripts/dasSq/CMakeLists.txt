@@ -1,4 +1,3 @@
-# Ported from prog/gameLibs/ecs/scripts/dasSq/jamfile (jam2cmake/skeleton.py)
 set(includes
   ${DAGOR_PROG_DIR}/gameLibs/publicInclude
   ${DAGOR_PROG_DIR}/gameLibs/publicInclude/quirrel
@@ -7,11 +6,9 @@ set(includes
 )
 file(GLOB AllSources RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
 set(sources ${AllSources})
-list(APPEND deps
-  gameLibs/quirrel/quirrel_json
-  gameLibs/ecs/scripts/sq
-  gameLibs/ecs/scripts/das
-  gameLibs/quirrel/bindQuirrelEx
-)
+list(APPEND deps gameLibs.quirrel.quirrel_json gameLibs.ecs.scripts.sq gameLibs.ecs.scripts.das
+  gameLibs.quirrel.bindQuirrelEx)
 
-dagor_add_library(STRICT QUIRREL SOURCES ${sources} PRIVATE_INCLUDES ${includes} DEPS ${deps})
+dagor_add_library(gameLibs.ecs.scripts.dasSq ${sources})
+target_include_directories(gameLibs.ecs.scripts.dasSq PRIVATE ${includes})
+target_link_libraries(gameLibs.ecs.scripts.dasSq PRIVATE Dagor::Quirrel ${deps})

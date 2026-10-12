@@ -6,4 +6,5 @@ set(includes
 set(AllSrcFolder_C enc dec common)
 dagor_glob_sources(sources DIRS ${AllSrcFolder_C} GLOB *.c)
 
-dagor_add_library(SOURCES ${sources} PRIVATE_INCLUDES ${includes})
+dagor_add_library(3rdPartyLibs.arc.brotli LAX ${sources})
+target_include_directories(3rdPartyLibs.arc.brotli PRIVATE ${includes})

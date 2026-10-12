@@ -1,8 +1,8 @@
 # daProfiler: the engine's CPU/GPU profiler with its capture and dump formats
 set(includes ${DAGOR_PROG_DIR}/engine/perfMon/daProfiler ${DAGOR_PROG_DIR}/engine/sharedInclude)
-if(DAGOR_PLATFORM STREQUAL "android")
+if(ANDROID)
   list(APPEND includes ${DAGOR_PROG_DIR}/3rdPartyLibs/libunwind/include)
-  list(APPEND deps 3rdPartyLibs/libunwind)
+  list(APPEND deps 3rdPartyLibs.libunwind)
 endif()
 set(sources
   daProfiler.cpp
@@ -29,15 +29,18 @@ set(sources
   daProfilerUserSettingsDump.cpp
   daProfilerSymbolsCache.cpp
 )
-if(DAGOR_PLATFORM STREQUAL "windows")
+if(WIN32)
   list(APPEND sources stackUnwinder/unwindStackWin.cpp)
-elseif(DAGOR_PLATFORM STREQUAL "android")
+elseif(ANDROID)
   list(APPEND sources stackUnwinder/unwindStackAndroid.cpp)
-elseif(DAGOR_PLATFORM MATCHES "^(iOS|macOS|tvOS)$")
+elseif(APPLE)
   list(APPEND sources stackUnwinder/unwindStackMac.cpp)
 else()
   list(APPEND sources stackUnwinder/unwindStackDagor.cpp)
 endif()
 set(defines __B_KERNEL_LIB)
 
-dagor_add_library(STRICT SOURCES ${sources} PRIVATE_INCLUDES ${includes} PRIVATE_DEFINES ${defines} DEPS ${deps})
+dagor_add_library(engine.perfMon.daProfiler ${sources})
+target_include_directories(engine.perfMon.daProfiler PRIVATE ${includes})
+target_compile_definitions(engine.perfMon.daProfiler PRIVATE ${defines})
+target_link_libraries(engine.perfMon.daProfiler PRIVATE ${deps})

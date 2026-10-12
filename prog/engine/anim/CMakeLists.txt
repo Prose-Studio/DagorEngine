@@ -12,7 +12,7 @@ set(sources
   simpleNodeAnim.cpp
 )
 set(options)
-if(DAGOR_CC MATCHES "^(clang|clang-cl)$")
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   list(APPEND options -Wno-undefined-bool-conversion)
 endif()
 foreach(build standard measurePerf)
@@ -20,12 +20,11 @@ foreach(build standard measurePerf)
   if(build STREQUAL "measurePerf")
     set(defines MEASURE_PERF=1)
   endif()
-  dagor_add_library(engine.anim.${build} STRICT
-    SOURCES ${sources}
-    PRIVATE_INCLUDES ${DAGOR_PROG_DIR}/engine/sharedInclude ${DAGOR_PROG_DIR}/3rdPartyLibs/acl/includes
-    PRIVATE_DEFINES ${defines}
-    COMPILE_OPTIONS ${options}
-    DEPS 3rdPartyLibs/regExp
-  )
+  dagor_add_library(engine.anim.${build} ${sources})
+  target_include_directories(engine.anim.${build} PRIVATE ${DAGOR_PROG_DIR}/engine/sharedInclude
+    ${DAGOR_PROG_DIR}/3rdPartyLibs/acl/includes)
+  target_compile_definitions(engine.anim.${build} PRIVATE ${defines})
+  target_compile_options(engine.anim.${build} PRIVATE ${options})
+  target_link_libraries(engine.anim.${build} PRIVATE 3rdPartyLibs.regExp)
 endforeach()
 dagor_add_link_choice(engine.anim PROPERTY DAGOR_MEASURE_PERF ON engine.anim.measurePerf OFF engine.anim.standard)

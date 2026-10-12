@@ -1,9 +1,11 @@
 # Core utilities: simple parameter blocks, base64, localization tables, fly mode
 set(sources simplePBlock.cpp base64.cpp localization.cpp)
-if(NOT DAGOR_PLATFORM STREQUAL "android" OR TRUE)
+if(NOT ANDROID OR TRUE)
   list(APPEND sources flyMode.cpp)
 endif()
 set(includes ${DAGOR_PROG_DIR}/engine/sharedInclude)
-set(deps 3rdPartyLibs/eastl)
+set(deps 3rdPartyLibs.eastl)
 
-dagor_add_library(STRICT SOURCES ${sources} PRIVATE_INCLUDES ${includes} DEPS ${deps})
+dagor_add_library(engine.coreUtil ${sources})
+target_include_directories(engine.coreUtil PRIVATE ${includes})
+target_link_libraries(engine.coreUtil PRIVATE ${deps})

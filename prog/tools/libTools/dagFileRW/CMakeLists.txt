@@ -16,4 +16,5 @@ set(sources
   dagMatRemapUtil.cpp
 )
 
-dagor_add_library(SOURCES ${sources} PRIVATE_INCLUDES ${includes})
+dagor_add_library(tools.libTools.dagFileRW LAX ${sources})
+target_include_directories(tools.libTools.dagFileRW PRIVATE ${includes})

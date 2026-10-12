@@ -8,7 +8,7 @@ set(includes
   ${DAGOR_PROG_DIR}/3rdPartyLibs/hash
   ${DAGOR_PROG_DIR}/3rdPartyLibs/arc/lz4
 )
-if("${DAGOR_PLATFORM}-${DAGOR_ARCH}" MATCHES "^(linux\-x86_64|windows\-x86_64)$")
+if((WIN32 OR LINUX) AND DAGOR_ARCH STREQUAL "x86_64")
   set(sources
     omm.cpp
     omm_cpu.cpp
@@ -24,7 +24,7 @@ if("${DAGOR_PLATFORM}-${DAGOR_ARCH}" MATCHES "^(linux\-x86_64|windows\-x86_64)$"
 else()
   set(sources omm_stub.cpp)
 endif()
-list(APPEND deps engine/lib3d engine/shaders 3rdPartyLibs/eastl 3rdPartyLibs/hash 3rdPartyLibs/arc/lz4)
+list(APPEND deps engine.lib3d engine.shaders 3rdPartyLibs.eastl 3rdPartyLibs.hash 3rdPartyLibs.arc.lz4)
 list(APPEND defines
   GLM_ENABLE_EXPERIMENTAL
   OMM_VK_S_SHIFT=0
@@ -32,20 +32,19 @@ list(APPEND defines
   OMM_VK_B_SHIFT=256
   OMM_VK_U_SHIFT=384
 )
-if(DAGOR_PLATFORM STREQUAL "windows")
+if(WIN32)
   list(APPEND options /Zc:__cplusplus)
 endif()
-if(DAGOR_CC MATCHES "^(clang|clang\-cl)$")
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   # a function-style macro: CMake's COMPILE_DEFINITIONS cannot hold those
   list(APPEND options "-DOMM_DEPRECATED_MSG(X)=" -Wno-ignored-attributes)
-  if("${DAGOR_PLATFORM}-${DAGOR_ARCH}" STREQUAL "linux-x86_64")
+  if(LINUX AND DAGOR_ARCH STREQUAL "x86_64")
     list(APPEND options -Wno-switch)
   endif()
 endif()
 
-dagor_add_library(SOURCES ${sources}
-  PRIVATE_INCLUDES ${includes}
-  PRIVATE_DEFINES ${defines}
-  COMPILE_OPTIONS ${options}
-  DEPS ${deps}
-)
+dagor_add_library(gameLibs.render.omm LAX ${sources})
+target_include_directories(gameLibs.render.omm PRIVATE ${includes})
+target_compile_definitions(gameLibs.render.omm PRIVATE ${defines})
+target_compile_options(gameLibs.render.omm PRIVATE ${options})
+target_link_libraries(gameLibs.render.omm PRIVATE ${deps})

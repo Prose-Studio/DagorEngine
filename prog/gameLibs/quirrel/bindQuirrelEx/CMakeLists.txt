@@ -41,42 +41,39 @@ set(sources
   japanese-hypenation.cpp
   helpers.cpp
 )
-if(DAGOR_PLATFORM STREQUAL "macOS")
+if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
   list(APPEND sources dagorSystemMac.mm)
 endif()
-if(DAGOR_PLATFORM STREQUAL "windows")
+if(WIN32)
   list(APPEND options /wd4548)
 endif()
-if(DAGOR_CC STREQUAL "gcc")
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   list(APPEND options -Wno-uninitialized)
 endif()
 list(APPEND defines ZIP_STATIC)
-set(deps engine/workCycle 3rdPartyLibs/pcre 3rdPartyLibs/uuidv7 3rdPartyLibs/arc/libzip gameLibs/iso8601Time)
-if(DAGOR_PLATFORM MATCHES "^(android|linux|macOS|windows)$" AND NOT DAGOR_ARCH STREQUAL "e2k")
-  list(APPEND deps 3rdPartyLibs/cpu_features)
+set(deps engine.workCycle 3rdPartyLibs.pcre 3rdPartyLibs.uuidv7 3rdPartyLibs.arc.libzip gameLibs.iso8601Time)
+if(CMAKE_SYSTEM_NAME MATCHES "^(Android|Darwin|Linux|Windows)$" AND NOT DAGOR_ARCH STREQUAL "e2k")
+  list(APPEND deps 3rdPartyLibs.cpu_features)
 endif()
-if(DAGOR_PLATFORM STREQUAL "linux")
+if(LINUX)
   foreach(build GUI noGUI)
     set(file dagorSystemLinux.cpp)
     if(build STREQUAL "noGUI")
       set(file dagorSystemLinuxStub.cpp)
     endif()
-    dagor_add_library(gameLibs.quirrel.bindQuirrelEx.linux${build} STRICT QUIRREL_HEADERS
-      SOURCES ${file}
-      PRIVATE_INCLUDES ${includes}
-      PRIVATE_DEFINES ${defines}
-      COMPILE_OPTIONS ${options})
+    dagor_add_library(gameLibs.quirrel.bindQuirrelEx.linux${build} ${file})
+    target_include_directories(gameLibs.quirrel.bindQuirrelEx.linux${build} PRIVATE ${includes})
+    target_compile_definitions(gameLibs.quirrel.bindQuirrelEx.linux${build} PRIVATE ${defines})
+    target_compile_options(gameLibs.quirrel.bindQuirrelEx.linux${build} PRIVATE ${options})
+    target_link_libraries(gameLibs.quirrel.bindQuirrelEx.linux${build} PRIVATE Dagor::QuirrelHeaders)
   endforeach()
   dagor_add_link_choice(gameLibs.quirrel.bindQuirrelEx.linuxSystem PROPERTY DAGOR_LINUX_GUI
     ON gameLibs.quirrel.bindQuirrelEx.linuxGUI OFF gameLibs.quirrel.bindQuirrelEx.linuxnoGUI)
   list(APPEND deps gameLibs.quirrel.bindQuirrelEx.linuxSystem)
 endif()
 
-dagor_add_library(STRICT
-  QUIRREL
-  SOURCES ${sources}
-  PRIVATE_INCLUDES ${includes}
-  PRIVATE_DEFINES ${defines}
-  COMPILE_OPTIONS ${options}
-  DEPS ${deps}
-)
+dagor_add_library(gameLibs.quirrel.bindQuirrelEx ${sources})
+target_include_directories(gameLibs.quirrel.bindQuirrelEx PRIVATE ${includes})
+target_compile_definitions(gameLibs.quirrel.bindQuirrelEx PRIVATE ${defines})
+target_compile_options(gameLibs.quirrel.bindQuirrelEx PRIVATE ${options})
+target_link_libraries(gameLibs.quirrel.bindQuirrelEx PRIVATE Dagor::Quirrel ${deps})

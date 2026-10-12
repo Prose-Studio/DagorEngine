@@ -13,19 +13,17 @@ if(DAGOR_DAS_LLVM_AOT)
 endif()
 set(SourceDAS ecs.das)
 list(APPEND stringify ${SourceDAS})
-list(APPEND deps 1stPartyLibs/daScript engine/workCycle)
-if(DAGOR_PLATFORM STREQUAL "windows")
+list(APPEND deps 1stPartyLibs.daScript engine.workCycle)
+if(WIN32)
   list(APPEND options /bigobj)
 endif()
 if(IS_DIRECTORY "${DAGOR_PROG_DIR}/engine/daECS/net")
   list(APPEND defines HAS_DANET)
 endif()
 
-dagor_add_library(STRICT
-  SOURCES ${sources}
-  PRIVATE_INCLUDES ${includes}
-  PRIVATE_DEFINES ${defines}
-  COMPILE_OPTIONS ${options}
-  DEPS ${deps}
-  STRINGIFY ${stringify}
-)
+dagor_add_library(gameLibs.ecs.scripts.das ${sources})
+target_include_directories(gameLibs.ecs.scripts.das PRIVATE ${includes})
+target_compile_definitions(gameLibs.ecs.scripts.das PRIVATE ${defines})
+target_compile_options(gameLibs.ecs.scripts.das PRIVATE ${options})
+target_link_libraries(gameLibs.ecs.scripts.das PRIVATE ${deps})
+dagor_target_stringify(gameLibs.ecs.scripts.das ${stringify})

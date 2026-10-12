@@ -1,8 +1,10 @@
-# Ported from prog/gameLibs/ecs/input/jamfile (jam2cmake/skeleton.py)
 set(includes ${DAGOR_PROG_DIR}/engine/dagorInclude ${DAGOR_PROG_DIR}/gameLibs/publicInclude)
 set(sources esHidEventRouter.cpp input.cpp debugInputEvents.cpp)
 set(SourceES rumbleES.cpp.inl)
 list(APPEND es_sources ${SourceES})
-list(APPEND deps gameLibs/daInput)
+list(APPEND deps gameLibs.daInput)
 
-dagor_add_library(STRICT SOURCES ${sources} PRIVATE_INCLUDES ${includes} DEPS ${deps} ES_SOURCES ${es_sources})
+dagor_add_library(gameLibs.ecs.input ${sources})
+target_include_directories(gameLibs.ecs.input PRIVATE ${includes})
+target_link_libraries(gameLibs.ecs.input PRIVATE ${deps})
+dagor_target_es_sources(gameLibs.ecs.input ${es_sources})

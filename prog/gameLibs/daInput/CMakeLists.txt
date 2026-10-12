@@ -1,4 +1,5 @@
-# Ported from prog/gameLibs/daInput/jamfile (jam2cmake/skeleton.py)
+add_subdirectory(stub)
+
 set(includes
   ${DAGOR_PROG_DIR}/gameLibs/publicInclude
   ${DAGOR_PROG_DIR}/gameLibs/publicInclude/quirrel
@@ -14,6 +15,8 @@ set(sources
   dargSqBind.cpp
   actionsDbg.cpp
 )
-list(APPEND deps 3rdPartyLibs/eastl)
+list(APPEND deps 3rdPartyLibs.eastl)
 
-dagor_add_library(STRICT QUIRREL SOURCES ${sources} PRIVATE_INCLUDES ${includes} DEPS ${deps})
+dagor_add_library(gameLibs.daInput ${sources})
+target_include_directories(gameLibs.daInput PRIVATE ${includes})
+target_link_libraries(gameLibs.daInput PRIVATE Dagor::Quirrel ${deps})

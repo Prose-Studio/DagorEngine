@@ -1,22 +1,20 @@
-# Ported from prog/gameLibs/dasModules/stdGui/jamfile (jam2cmake/skeleton.py)
+add_subdirectory(aotStub)
+
 set(includes ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/1stPartyLibs/daScript/include)
 file(GLOB AllSources RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
 set(sources ${AllSources})
-set(SourceDAS )
 list(APPEND stringify ${SourceDAS})
-if(DAGOR_PLATFORM STREQUAL "windows")
+if(WIN32)
   list(APPEND options /wd4548)
 endif()
-set(deps 1stPartyLibs/daScript)
+set(deps 1stPartyLibs.daScript)
 if(DAGOR_DAS_AOT_COMPILER)
   list(APPEND defines DAS_AOT_COMPILER) # the AOT compiler's stubs (prog/gameLibs/dasModules/module_common.jam)
 endif()
 
-dagor_add_library(STRICT
-  SOURCES ${sources}
-  PRIVATE_INCLUDES ${includes}
-  PRIVATE_DEFINES ${defines}
-  COMPILE_OPTIONS ${options}
-  DEPS ${deps}
-  STRINGIFY ${stringify}
-)
+dagor_add_library(gameLibs.dasModules.stdGui ${sources})
+target_include_directories(gameLibs.dasModules.stdGui PRIVATE ${includes})
+target_compile_definitions(gameLibs.dasModules.stdGui PRIVATE ${defines})
+target_compile_options(gameLibs.dasModules.stdGui PRIVATE ${options})
+target_link_libraries(gameLibs.dasModules.stdGui PRIVATE ${deps})
+dagor_target_stringify(gameLibs.dasModules.stdGui ${stringify})

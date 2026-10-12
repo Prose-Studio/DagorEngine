@@ -148,22 +148,18 @@ endforeach()
 foreach(name winfnt)
   list(APPEND sources src/winfonts/${name}.c)
 endforeach()
-set(source_options)
-if(DAGOR_PLATFORM STREQUAL "macOS")
+if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
   list(APPEND sources src/base/ftmac.c)
-  list(APPEND source_options src/bdf/bdflib.c -Wno-deprecated-declarations)
+  set_property(SOURCE src/bdf/bdflib.c APPEND PROPERTY COMPILE_OPTIONS -Wno-deprecated-declarations)
 endif()
 set(options)
-if(DAGOR_CC STREQUAL "msvc")
+if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
   list(APPEND options /wd4267) # conversion from 'size_t' to 'int', possible loss of data
-elseif(NOT DAGOR_MSVC_LIKE)
+elseif(NOT MSVC)
   list(APPEND options -Wno-unused-parameter)
 endif()
 
-dagor_add_library(
-  SOURCES ${sources}
-  PRIVATE_INCLUDES include src
-  PRIVATE_DEFINES FT2_BUILD_LIBRARY
-  COMPILE_OPTIONS ${options}
-  SOURCE_OPTIONS ${source_options}
-)
+dagor_add_library(3rdPartyLibs.freetype.freetype-2.8 LAX ${sources})
+target_include_directories(3rdPartyLibs.freetype.freetype-2.8 PRIVATE include src)
+target_compile_definitions(3rdPartyLibs.freetype.freetype-2.8 PRIVATE FT2_BUILD_LIBRARY)
+target_compile_options(3rdPartyLibs.freetype.freetype-2.8 PRIVATE ${options})

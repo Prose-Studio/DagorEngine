@@ -15,15 +15,12 @@ list(APPEND defines DUK_CMDLINE_MODULE_SUPPORT)
 list(APPEND includes extras/module-duktape)
 list(APPEND sources extras/module-duktape/duk_module_duktape.c)
 list(APPEND defines DUK_CMDLINE_FILEIO)
-if(DAGOR_PLATFORM MATCHES "^(linux|macOS)$")
+if(CMAKE_SYSTEM_NAME MATCHES "^(Darwin|Linux)$")
   list(APPEND options -fno-fast-math -Wno-format-overflow)
 endif()
 
-dagor_add_executable(duktape CONSOLE
-  CDK
-  NO_CONFIG_POSTFIX
-  SOURCES ${sources}
-  PRIVATE_INCLUDES ${includes}
-  PRIVATE_DEFINES ${defines}
-  COMPILE_OPTIONS ${options}
-)
+dagor_add_executable(duktape LAX NO_CONFIG_POSTFIX ${sources})
+target_include_directories(duktape PRIVATE ${includes})
+target_compile_definitions(duktape PRIVATE ${defines})
+target_compile_options(duktape PRIVATE ${options})
+dagor_install_cdk(duktape)

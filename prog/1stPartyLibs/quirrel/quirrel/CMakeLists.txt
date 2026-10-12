@@ -1,5 +1,8 @@
 # Quirrel: the VM and its standard library (the engine's build replaces upstream's CMakeLists.txt; the compiler is
 # squirrel/compiler, the module system sqmodules)
+add_subdirectory(sqmodules)
+add_subdirectory(squirrel/compiler)
+
 set(sources
   squirrel/sqapi.cpp
   squirrel/sqbaselib.cpp
@@ -35,14 +38,13 @@ if(DAGOR_SQ_VAR_TRACE)
 else()
   list(APPEND sources squirrel/vartracestub.cpp)
 endif()
-if(NOT DAGOR_PLATFORM MATCHES "^(windows|linux|macOS)$")
+if(NOT CMAKE_SYSTEM_NAME MATCHES "^(Darwin|Linux|Windows)$")
   list(APPEND defines SQ_SYSTEM_STUBS=1)
 endif()
 
-dagor_add_library(QUIRREL_HEADERS
-  SOURCES ${sources}
-  PRIVATE_INCLUDES squirrel internal helpers
-  PRIVATE_DEFINES ${defines}
-  DEPS 3rdPartyLibs/eastl 1stPartyLibs/quirrel/quirrel/squirrel/compiler
-  LICENSE_FILES COPYRIGHT
-)
+dagor_add_library(1stPartyLibs.quirrel.quirrel LAX ${sources})
+target_include_directories(1stPartyLibs.quirrel.quirrel PRIVATE squirrel internal helpers)
+target_compile_definitions(1stPartyLibs.quirrel.quirrel PRIVATE ${defines})
+target_link_libraries(1stPartyLibs.quirrel.quirrel PRIVATE Dagor::QuirrelHeaders 3rdPartyLibs.eastl
+  1stPartyLibs.quirrel.quirrel.squirrel.compiler)
+dagor_target_licenses(1stPartyLibs.quirrel.quirrel COPYRIGHT)

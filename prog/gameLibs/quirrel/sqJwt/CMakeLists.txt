@@ -8,6 +8,8 @@ set(includes
   ${DAGOR_PROG_DIR}/3rdPartyLibs/rapidjson/include
 )
 set(sources sqJwt.cpp)
-set(deps gameLibs/digitalSignature gameLibs/jsonUtils)
+set(deps gameLibs.digitalSignature gameLibs.jsonUtils)
 
-dagor_add_library(STRICT QUIRREL SOURCES ${sources} PRIVATE_INCLUDES ${includes} DEPS ${deps})
+dagor_add_library(gameLibs.quirrel.sqJwt ${sources})
+target_include_directories(gameLibs.quirrel.sqJwt PRIVATE ${includes})
+target_link_libraries(gameLibs.quirrel.sqJwt PRIVATE Dagor::Quirrel ${deps})

@@ -1,4 +1,3 @@
-# Ported from prog/gameLibs/webui/plugins/profiler/jamfile (jam2cmake/skeleton.py)
 set(includes
   ${DAGOR_PROG_DIR}/gameLibs/publicInclude
   ${DAGOR_PROG_DIR}/gameLibs/webui
@@ -6,4 +5,5 @@ set(includes
 )
 set(sources profilerPlugin.cpp)
 
-dagor_add_library(STRICT SOURCES ${sources} PRIVATE_INCLUDES ${includes})
+dagor_add_library(gameLibs.webui.plugins.profiler ${sources})
+target_include_directories(gameLibs.webui.plugins.profiler PRIVATE ${includes})

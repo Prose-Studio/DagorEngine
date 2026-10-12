@@ -1,17 +1,16 @@
 # BVH ray tracing (DAGOR_GAME_BVH), or its stub. The parts of the scene it covers are features, each with its stub;
 # DAGOR_BVH_STUBS lists those a tree builds as stubs (a game's: DagorGame.cmake).
 if(NOT DAGOR_GAME_BVH)
-  dagor_add_library(STRICT
-    SOURCES stub/bvh_stub.cpp stub/bvh_stub_processors.cpp
-    PRIVATE_INCLUDES ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/1stPartyLibs/jsoncpp/include
-    DEPS gameLibs/userSystemInfo gameLibs/eventLog
-  )
+  dagor_add_library(gameLibs.bvh stub/bvh_stub.cpp stub/bvh_stub_processors.cpp)
+  target_include_directories(gameLibs.bvh PRIVATE ${DAGOR_PROG_DIR}/gameLibs/publicInclude
+    ${DAGOR_PROG_DIR}/1stPartyLibs/jsoncpp/include)
+  target_link_libraries(gameLibs.bvh PRIVATE gameLibs.userSystemInfo gameLibs.eventLog)
   return()
 endif()
 
 set(sources bvh.cpp bvh_context.cpp bvh_debug.cpp bvh_tlas_debug.cpp bvh_omm.cpp bvh_processors.cpp bvh_particles.cpp
   bvh_voxel_activity.cpp)
-set(deps gameLibs/userSystemInfo gameLibs/eventLog gameLibs/render/omm)
+set(deps gameLibs.userSystemInfo gameLibs.eventLog gameLibs.render.omm)
 # <feature> is bvh_<feature>.cpp, or stub/bvh_stub_<feature>.cpp; ri has more
 set(features terrain ri dyn gobj grass cables bin_scene fft_water dagdp gpu_grass splinegen fx lru_collision
   smoke_tracers)
@@ -28,18 +27,17 @@ foreach(feature IN LISTS features)
   else()
     list(APPEND sources bvh_${feature}.cpp)
     if(feature STREQUAL "lru_collision")
-      list(APPEND deps gameLibs/render/lruCollision)
+      list(APPEND deps gameLibs.render.lruCollision)
     endif()
   endif()
 endforeach()
 set(options)
-if(DAGOR_CC STREQUAL "msvc")
+if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
   list(APPEND options /wd4582 /wd5031)
 endif()
 
-dagor_add_library(STRICT
-  SOURCES ${sources}
-  PRIVATE_INCLUDES ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/1stPartyLibs/jsoncpp/include
-  COMPILE_OPTIONS ${options}
-  DEPS ${deps}
-)
+dagor_add_library(gameLibs.bvh ${sources})
+target_include_directories(gameLibs.bvh PRIVATE ${DAGOR_PROG_DIR}/gameLibs/publicInclude
+  ${DAGOR_PROG_DIR}/1stPartyLibs/jsoncpp/include)
+target_compile_options(gameLibs.bvh PRIVATE ${options})
+target_link_libraries(gameLibs.bvh PRIVATE ${deps})

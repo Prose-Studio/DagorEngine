@@ -24,12 +24,15 @@ set(sources
   twoStepRelPath.cpp
   iesReader.cpp
 )
-if(DAGOR_PLATFORM STREQUAL "windows")
+if(WIN32)
   list(APPEND sources dagUuid.cpp str_util_shlwapi.cpp)
-elseif(DAGOR_PLATFORM STREQUAL "linux")
+elseif(LINUX)
   list(APPEND sources dagUuid.cpp)
-  list(APPEND libs uuid)
+  list(APPEND libs System::uuid)
 endif()
-set(deps 3rdPartyLibs/hash 3rdPartyLibs/regExp)
+set(deps 3rdPartyLibs.hash 3rdPartyLibs.regExp)
 
-dagor_add_library(SOURCES ${sources} PRIVATE_INCLUDES ${includes} DEPS ${deps} SYSTEM_LIBS ${libs})
+dagor_add_library(tools.libTools.util LAX ${sources})
+target_include_directories(tools.libTools.util PRIVATE ${includes})
+target_link_libraries(tools.libTools.util PRIVATE ${deps})
+target_link_libraries(tools.libTools.util PUBLIC ${libs})

@@ -1,4 +1,3 @@
-# Ported from prog/gameLibs/dasModules/localization/jamfile (jam2cmake/skeleton.py)
 set(includes
   ${DAGOR_PROG_DIR}/gameLibs/publicInclude
   ${DAGOR_PROG_DIR}/gameLibs/publicInclude/quirrel
@@ -11,7 +10,5 @@ set(includes
 set(AllSrcFolder_CPP .)
 set(AllSrcFolder_ES .)
 
-dagor_add_dng_module(localization CPP_DIRS ${AllSrcFolder_CPP}
-  ES_DIRS ${AllSrcFolder_ES}
-  PRIVATE_INCLUDES ${includes}
-)
+dagor_add_dng_module(gameLibs.dasModules.localization CPP_DIRS ${AllSrcFolder_CPP} ES_DIRS ${AllSrcFolder_ES})
+target_include_directories(gameLibs.dasModules.localization PRIVATE ${includes})

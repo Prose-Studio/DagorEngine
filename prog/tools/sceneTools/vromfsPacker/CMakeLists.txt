@@ -1,29 +1,20 @@
 # vromfsPacker: the virtual ROM file system (vromfs) pack builder (gameLibs/vromfsPacker)
 set(includes ${DAGOR_PROG_DIR}/tools/sharedInclude ${DAGOR_PROG_DIR}/gameLibs/publicInclude)
 set(sources cmain.cpp)
-set(deps
-  engine/kernel
-  engine/memory
-  engine/perfMon/daProfilerStub
-  engine/startup
-  engine/math
-  gameLibs/vromfsPacker
-)
-if(DAGOR_PLATFORM STREQUAL "windows")
-  list(APPEND libs advapi32)
+set(deps engine.kernel engine.memory engine.perfMon.daProfilerStub engine.startup engine.math gameLibs.vromfsPacker)
+if(WIN32)
+  list(APPEND libs System::advapi32)
 endif()
-if(DAGOR_PLATFORM STREQUAL "linux")
-  set(libs dl)
+if(LINUX)
+  set(libs System::dl)
 endif()
-if(DAGOR_PLATFORM STREQUAL "linux")
-  list(APPEND deps engine/osApiWrappers/messageBox/stub)
+if(LINUX)
+  list(APPEND deps engine.osApiWrappers.messageBox.stub)
 endif()
 
-dagor_add_executable(vromfsPacker CONSOLE
-  CDK
-  EXCEPTIONS ON
-  SOURCES ${sources}
-  PRIVATE_INCLUDES ${includes}
-  DEPS ${deps}
-  SYSTEM_LIBS ${libs}
-)
+dagor_add_executable(vromfsPacker LAX ${sources})
+target_include_directories(vromfsPacker PRIVATE ${includes})
+target_link_libraries(vromfsPacker PRIVATE ${deps})
+target_link_libraries(vromfsPacker PUBLIC ${libs})
+set_target_properties(vromfsPacker PROPERTIES DAGOR_EXCEPTIONS ON)
+dagor_install_cdk(vromfsPacker)

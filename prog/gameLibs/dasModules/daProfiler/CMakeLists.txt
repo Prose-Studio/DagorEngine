@@ -1,4 +1,3 @@
-# Ported from prog/gameLibs/dasModules/daProfiler/jamfile (jam2cmake/skeleton.py)
 set(includes
   ${DAGOR_PROG_DIR}/engine/dagorInclude
   ${DAGOR_PROG_DIR}/engine/sharedInclude
@@ -7,9 +6,12 @@ set(includes
 )
 file(GLOB AllSources RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
 set(sources ${AllSources})
-if(DAGOR_PLATFORM STREQUAL "windows")
+if(WIN32)
   list(APPEND options /wd4548)
 endif()
-set(deps 1stPartyLibs/daScript engine/perfMon gameLibs/folders)
+set(deps 1stPartyLibs.daScript engine.perfMon gameLibs.folders)
 
-dagor_add_library(STRICT SOURCES ${sources} PRIVATE_INCLUDES ${includes} COMPILE_OPTIONS ${options} DEPS ${deps})
+dagor_add_library(gameLibs.dasModules.daProfiler ${sources})
+target_include_directories(gameLibs.dasModules.daProfiler PRIVATE ${includes})
+target_compile_options(gameLibs.dasModules.daProfiler PRIVATE ${options})
+target_link_libraries(gameLibs.dasModules.daProfiler PRIVATE ${deps})

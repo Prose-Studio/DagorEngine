@@ -8,25 +8,14 @@ list(APPEND includes
   ${DAGOR_PROG_DIR}/gameLibs/sepClient/tests
 )
 list(APPEND defines USE_EASTL)
-if(DAGOR_PLATFORM STREQUAL "windows")
+if(WIN32)
   list(APPEND options /FC)
 endif()
-list(APPEND deps
-  engine/memory
-  engine/kernel
-  engine/osApiWrappers
-  engine/baseUtil
-  engine/ioSys
-  engine/perfMon/daProfilerStub
-  3rdPartyLibs/eastl
-  gameLibs/sepClient
-  gameLibs/websocketJsonRpc/tests/testHelpers
-)
+list(APPEND deps engine.memory engine.kernel engine.osApiWrappers engine.baseUtil engine.ioSys
+  engine.perfMon.daProfilerStub 3rdPartyLibs.eastl gameLibs.sepClient gameLibs.websocketJsonRpc.tests.testHelpers)
 
-dagor_add_catch2_test(sepClient-tests TAGS gameLibs net
-  SOURCES ${sources}
-  PRIVATE_INCLUDES ${includes}
-  PRIVATE_DEFINES ${defines}
-  COMPILE_OPTIONS ${options}
-  DEPS ${deps}
-)
+dagor_add_catch2_test(sepClient-tests TAGS gameLibs net LAX ${sources})
+target_include_directories(sepClient-tests PRIVATE ${includes})
+target_compile_definitions(sepClient-tests PRIVATE ${defines})
+target_compile_options(sepClient-tests PRIVATE ${options})
+target_link_libraries(sepClient-tests PRIVATE ${deps})

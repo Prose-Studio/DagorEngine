@@ -16,10 +16,13 @@ set(sources
   riverMasks/hmapLodMaskBuild.cpp
 )
 set(includes ${DAGOR_PROG_DIR}/gameLibs/publicInclude)
-list(APPEND deps engine/heightMapLand gameLibs/frustumCulling)
+list(APPEND deps engine.heightMapLand gameLibs.frustumCulling)
 set(defines)
 if(DAGOR_BUILDING_TOOLS)
   set(defines _TARGET_PC_TOOLS_BUILD)
 endif()
 
-dagor_add_library(SOURCES ${sources} PRIVATE_INCLUDES ${includes} PRIVATE_DEFINES ${defines} DEPS ${deps})
+dagor_add_library(gameLibs.heightmap LAX ${sources})
+target_include_directories(gameLibs.heightmap PRIVATE ${includes})
+target_compile_definitions(gameLibs.heightmap PRIVATE ${defines})
+target_link_libraries(gameLibs.heightmap PRIVATE ${deps})

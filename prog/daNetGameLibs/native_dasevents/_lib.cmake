@@ -1,1 +1,1 @@
-dagor_game_lib(PULLS daNetGameLibs_native_dasevents_DAS_pull_AOT DEPS daNetGameLibs/native_dasevents)
+dagor_game_lib(PULLS daNetGameLibs_native_dasevents_DAS_pull_AOT LINK daNetGameLibs.native_dasevents)

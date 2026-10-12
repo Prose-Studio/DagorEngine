@@ -1,5 +1,5 @@
 # The Linux GUI layer (window title, clipboard, event loop) on X11 and Wayland, for programs with DAGOR_LINUX_GUI
-if(NOT DAGOR_PLATFORM STREQUAL "linux")
+if(NOT LINUX)
   return()
 endif()
 if(NOT DAGOR_LINUX_X11 AND NOT DAGOR_LINUX_WAYLAND)
@@ -8,16 +8,16 @@ endif()
 set(sources mux.cpp linuxSetTitle.cpp linuxClipboard.cpp)
 set(defines)
 set(deps)
-set(libs xkbcommon)
+set(libs System::xkbcommon)
 if(DAGOR_LINUX_WAYLAND)
   list(APPEND sources wayland.cpp wayland_loader.cpp)
   list(APPEND defines USE_WAYLAND)
-  list(APPEND deps 3rdPartyLibs/wayland)
+  list(APPEND deps 3rdPartyLibs.wayland)
 endif()
 if(DAGOR_LINUX_X11)
   list(APPEND sources x11.cpp)
   list(APPEND defines USE_X11)
-  list(APPEND libs X11 Xcursor)
+  list(APPEND libs System::X11 System::Xcursor)
   # XInput2's header (raw mouse motion; libXi itself is loaded at run time, when there)
   find_path(DAGOR_XINPUT2_INCLUDE_DIR X11/extensions/XInput2.h)
   if(NOT DAGOR_XINPUT2_INCLUDE_DIR)
@@ -26,10 +26,8 @@ if(DAGOR_LINUX_X11)
   endif()
 endif()
 
-dagor_add_library(STRICT
-  SOURCES ${sources}
-  PRIVATE_INCLUDES ${DAGOR_PROG_DIR}/engine/sharedInclude
-  PRIVATE_DEFINES ${defines}
-  DEPS ${deps}
-  SYSTEM_LIBS ${libs}
-)
+dagor_add_library(engine.osApiWrappers.linuxGUI ${sources})
+target_include_directories(engine.osApiWrappers.linuxGUI PRIVATE ${DAGOR_PROG_DIR}/engine/sharedInclude)
+target_compile_definitions(engine.osApiWrappers.linuxGUI PRIVATE ${defines})
+target_link_libraries(engine.osApiWrappers.linuxGUI PRIVATE ${deps})
+target_link_libraries(engine.osApiWrappers.linuxGUI PUBLIC ${libs})

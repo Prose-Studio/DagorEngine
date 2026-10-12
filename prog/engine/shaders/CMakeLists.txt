@@ -63,7 +63,7 @@ if(DAGOR_BUILDING_TOOLS)
   list(APPEND defines SHADERS_ALLOW_2_BINDUMP)
 endif()
 set(stcode ${DAGOR_CPP_STCODE})
-if(DAGOR_PLATFORM STREQUAL "windows" AND DAGOR_ARCH STREQUAL "x86_64" AND NOT DAGOR_SSE EQUAL 4)
+if(WIN32 AND DAGOR_ARCH STREQUAL "x86_64" AND NOT DAGOR_SSE EQUAL 4)
   set(stcode disable)
 endif()
 if(stcode MATCHES "^(enable|both|validate)$")
@@ -88,14 +88,15 @@ set(includes ${DAGOR_PROG_DIR}/engine/sharedInclude)
 
 foreach(vars vars varsMock varsStub)
   string(REPLACE "vars" "shadersBinaryDataVars" source "${vars}")
-  dagor_add_library(engine.shaders.${vars} SOURCES ${source}.cpp PRIVATE_INCLUDES ${includes} PRIVATE_DEFINES ${defines})
+  dagor_add_library(engine.shaders.${vars} LAX ${source}.cpp)
+  target_include_directories(engine.shaders.${vars} PRIVATE ${includes})
+  target_compile_definitions(engine.shaders.${vars} PRIVATE ${defines})
 endforeach()
 dagor_add_link_select(engine.shaders.variables PROPERTY DAGOR_SHADER_VARS DEFAULT engine.shaders.vars
   mock engine.shaders.varsMock stub engine.shaders.varsStub)
 
-dagor_add_library(
-  SOURCES ${sources}
-  PRIVATE_INCLUDES ${includes}
-  PRIVATE_DEFINES ${defines}
-  DEPS engine.shaders.variables 3rdPartyLibs/eastl 3rdPartyLibs/meshoptimizer 3rdPartyLibs/hash/BLAKE3
-)
+dagor_add_library(engine.shaders LAX ${sources})
+target_include_directories(engine.shaders PRIVATE ${includes})
+target_compile_definitions(engine.shaders PRIVATE ${defines})
+target_link_libraries(engine.shaders PRIVATE engine.shaders.variables 3rdPartyLibs.eastl 3rdPartyLibs.meshoptimizer
+  3rdPartyLibs.hash.BLAKE3)

@@ -16,13 +16,13 @@ endif()
 dagor_fetch_sdk(ispc ispc_dir)
 find_program(DAGOR_ISPC NAMES ispc PATHS "${ispc_dir}/bin" NO_DEFAULT_PATH REQUIRED)
 set(os windows)
-if(DAGOR_PLATFORM STREQUAL "macOS")
+if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
   set(os macos)
-elseif(DAGOR_PLATFORM STREQUAL "linux")
+elseif(LINUX)
   set(os linux)
 endif()
 set(obj_ext .o)
-if(DAGOR_PLATFORM STREQUAL "windows")
+if(WIN32)
   set(obj_ext .obj)
 endif()
 
@@ -48,8 +48,6 @@ endforeach()
 file(MAKE_DIRECTORY "${gen}")
 set_source_files_properties(${objects} PROPERTIES EXTERNAL_OBJECT ON GENERATED ON)
 
-dagor_add_library(
-  SOURCES ispc_texcomp.cpp ispc_texcomp_astc.cpp ${objects} ${headers}
-  PRIVATE_INCLUDES "${gen}"
-  LICENSE_FILES license.txt
-)
+dagor_add_library(3rdPartyLibs.convert.ispc_texcomp LAX ispc_texcomp.cpp ispc_texcomp_astc.cpp ${objects} ${headers})
+target_include_directories(3rdPartyLibs.convert.ispc_texcomp PRIVATE "${gen}")
+dagor_target_licenses(3rdPartyLibs.convert.ispc_texcomp license.txt)

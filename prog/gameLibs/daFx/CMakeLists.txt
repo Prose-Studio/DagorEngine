@@ -14,4 +14,5 @@ set(sources
   frameBoundaryBufferManager.cpp
 )
 
-dagor_add_library(STRICT SOURCES ${sources} PRIVATE_INCLUDES ${includes})
+dagor_add_library(gameLibs.daFx ${sources})
+target_include_directories(gameLibs.daFx PRIVATE ${includes})

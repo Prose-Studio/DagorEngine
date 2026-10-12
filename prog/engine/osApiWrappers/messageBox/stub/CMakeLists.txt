@@ -3,4 +3,6 @@ set(defines __B_KERNEL_LIB __B_NO_MEM_BASE_INCLUDE)
 set(sources messageBox.cpp)
 list(APPEND includes ${DAGOR_PROG_DIR}/engine/sharedInclude)
 
-dagor_add_library(STRICT SOURCES ${sources} PRIVATE_INCLUDES ${includes} PRIVATE_DEFINES ${defines})
+dagor_add_library(engine.osApiWrappers.messageBox.stub ${sources})
+target_include_directories(engine.osApiWrappers.messageBox.stub PRIVATE ${includes})
+target_compile_definitions(engine.osApiWrappers.messageBox.stub PRIVATE ${defines})

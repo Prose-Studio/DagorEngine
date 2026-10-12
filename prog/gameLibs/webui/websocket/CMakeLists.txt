@@ -1,4 +1,5 @@
-# Ported from prog/gameLibs/webui/websocket/jamfile (jam2cmake/skeleton.py)
+add_subdirectory(stub)
+
 set(includes
   ${DAGOR_PROG_DIR}/gameLibs/publicInclude
   ${DAGOR_PROG_DIR}/gameLibs/publicInclude/quirrel
@@ -6,6 +7,8 @@ set(includes
   ${DAGOR_PROG_DIR}/engine/sharedInclude
 )
 set(sources webSocketStream.cpp)
-set(deps 3rdPartyLibs/mongoose)
+set(deps 3rdPartyLibs.mongoose)
 
-dagor_add_library(STRICT SOURCES ${sources} PRIVATE_INCLUDES ${includes} DEPS ${deps})
+dagor_add_library(gameLibs.webui.websocket ${sources})
+target_include_directories(gameLibs.webui.websocket PRIVATE ${includes})
+target_link_libraries(gameLibs.webui.websocket PRIVATE ${deps})

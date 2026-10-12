@@ -26,4 +26,5 @@ set(sources
   lightsCounter.cpp
 )
 
-dagor_add_library(SOURCES ${sources} PRIVATE_INCLUDES ${includes})
+dagor_add_library(gameLibs.render.lights LAX ${sources})
+target_include_directories(gameLibs.render.lights PRIVATE ${includes})

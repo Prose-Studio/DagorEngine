@@ -30,21 +30,19 @@ set(sources
   legacy_sceneray.cpp
 )
 set(includes ${DAGOR_PROG_DIR}/engine/sharedInclude)
-list(APPEND deps 3rdPartyLibs/eastl engine/daBVH)
-if(DAGOR_CC MATCHES "^(clang|clang\-cl)$")
+list(APPEND deps 3rdPartyLibs.eastl engine.daBVH)
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   list(APPEND options -Wno-undefined-bool-conversion)
 endif()
-if(DAGOR_CC MATCHES "^(clang|clang\-cl)$" AND DAGOR_ARCH STREQUAL "e2k")
-  list(APPEND source_options collisionGameRes.cpp -Wno-pass-failed)
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND DAGOR_ARCH STREQUAL "e2k")
+  set_property(SOURCE collisionGameRes.cpp APPEND PROPERTY COMPILE_OPTIONS -Wno-pass-failed)
 endif()
-if(DAGOR_LTO AND DAGOR_CC STREQUAL "msvc" AND DAGOR_ARCH STREQUAL "arm64")
-  list(APPEND source_options collisionGameRes.cpp /GL-) # MSVC's arm64 LTO miscompiles it
+if(DAGOR_LTO AND CMAKE_CXX_COMPILER_ID STREQUAL "MSVC" AND DAGOR_ARCH STREQUAL "arm64")
+  set_property(SOURCE collisionGameRes.cpp APPEND PROPERTY COMPILE_OPTIONS /GL-) # MSVC's arm64 LTO miscompiles it
 endif()
 
-dagor_add_library(STRICT FRAME_LIMIT 262144
-  SOURCES ${sources}
-  PRIVATE_INCLUDES ${includes}
-  COMPILE_OPTIONS ${options}
-  SOURCE_OPTIONS ${source_options}
-  DEPS ${deps}
-)
+dagor_add_library(engine.gameRes ${sources})
+target_include_directories(engine.gameRes PRIVATE ${includes})
+target_compile_options(engine.gameRes PRIVATE ${options})
+target_link_libraries(engine.gameRes PRIVATE ${deps})
+set_target_properties(engine.gameRes PROPERTIES DAGOR_FRAME_LIMIT 262144)

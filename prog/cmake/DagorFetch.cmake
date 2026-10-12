@@ -1,8 +1,8 @@
 # Fetching of pinned archives (SDKs, toolchains) into the deps cache, usable before project() and from toolchain files.
 #
 # prog/cmake/sdk/manifest.cmake declares every archive with dagor_sdk(); dagor_fetch_sdk() downloads, verifies and unpacks
-# it once into ${DAGOR_DEPS_DIR}/sdk/<name>-<version>[-<host>]. Each SDK can be replaced by a local copy with
-# -DDAGOR_SDK_<NAME>_DIR=<dir> (the name upper-cased, '-' as '_'), which is also the way to build offline.
+# it once into ${DAGOR_DEPS_DIR}/sdk/<name>-<version>[-<host>]. The Find modules (prog/cmake/find) take a local copy of
+# an SDK from <Package>_ROOT instead (dagor_sdk_root), which is also the way to build offline.
 include_guard(GLOBAL)
 
 include("${CMAKE_CURRENT_LIST_DIR}/DagorHost.cmake")
@@ -50,13 +50,6 @@ endfunction()
 
 include("${CMAKE_CURRENT_LIST_DIR}/sdk/manifest.cmake")
 
-# the DAGOR_SDK_<NAME>_DIR override variable of an SDK
-function(_dagor_sdk_override_var name out)
-  string(TOUPPER "${name}" upper)
-  string(REPLACE "-" "_" upper "${upper}")
-  set(${out} "DAGOR_SDK_${upper}_DIR" PARENT_SCOPE)
-endfunction()
-
 # dagor_sdk_version(<name> <out-var>): the pinned version of an SDK
 function(dagor_sdk_version name out)
   get_property(version GLOBAL PROPERTY DAGOR_SDK_${name}_VERSION)
@@ -70,14 +63,6 @@ endfunction()
 # Sets <out-dir-var> to the unpacked SDK dir; with OPTIONAL it is set to empty when the SDK has no archive for the host.
 function(dagor_fetch_sdk name out)
   cmake_parse_arguments(PARSE_ARGV 2 arg "OPTIONAL" "HOST" "")
-  _dagor_sdk_override_var("${name}" override)
-  if(${override})
-    if(NOT IS_DIRECTORY "${${override}}")
-      message(FATAL_ERROR "${override}='${${override}}' is not a directory")
-    endif()
-    set(${out} "${${override}}" PARENT_SCOPE)
-    return()
-  endif()
 
   dagor_sdk_version("${name}" version)
   get_property(hosts GLOBAL PROPERTY DAGOR_SDK_${name}_HOSTS)
@@ -94,7 +79,7 @@ function(dagor_fetch_sdk name out)
     set(${out} "" PARENT_SCOPE)
     return()
   else()
-    message(FATAL_ERROR "SDK '${name}' ${version} has no archive for ${arg_HOST}; point ${override} at a local copy")
+    message(FATAL_ERROR "SDK '${name}' ${version} has no archive for ${arg_HOST}")
   endif()
 
   get_property(url GLOBAL PROPERTY DAGOR_SDK_${name}_${host}_URL)
@@ -107,7 +92,7 @@ function(dagor_fetch_sdk name out)
   endif()
 
   if(NOT DAGOR_DEPS_DIR)
-    message(FATAL_ERROR "DAGOR_DEPS_DIR is not set; include DagorBootstrap.cmake first")
+    message(FATAL_ERROR "DAGOR_DEPS_DIR is not set: configure with a preset, whose toolchain file sets it")
   endif()
   set(dest "${DAGOR_DEPS_DIR}/sdk/${name}-${version}${dir_suffix}")
   set(stamp "${dest}/.dagor-sdk")
@@ -178,3 +163,15 @@ function(dagor_fetch_sdk name out)
   file(REMOVE "${archive}") # the unpacked SDK is what is kept (and what CI caches)
   set(${out} "${dest}" PARENT_SCOPE)
 endfunction()
+
+# dagor_sdk_root(<Package> <name> [OPTIONAL]): <Package>_ROOT, for a Find module: the given one (a variable or an
+# environment variable, as find_package takes it), or the pinned archive <name> of the manifest, fetched. With OPTIONAL
+# it is left empty when the manifest has no archive for the host.
+macro(dagor_sdk_root package name)
+  if(NOT ${package}_ROOT AND DEFINED ENV{${package}_ROOT})
+    set(${package}_ROOT "$ENV{${package}_ROOT}")
+  endif()
+  if(NOT ${package}_ROOT)
+    dagor_fetch_sdk(${name} ${package}_ROOT ${ARGN})
+  endif()
+endmacro()

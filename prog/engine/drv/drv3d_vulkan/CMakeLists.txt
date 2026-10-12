@@ -175,40 +175,37 @@ set(includes
   ${DAGOR_PROG_DIR}/3rdPartyLibs/imgui-node-editor
 )
 # jam linked engine/imgui's stub in Rel; its programs all link engine/imgui, whose objects came first in jam's order
-set(deps engine/drv/drv3d_commonCode engine/drv/shadersMetaData/spirv 3rdPartyLibs/vulkan/smol-v engine/imgui)
-dagor_use(3rdPartyLibs/imgui-node-editor)
+set(deps engine.drv.drv3d_commonCode engine.drv.shadersMetaData.spirv 3rdPartyLibs.vulkan.smol-v engine.imgui)
 list(APPEND deps "$<${dev}:3rdPartyLibs.imgui-node-editor>")
 set(libs)
-if(DAGOR_PLATFORM MATCHES "^(android|windows|linux)$")
+if(CMAKE_SYSTEM_NAME MATCHES "^(Android|Linux|Windows)$")
   list(APPEND sources "$<IF:${dev},${dir}/renderDoc_capture_module.cpp,${dir}/renderDoc_capture_module_stub.cpp>")
 else()
   list(APPEND sources renderDoc_capture_module_stub.cpp)
 endif()
-if(DAGOR_PLATFORM STREQUAL "windows")
+if(WIN32)
   list(APPEND sources os/win32.cpp)
-  list(APPEND libs Wintrust)
-  dagor_require_sdk(nvapi OPTIONAL)
-  if(TARGET sdk::nvapi)
-    list(APPEND deps sdk::nvapi)
+  list(APPEND libs System::wintrust)
+  find_package(NVAPI)
+  if(TARGET NVAPI::NVAPI)
+    list(APPEND deps NVAPI::NVAPI)
   endif()
-elseif(DAGOR_PLATFORM STREQUAL "linux")
+elseif(LINUX)
   list(APPEND sources os/linux.cpp)
-  list(APPEND deps engine/osApiWrappers/linuxGUI)
-elseif(DAGOR_PLATFORM STREQUAL "android")
+  list(APPEND deps engine.osApiWrappers.linuxGUI)
+elseif(ANDROID)
   list(APPEND sources os/android.cpp)
 endif()
-if(DAGOR_PLATFORM MATCHES "^(windows|linux)$" AND DAGOR_ARCH STREQUAL "x86_64")
+if(CMAKE_SYSTEM_NAME MATCHES "^(Linux|Windows)$" AND DAGOR_ARCH STREQUAL "x86_64")
   list(APPEND sources amdFsrVulkan.cpp)
   list(APPEND includes ${DAGOR_PROG_DIR}/3rdPartyLibs/fsr3.1/include)
 else()
   list(APPEND sources amdFsrArmAsrVulkan_stub.cpp)
 endif()
 
-dagor_add_library(STRICT
-  SOURCES ${sources}
-  PRIVATE_INCLUDES ${includes}
-  PRIVATE_DEFINES ${defines}
-  FORCE_INCLUDES ${dir}/d3d/config.h ${dir}/driver_defs.h
-  DEPS ${deps}
-  SYSTEM_LIBS ${libs}
-)
+dagor_add_library(engine.drv.drv3d_vulkan ${sources})
+target_include_directories(engine.drv.drv3d_vulkan PRIVATE ${includes})
+target_compile_definitions(engine.drv.drv3d_vulkan PRIVATE ${defines})
+target_link_libraries(engine.drv.drv3d_vulkan PRIVATE ${deps})
+target_link_libraries(engine.drv.drv3d_vulkan PUBLIC ${libs})
+dagor_target_force_include(engine.drv.drv3d_vulkan ${dir}/d3d/config.h ${dir}/driver_defs.h)

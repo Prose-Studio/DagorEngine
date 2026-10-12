@@ -2,18 +2,17 @@
 set(includes include)
 set(sources src/format.cc)
 list(APPEND defines FMT_UNICODE=0)
-if(DAGOR_PLATFORM STREQUAL "windows")
+if(WIN32)
   list(APPEND defines _HAS_EXCEPTIONS=1)
   list(APPEND options /EHsc)
 else()
   list(APPEND options -fexceptions)
 endif()
-if(DAGOR_CC MATCHES "^(clang|clang\-cl)$")
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   list(APPEND options -Wno-macro-redefined)
 endif()
 
-dagor_add_library(SOURCES ${sources}
-  PRIVATE_INCLUDES ${includes}
-  PRIVATE_DEFINES ${defines}
-  COMPILE_OPTIONS ${options}
-)
+dagor_add_library(3rdPartyLibs.fmt LAX ${sources})
+target_include_directories(3rdPartyLibs.fmt PRIVATE ${includes})
+target_compile_definitions(3rdPartyLibs.fmt PRIVATE ${defines})
+target_compile_options(3rdPartyLibs.fmt PRIVATE ${options})

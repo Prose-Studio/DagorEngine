@@ -15,6 +15,8 @@ set(sources
   occlusionIo.cpp
 )
 set(includes ${DAGOR_PROG_DIR}/engine/sharedInclude)
-list(APPEND deps 3rdPartyLibs/eastl)
+list(APPEND deps 3rdPartyLibs.eastl)
 
-dagor_add_library(SOURCES ${sources} PRIVATE_INCLUDES ${includes} DEPS ${deps})
+dagor_add_library(engine.scene LAX ${sources})
+target_include_directories(engine.scene PRIVATE ${includes})
+target_link_libraries(engine.scene PRIVATE ${deps})

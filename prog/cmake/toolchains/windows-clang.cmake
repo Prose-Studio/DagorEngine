@@ -39,7 +39,8 @@ set(_dagor_sdk_inc "${DAGOR_WINSDK_DIR}/Include/${DAGOR_WINSDK_RESOLVED_VERSION}
 string(REGEX MATCH "^[0-9]+" _dagor_clang_major "${DAGOR_LLVM_VERSION}")
 set(DAGOR_TOOLCHAIN_C_FLAGS
   "/vctoolsdir \"${DAGOR_MSVC_DIR}\" /winsdkdir \"${DAGOR_WINSDK_DIR}\" /winsdkversion ${DAGOR_WINSDK_RESOLVED_VERSION}")
-if(CMAKE_CXX_COMPILER_LAUNCHER AND NOT CMAKE_GENERATOR MATCHES "^Visual Studio")
+# a compiler launcher (sccache, ccache): CMAKE_CXX_COMPILER_LAUNCHER of the preset or of the environment
+if((CMAKE_CXX_COMPILER_LAUNCHER OR DEFINED ENV{CMAKE_CXX_COMPILER_LAUNCHER}) AND NOT CMAKE_GENERATOR MATCHES "^Visual Studio")
   set(_dagor_native_flags "${DAGOR_TOOLCHAIN_C_FLAGS}")
   # sccache does not recognize /vctoolsdir and /winsdkdir: their separate values look like source files. Spell the
   # same header search order explicitly, and preserve the selected cl.exe's version macros (not another installed VS).

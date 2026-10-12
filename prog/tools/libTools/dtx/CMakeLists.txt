@@ -15,9 +15,11 @@ set(includes
   ${DAGOR_PROG_DIR}/tools/sharedInclude
   ${DAGOR_PROG_DIR}/engine/sharedInclude
 )
-set(deps engine/image 3rdPartyLibs/convert/nvtt-2.0.7 3rdPartyLibs/image/jpeg-6b 3rdPartyLibs/image/avif)
+set(deps engine.image 3rdPartyLibs.convert.nvtt-2.0.7 3rdPartyLibs.image.jpeg-6b 3rdPartyLibs.image.avif)
 if(NOT DAGOR_KERNEL_LINKAGE STREQUAL "dynamic")
-  list(APPEND deps 3rdPartyLibs/arc/lzma-9.20)
+  list(APPEND deps 3rdPartyLibs.arc.lzma-9.20)
 endif()
 
-dagor_add_library(SOURCES ${sources} PRIVATE_INCLUDES ${includes} DEPS ${deps})
+dagor_add_library(tools.libTools.dtx LAX ${sources})
+target_include_directories(tools.libTools.dtx PRIVATE ${includes})
+target_link_libraries(tools.libTools.dtx PRIVATE ${deps})

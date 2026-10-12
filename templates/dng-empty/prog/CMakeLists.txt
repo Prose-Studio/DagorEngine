@@ -26,14 +26,14 @@ block(SCOPE_FOR VARIABLES)
   dagor_glob_sources(das DIRS scripts/dng_empty scripts/dng_empty/es GLOB *.das) # compiled ahead of time with DAGOR_DAS_AOT
 
   set(sources)
-  set(deps daNetGame daNetGameLibs/dm/stub)
+  set(deps daNetGame daNetGameLibs.dm.stub)
   set(client OFF)
   if(NOT DAGOR_DEDICATED AND NOT DAGOR_DAS_AOT_COMPILER)
     set(client ON)
   endif()
-  if(client AND DAGOR_PLATFORM STREQUAL "windows")
+  if(client AND WIN32)
     list(APPEND sources platform/windows/dng_empty.rc platform/windows/dng_empty.exe.manifest)
-  elseif(client AND NOT DAGOR_PLATFORM MATCHES "^(linux|macOS)$")
+  elseif(client AND NOT CMAKE_SYSTEM_NAME MATCHES "^(Darwin|Linux)$")
     message(FATAL_ERROR "dng_empty: the ${DAGOR_PLATFORM} client's packaging is not ported yet")
   endif()
 
@@ -53,7 +53,7 @@ block(SCOPE_FOR VARIABLES)
     OUTPUT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../game/${DAGOR_PLATFORM}-${DAGOR_ARCH}
   )
 
-  if(client AND DAGOR_PLATFORM STREQUAL "macOS")
+  if(client AND CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     # game/DngEmpty.app (DngEmptyArm64.app on arm64, as game/client.sh expects)
     set(bundle DngEmpty)
     if(DAGOR_ARCH STREQUAL "arm64")
@@ -78,13 +78,13 @@ block(SCOPE_FOR VARIABLES)
     set(dsc "-q|-shaderOn|-nodisassembly|-commentPP|-codeDumpErr|-maxVSF|4096")
     set(exp "-q|-shaderOn|-no_sha1_cache|-clearBlkHashInDump") # dabuild only needs the shader descriptions
     set(obj ${CMAKE_BINARY_DIR}/shaders)
-    if(DAGOR_PLATFORM STREQUAL "windows") # dx11 is the default driver and what daEditor renders levels with
+    if(WIN32) # dx11 is the default driver and what daEditor renders levels with
       set(steps
         "game-dx11|dsc2-hlsl11|shaders_dx11.blk|${dsc}"
         "game-dx12|dsc2-dx12|shaders_dx12.blk|${dsc}|-wx"
         "tools-dx11|dsc2-hlsl11|shaders_tools11.blk|${dsc}"
         "impostorbaker-dx12|dsc2-dx12|shaders_impostorbaker.blk|${dsc}")
-    elseif(DAGOR_PLATFORM STREQUAL "macOS")
+    elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
       set(steps
         "game-metal|dsc2-metal|shaders_metal.blk|${dsc}"
         "tools-metal|dsc2-metal|shaders_tools11.blk|${dsc}|-out|../../tools/toolsMTL"

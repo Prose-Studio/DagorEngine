@@ -1,54 +1,45 @@
-# The engine's own build: its unit tests (DAGOR_VARIANT=tests), tools (cdk, editor, maxplug), dargbox, or all of it.
-# Games and samples are separate projects, each with the top-level CMakeLists.txt of its prog/ (see templates/dng-empty).
-# dng.py configures and builds the trees (python dng.py build -h): in build/<platform>[-<compiler>]-<variant> of the
-# engine root, with the cache variables of the variant (prog/tools/pythonCommon/dagorCMake).
+# The Dagor Engine: its libraries, tools and unit tests, in the variant the preset names (DAGOR_VARIANT; see
+# CMakePresets.json, cmake --list-presets). Games are projects of their own whose trees add this directory through
+# find_package(Dagor) (cmake/DagorConfig.cmake): there it is a subproject that builds what the game links.
 cmake_minimum_required(VERSION 4.0)
-include(cmake/DagorBootstrap.cmake)
 project(DagorEngine LANGUAGES C CXX)
-include(DagorEngine)
+include(cmake/Dagor.cmake)
 
-if(DAGOR_VARIANT MATCHES "^(tests|all)$")
-  dagor_use_tests()
+add_subdirectory(3rdPartyLibs)
+add_subdirectory(1stPartyLibs)
+add_subdirectory(engine)
+add_subdirectory(commonFx)
+add_subdirectory(gameLibs)
+add_subdirectory(daNetGameLibs)
+add_subdirectory(tools)
+if(DAGOR_VARIANT STREQUAL "game")
+  add_subdirectory(daNetGame)
 endif()
-# the CDK: the command-line tools of the content pipeline (shader compilers, packers, converters), on the static kernel
-if(DAGOR_VARIANT MATCHES "^(cdk|all)$")
-  dagor_use(
-    3rdPartyLibs/legacy_parser/dolphin
-    3rdPartyLibs/legacy_parser/whale
-    3rdPartyLibs/scripts/duktape
-    tools/consoleSq
-    tools/converters/ddsConverter
-    tools/converters/ddsx2dds
-    tools/converters/ddsxCvt
-    tools/converters/GuiTex
-    tools/FontGenerator
-    tools/sceneTools/assetExp/ddsxConv
-    tools/sceneTools/csvUtil
-    tools/sceneTools/dbldUtil
-    tools/sceneTools/dumpGrp
-    tools/sceneTools/resClean
-    tools/sceneTools/resDiff
-    tools/sceneTools/resUpdate
-    tools/sceneTools/utils
-    tools/sceneTools/vromfsPacker
-    tools/shaderInfo
-    tools/ShaderCompiler2
-    tools/ShaderCompiler2/nodeBased
-    tools/sceneTools/guiShaders_commonData
-  )
-  # the data the tools load that is not built (prog/tools/toolsData/README.md), with the cdk-data component
-  install(DIRECTORY tools/toolsData/ DESTINATION tools COMPONENT cdk-data PATTERN README.md EXCLUDE)
-endif()
-# the tools on the shared kernel (daKernel): daBuild with its exporter plugins, ddsxCvt2
-if(DAGOR_VARIANT MATCHES "^(editor|all)$")
-  dagor_use(
-    tools/libTools/daKernel
-    tools/sceneTools/assetExp
-    tools/sceneTools/assetExp/exporters
-    tools/sceneTools/assetExp/refProviders
-    gameLibs/vehiclePhys/exporters
-    tools/converters/ddsxCvt2
-  )
+if(DAGOR_DAS_AOT_COMPILER)
+  add_subdirectory(daNetGame-das-aot)
 endif()
 
-dagor_finalize()
+# the programs of the variant's default build (cmake --build --preset <host>-<variant>); the test programs are the
+# tests variant's (DagorTesting.cmake)
+if(NOT PROJECT_IS_TOP_LEVEL)
+  return()
+endif()
+if(DAGOR_VARIANT STREQUAL "cdk")
+  # the CDK: the command-line tools of the content pipeline (shader compilers, packers, converters) on the static
+  # kernel, and the GUI shaders of the tools; the data the tools load that is not built is installed with them
+  dagor_build_by_default(dolphin whale duktape csq ddsConverter ddsx2dds ddsxCvt guiTex fontgen2 pcDdsxConv iosDdsxConv
+    andDdsxConv csvUtil2 dbldUtil dumpGrp resCleanUtil resDiffUtil resUpd binBlk vromfsPacker shaderInfo dsc2-stub
+    dsc2-nodeBased)
+  foreach(platform_tool dsc2-hlsl11 dsc2-dx12 dsc2-spirv dsc2-metal guiShaders-dx11 guiShaders-dx12 guiShaders-spirv
+                        guiShaders-metal)
+    if(TARGET ${platform_tool})
+      dagor_build_by_default(${platform_tool})
+    endif()
+  endforeach()
+  install(DIRECTORY tools/toolsData/ DESTINATION tools COMPONENT cdk PATTERN README.md EXCLUDE)
+elseif(DAGOR_VARIANT STREQUAL "editor")
+  # the tools on the shared kernel (daKernel): daBuild with its exporter plugins, ddsxCvt2
+  dagor_build_by_default(tools.libTools.daKernel daBuild daBuild-job a2dExp animCharExp collisionExp fastPhysExp fxExp
+    impostorExp landClsExp locShadersExp matExp modelExp phObjExp texExp compositRefProv efxRefProv splineRefProv
+    vehicleExp ddsxCvt2)
+endif()

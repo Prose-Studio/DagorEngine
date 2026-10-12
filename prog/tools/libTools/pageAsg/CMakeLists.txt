@@ -11,4 +11,5 @@ set(sources
   asg_anim_tree.cpp
 )
 
-dagor_add_library(SOURCES ${sources} PRIVATE_INCLUDES ${includes})
+dagor_add_library(tools.libTools.pageAsg LAX ${sources})
+target_include_directories(tools.libTools.pageAsg PRIVATE ${includes})
