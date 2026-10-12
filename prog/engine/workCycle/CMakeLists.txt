@@ -1,5 +1,4 @@
 # The work cycle: the main loop, timing, input device init, the console in Dev and Dbg
-add_subdirectory(stub)
 set(deps engine.perfMon engine.lowLatency engine.coreUtil)
 list(APPEND deps "$<$<CONFIG:Dev,Dbg>:engine.consoleProc>")
 list(APPEND deps engine.drv.vr_device)

@@ -1,10 +1,6 @@
 # daFrameGraph: the render graph (node registry, IR, scheduling of passes, resources and barriers, runtime), with its
 # debug visualization in Dev and Dbg, and the features of DAGOR_DAFG_FEATURES: das (daScript bindings), ecs (daECS
 # node integration); a game's has both (DagorGame.cmake).
-if(DAGOR_ENGINE_TESTS)
-  add_subdirectory(tests)
-endif()
-
 set(includes ${DAGOR_PROG_DIR}/gameLibs/publicInclude . ${DAGOR_PROG_DIR}/3rdPartyLibs/imgui
   ${DAGOR_PROG_DIR}/3rdPartyLibs/rapidjson/include)
 # the debug tools' libraries in Dev and Dbg (daFrameGraph_files.cmake), the console variables in every configuration

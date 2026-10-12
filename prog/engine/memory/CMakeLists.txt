@@ -3,7 +3,6 @@
 #   <allocator>    default (dlmalloc on Windows without sanitizers, else rtl), rtl, minrtl, dlmalloc, mimalloc, imported
 #   <debug level>  default (off in Rel and IRel), off, min, dbg, dbg2
 # e.g. engine.memory, engine.memory.rtl, engine.memory.dlmalloc.dbg, engine.memory.default.off
-
 function(_engine_memory allocator debug)
   set(name engine.memory)
   if(NOT debug STREQUAL "default")
@@ -71,7 +70,3 @@ foreach(allocator default rtl minrtl dlmalloc mimalloc imported)
     _engine_memory(${allocator} ${debug})
   endforeach()
 endforeach()
-
-if(DAGOR_KERNEL_LINKAGE STREQUAL "dynamic") # the C runtime's allocator replaced by daKernel's
-  add_subdirectory(rtlOverride)
-endif()

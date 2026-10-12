@@ -1,8 +1,4 @@
 # webui: the programs' HTTP server for the browser tools, with its plugins
-add_subdirectory(plugins)
-add_subdirectory(stub)
-add_subdirectory(websocket)
-
 set(plugins colorpicker dagor dargMcp editvar grapheditor profiler screenshot shadervars quirrel)
 if(CMAKE_SYSTEM_NAME STREQUAL "tvOS")
   list(APPEND plugins tvOS)

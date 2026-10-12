@@ -1,7 +1,5 @@
 # The camera manager (a gameLibs module, its pull framework_cameraManager_pull): with the renderer only, without it
 # games link gameLibs/cameraManager/stub
-add_subdirectory(stub)
-
 set(deps)
 if(DAGOR_GAME_RENDERER)
   set(deps gameLibs.folders)

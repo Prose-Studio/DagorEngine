@@ -1,6 +1,5 @@
 # Render instances: generated and placed instances (rendinst cells, extra instances, impostors, destruction), their
 # collision, visibility and rendering. Dedicated servers (DAGOR_DEDICATED) have no impostor textures.
-add_subdirectory(riFx)
 set(defines VECMATH_NO_FMA) # v_madd on NEON is explicit vfmaq that ignores ffp-contract=off
 if(DAGOR_BUILDING_TOOLS)
   list(APPEND defines _TARGET_PC_TOOLS_BUILD)

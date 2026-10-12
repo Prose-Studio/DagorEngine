@@ -1,6 +1,3 @@
-if(DAGOR_DAS_AOT) # the daslib scripts compiled ahead of time
-  add_subdirectory(daslib)
-endif()
 list(APPEND deps 3rdPartyLibs.eastl 1stPartyLibs.daScript 3rdPartyLibs.imgui 3rdPartyLibs.imgui-node-editor)
 if(DAGOR_DAS_AOT)
   list(APPEND deps 1stPartyLibs.daScript.modules.dasImgui.daslib) # its daslib scripts, compiled ahead of time

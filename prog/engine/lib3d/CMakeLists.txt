@@ -1,6 +1,5 @@
 # The engine's 3d layer above the driver: texture and buffer managers, DDSx loading, debug drawing, occlusion
 # (masked occlusion culling), texture streaming
-add_subdirectory(moc_avx)
 set(defines)
 set(deps 3rdPartyLibs.eastl "$<$<CONFIG:Dev,Dbg>:engine.consoleProc>")
 if(WIN32)

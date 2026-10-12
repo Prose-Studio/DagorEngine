@@ -1,7 +1,4 @@
 # ISO 8601 time parsing and formatting
-if(DAGOR_ENGINE_TESTS)
-  add_subdirectory(tests)
-endif()
 if(WIN32)
   list(APPEND options /wd4548)
 endif()

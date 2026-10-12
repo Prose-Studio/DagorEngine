@@ -3,12 +3,6 @@
 #   1stPartyLibs.daScript.console   stdout output and daScript's own crash handler, for the console tools (the das
 #                                   interpreter) that set the DAGOR_DAS_CONSOLE target property
 # Libraries depend on 1stPartyLibs/daScript, which links the one of the program they end up in.
-if(DAGOR_DAS_AOT) # the daslib scripts compiled ahead of time
-  add_subdirectory(daslib)
-endif()
-add_subdirectory(modules)
-add_subdirectory(utils/daScript)
-
 # DAS_ENABLE_DYN_INCLUDES: as daScript's own CMake build defines it (src/builtin/jit_runtime.cpp needs its header)
 set(defines DAS_ENABLE_KEEPALIVE=0 FMT_UNICODE=0 DAS_ENABLE_DYN_INCLUDES=1 "$<$<CONFIG:Rel,IRel>:DAS_NO_ASSERTIONS=1>")
 if(DAGOR_DAS_LLVM_AOT)

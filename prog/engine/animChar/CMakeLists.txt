@@ -1,7 +1,5 @@
 # Animated characters: the anim char (skeleton, anim graph state, physics), its rendering and the second animation
 # pass. Programs with the DAGOR_MEASURE_PERF property get the build with profiling counters (MEASURE_PERF=1).
-add_subdirectory(stub)
-
 set(options)
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   list(APPEND options -Wno-undefined-bool-conversion)

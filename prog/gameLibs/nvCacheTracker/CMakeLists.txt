@@ -1,5 +1,3 @@
-add_subdirectory(stub)
-
 dagor_add_target(NAME gameLibs.nvCacheTracker STATIC
   FILES_CMAKE nvCacheTracker_files.cmake
   INCLUDE_DIRECTORIES PRIVATE

@@ -1,4 +1,3 @@
-add_subdirectory(weather_effects)
 list(APPEND deps 3rdPartyLibs.eastl gameLibs.resourcePool)
 if(IS_DIRECTORY "${DAGOR_PROG_DIR}/gameLibs/ecs/phys" AND IS_DIRECTORY "${DAGOR_PROG_DIR}/gameLibs/gamePhys/ballistics")
   list(APPEND defines HAS_ECS_PHYS)

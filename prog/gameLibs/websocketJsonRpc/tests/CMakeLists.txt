@@ -1,5 +1,4 @@
 # Websocket JSON RPC unit tests
-add_subdirectory(testHelpers)
 if(WIN32)
   list(APPEND options /FC)
 endif()

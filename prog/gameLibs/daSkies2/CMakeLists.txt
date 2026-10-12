@@ -1,4 +1,3 @@
-add_subdirectory(debug)
 list(APPEND deps engine.lib3d gameLibs.resourcePool)
 if(DAGOR_GAME_RENDERER)
   list(APPEND deps gameLibs.render.nodeBasedShader)

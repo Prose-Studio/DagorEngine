@@ -1,5 +1,4 @@
 # sha1/sha256/sha3/md5/xxhash/crc32/rijndael; the SHA-2 implementation comes from OpenSSL's sha module
-add_subdirectory(BLAKE3)
 set(c_options)
 if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
   # warning 6386: Buffer overrun: accessing 'argument 1', the writable size is '64' bytes, but '746' bytes might be written

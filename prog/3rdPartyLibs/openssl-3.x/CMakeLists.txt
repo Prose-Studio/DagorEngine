@@ -1,6 +1,4 @@
 # OpenSSL 3: libssl and the default provider, on libcrypto (crypto/), with zlib compression
-add_subdirectory(crypto)
-
 include(openssl.cmake)
 set(c_options ${OPENSSL_C_OPTIONS})
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND DAGOR_SANITIZE STREQUAL "undefined")

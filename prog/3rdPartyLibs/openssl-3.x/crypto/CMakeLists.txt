@@ -1,6 +1,4 @@
 # OpenSSL 3 libcrypto (without SHA, which is crypto/sha)
-add_subdirectory(sha)
-
 include(../openssl.cmake)
 set(c_options ${OPENSSL_C_OPTIONS})
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")

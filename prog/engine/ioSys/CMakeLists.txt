@@ -1,6 +1,5 @@
 # Streams (files, memory, zlib, zstd, lzma, brotli, Oodle), async I/O, vromfs, findFiles. Oodle is not redistributable:
 # with -DOodle_ROOT=<oodle SDK> its codecs are built in, otherwise a stub reports them unsupported.
-add_subdirectory(dataBlock)
 set(deps engine.ioSys.dataBlock 3rdPartyLibs.hash 3rdPartyLibs.arc.zlib-ng 3rdPartyLibs.arc.zstd-1.4.5
   3rdPartyLibs.arc.lzma-9.20 3rdPartyLibs.arc.brotli)
 if(NOT DAGOR_KERNEL_LINKAGE STREQUAL "dynamic")

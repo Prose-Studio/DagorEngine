@@ -1,4 +1,3 @@
-add_subdirectory(aotStub)
 if(WIN32)
   list(APPEND options /wd4548)
 endif()

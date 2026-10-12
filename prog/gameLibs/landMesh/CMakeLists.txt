@@ -1,7 +1,5 @@
 # The land mesh (heightmap terrain with clipmap texturing, micro details and the weight atlas); its clipmap debug UI
 # (ImGui) in Dev and Dbg
-add_subdirectory(rendinstIntegration)
-add_subdirectory(stub)
 set(deps gameLibs.landMesh.rendinstIntegration gameLibs.heightmap gameLibs.physMap 3rdPartyLibs.eastl engine.daBVH
   3rdPartyLibs.convert.fastDXT)
 set(debug "$<CONFIG:Dev,Dbg>")

@@ -1,6 +1,3 @@
-add_subdirectory(graph)
-add_subdirectory(stub)
-
 dagor_add_target(NAME gameLibs.render.animatedSplashScreen STATIC
   FILES_CMAKE animatedSplashScreen_files.cmake
   INCLUDE_DIRECTORIES PRIVATE

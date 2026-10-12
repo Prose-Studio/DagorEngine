@@ -2,7 +2,6 @@
 # CMakeLists.txt of daScript's own build)
 # the tray backends are not wired on any platform (as in the jamfile): Dagor hosts no tray icon, and tray_* is bound
 # either way, TrayPlatformCreate returning null
-add_subdirectory(stub)
 dagor_add_target(NAME 1stPartyLibs.daScript.modules.dasStdDlg STATIC
   FILES_CMAKE dasStdDlg_files.cmake
   INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/1stPartyLibs/daScript/include

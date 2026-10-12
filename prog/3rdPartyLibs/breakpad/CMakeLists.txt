@@ -1,5 +1,4 @@
 # Google Breakpad's crash handling client: minidump writing and the exception handler
-add_subdirectory(common)
 set(deps 3rdPartyLibs.arc.zlib-ng)
 if(WIN32)
   list(APPEND defines UNICODE)

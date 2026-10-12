@@ -1,14 +1,8 @@
 # Breakpad's common code: the platform's (windows/, linux/, mac/), and on Linux and macOS the symbol and DWARF readers of
 # its tools and client
 if(WIN32)
-  add_subdirectory(windows)
   return()
-elseif(APPLE)
-  add_subdirectory(mac)
-else()
-  add_subdirectory(linux)
 endif()
-add_subdirectory(dwarf)
 
 dagor_add_target(NAME 3rdPartyLibs.breakpad.common STATIC LAX
   FILES_CMAKE common_files.cmake

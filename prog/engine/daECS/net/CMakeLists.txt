@@ -1,5 +1,3 @@
-add_subdirectory(replay)
-add_subdirectory(timesync)
 list(APPEND deps engine.daNet engine.crypto 3rdPartyLibs.arc.lz4)
 list(APPEND deps engine.daECS.io.datablock engine.daECS.core 3rdPartyLibs.eastl)
 

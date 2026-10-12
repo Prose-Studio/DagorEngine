@@ -1,5 +1,3 @@
-add_subdirectory(stub)
-
 dagor_add_target(NAME gameLibs.webui.websocket STATIC
   FILES_CMAKE websocket_files.cmake
   INCLUDE_DIRECTORIES PRIVATE

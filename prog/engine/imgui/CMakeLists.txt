@@ -1,8 +1,5 @@
 # The engine's ImGui integration: platform input, the renderer, the test runtime, netImgui outside Rel. Programs that
 # set DAGOR_IMGUI_TEST_ENGINE get the build with the ImGui test engine hooks (see 3rdPartyLibs/imgui).
-add_subdirectory(stub)
-add_subdirectory(util)
-
 include(netImgui.cmake)
 foreach(build standard testEngine)
   set(defines ${NET_IMGUI_DEFINES})

@@ -1,5 +1,3 @@
-add_subdirectory(blk2sqrat)
-
 dagor_add_target(NAME gameLibs.dataBlockUtils STATIC
   FILES_CMAKE dataBlockUtils_files.cmake
   INCLUDE_DIRECTORIES PRIVATE

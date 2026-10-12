@@ -1,4 +1,3 @@
-add_subdirectory(stub)
 list(APPEND deps 3rdPartyLibs.eastl gameLibs.rendInst)
 list(APPEND deps Dagor::Phys)
 

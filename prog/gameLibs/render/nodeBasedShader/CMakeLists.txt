@@ -1,5 +1,3 @@
-add_subdirectory(stub)
-
 dagor_add_target(NAME gameLibs.render.nodeBasedShader STATIC
   FILES_CMAKE nodeBasedShader_files.cmake
   INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${CMAKE_CURRENT_SOURCE_DIR}

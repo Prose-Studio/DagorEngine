@@ -1,7 +1,5 @@
 # The web UI's node-based shader editors (environment cover, fog, clouds). The comp variant: the compile-only build of the
 # node-based shader compiler (NBSM_COMPILE_ONLY).
-add_subdirectory(stub)
-
 foreach(variant "" .comp)
   set(name gameLibs.webui.plugins.shaderEditors${variant})
   dagor_add_target(NAME ${name} STATIC

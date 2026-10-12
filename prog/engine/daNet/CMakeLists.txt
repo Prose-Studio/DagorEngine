@@ -1,9 +1,4 @@
 # daNet: the ENet based network transport
-add_subdirectory(delta)
-if(DAGOR_ENGINE_TESTS)
-  add_subdirectory(tests)
-endif()
-
 set(includes ${DAGOR_PROG_DIR}/3rdPartyLibs/arc/zlib-ng ${DAGOR_PROG_DIR}/3rdPartyLibs/enet/include)
 set(deps 3rdPartyLibs.arc.zlib-ng 3rdPartyLibs.enet)
 if(WIN32)

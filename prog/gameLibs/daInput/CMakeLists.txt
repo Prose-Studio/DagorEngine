@@ -1,5 +1,3 @@
-add_subdirectory(stub)
-
 dagor_add_target(NAME gameLibs.daInput STATIC
   FILES_CMAKE daInput_files.cmake
   INCLUDE_DIRECTORIES PRIVATE

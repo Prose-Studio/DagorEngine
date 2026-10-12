@@ -1,7 +1,4 @@
 # JSON RPC over persistent websocket connections
-if(DAGOR_ENGINE_TESTS)
-  add_subdirectory(tests)
-endif()
 if(WIN32)
   list(APPEND options /FC)
 endif()

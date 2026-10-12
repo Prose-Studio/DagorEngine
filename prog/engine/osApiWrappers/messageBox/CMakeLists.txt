@@ -1,5 +1,4 @@
 # os_message_box(): the system's message box (FLTK on Linux)
-add_subdirectory(stub)
 set(libs)
 set(options)
 set(includes)
