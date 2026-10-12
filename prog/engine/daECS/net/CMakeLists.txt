@@ -1,17 +1,10 @@
 add_subdirectory(replay)
 add_subdirectory(timesync)
-
-set(includes ${DAGOR_PROG_DIR}/3rdPartyLibs/enet/include ${DAGOR_PROG_DIR}/3rdPartyLibs/arc)
 list(APPEND deps engine.daNet engine.crypto 3rdPartyLibs.arc.lz4)
-dagor_glob_sources(sources DIRS . GLOB *.cpp)
-list(APPEND es_sources replicationES.cpp.inl)
-list(APPEND es_sources msgSinkES.cpp.inl)
-list(APPEND es_sources componentFiltersES.cpp.inl)
-list(APPEND es_sources netEventES.cpp.inl)
-list(APPEND es_sources netEventsES.cpp.inl)
 list(APPEND deps engine.daECS.io.datablock engine.daECS.core 3rdPartyLibs.eastl)
 
-dagor_add_library(engine.daECS.net ${sources})
-target_include_directories(engine.daECS.net PRIVATE ${includes})
-target_link_libraries(engine.daECS.net PRIVATE ${deps})
-dagor_target_es_sources(engine.daECS.net ${es_sources})
+dagor_add_target(NAME engine.daECS.net STATIC
+  FILES_CMAKE net_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/3rdPartyLibs/enet/include ${DAGOR_PROG_DIR}/3rdPartyLibs/arc
+  BUILD_DEPENDENCIES PRIVATE ${deps}
+)

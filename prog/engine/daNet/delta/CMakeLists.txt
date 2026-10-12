@@ -3,8 +3,7 @@ if(DAGOR_ENGINE_TESTS)
   add_subdirectory(tests)
 endif()
 
-set(sources rle.cpp history.cpp buffer.cpp deltaCompression.cpp)
-list(APPEND deps engine.daNet)
-
-dagor_add_library(engine.daNet.delta ${sources})
-target_link_libraries(engine.daNet.delta PRIVATE ${deps})
+dagor_add_target(NAME engine.daNet.delta STATIC
+  FILES_CMAKE delta_files.cmake
+  BUILD_DEPENDENCIES PRIVATE engine.daNet
+)

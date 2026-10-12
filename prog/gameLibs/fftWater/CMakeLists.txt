@@ -1,25 +1,5 @@
-set(sources
-  wake.cpp
-  waterRenderCommon.cpp
-  waterRender.cpp
-  cpuTexSampler.cpp
-  chopWaterRender.cpp
-  chopWaterPhysics.cpp
-  chopWaterGen.cpp
-  waterRenderGpGPU.cpp
-  waterRenderCSGPU.cpp
-  gpuFetch.cpp
-  waterPhys.cpp
-  fftWater.cpp
-  fftWaterUtils.cpp
-  distanceField.cpp
-  flowMap.cpp
-  waterCommon.cpp
-  fftCPU/FFT_CPU_Simulation.cpp
+dagor_add_target(NAME gameLibs.fftWater STATIC LAX
+  FILES_CMAKE fftWater_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/gameLibs/fftWater/fftCPU
+  BUILD_DEPENDENCIES PRIVATE gameLibs.heightmap engine.lib3d
 )
-set(includes ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/gameLibs/fftWater/fftCPU)
-set(deps gameLibs.heightmap engine.lib3d)
-
-dagor_add_library(gameLibs.fftWater LAX ${sources})
-target_include_directories(gameLibs.fftWater PRIVATE ${includes})
-target_link_libraries(gameLibs.fftWater PRIVATE ${deps})

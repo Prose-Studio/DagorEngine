@@ -1,0 +1,24 @@
+set(FILES
+  str_util.cpp
+  filePathName.cpp
+  hash.cpp
+  hashSaveCb.cpp
+  undosys.cpp
+  conProgressIndicator.cpp
+  fileUtils.cpp
+  conLogWriter.cpp
+  reportLogWriter.cpp
+  blockFileUtil.cpp
+  fileMask.cpp
+  dag_TabOps.cpp
+  tab_sort.cpp
+  colorUtil.cpp
+  meshUtil.cpp
+  binDumpUtil.cpp
+  prepareBillboardMesh.cpp
+  blkUtil.cpp
+  svgWrite.cpp
+  genericCache.cpp
+  twoStepRelPath.cpp
+  iesReader.cpp
+)

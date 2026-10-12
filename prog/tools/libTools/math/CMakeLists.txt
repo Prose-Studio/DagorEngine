@@ -1,6 +1,5 @@
 # Tools math: k-DOP bounding volumes
-set(includes ${DAGOR_PROG_DIR}/tools/sharedInclude)
-set(sources kdop.cpp)
-
-dagor_add_library(tools.libTools.math LAX ${sources})
-target_include_directories(tools.libTools.math PRIVATE ${includes})
+dagor_add_target(NAME tools.libTools.math STATIC LAX
+  FILES_CMAKE math_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/tools/sharedInclude
+)

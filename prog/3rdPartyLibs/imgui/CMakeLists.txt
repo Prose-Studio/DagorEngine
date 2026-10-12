@@ -12,13 +12,13 @@ foreach(build standard testEngine)
   if(build STREQUAL "testEngine")
     set(defines IMGUI_ENABLE_TEST_ENGINE)
   endif()
-  dagor_add_library(3rdPartyLibs.imgui.${build} LAX imgui.cpp imgui_demo.cpp imgui_draw.cpp imgui_widgets.cpp
-    imgui_tables.cpp implot.cpp implot_demo.cpp implot_items.cpp misc/freetype/imgui_freetype.cpp)
-  target_include_directories(3rdPartyLibs.imgui.${build} PRIVATE .
-    ${DAGOR_PROG_DIR}/3rdPartyLibs/freetype/freetype-2.8/include)
-  target_compile_definitions(3rdPartyLibs.imgui.${build} PRIVATE ${defines})
-  target_compile_options(3rdPartyLibs.imgui.${build} PRIVATE ${options})
-  target_link_libraries(3rdPartyLibs.imgui.${build} PRIVATE 3rdPartyLibs.freetype.freetype-2.8)
+  dagor_add_target(NAME 3rdPartyLibs.imgui.${build} STATIC LAX
+    FILES_CMAKE imgui_files.cmake
+    INCLUDE_DIRECTORIES PRIVATE . ${DAGOR_PROG_DIR}/3rdPartyLibs/freetype/freetype-2.8/include
+    COMPILE_DEFINITIONS PRIVATE ${defines}
+    COMPILE_OPTIONS PRIVATE ${options}
+    BUILD_DEPENDENCIES PRIVATE 3rdPartyLibs.freetype.freetype-2.8
+  )
 endforeach()
 dagor_add_link_choice(3rdPartyLibs.imgui PROPERTY DAGOR_IMGUI_TEST_ENGINE
   ON 3rdPartyLibs.imgui.testEngine OFF 3rdPartyLibs.imgui.standard)

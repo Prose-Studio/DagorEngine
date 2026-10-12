@@ -1,52 +1,6 @@
 # Render instances: generated and placed instances (rendinst cells, extra instances, impostors, destruction), their
 # collision, visibility and rendering. Dedicated servers (DAGOR_DEDICATED) have no impostor textures.
 add_subdirectory(riFx)
-
-set(includes ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/engine/sharedInclude ${CMAKE_CURRENT_SOURCE_DIR})
-set(sources
-  dumpCollisions.cpp
-  dumpScenes.cpp
-  rendInstAccess.cpp
-  rendInstExtraAccess.cpp
-  rendInstCommon.cpp
-  rendInstGen.cpp
-  rendInstGenLand.cpp
-  rendInstGenCollision.cpp
-  rendInstGenExtra.cpp
-  rendInstExtraAdditionalData.cpp
-  rendInstGenExtraMaxHeight.cpp
-  rendInstGenDebris.cpp
-  rendInstGenGlobals.cpp
-  rendInstRotationPalette.cpp
-  rendInstGenRtTools.cpp
-  rendInstUtil.cpp
-  rendInstStubRes.cpp
-  rendInstDesc.cpp
-  riGrid.cpp
-  riGridDebug.cpp
-  riGridDump.cpp
-  treeDestr.cpp
-  riexSync.cpp
-  render/clipmapShadow.cpp
-  render/gpuObjects.cpp
-  render/genRender.cpp
-  render/impostor.cpp
-  render/extraRender.cpp
-  render/clipShadows.cpp
-  render/depthShadows.cpp
-  render/riShaderConstBuffers.cpp
-  render/extra/consoleHandler.cpp
-  render/riGenRenderer.cpp
-  visibility/genVisibility.cpp
-  visibility/extraVisibility.cpp
-  debug/collisionVisualization.cpp
-  debug/rendinstRulerDebug.cpp
-)
-if(DAGOR_DEDICATED)
-  list(APPEND sources stub/impostorTextureMgr.cpp)
-else()
-  list(APPEND sources impostorTextureMgr.cpp)
-endif()
 set(defines VECMATH_NO_FMA) # v_madd on NEON is explicit vfmaq that ignores ffp-contract=off
 if(DAGOR_BUILDING_TOOLS)
   list(APPEND defines _TARGET_PC_TOOLS_BUILD)
@@ -61,9 +15,12 @@ set(options)
 # the backend from fusing under fast-math)
 dagor_deterministic_fp(options KEEP_TRAPPING_MATH)
 
-dagor_add_library(gameLibs.rendInst ${sources})
-target_include_directories(gameLibs.rendInst PRIVATE ${includes})
-target_compile_definitions(gameLibs.rendInst PRIVATE ${defines})
-target_compile_options(gameLibs.rendInst PRIVATE ${options})
-target_link_libraries(gameLibs.rendInst PRIVATE ${deps})
-set_target_properties(gameLibs.rendInst PROPERTIES DAGOR_FRAME_LIMIT 262144)
+dagor_add_target(NAME gameLibs.rendInst STATIC
+  FILES_CMAKE rendInst_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE
+    ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/engine/sharedInclude ${CMAKE_CURRENT_SOURCE_DIR}
+  COMPILE_DEFINITIONS PRIVATE ${defines}
+  COMPILE_OPTIONS PRIVATE ${options}
+  BUILD_DEPENDENCIES PRIVATE ${deps}
+  PROPERTIES DAGOR_FRAME_LIMIT 262144
+)

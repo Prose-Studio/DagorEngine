@@ -1,10 +1,5 @@
-set(includes ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${CMAKE_CURRENT_SOURCE_DIR})
-set(sources decalsMatrices.cpp)
-list(APPEND deps engine.lib3d)
-set(SourceES decalsMatrices.cpp)
-list(APPEND es_sources ${SourceES})
-
-dagor_add_library(gameLibs.decalMatrices ${sources})
-target_include_directories(gameLibs.decalMatrices PRIVATE ${includes})
-target_link_libraries(gameLibs.decalMatrices PRIVATE ${deps})
-dagor_target_es_sources(gameLibs.decalMatrices ${es_sources})
+dagor_add_target(NAME gameLibs.decalMatrices STATIC
+  FILES_CMAKE decalMatrices_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${CMAKE_CURRENT_SOURCE_DIR}
+  BUILD_DEPENDENCIES PRIVATE engine.lib3d
+)

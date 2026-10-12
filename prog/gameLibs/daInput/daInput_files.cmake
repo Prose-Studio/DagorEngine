@@ -1,0 +1,9 @@
+set(FILES
+  actionData.cpp
+  actionsAndBindings.cpp
+  actionProcessing.cpp
+  userConfig.cpp
+  actionSqBind.cpp
+  dargSqBind.cpp
+  actionsDbg.cpp
+)

@@ -1,5 +1,4 @@
 set(includes ${DAGOR_PROG_DIR}/3rdPartyLibs/mongoose)
-set(sources mongoose.c)
 if(WIN32)
   list(APPEND deps 3rdPartyLibs.posix)
 endif()
@@ -10,7 +9,9 @@ if(WIN32)
   list(APPEND c_options /wd4267)
 endif()
 
-dagor_add_library(3rdPartyLibs.mongoose LAX ${sources})
-target_include_directories(3rdPartyLibs.mongoose PRIVATE ${includes})
-target_compile_options(3rdPartyLibs.mongoose PRIVATE "$<$<COMPILE_LANGUAGE:C>:${c_options}>")
-target_link_libraries(3rdPartyLibs.mongoose PRIVATE ${deps})
+dagor_add_target(NAME 3rdPartyLibs.mongoose STATIC LAX
+  FILES_CMAKE mongoose_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${includes}
+  COMPILE_OPTIONS PRIVATE "$<$<COMPILE_LANGUAGE:C>:${c_options}>"
+  BUILD_DEPENDENCIES PRIVATE ${deps}
+)

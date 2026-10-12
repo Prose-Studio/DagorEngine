@@ -1,17 +1,12 @@
 # Microsoft's mimalloc, an allocator of engine/memory (engine.memory.mimalloc). Its own checks (MI_DEBUG 2) are on in
 # Dev and Dbg; the nodebug variant has none (for engine.memory.mimalloc.off).
-set(sources src/alloc.c src/alloc-aligned.c src/alloc-posix.c src/arena.c src/bitmap.c src/heap.c src/init.c
-  src/libc.c src/options.c src/os.c src/page.c src/random.c src/segment.c src/segment-map.c src/stats.c)
-if(WIN32)
-  list(APPEND sources src/prim/windows/prim.c)
-else()
-  list(APPEND sources src/prim/unix/prim.c)
-endif()
 foreach(variant "" .nodebug)
   set(name 3rdPartyLibs.memAllocators.mimalloc${variant})
-  dagor_add_library(${name} LAX ${sources})
-  target_include_directories(${name} PRIVATE include mimalloc/include)
-  target_compile_options(${name} PRIVATE "$<$<C_COMPILER_ID:MSVC>:-wd4055;-wd4054>")
+  dagor_add_target(NAME ${name} STATIC LAX
+    FILES_CMAKE mimalloc_files.cmake
+    INCLUDE_DIRECTORIES PRIVATE include mimalloc/include
+    COMPILE_OPTIONS PRIVATE "$<$<C_COMPILER_ID:MSVC>:-wd4055;-wd4054>"
+  )
   if(WIN32)
     target_link_libraries(${name} PUBLIC System::advapi32)
   endif()

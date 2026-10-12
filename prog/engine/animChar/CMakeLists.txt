@@ -11,12 +11,13 @@ foreach(build standard measurePerf)
   if(build STREQUAL "measurePerf")
     set(defines MEASURE_PERF=1)
   endif()
-  dagor_add_library(engine.animChar.${build} animCharacter2.cpp animCharBase.cpp animCharRend.cpp animate2ndPass.cpp)
-  target_include_directories(engine.animChar.${build} PRIVATE ${DAGOR_PROG_DIR}/engine/sharedInclude
-    ${DAGOR_PROG_DIR}/3rdPartyLibs/acl/includes)
-  target_compile_definitions(engine.animChar.${build} PRIVATE ${defines})
-  target_compile_options(engine.animChar.${build} PRIVATE ${options})
-  target_link_libraries(engine.animChar.${build} PRIVATE engine.anim engine.phys.fastPhys)
+  dagor_add_target(NAME engine.animChar.${build} STATIC
+    FILES_CMAKE animChar_files.cmake
+    INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/engine/sharedInclude ${DAGOR_PROG_DIR}/3rdPartyLibs/acl/includes
+    COMPILE_DEFINITIONS PRIVATE ${defines}
+    COMPILE_OPTIONS PRIVATE ${options}
+    BUILD_DEPENDENCIES PRIVATE engine.anim engine.phys.fastPhys
+  )
 endforeach()
 dagor_add_link_choice(engine.animChar PROPERTY DAGOR_MEASURE_PERF
   ON engine.animChar.measurePerf OFF engine.animChar.standard)

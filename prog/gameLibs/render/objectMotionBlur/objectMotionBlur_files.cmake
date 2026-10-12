@@ -1,0 +1,1 @@
+set(FILES objectMotionBlur.cpp)

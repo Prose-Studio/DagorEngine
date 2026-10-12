@@ -1,0 +1,5 @@
+if(WIN32)
+  set(FILES win/systemId.cpp)
+else()
+  set(FILES stub/sysinfo.cpp)
+endif()

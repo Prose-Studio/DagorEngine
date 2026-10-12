@@ -1,4 +1,4 @@
 # MinHook API hooking (the kernel's hardware breakpoints on Windows)
-set(sources src/hde/hde32.c src/hde/hde64.c src/buffer.c src/hook.c src/trampoline.c)
-
-dagor_add_library(3rdPartyLibs.minhook LAX ${sources})
+dagor_add_target(NAME 3rdPartyLibs.minhook STATIC LAX
+  FILES_CMAKE minhook_files.cmake
+)

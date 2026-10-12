@@ -8,7 +8,7 @@
 #   DAGOR_RTTI        ON or OFF; unset: DAGOR_RTTI
 #   DAGOR_FRAME_LIMIT the stack frame limit of strict code in bytes (clang-cl; 32768 by default)
 # The warnings of first-party and third-party code are the lists DAGOR_STRICT_OPTIONS and DAGOR_LAX_OPTIONS, which
-# dagor_add_library() and dagor_add_executable() add to each target (LAX picks the second).
+# dagor_add_target() adds to each target (LAX picks the second).
 include_guard(GLOBAL)
 
 set(CMAKE_CXX_STANDARD ${DAGOR_CPP_STD})

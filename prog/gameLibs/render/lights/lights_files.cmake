@@ -1,0 +1,20 @@
+set(FILES
+  lightsBase.cpp
+  clusteredLights.cpp
+  clusteredLightsGrid.cpp
+  lightsSorter.cpp
+  lightsPartition.cpp
+  lightsManager.cpp
+  omniLightsManager.cpp
+  spotLightsManager.cpp
+  tiledLights.cpp
+  frustumClusters.cpp
+  shadowSystem.cpp
+  reallocatableLightsConstBuffer.cpp
+  lightsResources.cpp
+  dstReadbackLights.cpp
+  lightsRenderer.cpp
+  dynamicLightShadows.cpp
+  lightsVisibilityChecker.cpp
+  lightsCounter.cpp
+)

@@ -1,10 +1,7 @@
-set(includes
-  ${DAGOR_PROG_DIR}/gameLibs/publicInclude
-  ${DAGOR_PROG_DIR}/gameLibs/publicInclude/quirrel
-  ${DAGOR_PROG_DIR}/1stPartyLibs/jsoncpp/include
+dagor_add_target(NAME gameLibs.quirrel.clientLog STATIC
+  FILES_CMAKE clientLog_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE
+    ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/gameLibs/publicInclude/quirrel
+    ${DAGOR_PROG_DIR}/1stPartyLibs/jsoncpp/include
+  BUILD_DEPENDENCIES PRIVATE Dagor::Quirrel
 )
-set(sources clientLog.cpp)
-
-dagor_add_library(gameLibs.quirrel.clientLog ${sources})
-target_include_directories(gameLibs.quirrel.clientLog PRIVATE ${includes})
-target_link_libraries(gameLibs.quirrel.clientLog PRIVATE Dagor::Quirrel)

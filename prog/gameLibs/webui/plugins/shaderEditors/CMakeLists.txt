@@ -4,7 +4,9 @@ add_subdirectory(stub)
 
 foreach(variant "" .comp)
   set(name gameLibs.webui.plugins.shaderEditors${variant})
-  dagor_add_library(${name} shaderEditors.cpp enviCoverShaderEditor.cpp fogShaderEditor.cpp cloudsShaderEditor.cpp)
-  target_include_directories(${name} PRIVATE ${DAGOR_PROG_DIR}/gameLibs/publicInclude)
+  dagor_add_target(NAME ${name} STATIC
+    FILES_CMAKE shaderEditors_files.cmake
+    INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/gameLibs/publicInclude
+  )
 endforeach()
 target_compile_definitions(gameLibs.webui.plugins.shaderEditors.comp PRIVATE NBSM_COMPILE_ONLY)

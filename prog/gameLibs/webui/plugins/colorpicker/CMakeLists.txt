@@ -1,10 +1,5 @@
-set(includes ${DAGOR_PROG_DIR}/gameLibs/publicInclude)
-set(sources colorpicker.cpp)
-set(SourceJS colorGradient.js colorPicker.js cookie.js)
-set(deps gameLibs.colorPipette)
-list(APPEND stringify ${SourceJS})
-
-dagor_add_library(gameLibs.webui.plugins.colorpicker ${sources})
-target_include_directories(gameLibs.webui.plugins.colorpicker PRIVATE ${includes})
-target_link_libraries(gameLibs.webui.plugins.colorpicker PRIVATE ${deps})
-dagor_target_stringify(gameLibs.webui.plugins.colorpicker ${stringify})
+dagor_add_target(NAME gameLibs.webui.plugins.colorpicker STATIC
+  FILES_CMAKE colorpicker_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/gameLibs/publicInclude
+  BUILD_DEPENDENCIES PRIVATE gameLibs.colorPipette
+)

@@ -1,9 +1,4 @@
-set(includes ${DAGOR_PROG_DIR}/gameLibs/publicInclude)
-if(DAGOR_GAME_BVH)
-  set(sources rtr.cpp)
-else()
-  set(sources rtr_stub.cpp)
-endif()
-
-dagor_add_library(gameLibs.render.rtr ${sources})
-target_include_directories(gameLibs.render.rtr PRIVATE ${includes})
+dagor_add_target(NAME gameLibs.render.rtr STATIC
+  FILES_CMAKE rtr_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/gameLibs/publicInclude
+)

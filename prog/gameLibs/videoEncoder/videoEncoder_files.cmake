@@ -1,0 +1,5 @@
+if(WIN32)
+  set(FILES videoEncoder.cpp)
+else()
+  set(FILES videoEncoderStub.cpp)
+endif()

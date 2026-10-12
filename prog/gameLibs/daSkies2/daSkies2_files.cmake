@@ -1,0 +1,22 @@
+set(FILES
+  daStars.cpp
+  daScattering.cpp
+  daScatteringCPU.cpp
+  daSkies.cpp
+  daSkiesPanorama.cpp
+  panoramaCompressor.cpp
+  daSkiesToBlk.cpp
+  daSkiesAstronomy.cpp
+  daSkiesExporterConsole.cpp
+  cloudsShaderVars.cpp
+  cloudsField.cpp
+  cloudsFormLUT.cpp
+  cloudsLightRenderer.cpp
+  cloudsRenderer.cpp
+  cloudsRendererData.cpp
+  cloudsShadows.cpp
+  cloudsGenNoise.cpp
+  cloudsGenWeather.cpp
+  clouds2.cpp
+)
+set(ES_FILES cloudsRainMapES.cpp.inl)

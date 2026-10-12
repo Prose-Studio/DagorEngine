@@ -1,5 +1,4 @@
-set(includes ${DAGOR_PROG_DIR}/gameLibs/publicInclude)
-dagor_glob_sources(sources DIRS . GLOB *.cpp)
-
-dagor_add_library(gameLibs.daFracture.core ${sources})
-target_include_directories(gameLibs.daFracture.core PRIVATE ${includes})
+dagor_add_target(NAME gameLibs.daFracture.core STATIC
+  FILES_CMAKE core_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/gameLibs/publicInclude
+)

@@ -1,6 +1,5 @@
 # is01r spline smoothing, a numerical routine translated from Fortran with f2c (origin unknown, see NO_LICENSE)
-set(sources is01r_c.c)
-list(APPEND force_includes supp/dag_null.h)
-
-dagor_add_library(3rdPartyLibs.math.srcc_msu LAX ${sources})
-dagor_target_force_include(3rdPartyLibs.math.srcc_msu ${force_includes})
+dagor_add_target(NAME 3rdPartyLibs.math.srcc_msu STATIC LAX
+  FILES_CMAKE srcc_msu_files.cmake
+  FORCE_INCLUDES supp/dag_null.h
+)

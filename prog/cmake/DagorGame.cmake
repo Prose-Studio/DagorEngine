@@ -117,51 +117,47 @@ function(_dagor_pull_file target file kind variable)
 endfunction()
 
 # --- modules (prog/_jBuild/build_module.jam) --------------------------------------------------------------------------
-# dagor_add_dng_module(<target> [CPP_DIRS <dir>...] [ES_DIRS <dir>...] [DAS [DAS_DIRS <dir>...]] [PULL_VARS <name>...])
-# A game module in the calling directory (daNetGameLibs/<module>, or a gameLibs dir built like one): a strict library
-# of the .cpp of CPP_DIRS and the entity systems (*ES.cpp.inl) of ES_DIRS, with the pull file that references them all
-# (framework_<module>_pull, with PULL_VARS; <module> is the directory's name). A DAS module has the pull
-# <area>_<module>_DAS_pull_AOT of its daScript (the *.das of DAS_DIRS), compiled ahead of time with DAGOR_DAS_AOT (0
-# without).
-function(dagor_add_dng_module target)
-  cmake_parse_arguments(PARSE_ARGV 1 arg "DAS" "" "CPP_DIRS;ES_DIRS;DAS_DIRS;PULL_VARS")
+# dagor_add_dng_module(NAME <target> <dagor_add_target arguments> [DAS] [PULL_VARS <name>...])
+# A game module (daNetGameLibs/<module>, or a gameLibs dir built like one): a strict static library with the pull file
+# that references its entity systems (ES_FILES) and PULL_VARS as framework_<module>_pull (<module> is the directory's
+# name). A DAS module's daScript (DAS_FILES) is pulled by <area>_<module>_DAS_pull_AOT.
+function(dagor_add_dng_module)
+  cmake_parse_arguments(PARSE_ARGV 0 arg "${_DAGOR_TARGET_OPTIONS};DAS" "${_DAGOR_TARGET_ONE_VALUE}"
+                        "${_DAGOR_TARGET_MULTI_VALUE};PULL_VARS")
+  set(target ${arg_NAME})
   cmake_path(GET CMAKE_CURRENT_SOURCE_DIR FILENAME module)
   cmake_path(RELATIVE_PATH CMAKE_CURRENT_SOURCE_DIR BASE_DIRECTORY "${DAGOR_PROG_DIR}" OUTPUT_VARIABLE rel)
   string(REGEX MATCH "^[^/]+" area "${rel}")
-  set(sources)
-  if(arg_CPP_DIRS)
-    dagor_glob_sources(sources DIRS ${arg_CPP_DIRS} GLOB *.cpp)
+  if(arg_DAS)
+    string(MAKE_C_IDENTIFIER "${area}-${module}_DAS_pull_AOT" arg_DAS_PULL)
   endif()
-  set(es)
-  if(arg_ES_DIRS)
-    dagor_glob_sources(es DIRS ${arg_ES_DIRS} GLOB *ES.cpp.inl)
-  endif()
-  dagor_add_library(${target} ${sources})
+  _dagor_target_arguments(args)
+  dagor_add_target(${args})
   target_link_libraries(${target} PRIVATE Dagor::Quirrel)
   target_compile_definitions(${target} PRIVATE DISABLE_SYNC_DEBUG) # the fork has no gameLibs/syncDebug
-  dagor_target_es_sources(${target} ${es})
 
-  set(pulls ${arg_PULL_VARS})
-  foreach(file IN LISTS es)
-    cmake_path(GET file FILENAME es_name)
-    string(REGEX REPLACE "ES\\.cpp\\.inl$" "" es_name "${es_name}")
-    list(APPEND pulls "${es_name}")
-  endforeach()
+  _dagor_es_pulls(${target} pulls)
   _dagor_pull_file(${target} "${CMAKE_CURRENT_BINARY_DIR}/gen/${target}/${module}_es_pull.cpp" ECS
-    "framework_${module}_pull" ${pulls})
-  if(arg_DAS)
-    set(das)
-    if(arg_DAS_DIRS)
-      dagor_glob_sources(das DIRS ${arg_DAS_DIRS} GLOB *.das)
-    endif()
-    string(MAKE_C_IDENTIFIER "${area}-${module}_DAS_pull_AOT" das_pull)
-    if(DAGOR_DAS_AOT)
-      dagor_target_das_aot(${target} PULL ${das_pull} ${das})
+    "framework_${module}_pull" ${arg_PULL_VARS} ${pulls})
+endfunction()
+
+# _dagor_es_pulls(<target> <out-var>): the pulls of the entity systems of <target> (dagor_target_es_sources), named
+# after their files (<name>ES.cpp.inl); $<cond:name> for those built where cond holds
+function(_dagor_es_pulls target out)
+  get_property(entries TARGET ${target} PROPERTY DAGOR_ES_FILES)
+  set(pulls)
+  foreach(entry IN LISTS entries)
+    string(REGEX MATCH "^[^|]*" cond "${entry}")
+    string(REGEX REPLACE "^[^|]*\\|" "" path "${entry}")
+    cmake_path(GET path FILENAME name)
+    string(REGEX REPLACE "ES\\.cpp\\.inl$" "" name "${name}")
+    if(cond)
+      list(APPEND pulls "$<${cond}:${name}>")
     else()
-      _dagor_generate_source(${target} "${CMAKE_CURRENT_BINARY_DIR}/gen/${target}/${module}_das_aot_pull.cpp"
-        "#include <stddef.h>\nsize_t ${das_pull} = 0;\n")
+      list(APPEND pulls "${name}")
     endif()
-  endif()
+  endforeach()
+  set(${out} ${pulls} PARENT_SCOPE)
 endfunction()
 
 # --- what a library adds to the game program (the libraries' _lib.cmake) ----------------------------------------------
@@ -316,24 +312,25 @@ function(_dagor_game_project_files prog codename dng_libs game_libs)
 endfunction()
 
 # --- the game program (prog/daNetGame/game.jam) -----------------------------------------------------------------------
-# dagor_add_dng_game(<target> GAME <codename> [WINDOW_TITLE <title>] [USER_DIR <dir>] [MAIN_VROM <path>]
+# dagor_add_dng_game(NAME <target> GAME <codename> [WINDOW_TITLE <title>] [USER_DIR <dir>] [MAIN_VROM <path>]
 #   [AUTH_KEY_<PLATFORM> <20 bytes>] (PLATFORM: WINDOWS LINUX MACOS ANDROID IOS) [DEDICATED_AUTH <prefix> <platform>...]
-#   [LOG_CRYPT_KEY <128 bytes>] [CPP_DIRS <dir>...] [ES_DIRS <dir>...] [PULLS <pull>...]
-#   [DNG_LIBS <danetgamelibs.txt>] [GAME_LIBS <gamelibs.txt>] [AOT_SOURCES <file>...] [OUTPUT_DIRECTORY <dir>]
-#   [<source>...])
-# The game: daNetGame's main, the sources, the .cpp of CPP_DIRS and the entity systems of ES_DIRS, the code game.jam
-# generated (gameproj:: names and paths, auth keys, the pull of every module and library) and the libraries of the
-# lists, whose _lib.cmake add what they need to it (dagor_game_lib). The client is named <codename>, the dedicated
-# server <codename>-ded. LOG_CRYPT_KEY encrypts the logs of Rel and IRel builds with DAGOR_FORCE_LOGS. In the tree of
-# the game's daScript AOT compiler (DAGOR_DAS_AOT_COMPILER) it makes <codename>-aot instead, with the AOT_SOURCES and
-# what the libraries' _aot.cmake add, and no <target>.
-function(dagor_add_dng_game target)
+#   [LOG_CRYPT_KEY <128 bytes>] [PULLS <pull>...] [DNG_LIBS <danetgamelibs.txt>] [GAME_LIBS <gamelibs.txt>]
+#   [AOT_FILES_CMAKE <file>...] <dagor_add_target arguments>)
+# The game program: daNetGame's main, the files of FILES_CMAKE, the code game.jam generated (gameproj:: names and paths,
+# auth keys, the pull of every module and library) and the libraries of the lists, whose _lib.cmake add what they need
+# to it (dagor_game_lib). The client is named <codename>, the dedicated server <codename>-ded. LOG_CRYPT_KEY encrypts
+# the logs of Rel and IRel builds with DAGOR_FORCE_LOGS. In the tree of the game's daScript AOT compiler
+# (DAGOR_DAS_AOT_COMPILER) it makes <codename>-aot instead, of the files of AOT_FILES_CMAKE and what the libraries'
+# _aot.cmake add, and no <target>.
+function(dagor_add_dng_game)
   set(key_args)
   foreach(platform WINDOWS LINUX MACOS ANDROID IOS)
     list(APPEND key_args AUTH_KEY_${platform})
   endforeach()
-  cmake_parse_arguments(PARSE_ARGV 1 arg "" "GAME;WINDOW_TITLE;USER_DIR;MAIN_VROM;DNG_LIBS;GAME_LIBS;OUTPUT_DIRECTORY"
-    "CPP_DIRS;ES_DIRS;PULLS;DEDICATED_AUTH;LOG_CRYPT_KEY;AOT_SOURCES;${key_args}")
+  cmake_parse_arguments(PARSE_ARGV 0 arg "${_DAGOR_TARGET_OPTIONS}"
+    "${_DAGOR_TARGET_ONE_VALUE};GAME;WINDOW_TITLE;USER_DIR;MAIN_VROM;DNG_LIBS;GAME_LIBS"
+    "${_DAGOR_TARGET_MULTI_VALUE};PULLS;DEDICATED_AUTH;LOG_CRYPT_KEY;AOT_FILES_CMAKE;${key_args}")
+  set(target ${arg_NAME})
   if(NOT arg_GAME OR arg_GAME MATCHES "[A-Z]")
     message(FATAL_ERROR "dagor_add_dng_game(${target}): GAME <codename> in lowercase is required (it names the vromfs)")
   endif()
@@ -365,10 +362,10 @@ function(dagor_add_dng_game target)
 
   if(DAGOR_DAS_AOT_COMPILER)
     set_property(GLOBAL PROPERTY DAGOR_GAME_TARGET "${GAME}-aot")
-    dagor_add_executable(${GAME}-aot ${arg_AOT_SOURCES})
-    target_include_directories(${GAME}-aot PRIVATE ${DAGOR_DNG_INCLUDES} ${DAGOR_PROG_DIR}/daNetGameLibs
-      ${DAGOR_PROG_DIR}/gameLibs)
-    target_link_libraries(${GAME}-aot PRIVATE daNetGame-das-aot Dagor::Quirrel)
+    dagor_add_target(NAME ${GAME}-aot EXECUTABLE
+      FILES_CMAKE ${arg_AOT_FILES_CMAKE}
+      INCLUDE_DIRECTORIES PRIVATE ${DAGOR_DNG_INCLUDES} ${DAGOR_PROG_DIR}/daNetGameLibs ${DAGOR_PROG_DIR}/gameLibs
+      BUILD_DEPENDENCIES PRIVATE daNetGame-das-aot Dagor::Quirrel)
     _dagor_game_lib_files(libs _aot.cmake "${arg_DNG_LIBS}" "${arg_GAME_LIBS}")
     foreach(lib IN LISTS libs)
       include("${lib}")
@@ -379,25 +376,15 @@ function(dagor_add_dng_game target)
     _dagor_das_aot_compiler(${GAME} "${CMAKE_CURRENT_SOURCE_DIR}")
   endif()
 
-  set(name "${GAME}")
+  set(arg_EXECUTABLE ON)
+  set(arg_APPLICATION ON)
+  set(arg_OUTPUT_NAME "${GAME}")
   if(DAGOR_DEDICATED)
-    set(name "${GAME}-ded")
+    set(arg_OUTPUT_NAME "${GAME}-ded")
   endif()
-  set(output)
-  if(arg_OUTPUT_DIRECTORY)
-    set(output OUTPUT_DIRECTORY "${arg_OUTPUT_DIRECTORY}")
-  endif()
-  set(sources ${arg_UNPARSED_ARGUMENTS})
-  if(arg_CPP_DIRS)
-    dagor_glob_sources(sources DIRS ${arg_CPP_DIRS} GLOB *.cpp)
-  endif()
-  dagor_add_executable(${target} WIN32 OUTPUT_NAME ${name} ${output} ${sources})
+  _dagor_target_arguments(args)
+  dagor_add_target(${args})
   set_property(GLOBAL PROPERTY DAGOR_GAME_TARGET "${target}")
-  if(arg_ES_DIRS)
-    set(es)
-    dagor_glob_sources(es DIRS ${arg_ES_DIRS} GLOB *ES.cpp.inl)
-    dagor_target_es_sources(${target} ${es})
-  endif()
   # daNetGame's settings (jam: the game's jamfile included setup.jam): its include dirs, options and physics
   target_include_directories(${target} PRIVATE ${DAGOR_DNG_INCLUDES})
   target_compile_options(${target} PRIVATE ${DAGOR_DNG_OPTIONS})

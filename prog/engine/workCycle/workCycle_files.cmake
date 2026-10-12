@@ -1,0 +1,15 @@
+set(FILES
+  gameSetts.cpp
+  gameActRate.cpp
+  gameSceneSelect.cpp
+  gameSceneRenderer.cpp
+  resetSpentTime.cpp
+  workCycle.cpp
+  workCyclePerf.cpp
+  initVideo.cpp
+  initNullJoystick.cpp
+  initNullKeyb.cpp
+  initNullMouse.cpp
+  commonStart.cpp
+  mainWndProc.cpp
+)

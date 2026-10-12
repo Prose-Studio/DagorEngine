@@ -1,5 +1,4 @@
 # Regular expressions (Henry Spencer's)
-set(sources regExp.cpp)
 if(APPLE)
   set(options -Wno-unused)
 endif()
@@ -10,5 +9,7 @@ if(WIN32 AND CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   list(APPEND options -Wno-unused-value)
 endif()
 
-dagor_add_library(3rdPartyLibs.regExp LAX ${sources})
-target_compile_options(3rdPartyLibs.regExp PRIVATE ${options})
+dagor_add_target(NAME 3rdPartyLibs.regExp STATIC LAX
+  FILES_CMAKE regExp_files.cmake
+  COMPILE_OPTIONS PRIVATE ${options}
+)

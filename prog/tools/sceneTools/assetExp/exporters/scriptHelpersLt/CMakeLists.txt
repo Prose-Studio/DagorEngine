@@ -1,6 +1,5 @@
 # The light script helpers of the effect exporters: curves, gradient boxes and the script GUI of the effect params
-set(sources scriptCurves.cpp scriptGradientBox.cpp scriptGui.cpp scriptLoad.cpp)
-set(includes ${DAGOR_PROG_DIR}/tools/sharedInclude)
-
-dagor_add_library(tools.sceneTools.assetExp.exporters.scriptHelpersLt LAX ${sources})
-target_include_directories(tools.sceneTools.assetExp.exporters.scriptHelpersLt PRIVATE ${includes})
+dagor_add_target(NAME tools.sceneTools.assetExp.exporters.scriptHelpersLt STATIC LAX
+  FILES_CMAKE scriptHelpersLt_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/tools/sharedInclude
+)

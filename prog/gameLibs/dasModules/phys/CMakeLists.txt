@@ -1,16 +1,12 @@
-set(includes ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/1stPartyLibs/daScript/include)
-file(GLOB AllSources RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
-set(sources ${AllSources})
-set(SourceDAS dacoll.das daphys.das)
-list(APPEND stringify ${SourceDAS})
 if(WIN32)
   list(APPEND options /wd4548)
 endif()
 set(deps 1stPartyLibs.daScript)
 list(APPEND deps Dagor::Phys)
 
-dagor_add_library(gameLibs.dasModules.phys ${sources})
-target_include_directories(gameLibs.dasModules.phys PRIVATE ${includes})
-target_compile_options(gameLibs.dasModules.phys PRIVATE ${options})
-target_link_libraries(gameLibs.dasModules.phys PRIVATE ${deps})
-dagor_target_stringify(gameLibs.dasModules.phys ${stringify})
+dagor_add_target(NAME gameLibs.dasModules.phys STATIC
+  FILES_CMAKE phys_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/1stPartyLibs/daScript/include
+  COMPILE_OPTIONS PRIVATE ${options}
+  BUILD_DEPENDENCIES PRIVATE ${deps}
+)

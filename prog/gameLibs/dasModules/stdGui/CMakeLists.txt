@@ -1,20 +1,15 @@
 add_subdirectory(aotStub)
-
-set(includes ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/1stPartyLibs/daScript/include)
-file(GLOB AllSources RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
-set(sources ${AllSources})
-list(APPEND stringify ${SourceDAS})
 if(WIN32)
   list(APPEND options /wd4548)
 endif()
-set(deps 1stPartyLibs.daScript)
 if(DAGOR_DAS_AOT_COMPILER)
   list(APPEND defines DAS_AOT_COMPILER) # the AOT compiler's stubs (prog/gameLibs/dasModules/module_common.jam)
 endif()
 
-dagor_add_library(gameLibs.dasModules.stdGui ${sources})
-target_include_directories(gameLibs.dasModules.stdGui PRIVATE ${includes})
-target_compile_definitions(gameLibs.dasModules.stdGui PRIVATE ${defines})
-target_compile_options(gameLibs.dasModules.stdGui PRIVATE ${options})
-target_link_libraries(gameLibs.dasModules.stdGui PRIVATE ${deps})
-dagor_target_stringify(gameLibs.dasModules.stdGui ${stringify})
+dagor_add_target(NAME gameLibs.dasModules.stdGui STATIC
+  FILES_CMAKE stdGui_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/1stPartyLibs/daScript/include
+  COMPILE_DEFINITIONS PRIVATE ${defines}
+  COMPILE_OPTIONS PRIVATE ${options}
+  BUILD_DEPENDENCIES PRIVATE 1stPartyLibs.daScript
+)

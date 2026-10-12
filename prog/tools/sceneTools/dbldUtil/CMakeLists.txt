@@ -1,10 +1,4 @@
 # dbldUtil: lists, checks and unpacks the contents of dabuild output (.dxp.bin, .grp), the effects with gravity zones
-set(includes
-  ${DAGOR_PROG_DIR}/tools/sharedInclude
-  ${DAGOR_PROG_DIR}/engine
-  ${DAGOR_PROG_DIR}/gameLibs/publicInclude
-)
-set(sources dbldUtil.cpp dbldDeps.cpp cmain.cpp)
 set(deps engine.osApiWrappers engine.kernel engine.memory engine.ioSys engine.startup engine.baseUtil engine.coreUtil
   engine.math tools.libTools.util tools.libTools.dtx engine.shaders engine.lib3d engine.gameRes engine.anim
   engine.animChar engine.phys.physCommon engine.phys.fastPhys engine.scene engine.image engine.libFx
@@ -15,7 +9,10 @@ if(LINUX)
   list(APPEND deps engine.osApiWrappers.messageBox)
 endif()
 
-dagor_add_executable(dbldUtil LAX ${sources})
-target_include_directories(dbldUtil PRIVATE ${includes})
-target_link_libraries(dbldUtil PRIVATE ${deps})
-dagor_install_cdk(dbldUtil)
+dagor_add_target(NAME dbldUtil EXECUTABLE LAX
+  FILES_CMAKE dbldUtil_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE
+    ${DAGOR_PROG_DIR}/tools/sharedInclude ${DAGOR_PROG_DIR}/engine ${DAGOR_PROG_DIR}/gameLibs/publicInclude
+  BUILD_DEPENDENCIES PRIVATE ${deps}
+  CDK
+)

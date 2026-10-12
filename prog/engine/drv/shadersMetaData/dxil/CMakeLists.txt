@@ -1,4 +1,4 @@
 # Decoding of the DXIL shader metadata: the stage modules of a compiled shader container
-set(sources unpack.cpp)
-
-dagor_add_library(engine.drv.shadersMetaData.dxil LAX ${sources})
+dagor_add_target(NAME engine.drv.shadersMetaData.dxil STATIC LAX
+  FILES_CMAKE dxil_files.cmake
+)

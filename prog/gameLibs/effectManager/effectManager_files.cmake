@@ -1,0 +1,5 @@
+if(DAGOR_GAME_RENDERER)
+  list(APPEND FILES effectManager.cpp)
+else()
+  list(APPEND FILES stub/effectManagerStub.cpp)
+endif()

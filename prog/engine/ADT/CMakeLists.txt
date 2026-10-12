@@ -1,3 +1,3 @@
-set(sources halfFloatSimple.cpp)
-
-dagor_add_library(engine.ADT ${sources})
+dagor_add_target(NAME engine.ADT STATIC
+  FILES_CMAKE ADT_files.cmake
+)

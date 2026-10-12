@@ -1,8 +1,5 @@
-set(includes ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${CMAKE_CURRENT_SOURCE_DIR} shaders)
-file(GLOB AllSources RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
-set(sources ${AllSources})
-list(APPEND deps engine.lib3d gameLibs.daSDF)
-
-dagor_add_library(gameLibs.daGI2 ${sources})
-target_include_directories(gameLibs.daGI2 PRIVATE ${includes})
-target_link_libraries(gameLibs.daGI2 PRIVATE ${deps})
+dagor_add_target(NAME gameLibs.daGI2 STATIC
+  FILES_CMAKE daGI2_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${CMAKE_CURRENT_SOURCE_DIR} shaders
+  BUILD_DEPENDENCIES PRIVATE engine.lib3d gameLibs.daSDF
+)

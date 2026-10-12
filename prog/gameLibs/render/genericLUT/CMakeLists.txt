@@ -1,5 +1,4 @@
-set(includes ${DAGOR_PROG_DIR}/gameLibs/publicInclude)
-set(sources genericLUT.cpp commonLUT.cpp colorGradingLUT.cpp fullColorGradingLUT.cpp dynamicLUT.cpp)
-
-dagor_add_library(gameLibs.render.genericLUT ${sources})
-target_include_directories(gameLibs.render.genericLUT PRIVATE ${includes})
+dagor_add_target(NAME gameLibs.render.genericLUT STATIC
+  FILES_CMAKE genericLUT_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/gameLibs/publicInclude
+)

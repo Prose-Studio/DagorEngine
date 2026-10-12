@@ -1,7 +1,4 @@
-list(APPEND deps 3rdPartyLibs.eastl)
-set(SourceES hierarchyTransformES.cpp.inl)
-list(APPEND es_sources ${SourceES})
-
-dagor_add_library(engine.daECS.hierarchyTransform)
-target_link_libraries(engine.daECS.hierarchyTransform PRIVATE ${deps})
-dagor_target_es_sources(engine.daECS.hierarchyTransform ${es_sources})
+dagor_add_target(NAME engine.daECS.hierarchyTransform STATIC
+  FILES_CMAKE hierarchyTransform_files.cmake
+  BUILD_DEPENDENCIES PRIVATE 3rdPartyLibs.eastl
+)

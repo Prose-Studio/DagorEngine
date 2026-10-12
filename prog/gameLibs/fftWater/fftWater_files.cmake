@@ -1,0 +1,19 @@
+set(FILES
+  wake.cpp
+  waterRenderCommon.cpp
+  waterRender.cpp
+  cpuTexSampler.cpp
+  chopWaterRender.cpp
+  chopWaterPhysics.cpp
+  chopWaterGen.cpp
+  waterRenderGpGPU.cpp
+  waterRenderCSGPU.cpp
+  gpuFetch.cpp
+  waterPhys.cpp
+  fftWater.cpp
+  fftWaterUtils.cpp
+  distanceField.cpp
+  flowMap.cpp
+  waterCommon.cpp
+  fftCPU/FFT_CPU_Simulation.cpp
+)

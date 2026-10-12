@@ -151,6 +151,8 @@ function(dagor_target_es_sources target)
     endif()
     list(APPEND files "${cond}|${path}")
   endforeach()
+  # <condition>|<file> of each, for the pull of a game module's or the framework's entity systems (_dagor_es_pulls)
+  set_property(TARGET ${target} APPEND PROPERTY DAGOR_ES_FILES ${files})
 
   if(NOT DAGOR_ES_CODEGEN)
     foreach(entry IN LISTS files)

@@ -1,0 +1,15 @@
+set(FILES
+  scene.cpp
+  sceneIo.cpp
+  tiledScene.cpp
+  buildVisTree.cpp
+  loadLevel.cpp
+  physMat.cpp
+  renderSceneMgr.cpp
+  staticFxObjs.cpp
+  visibility.cpp
+  occlusionMap.cpp
+  objsToPlace.cpp
+  kdtree.cpp
+  occlusionIo.cpp
+)

@@ -1,5 +1,4 @@
-set(includes ${DAGOR_PROG_DIR}/gameLibs/publicInclude)
-set(sources animCharTexReplace.cpp)
-
-dagor_add_library(gameLibs.render.animCharTexReplace ${sources})
-target_include_directories(gameLibs.render.animCharTexReplace PRIVATE ${includes})
+dagor_add_target(NAME gameLibs.render.animCharTexReplace STATIC
+  FILES_CMAKE animCharTexReplace_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/gameLibs/publicInclude
+)

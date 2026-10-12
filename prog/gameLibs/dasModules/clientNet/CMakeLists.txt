@@ -1,14 +1,10 @@
-set(includes ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/1stPartyLibs/daScript/include)
-file(GLOB AllSources RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
-set(sources ${AllSources})
-list(APPEND stringify ${SourceDAS})
 if(WIN32)
   list(APPEND options /wd4548)
 endif()
-set(deps 1stPartyLibs.daScript)
 
-dagor_add_library(gameLibs.dasModules.clientNet ${sources})
-target_include_directories(gameLibs.dasModules.clientNet PRIVATE ${includes})
-target_compile_options(gameLibs.dasModules.clientNet PRIVATE ${options})
-target_link_libraries(gameLibs.dasModules.clientNet PRIVATE ${deps})
-dagor_target_stringify(gameLibs.dasModules.clientNet ${stringify})
+dagor_add_target(NAME gameLibs.dasModules.clientNet STATIC
+  FILES_CMAKE clientNet_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/1stPartyLibs/daScript/include
+  COMPILE_OPTIONS PRIVATE ${options}
+  BUILD_DEPENDENCIES PRIVATE 1stPartyLibs.daScript
+)

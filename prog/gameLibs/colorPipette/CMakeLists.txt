@@ -1,7 +1,5 @@
-set(includes ${DAGOR_PROG_DIR}/gameLibs/publicInclude)
-set(sources colorPipette.cpp)
-list(APPEND deps gameLibs.gameMath)
-
-dagor_add_library(gameLibs.colorPipette ${sources})
-target_include_directories(gameLibs.colorPipette PRIVATE ${includes})
-target_link_libraries(gameLibs.colorPipette PRIVATE ${deps})
+dagor_add_target(NAME gameLibs.colorPipette STATIC
+  FILES_CMAKE colorPipette_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/gameLibs/publicInclude
+  BUILD_DEPENDENCIES PRIVATE gameLibs.gameMath
+)

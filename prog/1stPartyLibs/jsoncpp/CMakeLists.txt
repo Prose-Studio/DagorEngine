@@ -1,10 +1,7 @@
 # jsoncpp on EASTL containers (the engine's variant of 3rdPartyLibs/jsoncpp, whose license it carries)
-set(includes ${DAGOR_PROG_DIR}/1stPartyLibs/jsoncpp/include)
-set(sources src/json_value.cpp src/json_reader.cpp src/json_writer.cpp)
-list(APPEND deps 3rdPartyLibs.eastl)
-list(APPEND license_files ${DAGOR_PROG_DIR}/3rdPartyLibs/jsoncpp)
-
-dagor_add_library(1stPartyLibs.jsoncpp LAX ${sources})
-target_include_directories(1stPartyLibs.jsoncpp PRIVATE ${includes})
-target_link_libraries(1stPartyLibs.jsoncpp PRIVATE ${deps})
-dagor_target_licenses(1stPartyLibs.jsoncpp ${license_files})
+dagor_add_target(NAME 1stPartyLibs.jsoncpp STATIC LAX
+  FILES_CMAKE jsoncpp_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/1stPartyLibs/jsoncpp/include
+  BUILD_DEPENDENCIES PRIVATE 3rdPartyLibs.eastl
+  LICENSES ${DAGOR_PROG_DIR}/3rdPartyLibs/jsoncpp
+)

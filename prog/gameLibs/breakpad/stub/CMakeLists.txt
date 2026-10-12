@@ -1,5 +1,4 @@
-set(includes ${DAGOR_PROG_DIR}/engine/sharedInclude ${DAGOR_PROG_DIR}/gameLibs/publicInclude)
-set(sources stub.cpp)
-
-dagor_add_library(gameLibs.breakpad.stub ${sources})
-target_include_directories(gameLibs.breakpad.stub PRIVATE ${includes})
+dagor_add_target(NAME gameLibs.breakpad.stub STATIC
+  FILES_CMAKE stub_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/engine/sharedInclude ${DAGOR_PROG_DIR}/gameLibs/publicInclude
+)

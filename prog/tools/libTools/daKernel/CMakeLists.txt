@@ -17,12 +17,14 @@ elseif(LINUX)
   set(options -fvisibility=hidden)
 endif()
 
-dagor_add_library(tools.libTools.daKernel SHARED OUTPUT_NAME daKernel daKernel.cpp namedPtr.cpp gpFuncTable.cpp)
-target_include_directories(tools.libTools.daKernel PRIVATE ${DAGOR_PROG_DIR}/tools/sharedInclude
-  ${DAGOR_PROG_DIR}/engine/sharedInclude)
-target_compile_definitions(tools.libTools.daKernel PRIVATE __B_KERNEL_LIB)
-target_compile_options(tools.libTools.daKernel PRIVATE ${options})
-target_link_libraries(tools.libTools.daKernel PRIVATE ${deps})
-target_link_libraries(tools.libTools.daKernel PUBLIC ${libs})
-target_link_options(tools.libTools.daKernel PRIVATE ${link_options})
-dagor_install_cdk(tools.libTools.daKernel)
+dagor_add_target(NAME tools.libTools.daKernel SHARED OUTPUT_NAME daKernel
+  FILES_CMAKE daKernel_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/tools/sharedInclude ${DAGOR_PROG_DIR}/engine/sharedInclude
+  COMPILE_DEFINITIONS PRIVATE __B_KERNEL_LIB
+  COMPILE_OPTIONS PRIVATE ${options}
+  LINK_OPTIONS PRIVATE ${link_options}
+  BUILD_DEPENDENCIES
+    PUBLIC ${libs}
+    PRIVATE ${deps}
+  CDK
+)

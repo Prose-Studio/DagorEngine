@@ -1,8 +1,4 @@
-set(includes ${DAGOR_PROG_DIR}/gameLibs/publicInclude)
-set(sources lagCatcher.cpp)
-if(LINUX)
-  list(APPEND sources btCollector.cpp utils.cpp)
-endif()
-
-dagor_add_library(gameLibs.lagCatcher ${sources})
-target_include_directories(gameLibs.lagCatcher PRIVATE ${includes})
+dagor_add_target(NAME gameLibs.lagCatcher STATIC
+  FILES_CMAKE lagCatcher_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/gameLibs/publicInclude
+)

@@ -1,0 +1,15 @@
+set(FILES
+  heightmapCompressError.cpp
+  lodGridVertexData.cpp
+  simpleHeightmapRenderer.cpp
+  heightmapRenderer.cpp
+  heightmapPhysHandler.cpp
+  heightmapMaxDelta.cpp
+  heightmapMetricsCalc.cpp
+  heightmapMetricsCulling.cpp
+  heightmapCulling.cpp
+  heightmapLoader.cpp
+  heightmapHandler.cpp
+  riverMasks/hmapCriticalPath.cpp
+  riverMasks/hmapLodMaskBuild.cpp
+)

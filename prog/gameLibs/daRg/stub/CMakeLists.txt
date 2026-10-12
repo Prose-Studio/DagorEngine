@@ -1,4 +1,4 @@
-set(sources daRgStub.cpp)
-
-dagor_add_library(gameLibs.daRg.stub ${sources})
-target_link_libraries(gameLibs.daRg.stub PRIVATE Dagor::Quirrel)
+dagor_add_target(NAME gameLibs.daRg.stub STATIC
+  FILES_CMAKE stub_files.cmake
+  BUILD_DEPENDENCIES PRIVATE Dagor::Quirrel
+)

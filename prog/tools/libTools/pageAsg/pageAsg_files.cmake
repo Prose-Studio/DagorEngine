@@ -1,0 +1,10 @@
+set(FILES
+  asg_data.cpp
+  asg_export.cpp
+  asg_scheme.cpp
+  asg_nodes.cpp
+  asg_cond_parser.cpp
+  asg_anim_load.cpp
+  asg_anim_save.cpp
+  asg_anim_tree.cpp
+)

@@ -1,0 +1,32 @@
+set(FILES
+  sqRegExp.cpp
+  sqUtf8.cpp
+  autoBind.cpp
+  autoCleanup.cpp
+  bindSqrat.cpp
+  sqModulesDagor.cpp
+  fileDropHandler.cpp
+  screenshotMetaInfoLoader.cpp
+  sqratDagorMath.cpp
+  sqratDagorDebug.cpp
+  logerrSqInterceptor.cpp
+  sqratDataBlock.cpp
+  sqratIso8601Time.cpp
+  random.cpp
+  hash.cpp
+  zipArchive.cpp
+  platformMisc.cpp
+  cpuinfo.cpp
+  dagorSystem.cpp
+  dagorSystemFileHandlers.cpp
+  dagorTime.cpp
+  dagorWorkCycle.cpp
+  dagorFS.cpp
+  dagorFolders.cpp
+  dagorShell.cpp
+  dagorClipboard.cpp
+  localization.cpp
+  chinese-hypenation.cpp
+  japanese-hypenation.cpp
+  helpers.cpp
+)

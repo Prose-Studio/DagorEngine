@@ -1,0 +1,15 @@
+set(FILES
+  impDagScene.cpp
+  loadDagFile.cpp
+  splineShape.cpp
+  geomTreeFromDag.cpp
+  geomMeshHelper.cpp
+  geomMeshHelperImp.cpp
+  geomMeshHelperMomj.cpp
+  getDagTex.cpp
+  dagFileExport.cpp
+  dagUtil.cpp
+  dagExporter.cpp
+  dagCopy.cpp
+  dagMatRemapUtil.cpp
+)

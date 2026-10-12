@@ -1,9 +1,9 @@
 # HTTP streaming unit tests (against a local HTTP server)
-list(APPEND includes ${DAGOR_PROG_DIR}/gameLibs/publicInclude)
-set(sources main.cpp test_streamIO.cpp)
-list(APPEND deps engine.memory engine.kernel engine.osApiWrappers engine.baseUtil engine.ioSys engine.math
-  engine.coreUtil engine.startup engine.perfMon.daProfilerStub gameLibs.streamIO)
-
-dagor_add_catch2_test(streamIO-tests TAGS gameLibs net REQUIRES http_server LAX ${sources})
-target_include_directories(streamIO-tests PRIVATE ${includes})
-target_link_libraries(streamIO-tests PRIVATE ${deps})
+dagor_add_catch2_test(NAME streamIO-tests LAX
+  TAGS gameLibs net REQUIRES http_server
+  FILES_CMAKE tests_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/gameLibs/publicInclude
+  BUILD_DEPENDENCIES PRIVATE
+    engine.memory engine.kernel engine.osApiWrappers engine.baseUtil engine.ioSys engine.math engine.coreUtil
+    engine.startup engine.perfMon.daProfilerStub gameLibs.streamIO
+)

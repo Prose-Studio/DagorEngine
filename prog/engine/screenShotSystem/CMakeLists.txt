@@ -1,5 +1,4 @@
-set(sources screenShotSystem.cpp)
-set(includes ${DAGOR_PROG_DIR}/engine/sharedInclude)
-
-dagor_add_library(engine.screenShotSystem ${sources})
-target_include_directories(engine.screenShotSystem PRIVATE ${includes})
+dagor_add_target(NAME engine.screenShotSystem STATIC
+  FILES_CMAKE screenShotSystem_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/engine/sharedInclude
+)

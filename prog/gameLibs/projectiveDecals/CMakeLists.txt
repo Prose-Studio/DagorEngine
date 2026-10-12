@@ -1,13 +1,5 @@
-set(includes ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${CMAKE_CURRENT_SOURCE_DIR})
-set(sources
-  defaultDecalData.cpp
-  projectiveDecals.cpp
-  projectiveDecalsBuffer.cpp
-  resizableProjectiveDecals.cpp
-  ringBufferProjectiveDecals.cpp
+dagor_add_target(NAME gameLibs.projectiveDecals STATIC
+  FILES_CMAKE projectiveDecals_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${CMAKE_CURRENT_SOURCE_DIR}
+  BUILD_DEPENDENCIES PRIVATE engine.lib3d gameLibs.render
 )
-list(APPEND deps engine.lib3d gameLibs.render)
-
-dagor_add_library(gameLibs.projectiveDecals ${sources})
-target_include_directories(gameLibs.projectiveDecals PRIVATE ${includes})
-target_link_libraries(gameLibs.projectiveDecals PRIVATE ${deps})

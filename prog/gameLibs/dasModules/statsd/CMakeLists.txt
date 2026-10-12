@@ -1,12 +1,10 @@
-set(includes ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/1stPartyLibs/daScript/include)
-file(GLOB AllSources RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
-set(sources ${AllSources})
 if(WIN32)
   list(APPEND options /wd4548)
 endif()
-set(deps 1stPartyLibs.daScript)
 
-dagor_add_library(gameLibs.dasModules.statsd ${sources})
-target_include_directories(gameLibs.dasModules.statsd PRIVATE ${includes})
-target_compile_options(gameLibs.dasModules.statsd PRIVATE ${options})
-target_link_libraries(gameLibs.dasModules.statsd PRIVATE ${deps})
+dagor_add_target(NAME gameLibs.dasModules.statsd STATIC
+  FILES_CMAKE statsd_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/1stPartyLibs/daScript/include
+  COMPILE_OPTIONS PRIVATE ${options}
+  BUILD_DEPENDENCIES PRIVATE 1stPartyLibs.daScript
+)

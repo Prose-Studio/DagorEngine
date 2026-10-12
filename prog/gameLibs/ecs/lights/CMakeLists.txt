@@ -1,10 +1,5 @@
-set(includes ${DAGOR_PROG_DIR}/engine/dagorInclude ${DAGOR_PROG_DIR}/gameLibs/publicInclude)
-list(APPEND deps 3rdPartyLibs.eastl)
-file(GLOB AllSourcesES RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp.inl")
-set(SourceES ${AllSourcesES})
-list(APPEND es_sources ${SourceES})
-
-dagor_add_library(gameLibs.ecs.lights)
-target_include_directories(gameLibs.ecs.lights PRIVATE ${includes})
-target_link_libraries(gameLibs.ecs.lights PRIVATE ${deps})
-dagor_target_es_sources(gameLibs.ecs.lights ${es_sources})
+dagor_add_target(NAME gameLibs.ecs.lights STATIC
+  FILES_CMAKE lights_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/engine/dagorInclude ${DAGOR_PROG_DIR}/gameLibs/publicInclude
+  BUILD_DEPENDENCIES PRIVATE 3rdPartyLibs.eastl
+)

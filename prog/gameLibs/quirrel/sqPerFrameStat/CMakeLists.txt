@@ -1,7 +1,5 @@
-set(includes ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/gameLibs/publicInclude/quirrel)
-set(sources sqPerFrameStat.cpp)
-set(deps gameLibs.perFrameStat)
-
-dagor_add_library(gameLibs.quirrel.sqPerFrameStat ${sources})
-target_include_directories(gameLibs.quirrel.sqPerFrameStat PRIVATE ${includes})
-target_link_libraries(gameLibs.quirrel.sqPerFrameStat PRIVATE Dagor::Quirrel ${deps})
+dagor_add_target(NAME gameLibs.quirrel.sqPerFrameStat STATIC
+  FILES_CMAKE sqPerFrameStat_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/gameLibs/publicInclude/quirrel
+  BUILD_DEPENDENCIES PRIVATE Dagor::Quirrel gameLibs.perFrameStat
+)

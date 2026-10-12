@@ -1,27 +1,6 @@
 # meshoptimizer: vertex cache, overdraw and fetch optimization, simplification
-set(sources
-  src/allocator.cpp
-  src/clusterizer.cpp
-  src/indexcodec.cpp
-  src/indexgenerator.cpp
-  src/meshletcodec.cpp
-  src/meshletutils.cpp
-  src/overdrawanalyzer.cpp
-  src/overdrawoptimizer.cpp
-  src/partition.cpp
-  src/simplifier.cpp
-  src/spatialorder.cpp
-  src/stripifier.cpp
-  src/vcacheanalyzer.cpp
-  src/vcacheoptimizer.cpp
-  src/vertexcodec.cpp
-  src/vertexfilter.cpp
-  src/vfetchanalyzer.cpp
-  src/vfetchoptimizer.cpp
+dagor_add_target(NAME 3rdPartyLibs.meshoptimizer STATIC LAX
+  FILES_CMAKE meshoptimizer_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/3rdPartyLibs/meshoptimizer/include
+  COMPILE_DEFINITIONS PRIVATE _RELEASE
 )
-set(includes ${DAGOR_PROG_DIR}/3rdPartyLibs/meshoptimizer/include)
-list(APPEND defines _RELEASE)
-
-dagor_add_library(3rdPartyLibs.meshoptimizer LAX ${sources})
-target_include_directories(3rdPartyLibs.meshoptimizer PRIVATE ${includes})
-target_compile_definitions(3rdPartyLibs.meshoptimizer PRIVATE ${defines})

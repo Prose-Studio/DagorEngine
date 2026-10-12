@@ -1,19 +1,8 @@
 # JSON for Quirrel: conversion to and from jsoncpp and rapidjson, a direct JSON parser and writer
-set(sources
-  quirrel_json.cpp
-  rapidjson.cpp
-  jsoncpp.cpp
-  direct_json/direct_json_parse.cpp
-  direct_json/direct_json_write.cpp
+dagor_add_target(NAME gameLibs.quirrel.quirrel_json STATIC
+  FILES_CMAKE quirrel_json_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE
+    ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/1stPartyLibs/jsoncpp/include
+    ${DAGOR_PROG_DIR}/3rdPartyLibs/rapidjson/include ${DAGOR_PROG_DIR}/3rdPartyLibs/arc/zstd-1.4.5
+  BUILD_DEPENDENCIES PRIVATE Dagor::Quirrel 1stPartyLibs.jsoncpp 3rdPartyLibs.arc.zstd-1.4.5
 )
-set(includes
-  ${DAGOR_PROG_DIR}/gameLibs/publicInclude
-  ${DAGOR_PROG_DIR}/1stPartyLibs/jsoncpp/include
-  ${DAGOR_PROG_DIR}/3rdPartyLibs/rapidjson/include
-  ${DAGOR_PROG_DIR}/3rdPartyLibs/arc/zstd-1.4.5
-)
-set(deps 1stPartyLibs.jsoncpp 3rdPartyLibs.arc.zstd-1.4.5)
-
-dagor_add_library(gameLibs.quirrel.quirrel_json ${sources})
-target_include_directories(gameLibs.quirrel.quirrel_json PRIVATE ${includes})
-target_link_libraries(gameLibs.quirrel.quirrel_json PRIVATE Dagor::Quirrel ${deps})

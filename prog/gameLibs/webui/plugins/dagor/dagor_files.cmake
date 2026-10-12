@@ -1,0 +1,5 @@
+set(FILES dagorplugins.cpp)
+set(STRINGIFY_ARRAY_FILES showMemFlameGraph.html)
+if(NOT DAGOR_BUILDING_TOOLS)
+  list(APPEND FILES memmap.cpp)
+endif()

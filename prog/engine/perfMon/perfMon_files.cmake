@@ -1,0 +1,15 @@
+set(FILES
+  profilerModes.cpp
+  profilerSettings.cpp
+  stat3d.cpp
+  tdrProfile.cpp
+  statStd.cpp
+  perfMonStat.cpp
+  platformEvents.cpp
+  sleepPrecise.cpp
+  memoryReport.cpp
+  memoryReportVramQuery.cpp
+  memoryReportLog.cpp
+  stub/cachesim.cpp
+  "$<$<NOT:$<CONFIG:Rel>>:${CMAKE_CURRENT_LIST_DIR}/alternateProfiler.cpp>"
+)

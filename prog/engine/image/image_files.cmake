@@ -1,0 +1,31 @@
+set(FILES
+  loadTga.cpp
+  saveTga.cpp
+  loadJpeg.cpp
+  saveJpeg.cpp
+  jpgCommon.cpp
+  jpgRead.cpp
+  jpgWrite.cpp
+  loadPsd.cpp
+  loadPng.cpp
+  loadAvif.cpp
+  savePng.cpp
+  loadTiff.cpp
+  saveTiff.cpp
+  saveExr.cpp
+  loadImage.cpp
+  loadDds.cpp
+  loadDdsTex.cpp
+  imgAlloc.cpp
+  resampleImage.cpp
+  imageCompare.cpp
+  regImageLoadAny.cpp
+  regImageLoadJpeg.cpp
+  regImageLoadPsd.cpp
+  regImageLoadTga.cpp
+  regImageLoadTiff.cpp
+  regImageLoadPng.cpp
+  regImageLoadSvg.cpp
+  regImageLoadAvif.cpp
+  dxtCompress.cpp
+)

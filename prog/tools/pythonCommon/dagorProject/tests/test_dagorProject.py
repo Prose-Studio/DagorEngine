@@ -129,7 +129,9 @@ class CreateTest(unittest.TestCase):
 
   def test_names_are_replaced(self):
     self.assertIn('windowTitle:t="My Game"', self.read('prog/gameBase/config/settings.blk'))
-    self.assertIn('dagor_add_dng_game(my_game GAME my_game', self.read('prog/CMakeLists.txt'))
+    self.assertIn('dagor_add_dng_game(NAME my_game GAME my_game', self.read('prog/CMakeLists.txt'))
+    self.assertIn('FILES_CMAKE my_game_files.cmake', self.read('prog/CMakeLists.txt'))
+    self.assertTrue(os.path.isfile(self.path('prog/my_game_files.cmake')))
     self.assertIn('ID org.test.MyGame', self.read('prog/CMakeLists.txt'))
     self.assertTrue(os.path.isfile(self.path('prog/scripts/my_game/my_game.das')))
     self.assertTrue(os.path.isfile(self.path('prog/platform/windows/my_game.rc')))

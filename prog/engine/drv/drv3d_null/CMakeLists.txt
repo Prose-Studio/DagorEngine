@@ -4,9 +4,8 @@ if(DAGOR_D3D_MULTI)
   if(NOT "null" IN_LIST DAGOR_D3D_DRIVERS)
     message(FATAL_ERROR "engine/drv/drv3d_null in a multi-driver tree needs null in DAGOR_D3D_DRIVERS")
   endif()
-  set(sources d3d_stub_m.cpp)
-else()
-  set(sources d3d_stub.cpp)
 endif()
-dagor_add_library(engine.drv.drv3d_null LAX ${sources})
-target_compile_definitions(engine.drv.drv3d_null PRIVATE INSIDE_DRIVER)
+dagor_add_target(NAME engine.drv.drv3d_null STATIC LAX
+  FILES_CMAKE drv3d_null_files.cmake
+  COMPILE_DEFINITIONS PRIVATE INSIDE_DRIVER
+)

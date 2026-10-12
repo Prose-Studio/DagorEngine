@@ -1,0 +1,44 @@
+set(FILES
+  dumpCollisions.cpp
+  dumpScenes.cpp
+  rendInstAccess.cpp
+  rendInstExtraAccess.cpp
+  rendInstCommon.cpp
+  rendInstGen.cpp
+  rendInstGenLand.cpp
+  rendInstGenCollision.cpp
+  rendInstGenExtra.cpp
+  rendInstExtraAdditionalData.cpp
+  rendInstGenExtraMaxHeight.cpp
+  rendInstGenDebris.cpp
+  rendInstGenGlobals.cpp
+  rendInstRotationPalette.cpp
+  rendInstGenRtTools.cpp
+  rendInstUtil.cpp
+  rendInstStubRes.cpp
+  rendInstDesc.cpp
+  riGrid.cpp
+  riGridDebug.cpp
+  riGridDump.cpp
+  treeDestr.cpp
+  riexSync.cpp
+  render/clipmapShadow.cpp
+  render/gpuObjects.cpp
+  render/genRender.cpp
+  render/impostor.cpp
+  render/extraRender.cpp
+  render/clipShadows.cpp
+  render/depthShadows.cpp
+  render/riShaderConstBuffers.cpp
+  render/extra/consoleHandler.cpp
+  render/riGenRenderer.cpp
+  visibility/genVisibility.cpp
+  visibility/extraVisibility.cpp
+  debug/collisionVisualization.cpp
+  debug/rendinstRulerDebug.cpp
+)
+if(DAGOR_DEDICATED)
+  list(APPEND FILES stub/impostorTextureMgr.cpp)
+else()
+  list(APPEND FILES impostorTextureMgr.cpp)
+endif()

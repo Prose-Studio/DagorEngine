@@ -7,8 +7,9 @@ if(LINUX)
   list(APPEND deps engine.osApiWrappers.messageBox.stub)
 endif()
 
-dagor_add_executable(dsc2-nodeBased LAX main.cpp winmain_con.cpp)
-target_include_directories(dsc2-nodeBased PRIVATE ${DAGOR_PROG_DIR}/gameLibs/publicInclude
-  ${DAGOR_PROG_DIR}/tools/sharedInclude)
-target_link_libraries(dsc2-nodeBased PRIVATE ${deps})
-dagor_install_cdk(dsc2-nodeBased)
+dagor_add_target(NAME dsc2-nodeBased EXECUTABLE LAX
+  FILES_CMAKE nodeBased_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/tools/sharedInclude
+  BUILD_DEPENDENCIES PRIVATE ${deps}
+  CDK
+)

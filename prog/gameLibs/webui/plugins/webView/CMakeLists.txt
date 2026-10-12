@@ -27,6 +27,8 @@ add_custom_command(OUTPUT "${gen}/ServeFiles.cpp"
   VERBATIM)
 file(MAKE_DIRECTORY "${gen}")
 
-dagor_add_library(gameLibs.webui.plugins.webView webViewPlugin.cpp "${gen}/ServeFiles.cpp")
-target_include_directories(gameLibs.webui.plugins.webView PRIVATE ${DAGOR_PROG_DIR}/gameLibs/publicInclude "${gen}")
-dagor_target_stringify(gameLibs.webui.plugins.webView ARRAY vue/index.html)
+dagor_add_target(NAME gameLibs.webui.plugins.webView STATIC
+  FILES_CMAKE webView_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/gameLibs/publicInclude "${gen}"
+)
+target_sources(gameLibs.webui.plugins.webView PRIVATE "${gen}/ServeFiles.cpp")

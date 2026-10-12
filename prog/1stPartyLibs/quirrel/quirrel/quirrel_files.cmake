@@ -1,0 +1,32 @@
+set(FILES
+  squirrel/sqapi.cpp
+  squirrel/sqbaselib.cpp
+  squirrel/sqclass.cpp
+  squirrel/sqdebug.cpp
+  squirrel/sqobject.cpp
+  squirrel/sqstate.cpp
+  squirrel/sqtable.cpp
+  squirrel/sqvm.cpp
+  squirrel/sqdedupshrinker.cpp
+  squirrel/sqstringlib.cpp
+  squirrel/sqext.cpp
+  squirrel/sqasync.cpp
+  squirrel/sqmem.cpp
+  sqstdlib/sqstdrex.cpp
+  sqstdlib/sqstdaux.cpp
+  sqstdlib/sqstdmath.cpp
+  sqstdlib/sqstdstring.cpp
+  sqstdlib/sqstdblob.cpp
+  sqstdlib/sqstddebug.cpp
+  sqstdlib/sqstdhash.cpp
+  sqstdlib/sqstdio.cpp
+  sqstdlib/sqstdstream.cpp
+  sqstdlib/sqstdsystem.cpp
+  sqstdlib/sqstddatetime.cpp
+  sqstdlib/sqstdserialization.cpp
+)
+if(DAGOR_SQ_VAR_TRACE)
+  list(APPEND FILES squirrel/vartrace.cpp)
+else()
+  list(APPEND FILES squirrel/vartracestub.cpp)
+endif()

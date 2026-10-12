@@ -6,34 +6,29 @@ cmake_minimum_required(VERSION 4.0)
 project(dng_empty LANGUAGES C CXX)
 find_package(Dagor REQUIRED)
 
-set(sources)
 set(client OFF)
 if(NOT DAGOR_DEDICATED AND NOT DAGOR_DAS_AOT_COMPILER)
   set(client ON)
 endif()
-if(client AND WIN32)
-  list(APPEND sources platform/windows/dng_empty.rc platform/windows/dng_empty.exe.manifest)
-endif()
 
 # the game program, in the tree of its daScript AOT compiler the compiler (with the game's own daScript modules)
-dagor_add_dng_game(dng_empty GAME dng_empty
+dagor_add_dng_game(NAME dng_empty GAME dng_empty
   # the linux dedicated server checks the clients' auth keys (NetPeerAuth): zero keys let any linux client in, set
   # real ones before shipping; windows and macOS clients are not checked
   AUTH_KEY_LINUX 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
   DEDICATED_AUTH linux linux
-  CPP_DIRS main
   DNG_LIBS danetgamelibs.txt
   GAME_LIBS gamelibs.txt
-  AOT_SOURCES main/dasGameModulesList.cpp
+  FILES_CMAKE dng_empty_files.cmake
+  AOT_FILES_CMAKE dng_empty_aot_files.cmake
   OUTPUT_DIRECTORY ../game/${DAGOR_PLATFORM}-${DAGOR_ARCH}
-  ${sources})
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/daNetGameLibs ${DAGOR_PROG_DIR}/gameLibs
+  BUILD_DEPENDENCIES PRIVATE daNetGame daNetGameLibs.dm.stub
+  DAS_PULL dng_empty_DAS_pull_AOT
+)
 if(DAGOR_DAS_AOT_COMPILER)
   return()
 endif()
-target_include_directories(dng_empty PRIVATE ${DAGOR_PROG_DIR}/daNetGameLibs ${DAGOR_PROG_DIR}/gameLibs)
-target_link_libraries(dng_empty PRIVATE daNetGame daNetGameLibs.dm.stub)
-dagor_glob_sources(das DIRS scripts/dng_empty scripts/dng_empty/es GLOB *.das)
-dagor_target_das_aot(dng_empty PULL dng_empty_DAS_pull_AOT ${das})
 
 if(client AND CMAKE_SYSTEM_NAME STREQUAL "Darwin")
   # the app bundle in ../game, where it finds the game's data (<bundle>/Contents/MacOS/../../..)

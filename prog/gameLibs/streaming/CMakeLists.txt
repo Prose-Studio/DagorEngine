@@ -1,5 +1,4 @@
-set(includes ${DAGOR_PROG_DIR}/gameLibs/publicInclude)
-set(sources streaming.cpp)
-
-dagor_add_library(gameLibs.streaming ${sources})
-target_include_directories(gameLibs.streaming PRIVATE ${includes})
+dagor_add_target(NAME gameLibs.streaming STATIC
+  FILES_CMAKE streaming_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/gameLibs/publicInclude
+)

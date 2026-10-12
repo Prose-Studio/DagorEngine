@@ -1,11 +1,7 @@
-set(includes
-  ${DAGOR_PROG_DIR}/engine/sharedInclude
-  ${DAGOR_PROG_DIR}/gameLibs/publicInclude
-  ${DAGOR_PROG_DIR}/gameLibs/publicInclude/quirrel
+dagor_add_target(NAME gameLibs.quirrel.sqDacoll STATIC
+  FILES_CMAKE sqDacoll_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE
+    ${DAGOR_PROG_DIR}/engine/sharedInclude ${DAGOR_PROG_DIR}/gameLibs/publicInclude
+    ${DAGOR_PROG_DIR}/gameLibs/publicInclude/quirrel
+  BUILD_DEPENDENCIES PRIVATE Dagor::Quirrel Dagor::Phys
 )
-set(sources sqDacoll.cpp)
-list(APPEND deps Dagor::Phys)
-
-dagor_add_library(gameLibs.quirrel.sqDacoll ${sources})
-target_include_directories(gameLibs.quirrel.sqDacoll PRIVATE ${includes})
-target_link_libraries(gameLibs.quirrel.sqDacoll PRIVATE Dagor::Quirrel ${deps})

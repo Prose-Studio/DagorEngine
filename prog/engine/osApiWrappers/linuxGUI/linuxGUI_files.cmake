@@ -1,0 +1,7 @@
+set(FILES mux.cpp linuxSetTitle.cpp linuxClipboard.cpp)
+if(DAGOR_LINUX_WAYLAND)
+  list(APPEND FILES wayland.cpp wayland_loader.cpp)
+endif()
+if(DAGOR_LINUX_X11)
+  list(APPEND FILES x11.cpp)
+endif()

@@ -1,0 +1,9 @@
+set(FILES
+  spirv_cfg.cpp
+  spirv_cross.cpp
+  spirv_cross_parsed_ir.cpp
+  spirv_parser.cpp
+  spirv_cpp.cpp
+  spirv_glsl.cpp
+  spirv_msl.cpp
+)

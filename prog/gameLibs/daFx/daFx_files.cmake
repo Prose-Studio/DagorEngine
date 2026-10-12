@@ -1,0 +1,13 @@
+set(FILES
+  binds.cpp
+  render.cpp
+  systems.cpp
+  shaders.cpp
+  buffers.cpp
+  culling.cpp
+  context.cpp
+  emitters.cpp
+  instances.cpp
+  globalData.cpp
+  frameBoundaryBufferManager.cpp
+)

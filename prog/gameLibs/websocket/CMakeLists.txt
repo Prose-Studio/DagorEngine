@@ -1,18 +1,18 @@
 # Websocket client on libcurl
 list(APPEND includes ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/3rdPartyLibs/libb64/include)
 list(APPEND deps 3rdPartyLibs.eastl 3rdPartyLibs.libb64 3rdPartyLibs.hash engine.crypto)
-set(sources websocket.cpp websocket_common.cpp websocket_compat.cpp websocket_io.cpp)
 list(APPEND includes ${DAGOR_PROG_DIR}/3rdPartyLibs/libcurl/include)
 list(APPEND deps 3rdPartyLibs.libcurl)
-list(APPEND defines CURL_STATICLIB)
 if(WIN32)
   list(APPEND options /FC)
 endif()
 list(APPEND includes ${DAGOR_PROG_DIR}/3rdPartyLibs/openssl-3.x/include)
 list(APPEND deps 3rdPartyLibs.openssl-3.x)
 
-dagor_add_library(gameLibs.websocket ${sources})
-target_include_directories(gameLibs.websocket PRIVATE ${includes})
-target_compile_definitions(gameLibs.websocket PRIVATE ${defines})
-target_compile_options(gameLibs.websocket PRIVATE ${options})
-target_link_libraries(gameLibs.websocket PRIVATE ${deps})
+dagor_add_target(NAME gameLibs.websocket STATIC
+  FILES_CMAKE websocket_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${includes}
+  COMPILE_DEFINITIONS PRIVATE CURL_STATICLIB
+  COMPILE_OPTIONS PRIVATE ${options}
+  BUILD_DEPENDENCIES PRIVATE ${deps}
+)

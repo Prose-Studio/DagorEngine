@@ -1,0 +1,19 @@
+set(FILES
+  shaderMeshData.cpp
+  shSkinMeshData.cpp
+  corSkinning.cpp
+  shaderMeshCacheOpt.cpp
+  globalVertexDataConnector.cpp
+  meshDataSave.cpp
+  processMat.cpp
+  validateLods.cpp
+  validateUv.cpp
+  validateAlphaTest.cpp
+  dynSceneResSrc.cpp
+  clothProxyBuild.cpp
+  rendInstResSrc.cpp
+  rendInstVoxel.cpp
+  tristrip/stripobj.cpp
+  tristrip/tristrip.cpp
+  forsythTriangleReorderopt.cpp
+)

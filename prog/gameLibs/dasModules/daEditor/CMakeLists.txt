@@ -1,12 +1,10 @@
-set(includes ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/1stPartyLibs/daScript/include)
-file(GLOB AllSources RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
-set(sources ${AllSources})
 if(WIN32)
   list(APPEND options /wd4548)
 endif()
-set(deps 1stPartyLibs.daScript gameLibs.daEditorE)
 
-dagor_add_library(gameLibs.dasModules.daEditor ${sources})
-target_include_directories(gameLibs.dasModules.daEditor PRIVATE ${includes})
-target_compile_options(gameLibs.dasModules.daEditor PRIVATE ${options})
-target_link_libraries(gameLibs.dasModules.daEditor PRIVATE Dagor::Quirrel ${deps})
+dagor_add_target(NAME gameLibs.dasModules.daEditor STATIC
+  FILES_CMAKE daEditor_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/1stPartyLibs/daScript/include
+  COMPILE_OPTIONS PRIVATE ${options}
+  BUILD_DEPENDENCIES PRIVATE Dagor::Quirrel 1stPartyLibs.daScript gameLibs.daEditorE
+)

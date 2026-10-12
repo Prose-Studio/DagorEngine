@@ -1,0 +1,5 @@
+set(FILES src/duktape.c examples/cmdline/duk_cmdline.c)
+list(APPEND FILES extras/print-alert/duk_print_alert.c)
+list(APPEND FILES extras/console/duk_console.c)
+list(APPEND FILES extras/logging/duk_logging.c)
+list(APPEND FILES extras/module-duktape/duk_module_duktape.c)

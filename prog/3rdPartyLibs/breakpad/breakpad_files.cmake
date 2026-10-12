@@ -1,0 +1,35 @@
+if(WIN32)
+  set(FILES
+    client/windows/crash_generation/minidump_generator.cc
+    client/windows/crash_generation/client_info.cc
+    client/windows/crash_generation/crash_generation_client.cc
+    client/windows/handler/exception_handler.cc
+  )
+endif()
+if(LINUX)
+  set(FILES
+    client/linux/crash_generation/crash_generation_client.cc
+    client/linux/minidump_writer/linux_dumper.cc
+    client/linux/minidump_writer/linux_ptrace_dumper.cc
+    client/linux/minidump_writer/linux_core_dumper.cc
+    client/linux/minidump_writer/minidump_writer.cc
+    client/linux/microdump_writer/microdump_writer.cc
+    client/linux/handler/exception_handler.cc
+    client/linux/handler/minidump_descriptor.cc
+    client/linux/dump_writer_common/thread_info.cc
+    client/linux/dump_writer_common/ucontext_reader.cc
+    client/linux/dump_writer_common/seccomp_unwinder.cc
+    client/linux/log/log.cc
+    client/minidump_file_writer.cc
+  )
+endif()
+if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+  set(FILES
+    client/mac/handler/breakpad_nlist_64.cc
+    client/mac/handler/dynamic_images.cc
+    client/mac/handler/exception_handler.cc
+    client/mac/handler/minidump_generator.cc
+    client/mac/handler/protected_memory_allocator.cc
+    client/minidump_file_writer.cc
+  )
+endif()

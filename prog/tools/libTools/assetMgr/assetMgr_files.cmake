@@ -1,0 +1,12 @@
+set(FILES
+  assetMgr.cpp
+  assetFromGameRes.cpp
+  assetFromDdsxTex.cpp
+  assetFromGameResEx.cpp
+  asset.cpp
+  vAssetRule.cpp
+  assetMsgPipe.cpp
+  assetMgrTrackChanges.cpp
+  assetFind.cpp
+  daBuildDLL.cpp
+)

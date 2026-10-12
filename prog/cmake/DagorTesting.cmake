@@ -1,10 +1,11 @@
 # Tests, run by CTest (ctest --preset <preset>). Each test gets the CTest labels of its layer (cpp, das, exec, ecs,
 # scenario), its TAGS and its REQUIRES as requires-<what>: the ci test presets exclude requires-gpu|requires-display.
 #
-#   dagor_add_catch2_test(<name> [DATA_DIR <dir>] [CASE_TIMEOUT <s>] [ARGS ...] [LAX] <common> [<source>...])
-#       a Catch2 program (main from <unittest/mainCatch2.inc.cpp>); each test case is a CTest test <name>:<case>.
-#       DATA_DIR (default: the calling dir) is where it finds its test data (--data-dir); CASE_TIMEOUT makes it abort
-#       a hung case itself. The program is target <name>: link its libraries with target_link_libraries.
+#   dagor_add_catch2_test(NAME <name> <dagor_add_target arguments> [DATA_DIR <dir>] [CASE_TIMEOUT <s>] [ARGS ...]
+#                         <common>)
+#       a Catch2 program (main from <unittest/mainCatch2.inc.cpp>), target <name>, in <build>/tests; each test case is
+#       a CTest test <name>:<case>. DATA_DIR (default: the calling dir) is where it finds its test data (--data-dir);
+#       CASE_TIMEOUT makes it abort a hung case itself.
 #   dagor_add_catch2_run(<target> <name> [DATA_DIR <dir>] [ARGS ...] <common>)
 #       another run of a dagor_add_catch2_test program's cases with other arguments and requirements (<name>:<case>)
 #   dagor_add_das_test(<name> PATHS <dir or file>... [PROJECT <.das_project>] [ISOLATED] [WORKING_DIRECTORY <dir>]
@@ -112,13 +113,16 @@ function(_dagor_http_launcher name out)
 endfunction()
 
 # the program is made whether or not its tests are registered, so the commands that follow can set it up
-function(dagor_add_catch2_test name)
-  cmake_parse_arguments(PARSE_ARGV 1 arg "${_DAGOR_TEST_OPTIONS};LAX" "${_DAGOR_TEST_ONE_VALUE}" "${_DAGOR_TEST_MULTI_VALUE}")
-  set(lax)
-  if(arg_LAX)
-    set(lax LAX)
+function(dagor_add_catch2_test)
+  cmake_parse_arguments(PARSE_ARGV 0 arg "${_DAGOR_TEST_OPTIONS};${_DAGOR_TARGET_OPTIONS}"
+    "${_DAGOR_TEST_ONE_VALUE};${_DAGOR_TARGET_ONE_VALUE}" "${_DAGOR_TEST_MULTI_VALUE};${_DAGOR_TARGET_MULTI_VALUE}")
+  set(name ${arg_NAME})
+  set(arg_EXECUTABLE ON)
+  if(NOT arg_OUTPUT_DIRECTORY)
+    set(arg_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/tests")
   endif()
-  dagor_add_executable(${name} ${lax} OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/tests" ${arg_UNPARSED_ARGUMENTS})
+  _dagor_target_arguments(args)
+  dagor_add_target(${args})
   set_property(TARGET ${name} PROPERTY DAGOR_EXCEPTIONS ON) # Catch2 reports failures with exceptions
   target_link_libraries(${name} PRIVATE 3rdPartyLibs.catch2 engine.unitTest)
   set(data_dir "${CMAKE_CURRENT_SOURCE_DIR}")

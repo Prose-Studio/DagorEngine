@@ -1,17 +1,10 @@
 # (DAGOR_LINUX_GUI)
-set(sources ms_device_common.cpp ms_classdrv_win.cpp ms_device_win.cpp)
-set(includes ${DAGOR_PROG_DIR}/engine/sharedInclude)
-if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-  list(APPEND sources macosx_ms_api.mm)
-endif()
 if(LINUX)
-  list(APPEND sources linux_ms_api.cpp)
   list(APPEND deps engine.osApiWrappers.linuxGUI)
 endif()
-if(WIN32)
-  list(APPEND sources windows_ms_api.cpp)
-endif()
 
-dagor_add_library(engine.drv.hid_mouse LAX ${sources})
-target_include_directories(engine.drv.hid_mouse PRIVATE ${includes})
-target_link_libraries(engine.drv.hid_mouse PRIVATE ${deps})
+dagor_add_target(NAME engine.drv.hid_mouse STATIC LAX
+  FILES_CMAKE hid_mouse_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/engine/sharedInclude
+  BUILD_DEPENDENCIES PRIVATE ${deps}
+)

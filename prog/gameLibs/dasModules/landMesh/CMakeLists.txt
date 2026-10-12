@@ -1,12 +1,10 @@
-set(includes ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/1stPartyLibs/daScript/include)
-set(AllSrcFolder_CPP .)
-dagor_glob_sources(sources DIRS ${AllSrcFolder_CPP} GLOB *.cpp)
 if(WIN32)
   list(APPEND options /wd4548)
 endif()
-set(deps 1stPartyLibs.daScript)
 
-dagor_add_library(gameLibs.dasModules.landMesh ${sources})
-target_include_directories(gameLibs.dasModules.landMesh PRIVATE ${includes})
-target_compile_options(gameLibs.dasModules.landMesh PRIVATE ${options})
-target_link_libraries(gameLibs.dasModules.landMesh PRIVATE ${deps})
+dagor_add_target(NAME gameLibs.dasModules.landMesh STATIC
+  FILES_CMAKE landMesh_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/1stPartyLibs/daScript/include
+  COMPILE_OPTIONS PRIVATE ${options}
+  BUILD_DEPENDENCIES PRIVATE 1stPartyLibs.daScript
+)

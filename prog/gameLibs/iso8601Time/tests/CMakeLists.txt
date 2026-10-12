@@ -1,9 +1,9 @@
 # ISO 8601 time unit tests
-list(APPEND includes ${DAGOR_PROG_DIR}/gameLibs/publicInclude)
-set(sources main.cpp test_iso8601.cpp)
-list(APPEND deps engine.memory engine.kernel engine.osApiWrappers engine.baseUtil engine.ioSys engine.math
-  engine.perfMon.daProfilerStub gameLibs.iso8601Time)
-
-dagor_add_catch2_test(iso8601Time-tests TAGS gameLibs LAX ${sources})
-target_include_directories(iso8601Time-tests PRIVATE ${includes})
-target_link_libraries(iso8601Time-tests PRIVATE ${deps})
+dagor_add_catch2_test(NAME iso8601Time-tests LAX
+  TAGS gameLibs
+  FILES_CMAKE tests_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/gameLibs/publicInclude
+  BUILD_DEPENDENCIES PRIVATE
+    engine.memory engine.kernel engine.osApiWrappers engine.baseUtil engine.ioSys engine.math
+    engine.perfMon.daProfilerStub gameLibs.iso8601Time
+)

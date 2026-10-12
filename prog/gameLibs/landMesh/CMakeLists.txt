@@ -2,47 +2,20 @@
 # (ImGui) in Dev and Dbg
 add_subdirectory(rendinstIntegration)
 add_subdirectory(stub)
-
-set(sources
-  landMicroDetails.cpp
-  lmeshManager.cpp
-  lmeshWeightAtlas.cpp
-  lmeshWeightAtlasGpu.cpp
-  lmeshWeightAtlasLegacyCpu.cpp
-  lmeshWeightAtlasLegacyGpu.cpp
-  lmeshLandClasses.cpp
-  lmeshRenderer.cpp
-  lmeshRenderingModeState.cpp
-  lmeshRendererLandClasses.cpp
-  virtualtexture.cpp
-  landRayTracerSoA4.cpp
-  lmeshRendererGlue.cpp
-  lastClip.cpp
-  biomeQuery.cpp
-  heightmapQuery.cpp
-  lmeshMirroring.cpp
-  lmeshHoles.cpp
-)
-set(includes
-  ${DAGOR_PROG_DIR}/gameLibs/publicInclude
-  ${DAGOR_PROG_DIR}/gameLibs/gamePhys/collision
-  ${DAGOR_PROG_DIR}/engine/sharedInclude
-  ${DAGOR_PROG_DIR}/engine/lib3d
-  ${DAGOR_PROG_DIR}/3rdPartyLibs
-)
 set(deps gameLibs.landMesh.rendinstIntegration gameLibs.heightmap gameLibs.physMap 3rdPartyLibs.eastl engine.daBVH
   3rdPartyLibs.convert.fastDXT)
-set(dir "${CMAKE_CURRENT_SOURCE_DIR}")
 set(debug "$<CONFIG:Dev,Dbg>")
-list(APPEND sources "$<IF:${debug},${dir}/clipmapDebug.cpp,${dir}/clipmapDebugStub.cpp>")
 list(APPEND deps "$<${debug}:3rdPartyLibs.imgui>" "$<${debug}:engine.imgui>")
 set(options)
 # no fused multiply-adds and no unsafe math: the land heights must match on every platform
 dagor_deterministic_fp(options)
-list(APPEND defines VECMATH_NO_FMA) # v_madd on NEON is explicit vfmaq that ignores ffp-contract=off
 
-dagor_add_library(gameLibs.landMesh LAX ${sources})
-target_include_directories(gameLibs.landMesh PRIVATE ${includes})
-target_compile_definitions(gameLibs.landMesh PRIVATE ${defines})
-target_compile_options(gameLibs.landMesh PRIVATE ${options})
-target_link_libraries(gameLibs.landMesh PRIVATE ${deps})
+dagor_add_target(NAME gameLibs.landMesh STATIC LAX
+  FILES_CMAKE landMesh_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE
+    ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/gameLibs/gamePhys/collision
+    ${DAGOR_PROG_DIR}/engine/sharedInclude ${DAGOR_PROG_DIR}/engine/lib3d ${DAGOR_PROG_DIR}/3rdPartyLibs
+  COMPILE_DEFINITIONS PRIVATE VECMATH_NO_FMA
+  COMPILE_OPTIONS PRIVATE ${options}
+  BUILD_DEPENDENCIES PRIVATE ${deps}
+)

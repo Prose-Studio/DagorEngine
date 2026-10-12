@@ -35,9 +35,10 @@ if(CMAKE_SYSTEM_NAME MATCHES "^(Android|Darwin|Linux|Windows|iOS|tvOS)$")
   endif()
   list(APPEND defines BITDEPTH=8 SUPPORT_AV1)
 endif()
-set(sources ogg_video.cpp av1_video.cpp)
 
-dagor_add_library(engine.videoPlayer ${sources})
-target_include_directories(engine.videoPlayer PRIVATE ${includes})
-target_compile_definitions(engine.videoPlayer PRIVATE ${defines})
-target_link_libraries(engine.videoPlayer PRIVATE ${deps})
+dagor_add_target(NAME engine.videoPlayer STATIC
+  FILES_CMAKE videoPlayer_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${includes}
+  COMPILE_DEFINITIONS PRIVATE ${defines}
+  BUILD_DEPENDENCIES PRIVATE ${deps}
+)

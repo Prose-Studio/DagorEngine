@@ -1,12 +1,5 @@
-set(includes
-  ${DAGOR_PROG_DIR}/gameLibs/publicInclude
-  ${DAGOR_PROG_DIR}/gameLibs
-  ${DAGOR_PROG_DIR}/dagorInclude
+dagor_add_target(NAME gameLibs.webui.plugins.ecsviewer STATIC
+  FILES_CMAKE ecsviewer_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE
+    ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/gameLibs ${DAGOR_PROG_DIR}/dagorInclude
 )
-set(sources ecsViewerPlugin.cpp ecsViewerPluginListener.cpp)
-set(SourceHTML ecsViewer.html)
-list(APPEND stringify ${SourceHTML})
-
-dagor_add_library(gameLibs.webui.plugins.ecsviewer ${sources})
-target_include_directories(gameLibs.webui.plugins.ecsviewer PRIVATE ${includes})
-dagor_target_stringify(gameLibs.webui.plugins.ecsviewer ${stringify})

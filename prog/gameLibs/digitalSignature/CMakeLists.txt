@@ -1,7 +1,8 @@
 # Digital signature creation and checking on OpenSSL
 set(includes ${DAGOR_PROG_DIR}/gameLibs/publicInclude)
 list(APPEND includes ${DAGOR_PROG_DIR}/3rdPartyLibs/openssl-3.x/include)
-set(sources digitalSignatureCheck.cpp digitalSignatureCreate.cpp)
 
-dagor_add_library(gameLibs.digitalSignature LAX ${sources})
-target_include_directories(gameLibs.digitalSignature PRIVATE ${includes})
+dagor_add_target(NAME gameLibs.digitalSignature STATIC LAX
+  FILES_CMAKE digitalSignature_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${includes}
+)

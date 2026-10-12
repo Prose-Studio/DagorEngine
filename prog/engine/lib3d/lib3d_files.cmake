@@ -1,0 +1,45 @@
+set(FILES
+  texMgr.cpp
+  bufMgr.cpp
+  texMgrData.cpp
+  texMgrCreat.cpp
+  texMgrMem.cpp
+  texMgrCon.cpp
+  tqlInit.cpp
+  loadDDSx/texLoad.cpp
+  loadDDSx/texResize.cpp
+  texMgrMt.cpp
+  texMgrFileFactory.cpp
+  texMgrSymFactory.cpp
+  texMgrStubFactory.cpp
+  textureFormat.cpp
+  convertPixelFormat.cpp
+  regTexCreateRaw.cpp
+  regTexCreateTiff.cpp
+  drv3dReset.cpp
+  setGamma.cpp
+  preRotation.cpp
+  debug3dBuffered.cpp
+  debug3dCached.cpp
+  debug3dStates.cpp
+  debug3dTex.cpp
+  texPackMgr2.cpp
+  createTex.cpp
+  picMgr.cpp
+  splashScreen.cpp
+  texIdHolder.cpp
+  bufIdHolder.cpp
+  resizableTex.cpp
+  ringCPUQueryLock.cpp
+  MaskedOcclusionCulling.cpp
+  occlusionSystem.cpp
+  quadIndexBuffer.cpp
+  serialIntBuffer.cpp
+  texStreamingContext.cpp
+  buildOnDemandTexFactory.cpp
+)
+if(DAGOR_ARCH MATCHES "^(x86_64|e2k)$" AND NOT DAGOR_ARCH STREQUAL "universal")
+  list(APPEND FILES MaskedOcclusionCulling_sse.cpp)
+else()
+  list(APPEND FILES MaskedOcclusionCulling_neon.cpp)
+endif()

@@ -1,5 +1,4 @@
-set(includes ${DAGOR_PROG_DIR}/gameLibs/publicInclude)
-set(sources perfRating.cpp)
-
-dagor_add_library(gameLibs.fpsProfiler ${sources})
-target_include_directories(gameLibs.fpsProfiler PRIVATE ${includes})
+dagor_add_target(NAME gameLibs.fpsProfiler STATIC
+  FILES_CMAKE fpsProfiler_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/gameLibs/publicInclude
+)

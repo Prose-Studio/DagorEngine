@@ -1,0 +1,2 @@
+file(GLOB FILES RELATIVE "${CMAKE_CURRENT_LIST_DIR}" CONFIGURE_DEPENDS "${CMAKE_CURRENT_LIST_DIR}/*.cpp")
+set(STRINGIFY_FILES animchar.das zones.das dagorFindFiles.das grid.das)

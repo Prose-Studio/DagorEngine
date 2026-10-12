@@ -1,8 +1,4 @@
-set(includes ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/dagorInclude)
-set(sources editVarPlugin.cpp)
-set(SourceStr editVar.html)
-list(APPEND stringify ${SourceStr})
-
-dagor_add_library(gameLibs.webui.plugins.editvar ${sources})
-target_include_directories(gameLibs.webui.plugins.editvar PRIVATE ${includes})
-dagor_target_stringify(gameLibs.webui.plugins.editvar ${stringify})
+dagor_add_target(NAME gameLibs.webui.plugins.editvar STATIC
+  FILES_CMAKE editvar_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/dagorInclude
+)

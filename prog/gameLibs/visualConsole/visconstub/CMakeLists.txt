@@ -1,5 +1,4 @@
-set(includes ${DAGOR_PROG_DIR}/gameLibs/publicInclude)
-set(sources visconstub.cpp)
-
-dagor_add_library(gameLibs.visualConsole.visconstub ${sources})
-target_include_directories(gameLibs.visualConsole.visconstub PRIVATE ${includes})
+dagor_add_target(NAME gameLibs.visualConsole.visconstub STATIC
+  FILES_CMAKE visconstub_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/gameLibs/publicInclude
+)

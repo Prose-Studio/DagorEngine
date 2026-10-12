@@ -1,0 +1,15 @@
+set(FILES
+  traits_table.cpp
+  module_writer.cpp
+  module_reader.cpp
+  module_builder.cpp
+  atomic_counter_resolve_pass.cpp
+  compile_header_pass.cpp
+  buffer_unique_pointer_pass.cpp
+  dxc_bugfix_pass.cpp
+  rename_entry_points_pass.cpp
+  semantic_resolve_pass.cpp
+  structure_layout_validation_pass.cpp
+  reflection_cleanup_pass.cpp
+  compiler_dxc.cpp
+)

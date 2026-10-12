@@ -1,12 +1,7 @@
-set(includes ${DAGOR_PROG_DIR}/engine/dagorInclude ${DAGOR_PROG_DIR}/gameLibs/publicInclude)
-list(APPEND deps 3rdPartyLibs.eastl)
 set(Source )
-dagor_glob_sources(sources DIRS . GLOB *.cpp)
-file(GLOB AllSourcesES RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp.inl")
-set(SourceES ${AllSourcesES})
-list(APPEND es_sources ${SourceES})
 
-dagor_add_library(gameLibs.ecs.camera ${sources})
-target_include_directories(gameLibs.ecs.camera PRIVATE ${includes})
-target_link_libraries(gameLibs.ecs.camera PRIVATE ${deps})
-dagor_target_es_sources(gameLibs.ecs.camera ${es_sources})
+dagor_add_target(NAME gameLibs.ecs.camera STATIC
+  FILES_CMAKE camera_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/engine/dagorInclude ${DAGOR_PROG_DIR}/gameLibs/publicInclude
+  BUILD_DEPENDENCIES PRIVATE 3rdPartyLibs.eastl
+)

@@ -1,12 +1,10 @@
-set(includes ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/1stPartyLibs/daScript/include)
-set(AllSrcFolder_CPP .)
-dagor_glob_sources(sources DIRS ${AllSrcFolder_CPP} GLOB *.cpp)
 if(WIN32)
   list(APPEND options /wd4548)
 endif()
-set(deps 1stPartyLibs.daScript gameLibs.dasModules.common engine.shaders engine.lib3d)
 
-dagor_add_library(gameLibs.dasModules.shaders ${sources})
-target_include_directories(gameLibs.dasModules.shaders PRIVATE ${includes})
-target_compile_options(gameLibs.dasModules.shaders PRIVATE ${options})
-target_link_libraries(gameLibs.dasModules.shaders PRIVATE ${deps})
+dagor_add_target(NAME gameLibs.dasModules.shaders STATIC
+  FILES_CMAKE shaders_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/1stPartyLibs/daScript/include
+  COMPILE_OPTIONS PRIVATE ${options}
+  BUILD_DEPENDENCIES PRIVATE 1stPartyLibs.daScript gameLibs.dasModules.common engine.shaders engine.lib3d
+)

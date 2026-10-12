@@ -1,7 +1,5 @@
-set(includes ${DAGOR_PROG_DIR}/gameLibs/publicInclude)
-set(sources customRendinstTrace.cpp)
-list(APPEND deps gameLibs.landMesh)
-
-dagor_add_library(gameLibs.gamePhys.collision.customRendinstTrace LAX ${sources})
-target_include_directories(gameLibs.gamePhys.collision.customRendinstTrace PRIVATE ${includes})
-target_link_libraries(gameLibs.gamePhys.collision.customRendinstTrace PRIVATE ${deps})
+dagor_add_target(NAME gameLibs.gamePhys.collision.customRendinstTrace STATIC LAX
+  FILES_CMAKE customRendinstTrace_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/gameLibs/publicInclude
+  BUILD_DEPENDENCIES PRIVATE gameLibs.landMesh
+)

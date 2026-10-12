@@ -1,6 +1,5 @@
 # whale, the LR parser generator of the shader compilers' parsers (with dolphin, see ../dolphin). jam built it rel only,
 # into the source tree; here it is a program of the tree that the parser generation runs.
-file(GLOB sources CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
 set(options)
 if(CMAKE_SYSTEM_NAME MATCHES "^(Darwin|Linux)$")
   list(APPEND options -funsigned-char)
@@ -15,9 +14,11 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   endif()
 endif()
 
-dagor_add_executable(whale LAX NO_CONFIG_POSTFIX nstl/stl.cpp ${sources})
-target_include_directories(whale PRIVATE nstl hash)
-target_compile_definitions(whale PRIVATE NO_PCRE LR0_SUPPRESS_PROFILING __B_NO_MEM_BASE_INCLUDE)
-target_compile_options(whale PRIVATE ${options})
-set_target_properties(whale PROPERTIES DAGOR_EXCEPTIONS SEH DAGOR_RTTI ON)
-dagor_install_cdk(whale)
+dagor_add_target(NAME whale EXECUTABLE LAX NO_CONFIG_POSTFIX
+  FILES_CMAKE whale_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE nstl hash
+  COMPILE_DEFINITIONS PRIVATE NO_PCRE LR0_SUPPRESS_PROFILING __B_NO_MEM_BASE_INCLUDE
+  COMPILE_OPTIONS PRIVATE ${options}
+  PROPERTIES DAGOR_EXCEPTIONS SEH DAGOR_RTTI ON
+  CDK
+)

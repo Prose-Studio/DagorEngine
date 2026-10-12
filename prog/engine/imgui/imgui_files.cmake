@@ -1,0 +1,8 @@
+set(FILES imguiImpl.cpp imguiRenderer.cpp imguiTestRuntime.cpp)
+if(WIN32)
+  list(APPEND FILES imgui_impl_win32.cpp)
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+  list(APPEND FILES imgui_impl_osx.mm)
+else()
+  list(APPEND FILES imgui_impl_stub.cpp)
+endif()

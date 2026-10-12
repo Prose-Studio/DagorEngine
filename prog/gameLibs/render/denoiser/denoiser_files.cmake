@@ -1,0 +1,5 @@
+if(DAGOR_GAME_BVH AND NOT CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+  set(FILES denoiser.cpp)
+else()
+  set(FILES denoiser_stub.cpp)
+endif()

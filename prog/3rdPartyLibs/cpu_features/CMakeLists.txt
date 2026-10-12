@@ -1,30 +1,22 @@
 # Google's cpu_features: the CPU's vendor, model and instruction set extensions, per platform and architecture
-set(sources src/filesystem.c src/stack_line_reader.c src/string_view.c src/impl_aarch64_cpuid.c)
 set(c_options -DSTACK_LINE_READER_BUFFER_SIZE=1024)
 if(CMAKE_SYSTEM_NAME MATCHES "^(Android|Darwin)$")
   if(DAGOR_ARCH STREQUAL "arm64")
-    # the hardware capabilities of an aarch64 unix (getauxval / sysctl)
-    list(APPEND sources src/impl_aarch64_linux_or_android.c src/hwcaps_linux_or_android.c src/hwcaps_freebsd.c
-      src/hwcaps.c)
     list(APPEND c_options -DHAVE_DLFCN_H)
-    set_property(SOURCE src/hwcaps_linux_or_android.c APPEND PROPERTY COMPILE_OPTIONS -DHAVE_STRONG_GETAUXVAL)
   else()
-    list(APPEND sources src/impl_x86_macos.c)
     list(APPEND c_options -DHAVE_SYSCTLBYNAME)
   endif()
 elseif(LINUX)
-  list(APPEND sources src/impl_x86_linux_or_android.c src/impl_loongarch_linux.c src/impl_ppc_linux.c
-    src/impl_riscv_linux.c src/impl_s390x_linux.c src/impl_aarch64_freebsd.c)
 elseif(WIN32)
-  list(APPEND sources src/impl_x86_windows.c src/impl_aarch64_windows.c)
 else()
   message(FATAL_ERROR "3rdPartyLibs/cpu_features does not support ${DAGOR_PLATFORM}")
 endif()
 if(APPLE AND DAGOR_ARCH STREQUAL "arm64")
-  list(APPEND sources src/impl_aarch64_macos_or_iphone.c)
   list(APPEND c_options -DHAVE_SYSCTLBYNAME)
 endif()
 
-dagor_add_library(3rdPartyLibs.cpu_features LAX ${sources})
-target_include_directories(3rdPartyLibs.cpu_features PRIVATE include include/internal)
-target_compile_options(3rdPartyLibs.cpu_features PRIVATE "$<$<COMPILE_LANGUAGE:C>:${c_options}>")
+dagor_add_target(NAME 3rdPartyLibs.cpu_features STATIC LAX
+  FILES_CMAKE cpu_features_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE include include/internal
+  COMPILE_OPTIONS PRIVATE "$<$<COMPILE_LANGUAGE:C>:${c_options}>"
+)

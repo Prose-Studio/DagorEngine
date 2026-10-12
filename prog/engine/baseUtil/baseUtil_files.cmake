@@ -1,0 +1,24 @@
+set(FILES
+  fastStrMap.cpp
+  oaHashNameMap.cpp
+  tabMem.cpp
+  tabSorted.cpp
+  strImpl.cpp
+  dobject.cpp
+  fatalCtx.cpp
+  bitArray.cpp
+  syncExecScheduler.cpp
+  hierBitMem.cpp
+  restart.cpp
+  texMetaData.cpp
+  unicodeHlp.cpp
+  safeArg.cpp
+  threadPool.cpp
+  parallelFor.cpp
+  watchdog.cpp
+  delayedActions.cpp
+  treeBitmap.cpp
+  lag.cpp
+  fnameMap.cpp
+  fileMd5Validate.cpp
+)

@@ -1,45 +1,10 @@
 # daNetGame: the framework of the games on it (the client or the dedicated server of a game tree, DAGOR_DEDICATED),
 # which link it with their own code (dagor_add_dng_game). Its switches are the tree's (DagorGame.cmake); those that
 # jam turned off in Rel are generator expressions here, so these lists have parts that only some configurations build.
-
-set(sources)
-set(es)
-set(das)
 set(deps)
 set(pulls)
 set(includes)
 set(system_libs)
-
-# _dng_glob(<var> <cond> <glob> <dir>...): the files of the dirs, built where <cond> holds (1, 0 or a generator
-# expression)
-function(_dng_glob var cond glob)
-  if(cond STREQUAL "0")
-    return()
-  endif()
-  set(found)
-  dagor_glob_sources(found DIRS ${ARGN} GLOB ${glob}
-    EXCLUDE "/main/(main|version)\\.cpp$" "_ps[45]\\.cpp$") # main.cpp and version.cpp are the game's (game.jam)
-  if(NOT cond STREQUAL "1")
-    list(TRANSFORM found REPLACE "^(.+)$" "$<${cond}:\\1>")
-  endif()
-  set(${var} ${${var}} ${found} PARENT_SCOPE)
-endfunction()
-
-# _dng_files(<var> <cond> <file>...): the files, built where <cond> holds
-function(_dng_files var cond)
-  if(cond STREQUAL "0")
-    return()
-  endif()
-  set(files)
-  foreach(file IN LISTS ARGN)
-    if(cond STREQUAL "1")
-      list(APPEND files "${file}")
-    else()
-      list(APPEND files "$<${cond}:${CMAKE_CURRENT_SOURCE_DIR}/${file}>")
-    endif()
-  endforeach()
-  set(${var} ${${var}} ${files} PARENT_SCOPE)
-endfunction()
 
 # _dng_not(<out> <cond>): the negation of a condition
 function(_dng_not out cond)
@@ -91,64 +56,6 @@ _dng_not(no_editor "${editor}")
 set(webui "${DAGOR_GAME_WEBUI}")
 _dng_not(no_webui "${webui}")
 
-# --- the framework's own code ----------------------------------------------------------------------------------------
-_dng_glob(sources 1 *.cpp main main/dasModulesList net game phys dasModules)
-_dng_glob(es 1 *ES.cpp.inl main game net phys)
-_dng_glob(das 1 *.das scripts/das/debug)
-# the ImGui windows, outside Rel
-_dng_glob(das "${imgui}" *.das scripts/das/imgui)
-_dng_glob(sources "${imgui}" *.cpp ui/imgui)
-_dng_glob(sources "${no_imgui}" *.cpp ui/imgui/stub)
-_dng_glob(sources "${desktop_dev}" *.cpp dasModules/websocket)
-# daScript modules embedded as text
-set(stringify dasModules/dgNet.das dasModules/dagorDebug3dSolid.das render/dasModules/daSkies.das
-  render/dasModules/fx.das)
-if(desktop)
-  list(APPEND stringify dasModules/websocket/webSocket.das)
-endif()
-
-if(DAGOR_DEDICATED)
-  list(APPEND sources camera/stub/camstub.cpp)
-  _dng_glob(sources 1 *.cpp net/dedicated main/dedicated main/dedicated/dasModules)
-  _dng_glob(es 1 *ES.cpp.inl main/dedicated net/dedicated)
-else()
-  _dng_glob(sources 1 *.cpp net/dedicated/stub camera main/client main/client/dasModules)
-  _dng_glob(es 1 *ES.cpp.inl camera main/client)
-endif()
-
-if(DAGOR_GAME_RENDERER)
-  _dng_glob(es 1 *ES.cpp.inl render/fx render/animchar render/weather render/world render/world/frameGraphNodes
-    render/grass render)
-  _dng_glob(sources 1 *.cpp render/dasModules render/world render/world/frameGraphNodes
-    render/world/frameGraphNodesMobile render/weather render)
-else()
-  list(APPEND sources render/stub/rendererStub.cpp render/stub/screencapStub.cpp render/stub/billboardStub.cpp
-    render/stub/wind.cpp render/stub/cinematicModeStub.cpp)
-endif()
-if(DAGOR_GAME_FX)
-  _dng_glob(sources 1 *.cpp render/fx)
-else()
-  list(APPEND sources render/stub/fxStub.cpp)
-endif()
-# the embedded daEditorE, outside Rel
-_dng_files(sources "${editor}" editor/embeddedEditor.cpp editor/de4entityEditor.cpp editor/de4entityObj.cpp
-  editor/de4sceneObj.cpp editor/editorDasModules.cpp)
-_dng_glob(es "${editor}" *ES.cpp.inl editor)
-_dng_files(sources "${no_editor}" editor/embeddedEditorStub.cpp)
-
-if(DAGOR_GAME_DNG_INPUT)
-  _dng_glob(sources 1 *.cpp input input/humanInput input/dasModules)
-  _dng_glob(es 1 *ES.cpp.inl input input/humanInput)
-else()
-  list(APPEND sources input/stub/inputstub.cpp)
-endif()
-if(DAGOR_GAME_OVERLAY_UI)
-  _dng_glob(es 1 *ES.cpp.inl ui ui/hud ui/bhv)
-  _dng_glob(sources 1 *.cpp ui ui/hud ui/bhv ui/robj)
-else()
-  list(APPEND sources ui/stub/uiStub.cpp ui/stub/overlayUiStub.cpp)
-endif()
-
 # the memory manager: the debug allocator outside Rel on Windows, the system's on the Linux servers and with sanitizers
 set(memory_leaks 0)
 if(NOT DAGOR_SANITIZE STREQUAL "none")
@@ -162,17 +69,6 @@ else()
   set(memory engine.memory)
 endif()
 _dng_not(no_memory_leaks "${memory_leaks}")
-_dng_files(sources "${memory_leaks}" main/opt/memleakDetector.cpp)
-_dng_files(sources "${no_memory_leaks}" main/opt/memleakDetectorStub.cpp)
-
-if(CMAKE_SYSTEM_NAME MATCHES "^(Linux|Windows)$" AND NOT DAGOR_DEDICATED)
-  list(APPEND sources render/autoGraphics/autoGraphics.cpp)
-else()
-  list(APPEND sources render/stub/autoGraphicsStub.cpp) # a server renders nothing: no graphics preset to choose
-endif()
-_dng_files(sources "${webui}" main/webui/webui.cpp)
-_dng_files(sources "${no_webui}" main/webui/stub.cpp)
-list(APPEND sources main/browser/webBrowserStub.cpp) # no embedded browser (DAGOR_GAME_EMBEDDED_BROWSER)
 
 # --- the libraries ---------------------------------------------------------------------------------------------------
 if(NOT DAGOR_KERNEL_LINKAGE STREQUAL "dynamic")
@@ -326,9 +222,6 @@ else()
   if(WIN32)
     set(system_libs System::ws2_32 System::shlwapi)
   elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-    list(APPEND sources main/apple_main.mm)
-    # the game runs from its dir, where its app bundle is (dagor_apple_bundle): <name>.app/Contents/MacOS/../../..
-    set_property(SOURCE main/apple_main.mm APPEND PROPERTY COMPILE_DEFINITIONS "DAGOR_MACOSX_CONTENTS=\"../../..\"")
   elseif(NOT LINUX)
     message(FATAL_ERROR "daNetGame: the ${DAGOR_PLATFORM} client is not ported yet")
   endif()
@@ -353,13 +246,8 @@ if(DAGOR_GAME_SOUND)
   message(FATAL_ERROR "daNetGame: DAGOR_GAME_SOUND (FMOD Studio) is not ported yet")
 endif()
 list(APPEND deps gameLibs.soundSystem.stub gameLibs.soundSystem.quirrel.stub gameLibs.ecs.sound.stub)
-_dng_glob(sources 1 *.cpp sound/stub)
 if(DAGOR_GAME_SOUND_NET)
   list(APPEND deps gameLibs.dasModules.sound.common)
-  _dng_glob(sources 1 *.cpp sound_net sound/common sound/server dasModules/sound/common dasModules/sound_net)
-  _dng_glob(es 1 *ES.cpp.inl sound_net sound/common sound/server dasModules/sound/common)
-else()
-  _dng_glob(sources 1 *.cpp sound_net/stub)
 endif()
 if(DAGOR_BREAKPAD)
   list(APPEND deps gameLibs.breakpad.binder)
@@ -372,80 +260,51 @@ set(gen "${CMAKE_CURRENT_BINARY_DIR}/gen")
 if(DAGOR_GAME_RENDERER)
   file(CONFIGURE OUTPUT "${gen}/iblCubePullRef.cpp" CONTENT
     "#include <stddef.h>\nextern const size_t ecs_pull_iblCube;\nsize_t iblCube_ecs_pull_ref = (size_t)(&ecs_pull_iblCube);\n")
-  list(APPEND sources "${gen}/iblCubePullRef.cpp")
+  set(generated "${gen}/iblCubePullRef.cpp")
 else()
   # daSkies' clouds rain map pull, which a renderless build has not
   file(CONFIGURE OUTPUT "${gen}/daSkies2PullStub.cpp" CONTENT
     "#include <stddef.h>\nextern const size_t ecs_pull_cloudsRainMap = (size_t)(&ecs_pull_cloudsRainMap);\n")
-  list(APPEND sources "${gen}/daSkies2PullStub.cpp")
+  set(generated "${gen}/daSkies2PullStub.cpp")
 endif()
-# the pull of the framework's entity systems
-set(es_pulls)
-foreach(file IN LISTS es)
-  _dagor_config_source("${file}" cond path)
-  if(path)
-    set(file "${path}")
-  endif()
-  cmake_path(GET file FILENAME name)
-  string(REGEX REPLACE "ES\\.cpp\\.inl$" "" name "${name}")
-  if(cond)
-    list(APPEND es_pulls "$<${cond}:${name}>")
-  else()
-    list(APPEND es_pulls "${name}")
-  endif()
-endforeach()
-# the daScript pulls of the client and the server: the tree's with DAGOR_DAS_AOT (DAS_AOT_PULL), 0 otherwise
-set(das_pull daNetGame_client_DAS_pull_AOT)
+# the daScript pulls of the client and the server: the tree's own is its daScript's (DAS_PULL), the other's is 0
 if(DAGOR_DEDICATED)
   set(das_pull daNetGame_server_DAS_pull_AOT)
-endif()
-set(text "#include <stddef.h>\n")
-if(NOT DAGOR_DAS_AOT OR DAGOR_DEDICATED)
-  string(APPEND text "size_t daNetGame_client_DAS_pull_AOT = 0;\n")
-endif()
-if(NOT DAGOR_DAS_AOT OR NOT DAGOR_DEDICATED)
-  string(APPEND text "size_t daNetGame_server_DAS_pull_AOT = 0;\n")
+  set(text "size_t daNetGame_client_DAS_pull_AOT = 0;\n")
+else()
+  set(das_pull daNetGame_client_DAS_pull_AOT)
+  set(text "size_t daNetGame_server_DAS_pull_AOT = 0;\n")
 endif()
 if(DAGOR_DAS_AOT)
   string(APPEND text "bool NEED_DAS_AOT_COMPILE = true;\n")
 else()
   string(APPEND text "bool NEED_DAS_AOT_COMPILE = false;\n")
 endif()
-file(CONFIGURE OUTPUT "${gen}/dasAot.cpp" CONTENT "${text}")
-list(APPEND sources "${gen}/dasAot.cpp")
+file(CONFIGURE OUTPUT "${gen}/dasAot.cpp" CONTENT "#include <stddef.h>\n${text}")
+list(APPEND generated "${gen}/dasAot.cpp")
 
 # --- the library -----------------------------------------------------------------------------------------------------
-list(REMOVE_DUPLICATES sources)
-list(REMOVE_DUPLICATES es)
-# sources with definitions of their own, which the precompiled header does not have
-set(own_defines)
-if(DAGOR_DEDICATED AND LINUX)
-  set_property(SOURCE net/dedicated/netded.cpp APPEND PROPERTY COMPILE_OPTIONS -DNET_PEER_AUTH) # the clients' auth keys (NetPeerAuth)
-  list(APPEND own_defines net/dedicated/netded.cpp)
-endif()
-if(DAGOR_GAME_THREAD_SAFE_NET_TIME)
-  set_property(SOURCE net/time.cpp APPEND PROPERTY COMPILE_OPTIONS -DTHREAD_SAFE_NET_TIME)
-  list(APPEND own_defines net/time.cpp)
-endif()
 # the precompiled header (jam: Windows, Dev and Dbg only); not on Apple platforms, whose SDK has no <malloc.h>
 set(pch)
 if(CMAKE_SYSTEM_NAME MATCHES "^(Linux|Windows)$")
   set(pch precompile.h)
 endif()
-dagor_add_library(daNetGame ${sources})
-target_include_directories(daNetGame PRIVATE ${DAGOR_DNG_INCLUDES} ${DAGOR_PROG_DIR}/3rdPartyLibs/openssl-3.x/include
-  ${DAGOR_PROG_DIR}/engine/sharedInclude ${DAGOR_PROG_DIR}/engine ${DAGOR_PROG_DIR}/gameLibs ${includes})
-target_compile_definitions(daNetGame PRIVATE DISABLE_SYNC_DEBUG) # the fork has no gameLibs/syncDebug
-target_compile_options(daNetGame PRIVATE ${DAGOR_DNG_OPTIONS})
-target_link_libraries(daNetGame PRIVATE Dagor::Quirrel ${deps} Dagor::Phys)
-target_link_libraries(daNetGame PUBLIC ${system_libs})
-target_precompile_headers(daNetGame PRIVATE ${pch})
-dagor_target_es_sources(daNetGame ${es})
-dagor_target_stringify(daNetGame ${stringify})
-dagor_target_das_aot(daNetGame PULL ${das_pull} ${das})
-set_target_properties(daNetGame PROPERTIES DAGOR_FRAME_LIMIT 262144)
+dagor_add_target(NAME daNetGame STATIC
+  FILES_CMAKE daNetGame_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE
+    ${DAGOR_DNG_INCLUDES} ${DAGOR_PROG_DIR}/3rdPartyLibs/openssl-3.x/include ${DAGOR_PROG_DIR}/engine/sharedInclude
+    ${DAGOR_PROG_DIR}/engine ${DAGOR_PROG_DIR}/gameLibs ${includes}
+  COMPILE_DEFINITIONS PRIVATE DISABLE_SYNC_DEBUG # the fork has no gameLibs/syncDebug
+  COMPILE_OPTIONS PRIVATE ${DAGOR_DNG_OPTIONS}
+  BUILD_DEPENDENCIES
+    PUBLIC ${system_libs}
+    PRIVATE Dagor::Quirrel ${deps} Dagor::Phys
+  PCH ${pch}
+  DAS_PULL ${das_pull}
+  PROPERTIES DAGOR_FRAME_LIMIT 262144
+)
+target_sources(daNetGame PRIVATE ${generated})
+# the pull of the framework's entity systems
+_dagor_es_pulls(daNetGame es_pulls)
 _dagor_pull_file(daNetGame "${gen}/daNetGame_es_pull.cpp" ECS framework_es_pulls ${es_pulls} ecsDebug)
-if(own_defines)
-  set_source_files_properties(${own_defines} PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
-endif()
 set_property(TARGET daNetGame APPEND PROPERTY INTERFACE_DAGOR_GAME_PULLS ${pulls})

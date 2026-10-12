@@ -19,28 +19,12 @@ function(_engine_memory allocator debug)
     endif()
   endif()
 
-  set(sources dagmem.cpp mspaceAlloc.cpp framemem.cpp physMem.cpp)
-  if(WIN32)
-    list(APPEND sources dagmem_start.c)
-  endif()
-  if(debug MATCHES "^(dbg|dbg2)$" AND NOT allocator STREQUAL "imported")
-    list(APPEND sources daProfileMem.cpp)
-  else()
-    list(APPEND sources daProfileMemStub.cpp)
-  endif()
   set(defines __B_KERNEL_LIB)
   set(includes ${DAGOR_PROG_DIR}/engine/sharedInclude)
   set(deps)
 
-  if(allocator STREQUAL "rtl")
+  if(allocator MATCHES "^(rtl|minrtl)$")
     list(APPEND defines USE_RTL_ALLOC)
-    if(WIN32)
-      list(APPEND sources msRtlNativeAddr.cpp)
-      set_property(SOURCE msRtlNativeAddr.cpp APPEND PROPERTY COMPILE_OPTIONS /EHac)
-    endif()
-  elseif(allocator STREQUAL "minrtl")
-    list(APPEND defines USE_RTL_ALLOC)
-    set(sources rtlStdMemoryMin/rtlStdMemoryMin.cpp)
   elseif(allocator STREQUAL "dlmalloc")
     list(APPEND defines USE_DLMALLOC)
     list(APPEND includes ${DAGOR_PROG_DIR}/3rdPartyLibs/memAllocators)
@@ -74,10 +58,12 @@ function(_engine_memory allocator debug)
     list(APPEND defines MEM_DEBUGALLOC=${level_${debug}})
   endif()
 
-  dagor_add_library(${name} ${sources})
-  target_include_directories(${name} PRIVATE ${includes})
-  target_compile_definitions(${name} PRIVATE ${defines})
-  target_link_libraries(${name} PRIVATE ${deps})
+  dagor_add_target(NAME ${name} STATIC
+    FILES_CMAKE memory_files.cmake
+    INCLUDE_DIRECTORIES PRIVATE ${includes}
+    COMPILE_DEFINITIONS PRIVATE ${defines}
+    BUILD_DEPENDENCIES PRIVATE ${deps}
+  )
 endfunction()
 
 foreach(allocator default rtl minrtl dlmalloc mimalloc imported)

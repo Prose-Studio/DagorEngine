@@ -1,30 +1,23 @@
 # os_message_box(): the system's message box (FLTK on Linux)
 add_subdirectory(stub)
-
-set(sources)
 set(libs)
 set(options)
 set(includes)
 if(WIN32)
-  set(sources messageBox.cpp)
   set(libs System::comctl32)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-  set(sources macMessageBox.mm macOsMessageBox.cpp)
   set(options -Wno-error)
 elseif(LINUX)
-  set(sources linuxMessageBox.cpp)
   set(libs System::X11 System::fltk)
   if(IS_DIRECTORY /usr/include/cairo)
     set(includes /usr/include/cairo) # the system FLTK's headers include cairo's
   endif()
-elseif(ANDROID)
-  set(sources and_MessageBox.cpp) # TODO(phase5): MessageBoxWrapper.java and android_mb.proguard go into the APK
-elseif(IOS)
-  set(sources iosMessageBox.mm)
 endif()
 
-dagor_add_library(engine.osApiWrappers.messageBox ${sources})
-target_include_directories(engine.osApiWrappers.messageBox PRIVATE ${DAGOR_PROG_DIR}/engine/sharedInclude ${includes})
-target_compile_definitions(engine.osApiWrappers.messageBox PRIVATE __B_KERNEL_LIB __B_NO_MEM_BASE_INCLUDE)
-target_compile_options(engine.osApiWrappers.messageBox PRIVATE ${options})
-target_link_libraries(engine.osApiWrappers.messageBox PUBLIC ${libs})
+dagor_add_target(NAME engine.osApiWrappers.messageBox STATIC
+  FILES_CMAKE messageBox_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/engine/sharedInclude ${includes}
+  COMPILE_DEFINITIONS PRIVATE __B_KERNEL_LIB __B_NO_MEM_BASE_INCLUDE
+  COMPILE_OPTIONS PRIVATE ${options}
+  BUILD_DEPENDENCIES PUBLIC ${libs}
+)

@@ -1,3 +1,5 @@
 # The camera manager of games without a renderer
-dagor_add_library(gameLibs.cameraManager.stub cameraManagerStub.cpp)
-target_include_directories(gameLibs.cameraManager.stub PRIVATE ${DAGOR_PROG_DIR}/gameLibs)
+dagor_add_target(NAME gameLibs.cameraManager.stub STATIC
+  FILES_CMAKE stub_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/gameLibs
+)

@@ -1,14 +1,9 @@
 add_subdirectory(stub)
 
-set(includes
-  ${DAGOR_PROG_DIR}/gameLibs/publicInclude
-  ${DAGOR_PROG_DIR}/gameLibs/publicInclude/quirrel
-  ${DAGOR_PROG_DIR}/dagorInclude
-  ${DAGOR_PROG_DIR}/engine/sharedInclude
+dagor_add_target(NAME gameLibs.webui.websocket STATIC
+  FILES_CMAKE websocket_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE
+    ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/gameLibs/publicInclude/quirrel
+    ${DAGOR_PROG_DIR}/dagorInclude ${DAGOR_PROG_DIR}/engine/sharedInclude
+  BUILD_DEPENDENCIES PRIVATE 3rdPartyLibs.mongoose
 )
-set(sources webSocketStream.cpp)
-set(deps 3rdPartyLibs.mongoose)
-
-dagor_add_library(gameLibs.webui.websocket ${sources})
-target_include_directories(gameLibs.webui.websocket PRIVATE ${includes})
-target_link_libraries(gameLibs.webui.websocket PRIVATE ${deps})

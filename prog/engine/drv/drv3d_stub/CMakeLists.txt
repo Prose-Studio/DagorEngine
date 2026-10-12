@@ -5,9 +5,10 @@ if(MSVC)
 else()
   set(options "SHELL:-include ${CMAKE_CURRENT_SOURCE_DIR}/d3d_config.h")
 endif()
-dagor_add_library(engine.drv.drv3d_stub d3d_stub.cpp init_d3di.cpp)
-target_include_directories(engine.drv.drv3d_stub PRIVATE ${DAGOR_PROG_DIR}/engine/sharedInclude
-  ${DAGOR_PROG_DIR}/engine/drv/drv3d_commonCode .)
-target_compile_definitions(engine.drv.drv3d_stub PRIVATE D3DSTUBBED INSIDE_DRIVER)
-target_compile_options(engine.drv.drv3d_stub PRIVATE ${options})
-target_link_libraries(engine.drv.drv3d_stub PRIVATE engine.drv.drv3d_commonCode)
+dagor_add_target(NAME engine.drv.drv3d_stub STATIC
+  FILES_CMAKE drv3d_stub_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/engine/sharedInclude ${DAGOR_PROG_DIR}/engine/drv/drv3d_commonCode .
+  COMPILE_DEFINITIONS PRIVATE D3DSTUBBED INSIDE_DRIVER
+  COMPILE_OPTIONS PRIVATE ${options}
+  BUILD_DEPENDENCIES PRIVATE engine.drv.drv3d_commonCode
+)

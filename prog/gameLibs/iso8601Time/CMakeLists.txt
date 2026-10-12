@@ -2,13 +2,12 @@
 if(DAGOR_ENGINE_TESTS)
   add_subdirectory(tests)
 endif()
-
-set(includes ${DAGOR_PROG_DIR}/engine/sharedInclude ${DAGOR_PROG_DIR}/gameLibs/publicInclude)
-set(sources iso8601Time.cpp)
 if(WIN32)
   list(APPEND options /wd4548)
 endif()
 
-dagor_add_library(gameLibs.iso8601Time ${sources})
-target_include_directories(gameLibs.iso8601Time PRIVATE ${includes})
-target_compile_options(gameLibs.iso8601Time PRIVATE ${options})
+dagor_add_target(NAME gameLibs.iso8601Time STATIC
+  FILES_CMAKE iso8601Time_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/engine/sharedInclude ${DAGOR_PROG_DIR}/gameLibs/publicInclude
+  COMPILE_OPTIONS PRIVATE ${options}
+)

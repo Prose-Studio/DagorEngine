@@ -1,6 +1,4 @@
 # vromfsPacker: the virtual ROM file system (vromfs) pack builder (gameLibs/vromfsPacker)
-set(includes ${DAGOR_PROG_DIR}/tools/sharedInclude ${DAGOR_PROG_DIR}/gameLibs/publicInclude)
-set(sources cmain.cpp)
 set(deps engine.kernel engine.memory engine.perfMon.daProfilerStub engine.startup engine.math gameLibs.vromfsPacker)
 if(WIN32)
   list(APPEND libs System::advapi32)
@@ -12,9 +10,12 @@ if(LINUX)
   list(APPEND deps engine.osApiWrappers.messageBox.stub)
 endif()
 
-dagor_add_executable(vromfsPacker LAX ${sources})
-target_include_directories(vromfsPacker PRIVATE ${includes})
-target_link_libraries(vromfsPacker PRIVATE ${deps})
-target_link_libraries(vromfsPacker PUBLIC ${libs})
-set_target_properties(vromfsPacker PROPERTIES DAGOR_EXCEPTIONS ON)
-dagor_install_cdk(vromfsPacker)
+dagor_add_target(NAME vromfsPacker EXECUTABLE LAX
+  FILES_CMAKE vromfsPacker_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/tools/sharedInclude ${DAGOR_PROG_DIR}/gameLibs/publicInclude
+  BUILD_DEPENDENCIES
+    PUBLIC ${libs}
+    PRIVATE ${deps}
+  PROPERTIES DAGOR_EXCEPTIONS ON
+  CDK
+)

@@ -1,6 +1,4 @@
 # fmt {fmt} formatting (the engine's build replaces upstream's CMakeLists.txt)
-set(includes include)
-set(sources src/format.cc)
 list(APPEND defines FMT_UNICODE=0)
 if(WIN32)
   list(APPEND defines _HAS_EXCEPTIONS=1)
@@ -12,7 +10,9 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   list(APPEND options -Wno-macro-redefined)
 endif()
 
-dagor_add_library(3rdPartyLibs.fmt LAX ${sources})
-target_include_directories(3rdPartyLibs.fmt PRIVATE ${includes})
-target_compile_definitions(3rdPartyLibs.fmt PRIVATE ${defines})
-target_compile_options(3rdPartyLibs.fmt PRIVATE ${options})
+dagor_add_target(NAME 3rdPartyLibs.fmt STATIC LAX
+  FILES_CMAKE fmt_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE include
+  COMPILE_DEFINITIONS PRIVATE ${defines}
+  COMPILE_OPTIONS PRIVATE ${options}
+)

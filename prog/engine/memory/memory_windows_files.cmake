@@ -1,0 +1,7 @@
+if(NOT allocator STREQUAL "minrtl")
+  set(FILES dagmem_start.c)
+endif()
+if(allocator STREQUAL "rtl")
+  list(APPEND FILES msRtlNativeAddr.cpp)
+  set_property(SOURCE msRtlNativeAddr.cpp PROPERTY COMPILE_OPTIONS /EHac)
+endif()

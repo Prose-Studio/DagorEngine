@@ -1,11 +1,8 @@
 # Copying Quirrel values and calls between two Quirrel VMs
-set(includes
-  ${DAGOR_PROG_DIR}/gameLibs/publicInclude
-  ${DAGOR_PROG_DIR}/gameLibs/publicInclude/quirrel
-  ${DAGOR_PROG_DIR}/engine/sharedInclude
+dagor_add_target(NAME gameLibs.quirrel.sqCrossCall STATIC
+  FILES_CMAKE sqCrossCall_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE
+    ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/gameLibs/publicInclude/quirrel
+    ${DAGOR_PROG_DIR}/engine/sharedInclude
+  BUILD_DEPENDENCIES PRIVATE Dagor::Quirrel
 )
-set(sources sqCrossCall.cpp)
-
-dagor_add_library(gameLibs.quirrel.sqCrossCall ${sources})
-target_include_directories(gameLibs.quirrel.sqCrossCall PRIVATE ${includes})
-target_link_libraries(gameLibs.quirrel.sqCrossCall PRIVATE Dagor::Quirrel)

@@ -1,6 +1,7 @@
 # The vehicle exporter of daBuild (a plugin): the vehicle physics assets
 include(${DAGOR_PROG_DIR}/tools/sceneTools/assetExp/dabuildPlugin.cmake)
-dabuild_plugin(vehicleExp vehicleExp.cpp)
-target_include_directories(vehicleExp PRIVATE ${DAGOR_PROG_DIR}/tools/sharedInclude
-  ${DAGOR_PROG_DIR}/gameLibs/publicInclude)
-target_link_libraries(vehicleExp PRIVATE engine.startup engine.math tools.libTools.assetMgr)
+dabuild_plugin(NAME vehicleExp
+  FILES_CMAKE exporters_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/tools/sharedInclude ${DAGOR_PROG_DIR}/gameLibs/publicInclude
+  BUILD_DEPENDENCIES PRIVATE engine.startup engine.math tools.libTools.assetMgr
+)

@@ -28,22 +28,11 @@ if(ANDROID)
     list(APPEND includes generated/android/arm)
   endif()
 endif()
-dagor_glob_sources(sources DIRS src tools/input GLOB *.c)
 if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
   list(APPEND includes include/compat/msvc) # stdatomic.h and the like
 endif()
 if(LINUX AND NOT (CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND NOT MSVC))
   list(APPEND includes include/compat/gcc)
-endif()
-if(WIN32)
-  list(APPEND sources src/win32/thread.c)
-endif()
-if(DAGOR_ARCH STREQUAL "x86_64")
-  dagor_glob_sources(sources DIRS src/x86 GLOB *.asm EXCLUDE "(16_(sse|avx)|filmgrain_common)")
-  dagor_glob_sources(sources DIRS src/x86 GLOB *.c)
-elseif(DAGOR_ARCH STREQUAL "arm64")
-  dagor_glob_sources(sources DIRS src/arm/64 GLOB *.S)
-  dagor_glob_sources(sources DIRS src/arm GLOB *.c)
 endif()
 # the assembly's symbol names: underscore-prefixed on Apple (the target and minimum OS of the ASM compiler come from
 # the toolchain there)
@@ -68,8 +57,9 @@ else()
   list(APPEND c_options -Wno-incompatible-pointer-types)
 endif()
 
-dagor_add_library(3rdPartyLibs.codecs.dav1d LAX ${sources})
-target_include_directories(3rdPartyLibs.codecs.dav1d PRIVATE ${includes})
-target_compile_options(3rdPartyLibs.codecs.dav1d PRIVATE ${asm_options})
-target_compile_options(3rdPartyLibs.codecs.dav1d PRIVATE "$<$<COMPILE_LANGUAGE:C>:${c_options}>")
-target_link_libraries(3rdPartyLibs.codecs.dav1d PUBLIC ${libs})
+dagor_add_target(NAME 3rdPartyLibs.codecs.dav1d STATIC LAX
+  FILES_CMAKE dav1d_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${includes}
+  COMPILE_OPTIONS PRIVATE ${asm_options} "$<$<COMPILE_LANGUAGE:C>:${c_options}>"
+  BUILD_DEPENDENCIES PUBLIC ${libs}
+)

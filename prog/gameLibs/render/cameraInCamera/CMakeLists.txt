@@ -1,10 +1,4 @@
-set(includes ${DAGOR_PROG_DIR}/gameLibs/publicInclude)
-set(AllSrcFolder_CPP )
-set(AllSrcFolder_ES )
-if(DAGOR_GAME_RENDERER)
-  list(APPEND AllSrcFolder_ES render)
-  list(APPEND AllSrcFolder_CPP render)
-endif()
-
-dagor_add_dng_module(gameLibs.render.cameraInCamera CPP_DIRS ${AllSrcFolder_CPP} ES_DIRS ${AllSrcFolder_ES})
-target_include_directories(gameLibs.render.cameraInCamera PRIVATE ${includes})
+dagor_add_dng_module(NAME gameLibs.render.cameraInCamera
+  FILES_CMAKE cameraInCamera_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/gameLibs/publicInclude
+)

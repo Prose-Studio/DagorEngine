@@ -1,5 +1,4 @@
-set(sources looseGrid.cpp)
-set(includes ${DAGOR_PROG_DIR}/gameLibs/publicInclude)
-
-dagor_add_library(gameLibs.spacePartition.looseGrid LAX ${sources})
-target_include_directories(gameLibs.spacePartition.looseGrid PRIVATE ${includes})
+dagor_add_target(NAME gameLibs.spacePartition.looseGrid STATIC LAX
+  FILES_CMAKE looseGrid_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/gameLibs/publicInclude
+)

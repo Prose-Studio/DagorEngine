@@ -11,27 +11,6 @@ add_subdirectory(hlsl2spirv)
 add_subdirectory(nodeBased)
 add_subdirectory(shaderBlobDisassembler)
 
-set(common_sources
-  shaderVariantSrc.cpp winmain_con.cpp main.cpp globVarSem.cpp shSemCode.cpp assemblyShader.cpp variablesMerger.cpp
-  gatherVar.cpp semUtils.cpp shExpr.cpp shExprParser.cpp shlexterm.cpp shLocVar.cpp shMacro.cpp shsem.cpp sh_stat.cpp
-  shCompiler.cpp debugSpitfile.cpp globalConfig.cpp hwSemantic.cpp hwAssembly.cpp shaderSemantic.cpp
-  variantSemantic.cpp variantAssembly.cpp preshaderCompilation.cpp gatherVariantLocalVars.cpp
-  shCode.cpp shTargetStorage.cpp shAssumes.cpp shaderBytecodeCache.cpp cppStcode.cpp cppStcodeAssembly.cpp
-  cppStcodePasses.cpp hlslRegisters.cpp globvar.cpp intervals.cpp samplers.cpp boolVar.cpp boolExpr.cpp
-  shaderVariant.cpp shaderSave.cpp shLog.cpp shUtils.cpp shFunc.cpp shCompilationInfo.cpp loadShaders.cpp
-  binDumpUtils.cpp makeShBinDump.cpp transcodeShader.cpp namedConst.cpp renderPassObject.cpp framebufferLayout.cpp
-  refinedBlockLayout.cpp refinedBlockRegisterAllocator.cpp codeBlocks.cpp condParser.cpp deSerializationContext.cpp
-  linkShaders.cpp parser/bparser.cpp gitRunner.cpp processes.cpp
-)
-if(WIN32)
-  list(APPEND common_sources processes_win.cpp)
-else()
-  list(APPEND common_sources processes_unix.cpp)
-endif()
-# the predefined declarations of each target, embedded into hwAssembly.cpp
-file(GLOB predefines RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" CONFIGURE_DEPENDS
-  "${CMAKE_CURRENT_SOURCE_DIR}/predefines_*.hlsl")
-
 set(common_includes
   ${CMAKE_CURRENT_SOURCE_DIR}
   ${DAGOR_PROG_DIR}/tools/sharedInclude
@@ -62,19 +41,19 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 endif()
 set(dxc_defines BINDUMP_TARGET_BE=0 _CRT_SECURE_NO_DEPRECATE _HAS_EXCEPTIONS=0 _SECURE_SCL=0 EXCLUDE_PSTDINT)
 
-# dsc2_compiler(<name> [DXC [RUNTIME_SUBDIR <dir>]] [SOURCES ...] [PRIVATE_INCLUDES ...] [PRIVATE_DEFINES ...]
-#               [COMPILE_OPTIONS ...] [LINK ...]): one shader compiler with the common front end; DXC: with the DXC
-#               runtime libraries next to it (in <dir> there)
-function(dsc2_compiler name)
-  cmake_parse_arguments(PARSE_ARGV 1 arg "DXC" "RUNTIME_SUBDIR" "SOURCES;PRIVATE_INCLUDES;PRIVATE_DEFINES;COMPILE_OPTIONS;LINK")
-  dagor_add_executable(${name} LAX ${common_sources} ${arg_SOURCES})
-  target_include_directories(${name} PRIVATE ${common_includes} ${arg_PRIVATE_INCLUDES})
-  target_compile_definitions(${name} PRIVATE ${arg_PRIVATE_DEFINES})
-  target_compile_options(${name} PRIVATE ${common_options} ${arg_COMPILE_OPTIONS})
-  target_link_libraries(${name} PRIVATE ${common_deps} ${arg_LINK})
-  dagor_target_stringify(${name} ${predefines})
-  set_target_properties(${name} PROPERTIES DAGOR_EXCEPTIONS ON)
-  dagor_install_cdk(${name})
+# dsc2_compiler(NAME <name> [DXC [RUNTIME_SUBDIR <dir>]] <dagor_add_target arguments>): one shader compiler of the CDK,
+# the common front end (ShaderCompiler2_files.cmake) with the target's back end; DXC: with the DXC runtime libraries
+# next to it (in <dir> there)
+function(dsc2_compiler)
+  cmake_parse_arguments(PARSE_ARGV 0 arg "DXC" "NAME;RUNTIME_SUBDIR" "")
+  set(name ${arg_NAME})
+  dagor_add_target(NAME ${name} EXECUTABLE LAX CDK ${arg_UNPARSED_ARGUMENTS}
+    FILES_CMAKE ShaderCompiler2_files.cmake
+    INCLUDE_DIRECTORIES PRIVATE ${common_includes}
+    COMPILE_OPTIONS PRIVATE ${common_options}
+    BUILD_DEPENDENCIES PRIVATE ${common_deps}
+    PROPERTIES DAGOR_EXCEPTIONS ON
+  )
   dagor_legacy_parsers(${name} LEX shlex.dlp SYN shsyn.whl)
   if(arg_DXC)
     find_package(DXC REQUIRED)
@@ -92,24 +71,24 @@ set(stub_options)
 if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
   set(stub_options -Wno-switch)
 endif()
-dsc2_compiler(dsc2-stub
-  SOURCES ver_obj_pcdx.cpp
-  PRIVATE_DEFINES _CROSS_TARGET_EMPTY BINDUMP_TARGET_BE=0
-  COMPILE_OPTIONS ${stub_options}
+dsc2_compiler(NAME dsc2-stub
+  FILES_CMAKE dsc2-stub_files.cmake
+  COMPILE_DEFINITIONS PRIVATE _CROSS_TARGET_EMPTY BINDUMP_TARGET_BE=0
+  COMPILE_OPTIONS PRIVATE ${stub_options}
 )
 
 if(WIN32)
-  dsc2_compiler(dsc2-hlsl11
-    SOURCES hlsl11transcode/asmShaders11.cpp ver_obj_pcdx.cpp
-    PRIVATE_DEFINES _CROSS_TARGET_DX11 BINDUMP_TARGET_BE=0
-    LINK System::d3dcompiler
+  dsc2_compiler(NAME dsc2-hlsl11
+    FILES_CMAKE dsc2-hlsl11_files.cmake
+    COMPILE_DEFINITIONS PRIVATE _CROSS_TARGET_DX11 BINDUMP_TARGET_BE=0
+    BUILD_DEPENDENCIES PRIVATE System::d3dcompiler
   )
   # DXC in dxc-dx12/pc next to it, as the compiler looks for it there
-  dsc2_compiler(dsc2-dx12 DXC RUNTIME_SUBDIR dxc-dx12/pc
-    SOURCES ver_obj_dxc.cpp
-    PRIVATE_INCLUDES ${DAGOR_PROG_DIR}/gameLibs/publicInclude
-    PRIVATE_DEFINES _CROSS_TARGET_DX12 ${dxc_defines} USE_BINDLESS_FOR_STATIC_TEX
-    LINK tools.ShaderCompiler2.dx12
+  dsc2_compiler(NAME dsc2-dx12 DXC RUNTIME_SUBDIR dxc-dx12/pc
+    FILES_CMAKE dsc2-dx12_files.cmake
+    INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/gameLibs/publicInclude
+    COMPILE_DEFINITIONS PRIVATE _CROSS_TARGET_DX12 ${dxc_defines} USE_BINDLESS_FOR_STATIC_TEX
+    BUILD_DEPENDENCIES PRIVATE tools.ShaderCompiler2.dx12
   )
 endif()
 
@@ -118,12 +97,12 @@ if(CMAKE_SYSTEM_NAME MATCHES "^(Linux|Windows)$")
   if(LINUX AND (CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND NOT MSVC))
     set(spirv_options -Wno-switch -Wno-sometimes-uninitialized)
   endif()
-  dsc2_compiler(dsc2-spirv DXC
-    SOURCES ver_obj_spirv.cpp
-    PRIVATE_INCLUDES ${DAGOR_PROG_DIR}/3rdPartyLibs/vulkan/include ${DAGOR_PROG_DIR}/gameLibs/publicInclude
-    PRIVATE_DEFINES _CROSS_TARGET_SPIRV ${dxc_defines}
-    COMPILE_OPTIONS ${spirv_options}
-    LINK tools.ShaderCompiler2.hlsl2spirv 3rdPartyLibs.regExp
+  dsc2_compiler(NAME dsc2-spirv DXC
+    FILES_CMAKE dsc2-spirv_files.cmake
+    INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/3rdPartyLibs/vulkan/include ${DAGOR_PROG_DIR}/gameLibs/publicInclude
+    COMPILE_DEFINITIONS PRIVATE _CROSS_TARGET_SPIRV ${dxc_defines}
+    COMPILE_OPTIONS PRIVATE ${spirv_options}
+    BUILD_DEPENDENCIES PRIVATE tools.ShaderCompiler2.hlsl2spirv 3rdPartyLibs.regExp
   )
 endif()
 
@@ -136,23 +115,17 @@ if(CMAKE_SYSTEM_NAME MATCHES "^(Darwin|Windows)$")
     set(metal_options -Wno-comment -Wno-writable-strings -Wno-int-to-pointer-cast -Wno-switch
       -Wno-tautological-constant-out-of-range-compare -Wno-undefined-bool-conversion -Wno-deprecated-declarations)
   endif()
-  dsc2_compiler(dsc2-metal DXC
-    SOURCES
-      hlsl2metal/HLSL2MetalCommon.cpp hlsl2metal/asmShaderHLSL2Metal.cpp hlsl2spirv/HLSL2SpirvCommon.cpp
-      hlsl2metal/spirv2MetalCompiler.cpp hlsl2metal/asmShaderHLSL2MetalDXC.cpp hlsl2metal/hlsl2spirvCompile.cpp
-      ver_obj_metal.cpp
-    PRIVATE_INCLUDES
-      ${DAGOR_PROG_DIR}/3rdPartyLibs/metal
-      ${DAGOR_PROG_DIR}/3rdPartyLibs/vulkan/glslang
-      ${DAGOR_PROG_DIR}/3rdPartyLibs/vulkan/include
-      ${DAGOR_PROG_DIR}/3rdPartyLibs/vulkan/spirv-tools/include
-      ${CMAKE_CURRENT_SOURCE_DIR}/hlsl2spirv
-      ${DAGOR_PROG_DIR}/3rdPartyLibs/vulkan/smol-v/source
-      ${DAGOR_PROG_DIR}/gameLibs/publicInclude
-      ${DAGOR_PROG_DIR}/engine/drv/drv3d_Metal
-    PRIVATE_DEFINES _CROSS_TARGET_METAL ${dxc_defines} ENABLE_HLSL $<$<NOT:$<PLATFORM_ID:Windows>>:_STD_RTL_MEMORY>
-    COMPILE_OPTIONS ${metal_options}
-    LINK
+  dsc2_compiler(NAME dsc2-metal DXC
+    FILES_CMAKE dsc2-metal_files.cmake
+    INCLUDE_DIRECTORIES PRIVATE
+      ${DAGOR_PROG_DIR}/3rdPartyLibs/metal ${DAGOR_PROG_DIR}/3rdPartyLibs/vulkan/glslang
+      ${DAGOR_PROG_DIR}/3rdPartyLibs/vulkan/include ${DAGOR_PROG_DIR}/3rdPartyLibs/vulkan/spirv-tools/include
+      ${CMAKE_CURRENT_SOURCE_DIR}/hlsl2spirv ${DAGOR_PROG_DIR}/3rdPartyLibs/vulkan/smol-v/source
+      ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/engine/drv/drv3d_Metal
+    COMPILE_DEFINITIONS PRIVATE
+      _CROSS_TARGET_METAL ${dxc_defines} ENABLE_HLSL $<$<NOT:$<PLATFORM_ID:Windows>>:_STD_RTL_MEMORY>
+    COMPILE_OPTIONS PRIVATE ${metal_options}
+    BUILD_DEPENDENCIES PRIVATE
       3rdPartyLibs.hash 3rdPartyLibs.vulkan.smol-v 3rdPartyLibs.metal.spirv2Metal 3rdPartyLibs.vulkan.spirv-tools
       gameLibs.folders gameLibs.spirv ${metal_libs}
   )

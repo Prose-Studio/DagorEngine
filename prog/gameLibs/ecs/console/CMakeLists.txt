@@ -1,14 +1,6 @@
-set(includes
-  ${DAGOR_PROG_DIR}/engine/dagorInclude
-  ${DAGOR_PROG_DIR}/gameLibs/publicInclude
-  ${DAGOR_PROG_DIR}/engine/consoleProc
+dagor_add_target(NAME gameLibs.ecs.console STATIC
+  FILES_CMAKE console_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE
+    ${DAGOR_PROG_DIR}/engine/dagorInclude ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/engine/consoleProc
+  BUILD_DEPENDENCIES PRIVATE 3rdPartyLibs.eastl
 )
-set(sources ecsConsole.cpp)
-list(APPEND deps 3rdPartyLibs.eastl)
-set(SourceES )
-list(APPEND es_sources ${SourceES})
-
-dagor_add_library(gameLibs.ecs.console ${sources})
-target_include_directories(gameLibs.ecs.console PRIVATE ${includes})
-target_link_libraries(gameLibs.ecs.console PRIVATE ${deps})
-dagor_target_es_sources(gameLibs.ecs.console ${es_sources})

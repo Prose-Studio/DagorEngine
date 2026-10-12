@@ -1,0 +1,17 @@
+set(FILES
+  bits.c
+  bptc-tables.c
+  clamp.c
+  convert.c
+  dds.c
+  decompress-bc.c
+  decompress-bptc-float.c
+  decompress-bptc.c
+  decompress-eac.c
+  decompress-etc.c
+  decompress-rgtc.c
+  division-tables.c
+  ktx.c
+  raw.c
+  texture.c
+)

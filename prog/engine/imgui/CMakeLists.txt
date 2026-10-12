@@ -4,22 +4,16 @@ add_subdirectory(stub)
 add_subdirectory(util)
 
 include(netImgui.cmake)
-set(sources imguiImpl.cpp imguiRenderer.cpp imguiTestRuntime.cpp)
-if(WIN32)
-  list(APPEND sources imgui_impl_win32.cpp)
-elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-  list(APPEND sources imgui_impl_osx.mm)
-else()
-  list(APPEND sources imgui_impl_stub.cpp)
-endif()
 foreach(build standard testEngine)
   set(defines ${NET_IMGUI_DEFINES})
   if(build STREQUAL "testEngine")
     list(APPEND defines IMGUI_ENABLE_TEST_ENGINE)
   endif()
-  dagor_add_library(engine.imgui.${build} LAX ${sources})
-  target_include_directories(engine.imgui.${build} PRIVATE ${DAGOR_PROG_DIR}/engine/sharedInclude ${NET_IMGUI_INCLUDES})
-  target_compile_definitions(engine.imgui.${build} PRIVATE ${defines})
-  target_link_libraries(engine.imgui.${build} PRIVATE 3rdPartyLibs.imgui ${NET_IMGUI_DEPS})
+  dagor_add_target(NAME engine.imgui.${build} STATIC LAX
+    FILES_CMAKE imgui_files.cmake
+    INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/engine/sharedInclude ${NET_IMGUI_INCLUDES}
+    COMPILE_DEFINITIONS PRIVATE ${defines}
+    BUILD_DEPENDENCIES PRIVATE 3rdPartyLibs.imgui ${NET_IMGUI_DEPS}
+  )
 endforeach()
 dagor_add_link_choice(engine.imgui PROPERTY DAGOR_IMGUI_TEST_ENGINE ON engine.imgui.testEngine OFF engine.imgui.standard)

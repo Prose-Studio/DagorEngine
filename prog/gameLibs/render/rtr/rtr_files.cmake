@@ -1,0 +1,5 @@
+if(DAGOR_GAME_BVH)
+  set(FILES rtr.cpp)
+else()
+  set(FILES rtr_stub.cpp)
+endif()

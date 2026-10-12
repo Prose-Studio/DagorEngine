@@ -1,4 +1,4 @@
 # UUID version 7 (RFC 9562) generation and parsing (nalgeon/uuidv7 with local string helpers)
-set(sources uuidv7.cpp)
-
-dagor_add_library(3rdPartyLibs.uuidv7 LAX ${sources})
+dagor_add_target(NAME 3rdPartyLibs.uuidv7 STATIC LAX
+  FILES_CMAKE uuidv7_files.cmake
+)

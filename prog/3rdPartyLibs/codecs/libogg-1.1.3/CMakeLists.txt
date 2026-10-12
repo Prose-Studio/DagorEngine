@@ -1,5 +1,4 @@
-set(includes ../include)
-set(sources src/bitwise.c src/framing.c)
-
-dagor_add_library(3rdPartyLibs.codecs.libogg-1.1.3 LAX ${sources})
-target_include_directories(3rdPartyLibs.codecs.libogg-1.1.3 PRIVATE ${includes})
+dagor_add_target(NAME 3rdPartyLibs.codecs.libogg-1.1.3 STATIC LAX
+  FILES_CMAKE libogg-1.1.3_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ../include
+)

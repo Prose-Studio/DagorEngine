@@ -1,18 +1,12 @@
-set(includes
-  ${DAGOR_PROG_DIR}/gameLibs/publicInclude
-  ${DAGOR_PROG_DIR}/1stPartyLibs/daScript/include
-  ${DAGOR_PROG_DIR}/1stPartyLibs/dasImgui
-)
-file(GLOB AllSources RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
-set(sources ${AllSources})
-list(APPEND stringify ${SourceDAS})
 if(WIN32)
   list(APPEND options /wd4548)
 endif()
-set(deps 1stPartyLibs.daScript)
 
-dagor_add_library(gameLibs.dasModules.imgui ${sources})
-target_include_directories(gameLibs.dasModules.imgui PRIVATE ${includes})
-target_compile_options(gameLibs.dasModules.imgui PRIVATE ${options})
-target_link_libraries(gameLibs.dasModules.imgui PRIVATE ${deps})
-dagor_target_stringify(gameLibs.dasModules.imgui ${stringify})
+dagor_add_target(NAME gameLibs.dasModules.imgui STATIC
+  FILES_CMAKE imgui_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE
+    ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/1stPartyLibs/daScript/include
+    ${DAGOR_PROG_DIR}/1stPartyLibs/dasImgui
+  COMPILE_OPTIONS PRIVATE ${options}
+  BUILD_DEPENDENCIES PRIVATE 1stPartyLibs.daScript
+)

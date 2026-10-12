@@ -1,3 +1,3 @@
-set(sources streamingCtrl.cpp streamingCtrlDebug.cpp streamingMgr.cpp baseStreamingScene.cpp)
-
-dagor_add_library(engine.streaming ${sources})
+dagor_add_target(NAME engine.streaming STATIC
+  FILES_CMAKE streaming_files.cmake
+)

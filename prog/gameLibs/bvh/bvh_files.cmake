@@ -1,0 +1,11 @@
+set(FILES bvh.cpp bvh_context.cpp bvh_debug.cpp bvh_tlas_debug.cpp bvh_omm.cpp bvh_processors.cpp bvh_particles.cpp
+  bvh_voxel_activity.cpp)
+foreach(feature IN LISTS features)
+  if(feature IN_LIST DAGOR_BVH_STUBS)
+    list(APPEND FILES stub/bvh_stub_${feature}.cpp)
+  elseif(feature STREQUAL "ri")
+    list(APPEND FILES bvh_ri.cpp bvh_ri_gen.cpp bvh_ri_ex.cpp)
+  else()
+    list(APPEND FILES bvh_${feature}.cpp)
+  endif()
+endforeach()

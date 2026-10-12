@@ -1,0 +1,14 @@
+set(FILES
+  bvhBuild.cpp
+  bvhIO.cpp
+  bvhReencode.cpp
+  bvhSerialization.cpp
+  bvhTraversalQuadOOL.cpp
+  quadBLASBuilder.cpp
+  soa4Convert.cpp
+  soa4EdgeFlags.cpp
+  soa4TraversalOOL.cpp
+  swTLAS.cpp
+  meshBLAS.cpp
+  meshSoa4BLAS.cpp
+)

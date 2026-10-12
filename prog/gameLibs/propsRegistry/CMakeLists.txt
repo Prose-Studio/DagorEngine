@@ -1,5 +1,4 @@
-set(includes ${DAGOR_PROG_DIR}/gameLibs/publicInclude)
-set(sources propsRegistry.cpp)
-
-dagor_add_library(gameLibs.propsRegistry LAX ${sources})
-target_include_directories(gameLibs.propsRegistry PRIVATE ${includes})
+dagor_add_target(NAME gameLibs.propsRegistry STATIC LAX
+  FILES_CMAKE propsRegistry_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/gameLibs/publicInclude
+)

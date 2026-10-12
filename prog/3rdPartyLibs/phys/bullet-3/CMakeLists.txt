@@ -1,30 +1,10 @@
 # Bullet 3 (https://github.com/bulletphysics/bullet3, rev 39b8de74df93721add193e5b3d9ebee579faebf8), the physics of the
 # tools (DAGOR_PHYS Bullet): its collision, dynamics and soft bodies, the world importer, and OpenCL (through clew) on
 # the desktops and Android. It builds with Dagor::BulletSettings, as its users do (DagorPhys.cmake).
-set(dirs
-  src # btBulletCollisionAll.cpp, btBulletDynamicsAll.cpp, btLinearMathAll.cpp
-  src/Bullet3Collision/BroadPhaseCollision
-  src/Bullet3Collision/NarrowPhaseCollision
-  src/Bullet3Common
-  src/Bullet3Dynamics
-  src/Bullet3Dynamics/ConstraintSolver
-  src/Bullet3Geometry
-  src/BulletInverseDynamics
-  src/BulletInverseDynamics/details
-  src/BulletSoftBody
-  src/BulletSoftBody/BulletReducedDeformableBody
-  Extras/Serialize/BulletWorldImporter
-  Extras/Serialize/BulletFileLoader
+dagor_add_target(NAME 3rdPartyLibs.phys.bullet-3 STATIC LAX
+  FILES_CMAKE bullet-3_files.cmake
+  BUILD_DEPENDENCIES PUBLIC Dagor::BulletSettings
 )
-if(CMAKE_SYSTEM_NAME MATCHES "^(Windows|Darwin|Linux|Android)$")
-  list(APPEND dirs src/Bullet3OpenCL/BroadphaseCollision src/Bullet3OpenCL/Initialize
-    src/Bullet3OpenCL/NarrowphaseCollision src/Bullet3OpenCL/ParallelPrimitives src/Bullet3OpenCL/Raycast
-    src/Bullet3OpenCL/RigidBody src/clew)
-endif()
-dagor_glob_sources(sources DIRS ${dirs} GLOB *.cpp *.c)
-
-dagor_add_library(3rdPartyLibs.phys.bullet-3 LAX ${sources})
-target_link_libraries(3rdPartyLibs.phys.bullet-3 PUBLIC Dagor::BulletSettings)
 if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
   target_link_libraries(3rdPartyLibs.phys.bullet-3 PUBLIC "$<LINK_LIBRARY:FRAMEWORK,OpenCL>")
 endif()

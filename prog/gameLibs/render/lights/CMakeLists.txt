@@ -1,30 +1,7 @@
 # Dynamic lights: omni and spot light managers, clustered and tiled light culling, light shadows
-set(includes
-  ${DAGOR_PROG_DIR}/gameLibs/publicInclude
-  ${CMAKE_CURRENT_SOURCE_DIR}
-  ${DAGOR_PROG_DIR}/gameLibs/render/shaders
-  ${DAGOR_PROG_DIR}/3rdPartyLibs/binPack2D/include
+dagor_add_target(NAME gameLibs.render.lights STATIC LAX
+  FILES_CMAKE lights_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE
+    ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${CMAKE_CURRENT_SOURCE_DIR} ${DAGOR_PROG_DIR}/gameLibs/render/shaders
+    ${DAGOR_PROG_DIR}/3rdPartyLibs/binPack2D/include
 )
-set(sources
-  lightsBase.cpp
-  clusteredLights.cpp
-  clusteredLightsGrid.cpp
-  lightsSorter.cpp
-  lightsPartition.cpp
-  lightsManager.cpp
-  omniLightsManager.cpp
-  spotLightsManager.cpp
-  tiledLights.cpp
-  frustumClusters.cpp
-  shadowSystem.cpp
-  reallocatableLightsConstBuffer.cpp
-  lightsResources.cpp
-  dstReadbackLights.cpp
-  lightsRenderer.cpp
-  dynamicLightShadows.cpp
-  lightsVisibilityChecker.cpp
-  lightsCounter.cpp
-)
-
-dagor_add_library(gameLibs.render.lights LAX ${sources})
-target_include_directories(gameLibs.render.lights PRIVATE ${includes})

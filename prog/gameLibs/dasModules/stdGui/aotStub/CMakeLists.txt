@@ -1,10 +1,9 @@
-set(includes ${DAGOR_PROG_DIR}/gameLibs/publicInclude)
-file(GLOB AllSources RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
-set(sources ${AllSources})
 if(WIN32)
   list(APPEND options /wd4548)
 endif()
 
-dagor_add_library(gameLibs.dasModules.stdGui.aotStub ${sources})
-target_include_directories(gameLibs.dasModules.stdGui.aotStub PRIVATE ${includes})
-target_compile_options(gameLibs.dasModules.stdGui.aotStub PRIVATE ${options})
+dagor_add_target(NAME gameLibs.dasModules.stdGui.aotStub STATIC
+  FILES_CMAKE aotStub_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/gameLibs/publicInclude
+  COMPILE_OPTIONS PRIVATE ${options}
+)

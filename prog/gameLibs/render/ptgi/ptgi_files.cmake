@@ -1,0 +1,5 @@
+if(DAGOR_GAME_BVH)
+  set(FILES ptgi.cpp)
+else()
+  set(FILES ptgi_stub.cpp)
+endif()

@@ -3,6 +3,6 @@ add_subdirectory(dx11)
 add_subdirectory(dxil)
 add_subdirectory(spirv)
 
-set(sources shaderSource.cpp)
-
-dagor_add_library(engine.drv.shadersMetaData LAX ${sources})
+dagor_add_target(NAME engine.drv.shadersMetaData STATIC LAX
+  FILES_CMAKE shadersMetaData_files.cmake
+)

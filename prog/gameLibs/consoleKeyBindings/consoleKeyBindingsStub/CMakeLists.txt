@@ -1,5 +1,4 @@
-set(includes ${DAGOR_PROG_DIR}/gameLibs/publicInclude)
-set(sources consoleKeyBindingsStub.cpp)
-
-dagor_add_library(gameLibs.consoleKeyBindings.consoleKeyBindingsStub ${sources})
-target_include_directories(gameLibs.consoleKeyBindings.consoleKeyBindingsStub PRIVATE ${includes})
+dagor_add_target(NAME gameLibs.consoleKeyBindings.consoleKeyBindingsStub STATIC
+  FILES_CMAKE consoleKeyBindingsStub_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/gameLibs/publicInclude
+)

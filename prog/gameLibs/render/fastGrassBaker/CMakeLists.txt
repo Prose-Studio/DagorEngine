@@ -7,9 +7,9 @@ if(WIN32)
   list(APPEND includes ${DAGOR_PROG_DIR}/3rdPartyLibs/convert/ispc_texcomp ${DAGOR_PROG_DIR}/engine/sharedInclude
     ${DAGOR_PROG_DIR}/gameLibs/rendInst)
 endif()
-set(dir ${CMAKE_CURRENT_SOURCE_DIR})
-set(sources "$<IF:${baker},${dir}/fast_grass_baker.cpp,${dir}/fast_grass_baker_stub.cpp>")
 
-dagor_add_library(gameLibs.render.fastGrassBaker ${sources})
-target_include_directories(gameLibs.render.fastGrassBaker PRIVATE ${includes})
-target_link_libraries(gameLibs.render.fastGrassBaker PRIVATE ${deps})
+dagor_add_target(NAME gameLibs.render.fastGrassBaker STATIC
+  FILES_CMAKE fastGrassBaker_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${includes}
+  BUILD_DEPENDENCIES PRIVATE ${deps}
+)

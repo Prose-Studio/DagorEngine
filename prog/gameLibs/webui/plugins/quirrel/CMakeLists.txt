@@ -1,13 +1,7 @@
-set(includes
-  ${DAGOR_PROG_DIR}/gameLibs/publicInclude
-  ${DAGOR_PROG_DIR}/gameLibs/publicInclude/quirrel
-  ${DAGOR_PROG_DIR}/dagorInclude
+dagor_add_target(NAME gameLibs.webui.plugins.quirrel STATIC
+  FILES_CMAKE quirrel_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE
+    ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/gameLibs/publicInclude/quirrel
+    ${DAGOR_PROG_DIR}/dagorInclude
+  BUILD_DEPENDENCIES PRIVATE Dagor::Quirrel
 )
-set(sources sqDebuggerPlugin.cpp)
-set(SourceStr quirrelDebugger.html)
-list(APPEND stringify ${SourceStr})
-
-dagor_add_library(gameLibs.webui.plugins.quirrel ${sources})
-target_include_directories(gameLibs.webui.plugins.quirrel PRIVATE ${includes})
-target_link_libraries(gameLibs.webui.plugins.quirrel PRIVATE Dagor::Quirrel)
-dagor_target_stringify(gameLibs.webui.plugins.quirrel ${stringify})

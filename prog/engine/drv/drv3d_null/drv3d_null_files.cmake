@@ -1,0 +1,5 @@
+if(DAGOR_D3D_MULTI)
+  set(FILES d3d_stub_m.cpp)
+else()
+  set(FILES d3d_stub.cpp)
+endif()

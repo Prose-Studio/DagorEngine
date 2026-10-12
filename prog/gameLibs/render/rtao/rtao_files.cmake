@@ -1,0 +1,5 @@
+if(DAGOR_GAME_BVH)
+  set(FILES rtao.cpp)
+else()
+  set(FILES rtao_stub.cpp)
+endif()

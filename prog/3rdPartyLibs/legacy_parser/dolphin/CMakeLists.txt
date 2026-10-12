@@ -1,6 +1,5 @@
 # dolphin, the lexer generator of the shader compilers' parsers (with whale, see ../whale). jam built it rel only, into
 # the source tree; here it is a program of the tree that the parser generation runs, and part of the CDK.
-file(GLOB sources CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
 set(options)
 if(CMAKE_SYSTEM_NAME MATCHES "^(Darwin|Linux)$")
   list(APPEND options -funsigned-char)
@@ -15,9 +14,11 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   endif()
 endif()
 
-dagor_add_executable(dolphin LAX NO_CONFIG_POSTFIX ${sources})
-target_include_directories(dolphin PRIVATE nstl hash)
-target_compile_definitions(dolphin PRIVATE __B_NO_MEM_BASE_INCLUDE)
-target_compile_options(dolphin PRIVATE ${options})
-set_target_properties(dolphin PROPERTIES DAGOR_EXCEPTIONS SEH DAGOR_RTTI ON)
-dagor_install_cdk(dolphin)
+dagor_add_target(NAME dolphin EXECUTABLE LAX NO_CONFIG_POSTFIX
+  FILES_CMAKE dolphin_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE nstl hash
+  COMPILE_DEFINITIONS PRIVATE __B_NO_MEM_BASE_INCLUDE
+  COMPILE_OPTIONS PRIVATE ${options}
+  PROPERTIES DAGOR_EXCEPTIONS SEH DAGOR_RTTI ON
+  CDK
+)

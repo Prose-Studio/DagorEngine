@@ -9,33 +9,6 @@ endif()
 add_subdirectory(modules)
 add_subdirectory(utils/daScript)
 
-set(source_dirs src/ast src/builtin src/runtime src/simulate src/misc src/parser src/modules/uriparser src/hal)
-# project_specific_file_info.cpp provides fallbacks of get_file_access / get_context / get_clone_context that every
-# Dagor program supplies itself (games through das_es.cpp + defaultFileAccess.cpp, tools through dagorAdapter/da.cpp),
-# and src/hal/performance_time.cpp the time functions the engine kernel provides: they would be duplicate symbols
-dagor_glob_sources(sources DIRS ${source_dirs} GLOB *.cpp EXCLUDE "project_specific_file_info\\.cpp$" "performance_time\\.cpp$")
-list(APPEND sources dagorAdapter/das_jit_runtime.cpp) # (empty without DAS_JIT_RUNTIME, jam's NeedDasJitRuntime)
-
-# the sources that throw (and the crash handler, which reads the exception in flight): compiled with exceptions
-# whatever the tree's setting
-set(exceptions)
-if(MSVC)
-  set(exceptions /EHsc -D_HAS_EXCEPTIONS=1 -DDAS_ENABLE_EXCEPTIONS)
-else()
-  set(exceptions -fexceptions -DDAS_ENABLE_EXCEPTIONS)
-endif()
-if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  list(APPEND exceptions -Wno-macro-redefined)
-endif()
-foreach(source IN LISTS sources)
-  if(source MATCHES "(_exceptions|_ast_serialize|runtime_string|format|crash_handler)\\.cpp$")
-    set_property(SOURCE "${source}" APPEND PROPERTY COMPILE_OPTIONS ${exceptions})
-  endif()
-endforeach()
-if(DAGOR_ARCH STREQUAL "e2k")
-  set_property(SOURCE src/simulate/simulate_gc.cpp APPEND PROPERTY COMPILE_OPTIONS -Wno-overloaded-virtual)
-endif()
-
 # DAS_ENABLE_DYN_INCLUDES: as daScript's own CMake build defines it (src/builtin/jit_runtime.cpp needs its header)
 set(defines DAS_ENABLE_KEEPALIVE=0 FMT_UNICODE=0 DAS_ENABLE_DYN_INCLUDES=1 "$<$<CONFIG:Rel,IRel>:DAS_NO_ASSERTIONS=1>")
 if(DAGOR_DAS_LLVM_AOT)
@@ -66,15 +39,16 @@ foreach(build standard console)
   if(build STREQUAL "console")
     list(APPEND build_defines DAS_DEFAULT_STDOUT DAS_USE_BASE_CRASH_HANDLER=1)
   endif()
-  dagor_add_library(1stPartyLibs.daScript.${build} LAX ${sources})
-  target_include_directories(1stPartyLibs.daScript.${build} PRIVATE include include/das_hash_map
-    include/modules/uriparser ${DAGOR_PROG_DIR}/3rdPartyLibs/uriparser/include
-    ${DAGOR_PROG_DIR}/3rdPartyLibs/fmt/include)
-  target_compile_definitions(1stPartyLibs.daScript.${build} PRIVATE ${build_defines})
-  target_compile_options(1stPartyLibs.daScript.${build} PRIVATE ${options})
-  target_link_libraries(1stPartyLibs.daScript.${build} PRIVATE 3rdPartyLibs.eastl 3rdPartyLibs.uriparser
-    3rdPartyLibs.fmt ${aot_deps})
-  dagor_target_licenses(1stPartyLibs.daScript.${build} LICENSE)
+  dagor_add_target(NAME 1stPartyLibs.daScript.${build} STATIC LAX
+    FILES_CMAKE daScript_files.cmake
+    INCLUDE_DIRECTORIES PRIVATE
+      include include/das_hash_map include/modules/uriparser ${DAGOR_PROG_DIR}/3rdPartyLibs/uriparser/include
+      ${DAGOR_PROG_DIR}/3rdPartyLibs/fmt/include
+    COMPILE_DEFINITIONS PRIVATE ${build_defines}
+    COMPILE_OPTIONS PRIVATE ${options}
+    BUILD_DEPENDENCIES PRIVATE 3rdPartyLibs.eastl 3rdPartyLibs.uriparser 3rdPartyLibs.fmt ${aot_deps}
+    LICENSES LICENSE
+  )
 endforeach()
 dagor_add_link_choice(1stPartyLibs.daScript PROPERTY DAGOR_DAS_CONSOLE
   ON 1stPartyLibs.daScript.console OFF 1stPartyLibs.daScript.standard)

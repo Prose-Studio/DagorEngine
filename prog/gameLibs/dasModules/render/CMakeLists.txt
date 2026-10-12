@@ -1,15 +1,10 @@
-set(includes ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/1stPartyLibs/daScript/include)
-file(GLOB AllSources RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
-set(sources ${AllSources})
-set(SourceDAS dagorDriver3d.das dagorTexture3d.das)
-list(APPEND stringify ${SourceDAS})
 if(WIN32)
   list(APPEND options /wd4548)
 endif()
-set(deps 1stPartyLibs.daScript)
 
-dagor_add_library(gameLibs.dasModules.render ${sources})
-target_include_directories(gameLibs.dasModules.render PRIVATE ${includes})
-target_compile_options(gameLibs.dasModules.render PRIVATE ${options})
-target_link_libraries(gameLibs.dasModules.render PRIVATE ${deps})
-dagor_target_stringify(gameLibs.dasModules.render ${stringify})
+dagor_add_target(NAME gameLibs.dasModules.render STATIC
+  FILES_CMAKE render_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/1stPartyLibs/daScript/include
+  COMPILE_OPTIONS PRIVATE ${options}
+  BUILD_DEPENDENCIES PRIVATE 1stPartyLibs.daScript
+)

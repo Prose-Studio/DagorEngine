@@ -1,0 +1,14 @@
+set(FILES
+  detail/storage.cpp
+  detail/unregisterAccess.cpp
+  nodeHandleWithSlotsAccess.cpp
+  registerAccess.cpp
+  resolveAccess.cpp
+  state.cpp
+  actions.cpp
+  das/resourceSlotCoreModule.cpp
+  das/registerAccess.cpp
+  das/state.cpp
+  das/clearResourceSlot.cpp
+  das/actionList.cpp
+)

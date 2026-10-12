@@ -1,0 +1,11 @@
+set(FILES
+  animBlendCtrl.cpp
+  animPostBlendCtrl.cpp
+  animIKCtrl.cpp
+  animFABRIKCtrl.cpp
+  animChannels.cpp
+  animGraph.cpp
+  animGraphDbg.cpp
+  animStateHolder.cpp
+  simpleNodeAnim.cpp
+)

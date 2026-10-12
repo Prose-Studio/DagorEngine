@@ -1,22 +1,5 @@
 # The well-known folders of a platform (documents, local app data, temp, the executable's), for games and tools
-set(includes ${DAGOR_PROG_DIR}/gameLibs/publicInclude)
-set(sources folders.cpp)
-if(WIN32)
-  list(APPEND sources platform/common.cpp platform/windows.cpp)
-endif()
-if(LINUX)
-  list(APPEND sources platform/linux.cpp platform/common.cpp)
-endif()
-if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-  list(APPEND sources platform/macos.cpp platform/common.cpp)
-endif()
-if(IOS)
-  # the game data stays visible in the Files app (jam's HideiOSGameDataFromUser, set by no project)
-  list(APPEND sources platform/ios.cpp platform/common.cpp platform/iosVisibleGameData.cpp)
-endif()
-if(ANDROID)
-  list(APPEND sources platform/android.cpp)
-endif()
-
-dagor_add_library(gameLibs.folders LAX ${sources})
-target_include_directories(gameLibs.folders PRIVATE ${includes})
+dagor_add_target(NAME gameLibs.folders STATIC LAX
+  FILES_CMAKE folders_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/gameLibs/publicInclude
+)

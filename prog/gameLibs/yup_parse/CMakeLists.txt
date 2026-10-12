@@ -1,12 +1,8 @@
 # Reading .yup files: bencoded dictionaries queried by '/' separated key paths
-set(includes
-  ${DAGOR_PROG_DIR}/gameLibs/publicInclude
-  ${DAGOR_PROG_DIR}/3rdPartyLibs/bencode
-  ${DAGOR_PROG_DIR}/engine/dagorInclude
+dagor_add_target(NAME gameLibs.yup_parse STATIC
+  FILES_CMAKE yup_parse_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE
+    ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/3rdPartyLibs/bencode
+    ${DAGOR_PROG_DIR}/engine/dagorInclude
+  BUILD_DEPENDENCIES PRIVATE 3rdPartyLibs.bencode
 )
-set(sources yup.cpp)
-list(APPEND deps 3rdPartyLibs.bencode)
-
-dagor_add_library(gameLibs.yup_parse ${sources})
-target_include_directories(gameLibs.yup_parse PRIVATE ${includes})
-target_link_libraries(gameLibs.yup_parse PRIVATE ${deps})

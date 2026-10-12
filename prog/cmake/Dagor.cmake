@@ -4,8 +4,7 @@
 #
 # It sets the tree-wide options (DagorOptions.cmake) and the compile and link settings of every target below the
 # calling directory (DagorCompilerFlags.cmake), and loads the functions the CMakeLists of the engine and of projects
-# use: dagor_add_library() and dagor_add_executable() (DagorTargets.cmake), the generated sources, daScript AOT, content,
-# tests and packages.
+# use: dagor_add_target() (DagorTargets.cmake), the generated sources, daScript AOT, content, tests and packages.
 include_guard(GLOBAL)
 
 if(NOT DEFINED PROJECT_NAME)

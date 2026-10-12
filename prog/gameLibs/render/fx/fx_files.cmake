@@ -1,0 +1,10 @@
+set(FILES
+  bloom_ps.cpp
+  ui_blurring.cpp
+  blurredUI.cpp
+  demonPostFx.cpp
+  postfx.cpp
+  auroraBorealis.cpp
+  lightning.cpp
+  flare.cpp
+)

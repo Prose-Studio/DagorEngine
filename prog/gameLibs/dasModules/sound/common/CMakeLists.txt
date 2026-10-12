@@ -1,12 +1,10 @@
-set(includes ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/1stPartyLibs/daScript/include)
-set(AllSrcFolder_CPP .)
-dagor_glob_sources(sources DIRS ${AllSrcFolder_CPP} GLOB *.cpp)
 if(WIN32)
   list(APPEND options /wd4548)
 endif()
-set(deps 1stPartyLibs.daScript gameLibs.dasModules.common)
 
-dagor_add_library(gameLibs.dasModules.sound.common ${sources})
-target_include_directories(gameLibs.dasModules.sound.common PRIVATE ${includes})
-target_compile_options(gameLibs.dasModules.sound.common PRIVATE ${options})
-target_link_libraries(gameLibs.dasModules.sound.common PRIVATE ${deps})
+dagor_add_target(NAME gameLibs.dasModules.sound.common STATIC
+  FILES_CMAKE common_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/1stPartyLibs/daScript/include
+  COMPILE_OPTIONS PRIVATE ${options}
+  BUILD_DEPENDENCIES PRIVATE 1stPartyLibs.daScript gameLibs.dasModules.common
+)

@@ -19,11 +19,12 @@ if(DAGOR_ARCH STREQUAL "x86_64")
   list(APPEND deps Aftermath::Aftermath)
 endif()
 
-dagor_add_library(engine.drv.drv3d_DX11 LAX init.cpp drvmain.cpp states.cpp rtarget.cpp texture.cpp shaders.cpp
-  buffers.cpp sampler.cpp genericBuffer.cpp init_d3di.cpp basetex.cpp immediateConst.cpp helpers.cpp memory_metrics.cpp
-  clear.cpp)
-target_include_directories(engine.drv.drv3d_DX11 PRIVATE ${includes})
-target_compile_definitions(engine.drv.drv3d_DX11 PRIVATE ${defines})
-target_link_libraries(engine.drv.drv3d_DX11 PRIVATE ${deps})
-target_link_libraries(engine.drv.drv3d_DX11 PUBLIC System::version)
-dagor_target_force_include(engine.drv.drv3d_DX11 d3d_config.h)
+dagor_add_target(NAME engine.drv.drv3d_DX11 STATIC LAX
+  FILES_CMAKE drv3d_DX11_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${includes}
+  COMPILE_DEFINITIONS PRIVATE ${defines}
+  BUILD_DEPENDENCIES
+    PUBLIC System::version
+    PRIVATE ${deps}
+  FORCE_INCLUDES d3d_config.h
+)

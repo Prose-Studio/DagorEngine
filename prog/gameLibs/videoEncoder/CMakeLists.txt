@@ -1,13 +1,9 @@
 if(WIN32)
-  set(sources videoEncoder.cpp)
-else()
-  set(sources videoEncoderStub.cpp)
-endif()
-if(WIN32)
   list(APPEND libs System::mfuuid System::winmm)
 endif()
-list(APPEND includes ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/engine/drv/drv3d_commonCode)
 
-dagor_add_library(gameLibs.videoEncoder LAX ${sources})
-target_include_directories(gameLibs.videoEncoder PRIVATE ${includes})
-target_link_libraries(gameLibs.videoEncoder PUBLIC ${libs})
+dagor_add_target(NAME gameLibs.videoEncoder STATIC LAX
+  FILES_CMAKE videoEncoder_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/engine/drv/drv3d_commonCode
+  BUILD_DEPENDENCIES PUBLIC ${libs}
+)

@@ -1,0 +1,6 @@
+dagor_glob_sources(FILES DIRS . GLOB *.cpp)
+set(ES_FILES replicationES.cpp.inl)
+list(APPEND ES_FILES msgSinkES.cpp.inl)
+list(APPEND ES_FILES componentFiltersES.cpp.inl)
+list(APPEND ES_FILES netEventES.cpp.inl)
+list(APPEND ES_FILES netEventsES.cpp.inl)

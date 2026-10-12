@@ -1,10 +1,7 @@
-set(includes
-  ${DAGOR_PROG_DIR}/gameLibs/publicInclude
-  ${DAGOR_PROG_DIR}/gameLibs/publicInclude/quirrel
-  ${DAGOR_PROG_DIR}/engine/sharedInclude
+dagor_add_target(NAME gameLibs.quirrel.sqStatsd STATIC
+  FILES_CMAKE sqStatsd_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE
+    ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/gameLibs/publicInclude/quirrel
+    ${DAGOR_PROG_DIR}/engine/sharedInclude
+  BUILD_DEPENDENCIES PRIVATE Dagor::Quirrel
 )
-set(sources sqStatsd.cpp)
-
-dagor_add_library(gameLibs.quirrel.sqStatsd ${sources})
-target_include_directories(gameLibs.quirrel.sqStatsd PRIVATE ${includes})
-target_link_libraries(gameLibs.quirrel.sqStatsd PRIVATE Dagor::Quirrel)

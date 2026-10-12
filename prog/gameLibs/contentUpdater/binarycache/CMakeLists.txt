@@ -1,6 +1,5 @@
-set(sources binaryCache.cpp)
-set(includes ${DAGOR_PROG_DIR}/gameLibs/publicInclude)
-
-dagor_add_library(gameLibs.contentUpdater.binarycache ${sources})
-target_include_directories(gameLibs.contentUpdater.binarycache PRIVATE ${includes})
-target_link_libraries(gameLibs.contentUpdater.binarycache PRIVATE Dagor::Quirrel)
+dagor_add_target(NAME gameLibs.contentUpdater.binarycache STATIC
+  FILES_CMAKE binarycache_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/gameLibs/publicInclude
+  BUILD_DEPENDENCIES PRIVATE Dagor::Quirrel
+)

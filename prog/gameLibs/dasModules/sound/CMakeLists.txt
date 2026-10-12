@@ -1,14 +1,11 @@
 add_subdirectory(common)
-
-set(includes ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/1stPartyLibs/daScript/include)
-set(AllSrcFolder_CPP .)
-dagor_glob_sources(sources DIRS ${AllSrcFolder_CPP} GLOB *.cpp)
 if(WIN32)
   list(APPEND options /wd4548)
 endif()
-set(deps 1stPartyLibs.daScript gameLibs.dasModules.common)
 
-dagor_add_library(gameLibs.dasModules.sound ${sources})
-target_include_directories(gameLibs.dasModules.sound PRIVATE ${includes})
-target_compile_options(gameLibs.dasModules.sound PRIVATE ${options})
-target_link_libraries(gameLibs.dasModules.sound PRIVATE ${deps})
+dagor_add_target(NAME gameLibs.dasModules.sound STATIC
+  FILES_CMAKE sound_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/1stPartyLibs/daScript/include
+  COMPILE_OPTIONS PRIVATE ${options}
+  BUILD_DEPENDENCIES PRIVATE 1stPartyLibs.daScript gameLibs.dasModules.common
+)

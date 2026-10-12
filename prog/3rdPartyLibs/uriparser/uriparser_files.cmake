@@ -1,0 +1,17 @@
+set(FILES
+  src/UriCommon.c
+  src/UriCompare.c
+  src/UriEscape.c
+  src/UriFile.c
+  src/UriIp4Base.c
+  src/UriIp4.c
+  src/UriMemory.c
+  src/UriNormalizeBase.c
+  src/UriNormalize.c
+  src/UriParseBase.c
+  src/UriParse.c
+  src/UriQuery.c
+  src/UriRecompose.c
+  src/UriResolve.c
+  src/UriShorten.c
+)

@@ -1,23 +1,4 @@
 # Shader mesh resource building: shader and skin mesh data, LOD and UV checks, rendInst and dynmodel sources
-set(sources
-  shaderMeshData.cpp
-  shSkinMeshData.cpp
-  corSkinning.cpp
-  shaderMeshCacheOpt.cpp
-  globalVertexDataConnector.cpp
-  meshDataSave.cpp
-  processMat.cpp
-  validateLods.cpp
-  validateUv.cpp
-  validateAlphaTest.cpp
-  dynSceneResSrc.cpp
-  clothProxyBuild.cpp
-  rendInstResSrc.cpp
-  rendInstVoxel.cpp
-  tristrip/stripobj.cpp
-  tristrip/tristrip.cpp
-  forsythTriangleReorderopt.cpp
-)
 set(includes
   ${DAGOR_PROG_DIR}/tools/sharedInclude
   ${DAGOR_PROG_DIR}/engine/sharedInclude
@@ -33,7 +14,9 @@ else()
 endif()
 list(APPEND defines _DEBUG_TAB_)
 
-dagor_add_library(tools.libTools.shaderResBuilder LAX ${sources})
-target_include_directories(tools.libTools.shaderResBuilder PRIVATE ${includes})
-target_compile_definitions(tools.libTools.shaderResBuilder PRIVATE ${defines})
-target_link_libraries(tools.libTools.shaderResBuilder PRIVATE ${deps})
+dagor_add_target(NAME tools.libTools.shaderResBuilder STATIC LAX
+  FILES_CMAKE shaderResBuilder_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${includes}
+  COMPILE_DEFINITIONS PRIVATE ${defines}
+  BUILD_DEPENDENCIES PRIVATE ${deps}
+)

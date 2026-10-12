@@ -1,11 +1,10 @@
-set(includes ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${CMAKE_CURRENT_SOURCE_DIR})
-set(sources billboardDecals.cpp matProps.cpp)
-list(APPEND deps engine.lib3d gameLibs.decalMatrices)
 if(IS_DIRECTORY "${DAGOR_PROG_DIR}/gameLibs/propsRegistry")
   list(APPEND defines HAS_PROPS_REGISTRY)
 endif()
 
-dagor_add_library(gameLibs.billboardDecals ${sources})
-target_include_directories(gameLibs.billboardDecals PRIVATE ${includes})
-target_compile_definitions(gameLibs.billboardDecals PRIVATE ${defines})
-target_link_libraries(gameLibs.billboardDecals PRIVATE ${deps})
+dagor_add_target(NAME gameLibs.billboardDecals STATIC
+  FILES_CMAKE billboardDecals_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${CMAKE_CURRENT_SOURCE_DIR}
+  COMPILE_DEFINITIONS PRIVATE ${defines}
+  BUILD_DEPENDENCIES PRIVATE engine.lib3d gameLibs.decalMatrices
+)

@@ -9,6 +9,8 @@ set(defines)
 if(DAGOR_FORCE_LINK_DEBUG_LINES)
   set(defines "$<$<CONFIG:Rel,IRel>:FORCE_LINK_DEBUG_LINES>")
 endif()
-dagor_add_library(engine.lib3d.moc_avx MaskedOcclusionCulling_avx.cpp)
-target_compile_definitions(engine.lib3d.moc_avx PRIVATE ${defines})
-target_compile_options(engine.lib3d.moc_avx PRIVATE ${options})
+dagor_add_target(NAME engine.lib3d.moc_avx STATIC
+  FILES_CMAKE moc_avx_files.cmake
+  COMPILE_DEFINITIONS PRIVATE ${defines}
+  COMPILE_OPTIONS PRIVATE ${options}
+)

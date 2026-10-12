@@ -1,0 +1,65 @@
+set(FILES
+  shaderVariableInfo.cpp
+  bindumpReloadListener.cpp
+  overrideStates.cpp
+  renderStates.cpp
+  shadersBinaryDataDbg2.cpp
+  shaderBlock.cpp
+  shaderRenderPass.cpp
+  globVarsBlk.cpp
+  postFxRenderer.cpp
+  shStateBlk.cpp
+  shStateBlkClose.cpp
+  shStateBlkData.cpp
+  shaders_globdata.cpp
+  scene_binload.cpp
+  shaderMesh.cpp
+  shaderMeshSimple.cpp
+  shaderResUnitedData.cpp
+  atlasBlockManager.cpp
+  shUtils.cpp
+  shUtilsEx.cpp
+  dynamicShaderHelper.cpp
+  dynamicShadersBuffer.cpp
+  dynShaderBuf.cpp
+  debugPrimitivesVbuffer.cpp
+  scene.cpp
+  scene_vis.cpp
+  shadersBinaryDataLoad.cpp
+  shadersBinaryDataDbg.cpp
+  shadersDbg.cpp
+  shadersCon.cpp
+  scriptSElem.cpp
+  scriptSMat.cpp
+  shaders.cpp
+  shadersRes.cpp
+  shFunc.cpp
+  shSkinnedMesh.cpp
+  dynSceneRes.cpp
+  rendInstRes.cpp
+  instShaderMeshRes.cpp
+  matVdata.cpp
+  matVdataLoad.cpp
+  voxelSurfaceData.cpp
+  shaderMeshTexLoadCtrl.cpp
+  computeShaders.cpp
+  meshShaders.cpp
+  sh_vars.cpp
+  refinedBlock.cpp
+  refinedBlockExec.cpp
+  shMaterialUtils.cpp
+  shStateBlockBindless.cpp
+  shStateBlockSlotTextures.cpp
+  shAssert.cpp
+  shBindumps.cpp
+  bindposeBufferManager.cpp
+)
+if(stcode MATCHES "^(enable|both|validate)$")
+  list(APPEND FILES stcode.cpp stcode/stcodeCallbacksImpl.cpp)
+  if(stcode STREQUAL "validate")
+    list(APPEND FILES stcode/compareStcode.cpp)
+  endif()
+endif()
+if(DAGOR_PROFILE_STCODE)
+  list(APPEND FILES profileStcode.cpp)
+endif()

@@ -1,0 +1,10 @@
+set(FILES
+  atmosphere.cpp
+  shakeMatProps.cpp
+  deformMatProps.cpp
+  arcadeBoostProps.cpp
+  softMaterialProps.cpp
+  physMatDamageModelProps.cpp
+  physDestructibleProps.cpp
+  physContactProps.cpp
+)

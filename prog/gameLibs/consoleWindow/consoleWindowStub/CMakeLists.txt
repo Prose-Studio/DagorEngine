@@ -1,5 +1,4 @@
-set(includes ${DAGOR_PROG_DIR}/gameLibs/publicInclude)
-set(sources consoleWindowStub.cpp)
-
-dagor_add_library(gameLibs.consoleWindow.consoleWindowStub ${sources})
-target_include_directories(gameLibs.consoleWindow.consoleWindowStub PRIVATE ${includes})
+dagor_add_target(NAME gameLibs.consoleWindow.consoleWindowStub STATIC
+  FILES_CMAKE consoleWindowStub_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/gameLibs/publicInclude
+)

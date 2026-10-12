@@ -48,6 +48,9 @@ endforeach()
 file(MAKE_DIRECTORY "${gen}")
 set_source_files_properties(${objects} PROPERTIES EXTERNAL_OBJECT ON GENERATED ON)
 
-dagor_add_library(3rdPartyLibs.convert.ispc_texcomp LAX ispc_texcomp.cpp ispc_texcomp_astc.cpp ${objects} ${headers})
-target_include_directories(3rdPartyLibs.convert.ispc_texcomp PRIVATE "${gen}")
-dagor_target_licenses(3rdPartyLibs.convert.ispc_texcomp license.txt)
+dagor_add_target(NAME 3rdPartyLibs.convert.ispc_texcomp STATIC LAX
+  FILES_CMAKE ispc_texcomp_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE "${gen}"
+  LICENSES license.txt
+)
+target_sources(3rdPartyLibs.convert.ispc_texcomp PRIVATE ${objects} ${headers})

@@ -1,0 +1,20 @@
+set(FILES
+  src/alpha.c
+  src/avif.c
+  src/codec_dav1d.c
+  src/colr.c
+  src/diag.c
+  src/exif.c
+  src/io.c
+  src/mem.c
+  src/obu.c
+  src/rawdata.c
+  src/read.c
+  src/reformat.c
+  src/reformat_libsharpyuv.c
+  src/reformat_libyuv.c
+  src/scale.c
+  src/stream.c
+  src/utils.c
+  src/write.c
+)

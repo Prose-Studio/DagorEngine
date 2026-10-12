@@ -1,0 +1,5 @@
+dagor_glob_sources(FILES DIRS source GLOB *.cpp)
+list(APPEND FILES mem.cpp snprintf.cpp)
+if(DAGOR_ARCH STREQUAL "e2k")
+  list(APPEND FILES assert_e2k.cpp)
+endif()

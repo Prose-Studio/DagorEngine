@@ -1,11 +1,7 @@
 # Crypto helpers on OpenSSL (digests, ciphers, signatures)
-file(GLOB AllSources RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
-set(sources ${AllSources})
-list(APPEND includes ${DAGOR_PROG_DIR}/3rdPartyLibs/openssl-3.x/include)
-list(APPEND deps 3rdPartyLibs.openssl-3.x)
-list(APPEND defines OPENSSL_IS_STATICALLY_LINKED)
-
-dagor_add_library(engine.crypto ${sources})
-target_include_directories(engine.crypto PRIVATE ${includes})
-target_compile_definitions(engine.crypto PRIVATE ${defines})
-target_link_libraries(engine.crypto PRIVATE ${deps})
+dagor_add_target(NAME engine.crypto STATIC
+  FILES_CMAKE crypto_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/3rdPartyLibs/openssl-3.x/include
+  COMPILE_DEFINITIONS PRIVATE OPENSSL_IS_STATICALLY_LINKED
+  BUILD_DEPENDENCIES PRIVATE 3rdPartyLibs.openssl-3.x
+)

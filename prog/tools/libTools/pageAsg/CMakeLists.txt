@@ -1,15 +1,5 @@
 # Animation state graph (ASG) data for tools: states, nodes, the anim tree, conditions, loading and export
-set(includes ${DAGOR_PROG_DIR}/tools/sharedInclude)
-set(sources
-  asg_data.cpp
-  asg_export.cpp
-  asg_scheme.cpp
-  asg_nodes.cpp
-  asg_cond_parser.cpp
-  asg_anim_load.cpp
-  asg_anim_save.cpp
-  asg_anim_tree.cpp
+dagor_add_target(NAME tools.libTools.pageAsg STATIC LAX
+  FILES_CMAKE pageAsg_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/tools/sharedInclude
 )
-
-dagor_add_library(tools.libTools.pageAsg LAX ${sources})
-target_include_directories(tools.libTools.pageAsg PRIVATE ${includes})

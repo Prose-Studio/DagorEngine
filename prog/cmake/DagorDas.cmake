@@ -5,7 +5,8 @@
 # translates the files to C++ with the game's AOT compiler and compiles them into <target>, in batches of
 # DAGOR_DAS_AOT_BATCH (jam's AotCompileBatchedGeneratedDAS). Each batch defines aot_<batch>_pull; <variable> references
 # them all (in a program: is just defined), and the code that pulls the target's daScript in names it (e.g.
-# ecs_aot_DAS_pull_AOT of gameLibs/das/ecs). Without DAGOR_DAS_AOT it does nothing: the code does without the pull.
+# ecs_aot_DAS_pull_AOT of gameLibs/das/ecs). Without DAGOR_DAS_AOT <variable> is 0, for the code that names it anyway
+# (the game's pull of its modules).
 #
 # The AOT compiler is a host program of the game (daNetGame-das-aot with the game's daScript modules), which
 # dagor_add_dng_game() sets up as target dagor.dasAotCompiler: the project's <host>-aot-compiler preset
@@ -44,10 +45,14 @@ function(dagor_target_das_aot target)
   if(NOT arg_PULL)
     message(FATAL_ERROR "dagor_target_das_aot(${target}): PULL <variable> is required")
   endif()
+  set(gen "${CMAKE_CURRENT_BINARY_DIR}/gen/${target}/das")
   if(NOT DAGOR_DAS_AOT)
+    file(CONFIGURE OUTPUT "${gen}/${arg_PULL}.cpp" CONTENT "#include <stddef.h>
+size_t ${arg_PULL} = 0;
+")
+    target_sources(${target} PRIVATE "${gen}/${arg_PULL}.cpp")
     return()
   endif()
-  set(gen "${CMAKE_CURRENT_BINARY_DIR}/gen/${target}/das")
   get_target_property(type ${target} TYPE)
   set(compiler "$<TARGET_PROPERTY:dagor.dasAotCompiler,DAGOR_EXECUTABLE>")
   set(files)

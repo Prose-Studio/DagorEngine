@@ -1,9 +1,4 @@
-set(includes ${DAGOR_PROG_DIR}/gameLibs/publicInclude)
-if(DAGOR_GAME_BVH)
-  set(sources rtao.cpp)
-else()
-  set(sources rtao_stub.cpp)
-endif()
-
-dagor_add_library(gameLibs.render.rtao ${sources})
-target_include_directories(gameLibs.render.rtao PRIVATE ${includes})
+dagor_add_target(NAME gameLibs.render.rtao STATIC
+  FILES_CMAKE rtao_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/gameLibs/publicInclude
+)

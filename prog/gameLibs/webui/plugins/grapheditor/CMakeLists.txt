@@ -1,11 +1,4 @@
-set(includes ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/dagorInclude)
-set(sources graphEditorPlugin.cpp)
-set(SourceStr stubNodesSettings.js)
-set(SourceArray graphEditor.html)
-list(APPEND stringify ${SourceStr})
-list(APPEND stringify_array ${SourceArray})
-
-dagor_add_library(gameLibs.webui.plugins.grapheditor ${sources})
-target_include_directories(gameLibs.webui.plugins.grapheditor PRIVATE ${includes})
-dagor_target_stringify(gameLibs.webui.plugins.grapheditor ${stringify})
-dagor_target_stringify(gameLibs.webui.plugins.grapheditor ARRAY ${stringify_array})
+dagor_add_target(NAME gameLibs.webui.plugins.grapheditor STATIC
+  FILES_CMAKE grapheditor_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/dagorInclude
+)

@@ -1,6 +1,5 @@
 # Frustum planes as shader variables (set directly or by a scoped override)
-set(sources frustumPlanes.cpp)
-set(includes ${DAGOR_PROG_DIR}/gameLibs/publicInclude)
-
-dagor_add_library(gameLibs.frustumCulling LAX ${sources})
-target_include_directories(gameLibs.frustumCulling PRIVATE ${includes})
+dagor_add_target(NAME gameLibs.frustumCulling STATIC LAX
+  FILES_CMAKE frustumCulling_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/gameLibs/publicInclude
+)

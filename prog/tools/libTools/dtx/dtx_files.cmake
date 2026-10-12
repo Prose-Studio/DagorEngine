@@ -1,0 +1,11 @@
+set(FILES
+  dtxConvertImage.cpp
+  dtxConvertFile.cpp
+  rgbe.cpp
+  dtxSave.cpp
+  dtxSampler.cpp
+  de_TextureName.cpp
+  de_TexNameMkRel.cpp
+  ddsxPlugin.cpp
+  ddsInfo.cpp
+)

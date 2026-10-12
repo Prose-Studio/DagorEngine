@@ -1,5 +1,4 @@
-set(includes ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/gameLibs/render)
-set(sources upscaleSampling.cpp)
-
-dagor_add_library(gameLibs.render.upscale ${sources})
-target_include_directories(gameLibs.render.upscale PRIVATE ${includes})
+dagor_add_target(NAME gameLibs.render.upscale STATIC
+  FILES_CMAKE upscale_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/gameLibs/render
+)

@@ -5,17 +5,14 @@ endif()
 if(NOT DAGOR_LINUX_X11 AND NOT DAGOR_LINUX_WAYLAND)
   message(FATAL_ERROR "DAGOR_LINUX_X11 or DAGOR_LINUX_WAYLAND must be on")
 endif()
-set(sources mux.cpp linuxSetTitle.cpp linuxClipboard.cpp)
 set(defines)
 set(deps)
 set(libs System::xkbcommon)
 if(DAGOR_LINUX_WAYLAND)
-  list(APPEND sources wayland.cpp wayland_loader.cpp)
   list(APPEND defines USE_WAYLAND)
   list(APPEND deps 3rdPartyLibs.wayland)
 endif()
 if(DAGOR_LINUX_X11)
-  list(APPEND sources x11.cpp)
   list(APPEND defines USE_X11)
   list(APPEND libs System::X11 System::Xcursor)
   # XInput2's header (raw mouse motion; libXi itself is loaded at run time, when there)
@@ -26,8 +23,11 @@ if(DAGOR_LINUX_X11)
   endif()
 endif()
 
-dagor_add_library(engine.osApiWrappers.linuxGUI ${sources})
-target_include_directories(engine.osApiWrappers.linuxGUI PRIVATE ${DAGOR_PROG_DIR}/engine/sharedInclude)
-target_compile_definitions(engine.osApiWrappers.linuxGUI PRIVATE ${defines})
-target_link_libraries(engine.osApiWrappers.linuxGUI PRIVATE ${deps})
-target_link_libraries(engine.osApiWrappers.linuxGUI PUBLIC ${libs})
+dagor_add_target(NAME engine.osApiWrappers.linuxGUI STATIC
+  FILES_CMAKE linuxGUI_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/engine/sharedInclude
+  COMPILE_DEFINITIONS PRIVATE ${defines}
+  BUILD_DEPENDENCIES
+    PUBLIC ${libs}
+    PRIVATE ${deps}
+)

@@ -1,0 +1,12 @@
+set(FILES
+  conBaseProc.cpp
+  conClassBase.cpp
+  consoleProcessor.cpp
+  consoleVisualDrv.cpp
+  consoleState.cpp
+  consoleInit.cpp
+  consoleVars.cpp
+  consoleUtil.cpp
+  defAppConsole.cpp
+  profilerConsole.cpp
+)

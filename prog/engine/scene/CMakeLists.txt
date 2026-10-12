@@ -1,22 +1,6 @@
 # Static scenes: tiled scenes, visibility trees, occlusion maps, level loading, ray tracer dumps, physical materials
-set(sources
-  scene.cpp
-  sceneIo.cpp
-  tiledScene.cpp
-  buildVisTree.cpp
-  loadLevel.cpp
-  physMat.cpp
-  renderSceneMgr.cpp
-  staticFxObjs.cpp
-  visibility.cpp
-  occlusionMap.cpp
-  objsToPlace.cpp
-  kdtree.cpp
-  occlusionIo.cpp
+dagor_add_target(NAME engine.scene STATIC LAX
+  FILES_CMAKE scene_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/engine/sharedInclude
+  BUILD_DEPENDENCIES PRIVATE 3rdPartyLibs.eastl
 )
-set(includes ${DAGOR_PROG_DIR}/engine/sharedInclude)
-list(APPEND deps 3rdPartyLibs.eastl)
-
-dagor_add_library(engine.scene LAX ${sources})
-target_include_directories(engine.scene PRIVATE ${includes})
-target_link_libraries(engine.scene PRIVATE ${deps})

@@ -1,0 +1,30 @@
+set(FILES
+  baseIo.cpp
+  fileIo.cpp
+  memIo.cpp
+  chainedMemIo.cpp
+  ioUtils.cpp
+  zlibIo.cpp
+  zlibIoFatal.cpp
+  zstdIo.cpp
+  zstdIoFatal.cpp
+  asyncIo.cpp
+  asyncIoCached.cpp
+  msgIo.cpp
+  obsolete_cfg.cpp
+  roDataBlk.cpp
+  vromfsLoad.cpp
+  vromfsBacked.cpp
+  findFiles.cpp
+  fastSeqRead.cpp
+  asyncWrite.cpp
+  lzmaDecIo.cpp
+  lzmaEnc.cpp
+  lzmaIoFatal.cpp
+  brotli.cpp
+)
+if(Oodle_FOUND)
+  list(APPEND FILES oodleIo.cpp oodleIoFatal.cpp)
+else()
+  list(APPEND FILES oodleIoStub.cpp)
+endif()

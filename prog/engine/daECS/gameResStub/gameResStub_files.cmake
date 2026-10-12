@@ -1,0 +1,1 @@
+set(FILES gameResStub.cpp)

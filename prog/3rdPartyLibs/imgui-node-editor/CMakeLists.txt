@@ -1,8 +1,6 @@
 # imgui-node-editor: node graph widgets for ImGui
-set(includes ${CMAKE_CURRENT_SOURCE_DIR} ${DAGOR_PROG_DIR}/3rdPartyLibs/imgui)
-set(sources crude_json.cpp imgui_canvas.cpp imgui_node_editor_api.cpp imgui_node_editor.cpp)
-list(APPEND deps 3rdPartyLibs.imgui)
-
-dagor_add_library(3rdPartyLibs.imgui-node-editor LAX ${sources})
-target_include_directories(3rdPartyLibs.imgui-node-editor PRIVATE ${includes})
-target_link_libraries(3rdPartyLibs.imgui-node-editor PRIVATE ${deps})
+dagor_add_target(NAME 3rdPartyLibs.imgui-node-editor STATIC LAX
+  FILES_CMAKE imgui-node-editor_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${DAGOR_PROG_DIR}/3rdPartyLibs/imgui
+  BUILD_DEPENDENCIES PRIVATE 3rdPartyLibs.imgui
+)

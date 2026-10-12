@@ -1,0 +1,23 @@
+set(FILES
+  checkCpuid.cpp
+  globals.cpp
+  globals3d.cpp
+  initCrt.cpp
+  loadSettings.cpp
+  purgeLogs.cpp
+  applyCmdline.cpp
+  mbReport.cpp
+  inpDevClsDrv.cpp
+  regCommonGameTex.cpp
+  regCommonToolTex.cpp
+  regTexCreateDds.cpp
+  regTexCreateLoadable.cpp
+  setDefFileTF.cpp
+  setDefSymTF.cpp
+  splashScreen_stub.cpp
+  memReport.cpp
+  memReportRef.cpp
+  joy_data.cpp
+  kbd_data.cpp
+  ms_data.cpp
+)

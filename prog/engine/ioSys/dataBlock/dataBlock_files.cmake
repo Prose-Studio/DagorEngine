@@ -1,0 +1,12 @@
+set(FILES
+  blk_core.cpp
+  blk_errors.cpp
+  blk_parser.cpp
+  blk_readBBF3.cpp
+  blk_serialize.cpp
+  blk_to_json.cpp
+  blk_zstd.cpp
+  blk_utils.cpp
+  blk_writeBBF3.cpp
+  obsolete_hashNameMap.cpp
+)

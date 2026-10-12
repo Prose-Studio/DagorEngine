@@ -1,10 +1,6 @@
 # Performance timer stubs
-set(includes
-  ${DAGOR_PROG_DIR}/engine/sharedInclude
-  ${DAGOR_PROG_DIR}/engine/perfMon
-  ${DAGOR_PROG_DIR}/engine/perfMon/daProfiler
+dagor_add_target(NAME engine.perfMon.perfTimerStub STATIC
+  FILES_CMAKE perfTimerStub_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE
+    ${DAGOR_PROG_DIR}/engine/sharedInclude ${DAGOR_PROG_DIR}/engine/perfMon ${DAGOR_PROG_DIR}/engine/perfMon/daProfiler
 )
-set(sources perfTimerStub.cpp)
-
-dagor_add_library(engine.perfMon.perfTimerStub ${sources})
-target_include_directories(engine.perfMon.perfTimerStub PRIVATE ${includes})

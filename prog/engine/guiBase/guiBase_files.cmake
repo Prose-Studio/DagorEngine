@@ -1,0 +1,14 @@
+set(FILES
+  font.cpp
+  imgui_drawlist.cpp
+  stdGuiRender.cpp
+  guiRenderCache.cpp
+  cursorLite.cpp
+  guiVars.cpp
+  baseGuiStartup.cpp
+  visConsole.cpp
+  textMarks.cpp
+  visualLog.cpp
+  visualErr.cpp
+  visMemReport.cpp
+)

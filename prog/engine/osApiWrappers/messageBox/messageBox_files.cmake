@@ -1,0 +1,11 @@
+if(WIN32)
+  set(FILES messageBox.cpp)
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+  set(FILES macMessageBox.mm macOsMessageBox.cpp)
+elseif(LINUX)
+  set(FILES linuxMessageBox.cpp)
+elseif(ANDROID)
+  set(FILES and_MessageBox.cpp) # TODO(phase5): MessageBoxWrapper.java and android_mb.proguard go into the APK
+elseif(IOS)
+  set(FILES iosMessageBox.mm)
+endif()

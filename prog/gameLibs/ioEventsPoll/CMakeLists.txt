@@ -5,10 +5,10 @@ endif()
 if(APPLE)
   set(options -Wno-c++1z-compat-mangling)
 endif()
-list(APPEND deps 3rdPartyLibs.libev)
-set(sources ioEventsPoll.cpp)
 
-dagor_add_library(gameLibs.ioEventsPoll LAX ${sources})
-target_include_directories(gameLibs.ioEventsPoll PRIVATE ${includes})
-target_compile_options(gameLibs.ioEventsPoll PRIVATE ${options})
-target_link_libraries(gameLibs.ioEventsPoll PRIVATE ${deps})
+dagor_add_target(NAME gameLibs.ioEventsPoll STATIC LAX
+  FILES_CMAKE ioEventsPoll_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${includes}
+  COMPILE_OPTIONS PRIVATE ${options}
+  BUILD_DEPENDENCIES PRIVATE 3rdPartyLibs.libev
+)

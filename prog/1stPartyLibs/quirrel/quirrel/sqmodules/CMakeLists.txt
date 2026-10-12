@@ -1,12 +1,10 @@
 # Quirrel's module system (require(), file access); the engine's build replaces upstream's CMakeLists.txt
-set(sources sqmodules.cpp path.cpp helpers.cpp)
-if(CMAKE_SYSTEM_NAME MATCHES "^(Darwin|Linux|Windows)$")
-  list(APPEND sources deffileaccess.cpp)
-endif()
 set(options)
 if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
   list(APPEND options -wd4267)
 endif()
-dagor_add_library(1stPartyLibs.quirrel.quirrel.sqmodules LAX ${sources})
-target_compile_options(1stPartyLibs.quirrel.quirrel.sqmodules PRIVATE ${options})
-target_link_libraries(1stPartyLibs.quirrel.quirrel.sqmodules PRIVATE Dagor::QuirrelHeaders)
+dagor_add_target(NAME 1stPartyLibs.quirrel.quirrel.sqmodules STATIC LAX
+  FILES_CMAKE sqmodules_files.cmake
+  COMPILE_OPTIONS PRIVATE ${options}
+  BUILD_DEPENDENCIES PRIVATE Dagor::QuirrelHeaders
+)

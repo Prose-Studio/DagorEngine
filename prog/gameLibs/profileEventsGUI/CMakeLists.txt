@@ -1,7 +1,5 @@
-set(includes ${DAGOR_PROG_DIR}/engine/dagorInclude ${DAGOR_PROG_DIR}/gameLibs/publicInclude)
-list(APPEND deps 3rdPartyLibs.eastl)
-set(sources profileEventsGUI.cpp)
-
-dagor_add_library(gameLibs.profileEventsGUI ${sources})
-target_include_directories(gameLibs.profileEventsGUI PRIVATE ${includes})
-target_link_libraries(gameLibs.profileEventsGUI PRIVATE ${deps})
+dagor_add_target(NAME gameLibs.profileEventsGUI STATIC
+  FILES_CMAKE profileEventsGUI_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/engine/dagorInclude ${DAGOR_PROG_DIR}/gameLibs/publicInclude
+  BUILD_DEPENDENCIES PRIVATE 3rdPartyLibs.eastl
+)

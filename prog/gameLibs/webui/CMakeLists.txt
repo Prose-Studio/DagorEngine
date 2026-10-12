@@ -9,9 +9,10 @@ if(CMAKE_SYSTEM_NAME STREQUAL "tvOS")
 endif()
 list(TRANSFORM plugins PREPEND gameLibs.webui.plugins.)
 
-dagor_add_library(gameLibs.webui httpserver.cpp bson.cpp)
+dagor_add_target(NAME gameLibs.webui STATIC
+  FILES_CMAKE webui_files.cmake
+  BUILD_DEPENDENCIES PRIVATE ${plugins}
+)
 target_include_directories(gameLibs.webui PRIVATE ${DAGOR_PROG_DIR}/gameLibs/publicInclude/quirrel
   ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/engine/sharedInclude # for access to the shaders' implementation
 )
-target_link_libraries(gameLibs.webui PRIVATE ${plugins})
-dagor_target_stringify(gameLibs.webui webuiIndexTemplate.html)
