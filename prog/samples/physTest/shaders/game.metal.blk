@@ -1,2 +1,0 @@
-include "game.dx11.blk"
-"@override:outDumpName":t="../../../../samples/physTest/gameMTL"

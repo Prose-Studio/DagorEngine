@@ -1,2 +1,0 @@
-include "../../../prog/daNetGame/shaders/_build/shaders_impostorbaker.blk"
-"@override:outDumpName":t="../../tools/tools.impostorbakerDX12"

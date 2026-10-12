@@ -106,7 +106,7 @@ target{ name:t="myGame.scenarios"; layer:t="scenario"; path:t="tests/scenarios";
 Scenario targets require a GPU and a display and never run in parallel with other GPU targets.
 
 `args:t=` adds game arguments, e.g. switches that make the game start the scene directly instead of its menu
-(outerSpace: `args:t="-config:disableMenu:b=yes -config:licenseAccepted:b=yes"`).
+(`args:t="-config:disableMenu:b=yes"`).
 
 Test functions run like entity systems: `query` and `find_query` work in them, and an `[es]` declared in a test file
 runs every frame of `advance_frames`.

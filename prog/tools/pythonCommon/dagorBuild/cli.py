@@ -1,4 +1,4 @@
-"""dng.py build --jam: the jam build of the engine tools (cdk), dargbox, the project template and the samples."""
+"""dng.py build --jam: the jam build of the engine tools (cdk), dargbox and the project template."""
 import argparse
 import os
 import sys
@@ -10,26 +10,19 @@ PROJECTS = {
   'cdk': (None, None, None, True),
   'dargbox': ('prog/tools/dargbox', None, None, True),
   'dngEmpty': ('templates/dng-empty/prog', None, None, True),
-  'physTest': ('prog/samples/physTest', 'samples/physTest', 'samples-base.7z', False),
-  'skiesSample': ('samples/skiesSample/prog', 'samples/skiesSample/develop', 'samples-base.7z', False),
-  'testGI': ('samples/testGI/prog', 'samples/testGI/develop', 'samples-base.7z', False),
-  'outerSpace': ('outerSpace/prog', 'outerSpace/develop', 'outerSpace-devsrc.7z', False),
-  'dngSceneViewer': ('samples/dngSceneViewer/prog', 'samples/dngSceneViewer/viewer/content', 'dngSceneViewer.7z', False),
 }
-SAMPLES = [p for p, (_, content, _, _) in PROJECTS.items() if content]
 
 EPILOG = '''examples:
   python dng.py build                       the engine tools, dargbox and the project template
   python dng.py build cdk -c code           only the engine tools
-  python dng.py build samples               the samples whose content is unpacked (see README.md)
-  python dng.py build outerSpace -c code -c shaders --arch x86_64'''
+  python dng.py build dngEmpty -c code --arch x86_64'''
 
 
 def make_parser():
   p = argparse.ArgumentParser(prog='dng.py build', description=__doc__, epilog=EPILOG,
                               formatter_class=argparse.RawDescriptionHelpFormatter)
   p.add_argument('projects', nargs='*', metavar='PROJECT',
-                 help='{} or samples (default: {})'.format(', '.join(PROJECTS), ' '.join(p for p in PROJECTS if PROJECTS[p][3])))
+                 help='{} (default: {})'.format(', '.join(PROJECTS), ' '.join(p for p in PROJECTS if PROJECTS[p][3])))
   p.add_argument('-c', '--component', action='append', default=[], metavar='COMPONENT',
                  help='{}, repeatable or comma separated (default: everything each project builds)'.format(', '.join(COMPONENTS)))
   p.add_argument('--arch', default='', help='target architecture, e.g. x86_64, arm64 (default: the host\'s)')
@@ -65,9 +58,9 @@ def main(argv):
     if c not in COMPONENTS:
       make_parser().error('unknown component "{}", expected {}'.format(c, ', '.join(COMPONENTS)))
   for p in args.projects:
-    if p not in PROJECTS and p != 'samples':
-      make_parser().error('unknown project "{}", expected {} or samples'.format(p, ', '.join(PROJECTS)))
-  named = {s for p in args.projects for s in (SAMPLES if p == 'samples' else [p])}
+    if p not in PROJECTS:
+      make_parser().error('unknown project "{}", expected {}'.format(p, ', '.join(PROJECTS)))
+  named = set(args.projects)
   projects = [p for p in PROJECTS if (p in named if named else PROJECTS[p][3])]
 
   sync_tools_data(args.dry_run)  # data of the engine tools that is not built

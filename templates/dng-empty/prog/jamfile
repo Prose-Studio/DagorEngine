@@ -111,7 +111,7 @@ if $(Dedicated) != yes {
     }
     if $(HaveSound) != no { LINKopt += -framework AudioUnit -framework CoreAudio ; }
   } else {
-    Exit unsupported Platform\=$(Platform) for Target\=$(Target): add its packaging here, see outerSpace/prog/jamfile ;
+    Exit unsupported Platform\=$(Platform) for Target\=$(Target): add its packaging here ;
   }
 }
 

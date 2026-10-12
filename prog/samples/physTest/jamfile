@@ -1,4 +1,0 @@
-Root    ?= ../../.. ;
-Location = prog/samples/physTest ;
-
-include $(Root)/$(Location)/jamfile-test-bullet ;

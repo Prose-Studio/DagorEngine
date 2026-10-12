@@ -1,5 +1,0 @@
-Root    ?= ../../.. ;               # directory where 'prog' located
-PhysEngine = JOLT ;
-
-include $(Root)/prog/samples/physTest/jamfile-phys-test ;
-include $(Root)/prog/_jBuild/build.jam ;

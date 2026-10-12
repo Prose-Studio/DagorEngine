@@ -1,5 +1,0 @@
-internal {
-  //add circuit-specific data here
-}
-
-defaultCircuit:t="internal"

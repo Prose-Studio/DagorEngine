@@ -1,6 +1,0 @@
-@echo off
-del ..\..\game\compiledShaders\gameDX12.ps50.shdump.bin
-
-call ..\..\..\prog\_jBuild\make_dagor_tools_path.cmd
-%DAGOR_CDK_DIR%\dsc2-dx12-dev.exe .\shaders_dx12.blk -q -shaderOn -nodisassembly -commentPP -codeDumpErr -maxVSF 4096 -o ..\..\..\_output\shaders\%BRANCH%\outerSpace-game~dx12 -wx %*
-if %ERRORLEVEL% NEQ 0 exit /b 1

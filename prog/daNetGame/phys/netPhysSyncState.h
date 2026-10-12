@@ -7,7 +7,7 @@
 
 // Reliable sync state of a phys actor as known by one connection, stored packed
 // in BasePhysActor::allSyncStates (see phys_sync_states_packed_t). Kept free of
-// framework dependencies so unit tests can exercise it (samples/unittest).
+// framework dependencies so unit tests can exercise it.
 enum class PhysActorSyncState // Note: shall fit in 2 bits
 {
   Normal,

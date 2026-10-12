@@ -34,8 +34,8 @@ An empty daNetGame game: a client and a dedicated server, an empty default world
 with a camera, one sample entity system, the scripts of the tools (daEditor, daViewer, dabuild, daImpostor) and a test
 target of every [test layer](../testing/overview.md). Its `README.md` describes the layout.
 
-The template is under the engine's license, like `prog/`. It takes nothing from the content of the sample games
-(`outerSpace`, the downloadable sample assets), which is licensed differently: the textures the renderer needs by name
+The template is under the engine's license, like `prog/`. It takes nothing from Gaijin's downloadable sample content,
+which is licensed differently: the textures the renderer needs by name
 (stars, moon, strata clouds, a paint palette) are generated placeholders in `develop/assets/base` to be replaced, and
 water, glass scratches, fluid wind and UI fonts are off until a game brings their assets (see `gameparams.blk` and
 `settings.blk` in the template).

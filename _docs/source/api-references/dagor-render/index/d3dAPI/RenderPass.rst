@@ -1,7 +1,6 @@
 Render Pass
 =================================================
 
-* See ``samples/testDrv3d/render_pass_tests.h`` for example usage.
 
 Callable D3D:: methods
 ----------------------

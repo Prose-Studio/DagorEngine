@@ -1,18 +1,11 @@
 name: cmake
 
-# The CMake build, which replaces jam step by step (see prog/cmake). It runs next to the jam-based tests.yaml until the
-# port is complete: dng.py configures, builds and tests each tree (dng.py test --ci: hosted runners have no GPU, so
+# The CMake build: dng.py configures, builds and tests each tree (dng.py test --ci: hosted runners have no GPU, so
 # tests labeled requires-gpu or requires-display are excluded). The deps cache (SDKs, LLVM) is keyed on the manifest.
 # Weekly (and on demand) the Visual Studio and Xcode generators configure the tests tree and build one test program.
 
 on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
-  schedule:
-    - cron: '0 4 * * 1' # weekly: the IDE generators
-  workflow_dispatch:
+  workflow_dispatch: # manual until the CMake migration is complete and validated
 
 concurrency:
   group: cmake-${{ github.ref }}

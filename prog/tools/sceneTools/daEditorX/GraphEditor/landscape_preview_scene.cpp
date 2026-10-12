@@ -104,7 +104,6 @@ void LandscapePreviewScene::actCamera(float dt, const CameraInput &in)
   flyMode->keys.turbo = in.turbo;
 
   // Turbo acceleration ramp, identical to MouseKbdFreeCameraDriver::act
-  // (prog/samples/commonFramework/de3_freeCam_mk.cpp lines 82-87).
   const bool moving = in.fwd || in.back || in.left || in.right;
   accelTime = (in.turbo && moving) ? (accelTime + dt) : 0.0f;
   flyMode->turboSpd = flyMode->moveSpd * TURBO_SCALE * (accelTime * 4.0f + 1.0f);

@@ -1,8 +1,0 @@
-  file:t = "postfx.dshl"
-  file:t = "downsampleDepth.dshl"
-  file:t = "ssao.dshl"
-  file:t = "light_probe.dshl"
-  file:t = "debugGbuffer.dshl"
-  file:t = "showGbuffer.dshl"
-  file:t = "gui_default.dshl"//for editor (and for future in game console)
-  file:t = "copy_tex.dshl"
