@@ -4,7 +4,9 @@
 #   SPIRV-Cross), stub (no bytecode)
 # Windows builds them all, Linux spirv and stub, macOS metal and stub. They run with mimalloc, without the memory
 # debug checks, outside Dbg (as jam's tools did).
-add_subdirectory(dx12)
+if(WIN32) # the DX12 back end (DXIL, with FXC as the preprocessor)
+  add_subdirectory(dx12)
+endif()
 add_subdirectory(hlsl2spirv)
 add_subdirectory(nodeBased)
 add_subdirectory(shaderBlobDisassembler)
