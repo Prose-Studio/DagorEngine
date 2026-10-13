@@ -12,8 +12,8 @@ if(DAGOR_ENGINE_TESTS)
       FILES_CMAKE ogg_test_files.cmake
       INCLUDE_DIRECTORIES PRIVATE ../include
       COMPILE_DEFINITIONS PRIVATE _V_SELFTEST
-      COMPILE_OPTIONS PRIVATE $<$<C_COMPILER_ID:Clang,AppleClang,GNU>:-Wno-format> # its reports print 32-bit ints as long
       BUILD_DEPENDENCIES PRIVATE engine.memory.minrtl # libogg allocates with the engine's memalloc
+      PROPERTIES COMPILE_WARNING_AS_ERROR OFF # upstream's test code, as it is (Apple builds fail on warnings)
     )
   endforeach()
   dagor_add_exec_test(3rdPartyLibs.libogg.bitwise COMMAND $<TARGET_FILE:libogg-1.1.3-bitwise> TAGS 3rdPartyLibs)
