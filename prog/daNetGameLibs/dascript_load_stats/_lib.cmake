@@ -1,0 +1,2 @@
+dagor_game_lib(PULLS daNetGameLibs_dascript_load_stats_DAS_pull_AOT)
+dagor_game_lib(LINK daNetGameLibs.dascript_load_stats)

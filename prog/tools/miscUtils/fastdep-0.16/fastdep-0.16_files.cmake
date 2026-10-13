@@ -1,0 +1,15 @@
+set(FILES
+  CheckVersion.cpp
+  CompileState.cpp
+  Define.cpp
+  Element.cpp
+  Expression.cpp
+  fastdep.cpp
+  FileCache.cpp
+  FileStructure.cpp
+  If.cpp
+  Include.cpp
+  MappedFile.cpp
+  realpath.cpp
+  Sequence.cpp
+)

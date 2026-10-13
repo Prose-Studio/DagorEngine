@@ -1,0 +1,26 @@
+set(FILES
+  assetStatsFiller.cpp
+  entity.cpp
+  entityMatEditor.cpp
+  entityMatEditorUndo.cpp
+  entityMatFileResource.cpp
+  entityMatProperties.cpp
+  objPropEditor.cpp
+  objPropDlg.cpp
+  shaderPropSeparators.cpp
+  colorDlgAppMat.cpp
+  saveAsCompositeDlg.cpp
+  compositeEditor.cpp
+  compositeEditorSubStack.cpp
+  compositeEditorCopyDlg.cpp
+  compositeEditorGizmoClient.cpp
+  compositeEditorPanel.cpp
+  compositeEditorToolbar.cpp
+  compositeEditorTree.cpp
+  compositeEditorTreeData.cpp
+  compositeEditorTreeDataNode.cpp
+  compositeEditorUndo.cpp
+  compositeEditorViewport.cpp
+  outlineRenderer.cpp
+  editModeRenderer.cpp
+)

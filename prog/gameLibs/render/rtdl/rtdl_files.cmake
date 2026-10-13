@@ -1,0 +1,5 @@
+if(DAGOR_GAME_BVH)
+  set(FILES rtdl.cpp)
+else()
+  set(FILES rtdl_stub.cpp)
+endif()

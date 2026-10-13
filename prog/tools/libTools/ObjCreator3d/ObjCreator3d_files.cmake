@@ -1,0 +1,11 @@
+set(FILES
+  objCreator3d.cpp
+  stairs.cpp
+  plane.cpp
+  sphere.cpp
+  box.cpp
+  cylinder.cpp
+  polyMesh.cpp
+  loft.cpp
+  capsule.cpp
+)

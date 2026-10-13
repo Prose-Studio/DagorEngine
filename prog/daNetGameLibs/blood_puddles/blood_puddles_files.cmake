@@ -1,0 +1,12 @@
+set(STRINGIFY_FILES private/dasModules/bloodPuddles.das)
+if(DAGOR_GAME_RENDERER)
+  dagor_glob_sources(FILES DIRS private/dasModules private/render GLOB *.cpp)
+  dagor_glob_sources(ES_FILES DIRS private/render GLOB *ES.cpp.inl)
+  dagor_glob_sources(DAS_FILES DIRS private/render GLOB *.das)
+  # the debug entity systems in Dev and Dbg
+  dagor_glob_sources(debug DIRS debug/render GLOB *ES.cpp.inl)
+  list(TRANSFORM debug REPLACE "^(.+)$" "$<$<CONFIG:Dev,Dbg>:\\1>")
+  list(APPEND ES_FILES ${debug})
+else()
+  dagor_glob_sources(FILES DIRS private/dasModules private/dasModules/stub GLOB *.cpp)
+endif()

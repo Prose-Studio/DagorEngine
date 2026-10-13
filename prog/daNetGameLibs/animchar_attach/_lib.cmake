@@ -1,0 +1,2 @@
+dagor_game_lib(LINK daNetGameLibs.animchar_attach)
+dagor_game_lib(PULLS framework_animchar_attach_pull daNetGameLibs_animchar_attach_DAS_pull_AOT)

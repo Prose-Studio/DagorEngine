@@ -1,0 +1,5 @@
+if(DAGOR_GAME_RENDERER)
+  dagor_game_lib(PULLS framework_local_tone_mapping_pull daNetGameLibs_local_tone_mapping_DAS_pull_AOT)
+  dagor_game_lib(INCLUDES ${DAGOR_PROG_DIR}/gameLibs/render/daFrameGraph)
+  dagor_game_lib(LINK daNetGameLibs.local_tone_mapping)
+endif()

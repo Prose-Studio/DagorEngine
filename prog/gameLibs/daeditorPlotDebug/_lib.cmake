@@ -1,0 +1,2 @@
+dagor_game_lib(PULLS DaeditorPlotDebugModule_pull)
+dagor_game_lib(LINK gameLibs.daeditorPlotDebug)

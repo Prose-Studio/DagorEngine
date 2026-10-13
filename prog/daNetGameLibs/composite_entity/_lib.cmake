@@ -1,0 +1,2 @@
+dagor_game_lib(PULLS daNetGameLibs_composite_entity_DAS_pull_AOT)
+dagor_game_lib(LINK daNetGameLibs.composite_entity)

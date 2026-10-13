@@ -1,0 +1,1 @@
+dagor_game_lib(LINK daNetGameLibs.screen_night_vision)

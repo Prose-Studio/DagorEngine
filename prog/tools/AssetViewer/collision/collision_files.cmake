@@ -1,0 +1,13 @@
+set(FILES
+  main.cpp
+  collision.cpp
+  nodesProcessing.cpp
+  selectionNodesProcessing.cpp
+  collisionNodesSettings.cpp
+  combinedNodesProcessing.cpp
+  convexHullComputerProcessing.cpp
+  convexVhacdProcessing.cpp
+  kdopProcessing.cpp
+  collisionUtils.cpp
+  physMatLegend.cpp
+)

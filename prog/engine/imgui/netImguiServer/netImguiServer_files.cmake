@@ -1,0 +1,1 @@
+set(FILES NetImguiServer_HAL_dagor.cpp NetImguiServer_textures_dagor.cpp)

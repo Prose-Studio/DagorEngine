@@ -1,0 +1,2 @@
+dagor_game_lib(PULLS daNetGameLibs_ri_phys_DAS_pull_AOT)
+dagor_game_lib(LINK daNetGameLibs.ri_phys)

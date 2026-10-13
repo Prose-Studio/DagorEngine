@@ -214,12 +214,18 @@ def value(word, kind):
     w = w.replace('$({})'.format(var), fixed)
   if '$(' in w or '[' in w:
     raise Untranslatable(word)
-  if kind == 'deps' and w.startswith('${DAGOR_PROG_DIR}/'):
-    w = w[len('${DAGOR_PROG_DIR}/'):]
-  if kind == 'libs':  # Ws2_32.lib and -lX11 are the libraries Ws2_32 and X11
-    w = re.sub(r'(?i)\.lib$', '', w) if '/' not in w else w
-    w = re.sub(r'^-l', '', w)
-    w = re.sub(r'^"?-framework\s+(\w+)"?$', r'-Wl,-framework,\1', w)  # one argument for the linker driver
+  if kind == 'deps':  # a library dir under prog/ is the target named after it
+    if w.startswith('${DAGOR_PROG_DIR}/'):
+      w = w[len('${DAGOR_PROG_DIR}/'):]
+    w = w.replace('/', '.') if '::' not in w else w
+  if kind == 'libs':  # Ws2_32.lib and -lX11 are the system libraries System::ws2_32 and System::X11
+    m = re.fullmatch(r'"?-framework\s+(\w+)"?', w)
+    if m:
+      return '"$<LINK_LIBRARY:FRAMEWORK,{}>"'.format(m.group(1))
+    if '/' not in w and re.search(r'(?i)\.lib$', w):
+      return 'System::' + re.sub(r'(?i)\.lib$', '', w).lower()
+    if w.startswith('-l'):
+      return 'System::' + w[2:]
   return w
 
 
@@ -367,6 +373,7 @@ class Converter:
     self.user_vars = set()
     self.derived = 0
     self.locals = {}
+    self.nonempty = set()  # the jamfile's lists that something is put into
 
   def refs(self, depth, values):
     """values with $(V) and $(V:D=dir) of the jamfile's own list variables as CMake ${...}"""
@@ -458,7 +465,7 @@ class Converter:
       except Untranslatable:
         self.todo_line(depth, src)
         return
-      head = 'dagor_game_lib({} '.format('DEPS' if kind == 'deps' else 'INCLUDES')
+      head = 'dagor_game_lib({} '.format('LINK' if kind == 'deps' else 'INCLUDES')
       self.emit(depth, head + cmake_values(vals, depth, head) + ')')
       return
     if var in LIST_VARS:
@@ -541,6 +548,8 @@ class Converter:
       except Untranslatable:
         self.todo_line(depth, src)
         return
+      if vals:
+        self.nonempty.add(var)
       head = ('list(APPEND {} ' if op == '+=' and var in self.user_vars else 'set({} ').format(var)
       self.emit(depth, head + cmake_values(vals, depth, head) + ')')
       self.user_vars.add(var)
@@ -557,8 +566,7 @@ class Converter:
         _, var, target, op, values = s
         src = '{} on {} {} {} ;'.format(var, target, op, ' '.join(values))
         if var in ('opt', 'CPPopt') and '$(' not in target:
-          self.emit(depth, 'list(APPEND source_options {} {})'.format(target, cmake_values(values)))
-          self.used.add('source_options')
+          self.emit(depth, 'set_property(SOURCE {} APPEND PROPERTY COMPILE_OPTIONS {})'.format(target, ' '.join(values)))
         else:
           self.todo_line(depth, src)
       elif kind == 'include':
@@ -688,73 +696,79 @@ class Converter:
     return []
 
   def call(self):
+    """the target: dagor_add_library/executable or dagor_add_catch2_test with target_* calls, which the declaration
+    converter turns into dagor_add_target() with the sources in a _files.cmake"""
     s = self.scalars
     type_ = (s.get('TargetType') or ['lib'])[0]
+    rel = os.path.relpath(os.path.dirname(self.jamfile), os.path.join(ENGINE, 'prog')).replace(os.sep, '/')
     target = (s.get('Target') or [''])[0]
-    name = os.path.splitext(os.path.basename(re.sub(r'\$\([^)]*\)', '', target)))[0].rstrip('-~')
-    args = []
-    if s.get('StrictCompile') == ['yes']:
-      args.append('STRICT')
-    if s.get('UseQuirrel') == ['yes']:
-      args.append('QUIRREL')
-    elif s.get('quirrelHeaders'):
-      args.append('QUIRREL_HEADERS')
-    if s.get('ConsoleExe') == ['yes'] and not s.get('unitTest'):
-      args.append('CONSOLE')
+    exe_name = os.path.splitext(os.path.basename(re.sub(r'\$\([^)]*\)', '', target)))[0].rstrip('-~')
+    name = rel.replace('/', '.') if type_ == 'lib' or type_ == 'dll' and not exe_name else exe_name
+    if s.get('module'):
+      # build_module.jam: the .cpp of AllSrcFolder_CPP, the entity systems of AllSrcFolder_ES, the daScript of
+      # AllSrcFolder_DAS (the module's pull: DAS_PULL module, which dng_module() makes dagor_add_dng_module's DAS)
+      name = rel.replace('/', '.')
+      for var, out, glob in (('AllSrcFolder_CPP', 'sources', '*.cpp'), ('AllSrcFolder_ES', 'es_sources', '*ES.cpp.inl'),
+                             ('AllSrcFolder_DAS', 'das', '*.das')):
+        if var in self.nonempty:
+          self.emit(0, 'dagor_glob_sources({} DIRS ${{{}}} GLOB {})'.format(out, var, glob))
+          self.used.add(out)
+      s['StrictCompile'] = ['yes']
+      s.pop('UseQuirrel', None)  # dagor_add_dng_module links Quirrel
+    head = []
     if s.get('unitTest'):
-      args += self.test_manifest(name)
-    if s.get('cdk'):
-      args.append('CDK')
+      head = ['dagor_add_catch2_test(' + exe_name] + self.test_manifest(exe_name)
+    elif type_ == 'exe':
+      head = ['dagor_add_executable(' + name] + ([] if s.get('ConsoleExe') == ['yes'] else ['WIN32'])
+    else:
+      head = ['dagor_add_library(' + name] + (['SHARED'] if type_ == 'dll' else [])
+    if s.get('StrictCompile') != ['yes']:
+      head.append('LAX')
     if s.get('Config') == ['rel']:
-      args.append('NO_CONFIG_POSTFIX')  # jam built it in rel only, so without a config suffix (prog/cmake/DESIGN.md)
-    for var, prop in (('Exceptions', 'EXCEPTIONS'), ('Rtti', 'RTTI')):
-      if s.get(var) in (['yes'], ['no']):
-        args.append('{} {}'.format(prop, 'ON' if s[var] == ['yes'] else 'OFF'))
-      elif s.get(var) == ['SEH']:
-        args.append('{} SEH'.format(prop))
+      head.append('NO_CONFIG_POSTFIX')  # jam built it in rel only, so without a config suffix (prog/cmake/DESIGN.md)
     if 'OutDir' in s:
       try:
-        args.append('OUTPUT_DIR ' + value(s['OutDir'][0], 'dirs'))
+        head += ['OUTPUT_DIRECTORY', value(s['OutDir'][0], 'dirs')]
       except Untranslatable:
         self.todo_line(0, 'OutDir = {} ;'.format(' '.join(s['OutDir'])))
-    for var, kw in (('sources', 'SOURCES'), ('force_includes', 'FORCE_INCLUDES'), ('includes', 'PRIVATE_INCLUDES'),
-                    ('defines', 'PRIVATE_DEFINES'), ('options', 'COMPILE_OPTIONS'), ('c_options', 'C_OPTIONS'),
-                    ('source_options', 'SOURCE_OPTIONS'), ('deps', 'DEPS'), ('libs', 'SYSTEM_LIBS'),
-                    ('link_options', 'LINK_OPTIONS'), ('license_files', 'LICENSE_FILES'), ('stringify', 'STRINGIFY'),
-                    ('stringify_array', 'STRINGIFY_ARRAY'), ('es_sources', 'ES_SOURCES')):
+    if 'sources' in self.used:
+      head.append('${sources}')
+    self.emit(0, ' '.join(head) + ')')
+    deps = (['${deps}'] if 'deps' in self.used else [])
+    if s.get('UseQuirrel') == ['yes']:
+      deps.append('Dagor::Quirrel')
+    elif s.get('quirrelHeaders'):
+      deps.append('Dagor::QuirrelHeaders')
+    calls = [('target_include_directories', 'includes', 'PRIVATE ${includes}'),
+             ('target_compile_definitions', 'defines', 'PRIVATE ${defines}'),
+             ('target_compile_options', 'options', 'PRIVATE ${options}'),
+             ('target_compile_options', 'c_options', 'PRIVATE "$<$<COMPILE_LANGUAGE:C>:${c_options}>"'),
+             ('target_link_options', 'link_options', 'PRIVATE ${link_options}'),
+             ('dagor_target_force_include', 'force_includes', '${force_includes}'),
+             ('dagor_target_licenses', 'license_files', '${license_files}'),
+             ('dagor_target_stringify', 'stringify', '${stringify}'),
+             ('dagor_target_stringify', 'stringify_array', 'ARRAY ${stringify_array}'),
+             ('dagor_target_es_sources', 'es_sources', '${es_sources}'),
+             ('dagor_target_das_aot', 'das', 'PULL module ${das}')]
+    if s.get('module') and s.get('DasModule') and 'das' not in self.used:
+      self.emit(0, 'dagor_target_das_aot({} PULL module)'.format(name))
+    for cmd, var, args in calls:
       if var in self.used:
-        args.append('{} ${{{}}}'.format(kw, var))
-    if s.get('module'):
-      # build_module.jam: STRICT QUIRREL, its own sources; the dirs of the module's lists
-      args = [a for a in args if a not in ('STRICT', 'QUIRREL') and not a.startswith('SOURCES ')]
-      dirs = []
-      for var, kw in (('AllSrcFolder_CPP', 'CPP_DIRS'), ('AllSrcFolder_ES', 'ES_DIRS')):
-        if var in self.user_vars:
-          dirs.append('{} ${{{}}}'.format(kw, var))
-      if s.get('DasModule'):
-        dirs.append('DAS')
-        if 'AllSrcFolder_DAS' in self.user_vars:
-          dirs.append('DAS_DIRS ${AllSrcFolder_DAS}')
-      if 'pull_vars' in self.used:
-        dirs.append('PULL_VARS ${pull_vars}')
-      args = dirs + args
-      head = 'dagor_add_dng_module({}'.format((s.get('Module') or ['TODO'])[0])
-    elif s.get('unitTest'):
-      head = 'dagor_add_catch2_test({}'.format(name)
-    elif type_ == 'exe':
-      head = 'dagor_add_executable({}'.format(name)
-    elif type_ == 'dll':
-      head = 'dagor_add_shared_library({}'.format(name)
-    else:
-      head = 'dagor_add_library('
-    sep = '' if head.endswith('(') else ' '
-    if len(head) + 1 + sum(len(a) + 1 for a in args) <= 118:
-      self.emit(0, head + sep + ' '.join(args) + ')')
-    else:
-      self.emit(0, head + sep + args[0] if args else head)
-      for a in args[1:]:
-        self.emit(1, a)
-      self.emit(0, ')')
+        self.emit(0, '{}({} {})'.format(cmd, name, args))
+    if s.get('module') and 'pull_vars' in self.used:
+      self.emit(0, 'set_target_properties({} PROPERTIES PULL_VARS ${{pull_vars}})'.format(name))
+    if deps or 'libs' in self.used:
+      self.emit(0, 'target_link_libraries({} PRIVATE {})'.format(name, ' '.join(deps + (['${libs}'] if 'libs' in self.used else []))))
+    props = []
+    for var, prop in (('Exceptions', 'DAGOR_EXCEPTIONS'), ('Rtti', 'DAGOR_RTTI')):
+      if s.get(var) in (['yes'], ['no']):
+        props += [prop, 'ON' if s[var] == ['yes'] else 'OFF']
+      elif s.get(var) == ['SEH']:
+        props += [prop, 'SEH']
+    if props:
+      self.emit(0, 'set_target_properties({} PROPERTIES {})'.format(name, ' '.join(props)))
+    if s.get('cdk'):
+      self.emit(0, 'dagor_install_cdk({})'.format(name))
 
   def convert(self, text):
     stmts = Parser(tokens(text)).parse()
@@ -769,9 +783,7 @@ class Converter:
     if not self.lib_mode:
       self.lines.append('')
       self.call()
-    header = ['# Ported from {} (jam2cmake/skeleton.py{})'.format(
-      rel, '; {} TODO(jam) to port by hand'.format(self.todo) if self.todo else '')]
-    return '\n'.join(header + self.lines[body_start:]).replace('\n\n\n', '\n\n') + '\n'
+    return '\n'.join(self.lines[body_start:]).replace('\n\n\n', '\n\n').lstrip('\n') + '\n'
 
 
 def main(argv):

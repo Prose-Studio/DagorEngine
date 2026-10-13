@@ -1,0 +1,2 @@
+dagor_game_lib(PULLS daNetGameLibs_verify_ecs_DAS_pull_AOT)
+dagor_game_lib(LINK daNetGameLibs.verify_ecs)

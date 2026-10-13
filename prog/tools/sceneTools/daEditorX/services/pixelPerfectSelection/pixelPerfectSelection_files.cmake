@@ -1,0 +1,1 @@
+set(FILES pixelPerfectSelection.cpp pixelPerfectSelectionService.cpp)

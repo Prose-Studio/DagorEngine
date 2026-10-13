@@ -1,0 +1,5 @@
+if(DAGOR_GAME_RENDERER)
+  dagor_game_lib(PULLS framework_projectors_pull)
+  dagor_game_lib(INCLUDES ${DAGOR_PROG_DIR}/gameLibs/render/daFrameGraph)
+  dagor_game_lib(LINK daNetGameLibs.projectors)
+endif()

@@ -1,0 +1,2 @@
+dagor_game_lib(PULLS framework_burnt_ground_editor_stub_pull)
+dagor_game_lib(LINK daNetGameLibs.burnt_ground.editor_stub)

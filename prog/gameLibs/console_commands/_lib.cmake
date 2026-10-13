@@ -1,0 +1,2 @@
+dagor_game_lib(PULLS gameLibs_console_commands_DAS_pull_AOT)
+dagor_game_lib(LINK gameLibs.console_commands)

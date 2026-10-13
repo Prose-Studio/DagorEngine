@@ -1,0 +1,4 @@
+dagor_add_target(NAME 3rdPartyLibs.udis86 STATIC LAX
+  FILES_CMAKE udis86_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
+)

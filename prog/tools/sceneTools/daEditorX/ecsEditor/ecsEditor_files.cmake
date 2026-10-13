@@ -1,0 +1,12 @@
+set(FILES
+  ecsSceneOutliner/ecsSceneOutlinerDragDrop.cpp
+  ecsSceneOutliner/ecsSceneOutlinerEventHandler.cpp
+  ecsSceneOutliner/ecsSceneOutlinerPanel.cpp
+  ecsSceneOutliner/ecsSceneOutlinerUndoRedo.cpp
+  ecsEditorMain.cpp
+  ecsEditorPlugin.cpp
+  ecsEntityCreateData.cpp
+  ecsEntityObject.cpp
+  ecsObjectEditor.cpp
+  ecsSceneObject.cpp
+)

@@ -1,0 +1,11 @@
+set(AllSrcFolder_ES )
+set(AllSrcFolder_CPP )
+if(DAGOR_GAME_RENDERER)
+  list(APPEND AllSrcFolder_CPP dasModules)
+  set(AllSrcFolder_DAS test)
+  list(APPEND AllSrcFolder_ES render)
+endif()
+
+dagor_glob_sources(FILES DIRS ${AllSrcFolder_CPP} GLOB *.cpp)
+dagor_glob_sources(ES_FILES DIRS ${AllSrcFolder_ES} GLOB *ES.cpp.inl)
+dagor_glob_sources(DAS_FILES DIRS ${AllSrcFolder_DAS} GLOB *.das)

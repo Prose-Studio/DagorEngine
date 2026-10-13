@@ -1,0 +1,17 @@
+set(FILES
+  texturePSGenShader.cpp
+  textureGenerator.cpp
+  textureRegManager.cpp
+  textureGenDF.cpp
+  textureGenBlurIter.cpp
+  textureGenConvolution.cpp
+  textureGenAutolevels.cpp
+  textureGenFillAreas.cpp
+  textureGenErosion.cpp
+  textureGenCache.cpp
+  textureDataCache.cpp
+  textureGenPseudoDLA.cpp
+  textureGenRenderText.cpp
+  textureGenImgToGradient.cpp
+  textureGenHeightmapOcclusion.cpp
+)

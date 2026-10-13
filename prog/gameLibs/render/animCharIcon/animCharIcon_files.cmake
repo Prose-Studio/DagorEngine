@@ -1,0 +1,1 @@
+set(FILES renderAnimCharIconBase.cpp animCharIconAdditionalData.cpp)

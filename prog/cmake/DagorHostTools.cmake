@@ -6,7 +6,7 @@
 #   - DAGOR_HOST_TOOLS_DIR (a CDK, e.g. tools/dagor_cdk/windows-x86_64 of a prebuilt engine): the program there;
 #   - an engine tree that is not cross-compiling: the tree's own target;
 #   - otherwise (games, cross builds) the engine's CDK for the host, built on demand: target dagor.hostTools.<variant>
-#     configures and builds the engine's <host>-cdk preset (the editor tools, daBuild and its plugins: <host>-editor), the trees
+#     configures and builds the engine's <host>-cdk preset (daBuild with its plugins and ddsxCvt2: <host>-assets), the trees
 #     cmake --preset makes in <engine>/build, and installs them into <engine>/tools/dagor_cdk/<host>. Trees sharing it
 #     build it under a lock, one at a time; when it is up to date that is a quick check.
 #
@@ -18,8 +18,8 @@ include_guard(GLOBAL)
 
 set(DAGOR_HOST_TOOLS_DIR "" CACHE PATH "A CDK (prebuilt engine tools) for the build steps; empty builds the engine's")
 
-# the CDK tools of the editor tree (on the shared kernel; daBuild loads the exporter plugins built with it)
-set(_DAGOR_EDITOR_HOST_TOOLS daBuild ddsxCvt2)
+# the CDK tools of the assets tree (on the shared kernel; daBuild loads the exporter plugins built with it)
+set(_DAGOR_ASSETS_HOST_TOOLS daBuild ddsxCvt2)
 # the CDK tools jam built rel only, without a config postfix (dagor_install_cdk checks this list)
 set(DAGOR_CDK_NO_POSTFIX binBlk ddsx2dds ddsxCvt dolphin whale duktape pcDdsxConv iosDdsxConv andDdsxConv)
 
@@ -44,8 +44,8 @@ function(dagor_host_tool tool out)
   endif()
 
   set(variant cdk)
-  if(tool IN_LIST _DAGOR_EDITOR_HOST_TOOLS)
-    set(variant editor)
+  if(tool IN_LIST _DAGOR_ASSETS_HOST_TOOLS)
+    set(variant assets)
   endif()
   if(NOT TARGET dagor.hostTools.${variant})
     string(TOLOWER "${DAGOR_HOST_PLATFORM}" host)

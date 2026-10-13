@@ -1,0 +1,10 @@
+set(FILES
+  fastPhys.cpp
+  fastPhysEd.cpp
+  fastPhysPanel.cpp
+  fastPhysObject.cpp
+  fastPhysBone.cpp
+  fastPhysClipper.cpp
+  fastPhysPoint.cpp
+  fastPhysChar.cpp
+)

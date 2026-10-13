@@ -1,0 +1,10 @@
+set(FILES
+  av_allAssetsTree.cpp
+  av_assetBrowser.cpp
+  av_assetTreeDragHandler.cpp
+  av_tagManagement.cpp
+  av_assetSelectorCommon.cpp
+  av_globalState.cpp
+  av_selObjDlg.cpp
+  av_view.cpp
+)

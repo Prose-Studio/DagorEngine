@@ -31,8 +31,8 @@ endfunction()
 
 # --- what the tree is ------------------------------------------------------------------------------------------------
 dagor_option(DAGOR_VARIANT tests
-  "What the tree builds: the unit tests, the content tools (cdk), the editor tools on the shared kernel, the 3ds Max plugins, dargbox, or a game (the trees of projects)"
-  CHOICES tests cdk editor maxplug dargbox game)
+  "What the tree builds: the unit tests, the content tools (cdk), the asset build on the shared kernel (assets), the GUI editors (editor), the 3ds Max plugins, dargbox, or a game (the trees of projects)"
+  CHOICES tests cdk assets editor maxplug dargbox game)
 option(DAGOR_DEDICATED "The game tree builds the dedicated server (no rendering)" OFF)
 option(DAGOR_DAS_AOT_COMPILER "The game tree builds the game's daScript AOT compiler (a host program of its trees)" OFF)
 option(DAGOR_BUILD_ALL "Build every library and program of the tree, not only those of the variant" OFF)
@@ -79,7 +79,7 @@ endif()
 dagor_option(DAGOR_MARCH "${_march}" "CPU the code is tuned for (-march of GCC and clang; empty for the compiler's default)")
 dagor_option(DAGOR_CPP_STD 20 "C++ standard" CHOICES 20 23)
 set(_kernel static)
-if(DAGOR_VARIANT STREQUAL "editor")
+if(DAGOR_VARIANT MATCHES "^(assets|editor)$")
   set(_kernel dynamic)
 endif()
 dagor_option(DAGOR_KERNEL_LINKAGE ${_kernel} "The kernel linked into each program (static) or shared as daKernel (dynamic)"
@@ -164,11 +164,17 @@ set(_d3d_client_linux vulkan)
 set(_d3d_client_macOS Metal)
 set(_d3d_client_iOS Metal)
 set(_d3d_client_android vulkan)
+# the GUI editors render through the platform's drivers and the stub (jam's UseD3DMultiList of daEditor3x, AssetViewer)
+set(_d3d_editor_windows DX11 vulkan stub)
+set(_d3d_editor_linux vulkan stub)
+set(_d3d_editor_macOS Metal stub)
 set(_d3d stub)
 if(DAGOR_DAS_AOT_COMPILER)
   set(_d3d null)
 elseif(_client)
   set(_d3d ${_d3d_client_${DAGOR_PLATFORM}})
+elseif(DAGOR_VARIANT STREQUAL "editor")
+  set(_d3d ${_d3d_editor_${DAGOR_PLATFORM}})
 endif()
 set(DAGOR_D3D_DRIVERS "${_d3d}" CACHE STRING "3d drivers (a list of: ${_d3d_valid_${DAGOR_PLATFORM}})")
 foreach(_drv IN LISTS DAGOR_D3D_DRIVERS)
@@ -189,7 +195,7 @@ endif()
 # the shader system (engine/shaders): the editor tools load a second bindump; game clients have their own camera code;
 # the shaders' state code can be compiled to C++ (CppStcode) instead of being interpreted
 set(_building_tools OFF)
-if(DAGOR_VARIANT STREQUAL "editor")
+if(DAGOR_VARIANT MATCHES "^(assets|editor)$")
   set(_building_tools ON)
 endif()
 option(DAGOR_BUILDING_TOOLS "The tree builds the editor tools (jam's BuildingTools: a second bindump, ...)" ${_building_tools})
@@ -208,9 +214,10 @@ option(DAGOR_ES_CODEGEN "Generate the entity systems' registration code in the b
 option(DAGOR_NET_IMGUI "netImgui (remote ImGui) in the Dev, IRel and Dbg builds" ON)
 option(DAGOR_FORCE_LINK_DEBUG_LINES "Keep the debug line drawing in Rel and IRel" OFF)
 
-# the physics engine (Dagor::Phys, DagorPhys.cmake): Jolt, Bullet for the tools
+# the physics engine (Dagor::Phys, DagorPhys.cmake): Jolt, Bullet for the command-line tools (the GUI editors are on
+# Jolt, and link physBullet too)
 set(_phys Jolt)
-if(_tools)
+if(_tools AND NOT DAGOR_VARIANT STREQUAL "editor")
   set(_phys Bullet)
 endif()
 dagor_option(DAGOR_PHYS ${_phys} "Physics engine" CHOICES Jolt Bullet)

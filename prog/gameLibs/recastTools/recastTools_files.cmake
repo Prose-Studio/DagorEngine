@@ -1,0 +1,11 @@
+set(FILES
+  recastBuildCovers.cpp
+  recastBuildCovers1.cpp
+  recastBuildCovers2.cpp
+  recastBuildEdges.cpp
+  recastBuildJumpLinks.cpp
+  recastBuildJumpLinks1.cpp
+  recastBuildJumpLinks2.cpp
+  recastTileCacheDetail.cpp
+  recastTools.cpp
+)

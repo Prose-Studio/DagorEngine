@@ -1,0 +1,2 @@
+dagor_game_lib(PULLS framework_ground_holes_pull)
+dagor_game_lib(LINK daNetGameLibs.ground_holes gameLibs.groundHolesCore)

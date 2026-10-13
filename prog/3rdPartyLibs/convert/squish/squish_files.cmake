@@ -1,0 +1,11 @@
+set(FILES
+  alpha.cpp
+  clusterfit.cpp
+  colourblock.cpp
+  colourfit.cpp
+  colourset.cpp
+  maths.cpp
+  rangefit.cpp
+  singlecolourfit.cpp
+  squish.cpp
+)

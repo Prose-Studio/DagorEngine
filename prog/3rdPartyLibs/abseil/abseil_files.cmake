@@ -1,0 +1,11 @@
+set(FILES
+  absl/strings/numbers.cc
+  absl/strings/ascii.cc
+  absl/strings/match.cc
+  absl/strings/charconv.cc
+  absl/strings/internal/charconv_parse.cc
+  absl/strings/internal/charconv_bigint.cc
+  absl/strings/internal/memutil.cc
+  absl/numeric/int128.cc
+  absl/base/internal/raw_logging.cc
+)

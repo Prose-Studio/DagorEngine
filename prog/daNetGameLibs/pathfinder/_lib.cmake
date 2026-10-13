@@ -1,0 +1,2 @@
+dagor_game_lib(PULLS framework_pathfinder_pull daNetGameLibs_pathfinder_DAS_pull_AOT)
+dagor_game_lib(LINK daNetGameLibs.pathfinder)

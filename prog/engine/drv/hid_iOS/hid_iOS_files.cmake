@@ -1,0 +1,9 @@
+set(FILES
+  ms_classdrv.cpp
+  ms_device.cpp
+  kbd_classdrv.cpp
+  joy_acc_gyro_device.mm
+  joy_acc_gyro_classdrv.mm
+  acc_gyro.mm
+  ime_ios.mm
+)

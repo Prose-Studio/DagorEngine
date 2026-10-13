@@ -1,0 +1,1 @@
+dagor_game_lib(LINK daNetGameLibs.local_tone_mapping)

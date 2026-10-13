@@ -1,0 +1,5 @@
+if(WIN32)
+  set(FILES pcKinect.cpp)
+else()
+  set(FILES pcStub.cpp)
+endif()

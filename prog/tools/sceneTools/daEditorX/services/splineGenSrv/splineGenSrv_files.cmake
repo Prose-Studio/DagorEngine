@@ -1,0 +1,9 @@
+set(FILES
+  splineGenService.cpp
+  genLoft.cpp
+  genObjs.cpp
+  spline.cpp
+  poly.cpp
+  commonMath.cpp
+  triangulatePoly.cpp
+)

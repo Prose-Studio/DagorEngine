@@ -1,0 +1,2 @@
+dagor_game_lib(PULLS framework_terraform_pull TerraformModule_pull)
+dagor_game_lib(LINK daNetGameLibs.terraform)

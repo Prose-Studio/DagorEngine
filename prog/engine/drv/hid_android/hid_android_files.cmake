@@ -1,0 +1,11 @@
+set(FILES
+  and_sensor.cpp
+  ms_classdrv.cpp
+  ms_device.cpp
+  kbd_classdrv.cpp
+  joy_acc_gyro_classdrv.cpp
+  joy_acc_gyro_create.cpp
+  joy_acc_gyro_device.cpp
+  joy_helper_android.cpp
+  ime_android.cpp
+)

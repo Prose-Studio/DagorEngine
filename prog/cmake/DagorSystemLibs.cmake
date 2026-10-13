@@ -21,6 +21,7 @@ set(_dagor_pkg_apt_uuid uuid-dev)
 set(_dagor_pkg_apt_curl libcurl4-openssl-dev)
 set(_dagor_pkg_apt_ssl libssl-dev)
 set(_dagor_pkg_apt_crypto libssl-dev)
+set(_dagor_pkg_apt_dbus-1 libdbus-1-dev)
 set(_dagor_pkg_rpm_X11 libX11-devel)
 set(_dagor_pkg_rpm_Xrandr libXrandr-devel)
 set(_dagor_pkg_rpm_Xcursor libXcursor-devel)
@@ -35,6 +36,7 @@ set(_dagor_pkg_rpm_uuid libuuid-devel)
 set(_dagor_pkg_rpm_curl libcurl-devel)
 set(_dagor_pkg_rpm_ssl openssl-devel)
 set(_dagor_pkg_rpm_crypto openssl-devel)
+set(_dagor_pkg_rpm_dbus-1 dbus-devel)
 # provided by the C library or the toolchain, never looked up
 set(_dagor_system_libs_builtin c m rt pthread dl stdc++ c++ log android)
 
@@ -70,12 +72,12 @@ if(WIN32)
     iphlpapi version comdlg32 comctl32 uuid imm32 setupapi hid dxgi d3d11 d3d12 d3dcompiler dxguid dinput8 xinput
     psapi userenv crypt32 bcrypt secur32 normaliz wldap32 winhttp wininet mfplat mfuuid mfreadwrite mf strmiids
     propsys dwmapi uxtheme powrprof wtsapi32 netapi32 mpr rpcrt4 synchronization wbemuuid gdiplus msimg32 opengl32
-    runtimeobject dsound ncrypt delayimp wintrust
+    runtimeobject dsound ncrypt delayimp wintrust imagehlp
     clang_rt.builtins-x86_64 clang_rt.asan_dynamic-x86_64 clang_rt.profile-x86_64)
 else()
   dagor_system_library(m rt dl pthread stdc++)
 endif()
 if(LINUX)
-  dagor_system_library(X11 Xcursor Xrandr Xi xkbcommon xkbfile fltk udev pulse asound uuid curl ssl crypto)
+  dagor_system_library(X11 Xcursor Xrandr Xi xkbcommon xkbfile fltk udev pulse asound uuid curl ssl crypto dbus-1)
 endif()
 find_package(Threads REQUIRED)

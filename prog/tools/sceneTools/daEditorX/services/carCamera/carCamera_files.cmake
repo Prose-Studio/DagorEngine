@@ -1,0 +1,10 @@
+set(FILES
+  car_phys.cpp
+  car_obj.cpp
+  camera_controller.cpp
+  carDriver.cpp
+  steering.cpp
+  joystickParams.cpp
+  joystickDrv/joy_drv.cpp
+  phys_bullet.cpp
+)

@@ -161,19 +161,20 @@ function(_dagor_es_pulls target out)
 endfunction()
 
 # --- what a library adds to the game program (the libraries' _lib.cmake) ----------------------------------------------
-# dagor_game_lib([PULLS <pull>...] [INCLUDES <dir>...] [LINK <target>...] [SOURCES <file>...]): the game program of the
-# tree (its AOT compiler in a DAGOR_DAS_AOT_COMPILER tree) references the pulls, compiles with the include dirs and the
-# sources (relative to the calling file's dir), and links the libraries. A library's own CMakeLists.txt, which comes
+# dagor_game_lib([PULLS <pull>...] [INCLUDES <dir>...] [LINK <target>...] [SOURCES <file>...] [STRINGIFY <file>...]): the
+# game program of the tree (its AOT compiler in a DAGOR_DAS_AOT_COMPILER tree) references the pulls, compiles with the
+# include dirs and the sources (relative to the calling file's dir; STRINGIFY: embedded as text, a daScript module's
+# script), and links the libraries. A library's own CMakeLists.txt, which comes
 # before the game, names the pulls the game needs when it links the library in INTERFACE_DAGOR_GAME_PULLS (a custom
 # transitive property: the game gets those of its whole link closure).
 function(dagor_game_lib)
-  cmake_parse_arguments(PARSE_ARGV 0 arg "" "" "PULLS;INCLUDES;LINK;SOURCES")
+  cmake_parse_arguments(PARSE_ARGV 0 arg "" "" "PULLS;INCLUDES;LINK;SOURCES;STRINGIFY")
   get_property(game GLOBAL PROPERTY DAGOR_GAME_TARGET)
   if(NOT game)
     message(FATAL_ERROR "dagor_game_lib() in ${CMAKE_CURRENT_LIST_DIR}: the tree has no game (dagor_add_dng_game)")
   endif()
   set_property(TARGET ${game} APPEND PROPERTY DAGOR_GAME_PULLS ${arg_PULLS})
-  foreach(kind INCLUDES SOURCES)
+  foreach(kind INCLUDES SOURCES STRINGIFY)
     list(TRANSFORM arg_${kind} PREPEND "${CMAKE_CURRENT_LIST_DIR}/" REGEX "^[^/$][^:]*$")
   endforeach()
   if(arg_INCLUDES)
@@ -184,6 +185,9 @@ function(dagor_game_lib)
   endif()
   if(arg_SOURCES)
     target_sources(${game} PRIVATE ${arg_SOURCES})
+  endif()
+  if(arg_STRINGIFY)
+    dagor_target_stringify(${game} ${arg_STRINGIFY})
   endif()
 endfunction()
 

@@ -1,0 +1,11 @@
+set(FILES
+  nsb_ver.cpp
+  nsb_LightmappedScene.cpp
+  nsb_calcLmMapping.cpp
+  nsb_LmsLoad.cpp
+  nsb_LmsSave.cpp
+  nsb_StaticVisualScene.cpp
+  nsb_StdTonemapper.cpp
+  nsb_savelightmaps.cpp
+  nsb_export_lt.cpp
+)

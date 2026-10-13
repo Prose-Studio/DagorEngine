@@ -1,0 +1,2 @@
+dagor_game_lib(PULLS framework_tree_burning_pull)
+dagor_game_lib(LINK daNetGameLibs.tree_burning)

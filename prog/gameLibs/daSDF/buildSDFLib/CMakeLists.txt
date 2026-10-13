@@ -1,0 +1,5 @@
+dagor_add_target(NAME gameLibs.daSDF.buildSDFLib STATIC
+  FILES_CMAKE buildSDFLib_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
+  BUILD_DEPENDENCIES PRIVATE engine.daBVH engine.math
+)

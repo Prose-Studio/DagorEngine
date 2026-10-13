@@ -1,0 +1,34 @@
+set(FILES
+  cfg.cpp
+  common.cpp
+  dagimp.cpp
+  dagorLogWindow.cpp
+  datablk.cpp
+  debug.cpp
+  dllmain.cpp
+  dummy.cpp
+  expanim2.cpp
+  expUtil.cpp
+  font.cpp
+  freecam.cpp
+  layout.cpp
+  loadta.cpp
+  matConvUtil.cpp
+  mater.cpp
+  mater2.cpp
+  mathAng.cpp
+  meshtrace.cpp
+  milkShapeAnimImport.cpp
+  namemap.cpp
+  objectPropertiesEditor.cpp
+  objonsrf.cpp
+  physExport.cpp
+  polyBumpUtil.cpp
+  rbDummy.cpp
+  rolluppanel.cpp
+  ta.cpp
+  util.cpp
+  util2.cpp
+  vpconv.cpp
+  dagor.rc
+)

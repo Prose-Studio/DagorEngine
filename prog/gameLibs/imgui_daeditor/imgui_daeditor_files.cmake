@@ -1,0 +1,6 @@
+if(DAGOR_GAME_RENDERER)
+  dagor_glob_sources(DAS_FILES DIRS imgui imgui/animgraph GLOB *.das)
+  if(NOT DAGOR_GAME_EDITOR STREQUAL "0")
+    dagor_glob_sources(DAS_FILES DIRS imgui/daEditor imgui/daEditor/rendInst daEditor GLOB *.das)
+  endif()
+endif()

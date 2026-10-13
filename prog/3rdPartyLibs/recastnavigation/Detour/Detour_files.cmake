@@ -1,0 +1,13 @@
+set(FILES
+  Source/DetourAlloc.cpp
+  Source/DetourAssert.cpp
+  Source/DetourCommon.cpp
+  Source/DetourNavMesh.cpp
+  Source/DetourNavMeshDagor.cpp
+  Source/DetourNavMeshBuilder.cpp
+  Source/DetourNavMeshQuery.cpp
+  Source/DetourNavMeshQueryDagor.cpp
+  Source/DetourNode.cpp
+  Source/DetourPathCorridor.cpp
+  Source/DetourObstacleAvoidance.cpp
+)

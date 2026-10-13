@@ -1,0 +1,40 @@
+set(FILES client/crash_report_database_win.cc client/crashpad_client_win.cc)
+list(APPEND FILES
+  util/file/directory_reader_win.cc
+  util/file/file_io_win.cc
+  util/file/filesystem_win.cc
+  util/misc/clock_win.cc
+  util/misc/paths_win.cc
+  util/misc/time_win.cc
+  util/misc/capture_context_win.masm
+  util/net/http_transport_win.cc
+  util/process/process_memory_win.cc
+  util/synchronization/semaphore_win.cc
+  util/thread/thread_win.cc
+  util/win/command_line.cc
+  util/win/critical_section_with_debug_info.cc
+  util/win/exception_handler_server.cc
+  util/win/get_function.cc
+  util/win/get_module_information.cc
+  util/win/handle.cc
+  util/win/initial_client_data.cc
+  util/win/loader_lock.cc
+  util/win/module_version.cc
+  util/win/nt_internals.cc
+  util/win/ntstatus_logging.cc
+  util/win/process_info.cc
+  util/win/registration_protocol_win.cc
+  util/win/safe_terminate_process.masm
+  util/win/scoped_handle.cc
+  util/win/scoped_local_alloc.cc
+  util/win/scoped_process_suspend.cc
+  util/win/scoped_set_event.cc
+  util/win/session_end_watcher.cc
+)
+list(APPEND FILES
+  third_party/mini_chromium/mini_chromium/base/threading/thread_local_storage_win.cc
+  third_party/mini_chromium/mini_chromium/base/synchronization/lock_impl_win.cc
+  third_party/mini_chromium/mini_chromium/base/strings/string_util_win.cc
+  third_party/mini_chromium/mini_chromium/base/scoped_clear_last_error_win.cc
+  third_party/mini_chromium/mini_chromium/base/memory/page_size_win.cc
+)

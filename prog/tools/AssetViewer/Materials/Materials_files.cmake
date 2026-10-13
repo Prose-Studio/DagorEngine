@@ -1,0 +1,10 @@
+set(FILES
+  main.cpp
+  materials.cpp
+  mat_panel.cpp
+  mat_paramDesc.cpp
+  mat_shader.cpp
+  mat_param.cpp
+  mat_util.cpp
+  materialRec.cpp
+)

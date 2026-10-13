@@ -1,0 +1,5 @@
+dagor_game_lib(PULLS framework_package_physobj_pull)
+if(DAGOR_GAME_SOUND)
+  dagor_game_lib(PULLS daNetGameLibs_package_physobj_DAS_pull_AOT)
+endif()
+dagor_game_lib(LINK daNetGameLibs.package_physobj)

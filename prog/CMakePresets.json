@@ -45,6 +45,13 @@
       }
     },
     {
+      "name": "variant-assets",
+      "hidden": true,
+      "cacheVariables": {
+        "DAGOR_VARIANT": "assets"
+      }
+    },
+    {
       "name": "variant-maxplug",
       "hidden": true,
       "cacheVariables": {
@@ -80,6 +87,14 @@
         "engine",
         "windows",
         "variant-editor"
+      ]
+    },
+    {
+      "name": "windows-assets",
+      "inherits": [
+        "engine",
+        "windows",
+        "variant-assets"
       ]
     },
     {
@@ -163,6 +178,14 @@
       ]
     },
     {
+      "name": "linux-assets",
+      "inherits": [
+        "engine",
+        "linux",
+        "variant-assets"
+      ]
+    },
+    {
       "name": "linux-dargbox",
       "inherits": [
         "engine",
@@ -224,6 +247,14 @@
         "engine",
         "macos",
         "variant-editor"
+      ]
+    },
+    {
+      "name": "macos-assets",
+      "inherits": [
+        "engine",
+        "macos",
+        "variant-assets"
       ]
     },
     {
@@ -313,8 +344,21 @@
       "configuration": "Dev"
     },
     {
+      "name": "windows-assets",
+      "configurePreset": "windows-assets",
+      "configuration": "Dev"
+    },
+    {
       "name": "windows-editor-install",
       "configurePreset": "windows-editor",
+      "configuration": "Dev",
+      "targets": [
+        "install"
+      ]
+    },
+    {
+      "name": "windows-assets-install",
+      "configurePreset": "windows-assets",
       "configuration": "Dev",
       "targets": [
         "install"
@@ -395,8 +439,21 @@
       "configuration": "Dev"
     },
     {
+      "name": "linux-assets",
+      "configurePreset": "linux-assets",
+      "configuration": "Dev"
+    },
+    {
       "name": "linux-editor-install",
       "configurePreset": "linux-editor",
+      "configuration": "Dev",
+      "targets": [
+        "install"
+      ]
+    },
+    {
+      "name": "linux-assets-install",
+      "configurePreset": "linux-assets",
       "configuration": "Dev",
       "targets": [
         "install"
@@ -467,8 +524,21 @@
       "configuration": "Dev"
     },
     {
+      "name": "macos-assets",
+      "configurePreset": "macos-assets",
+      "configuration": "Dev"
+    },
+    {
       "name": "macos-editor-install",
       "configurePreset": "macos-editor",
+      "configuration": "Dev",
+      "targets": [
+        "install"
+      ]
+    },
+    {
+      "name": "macos-assets-install",
+      "configurePreset": "macos-assets",
       "configuration": "Dev",
       "targets": [
         "install"
@@ -702,6 +772,19 @@
       ]
     },
     {
+      "name": "windows-assets",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "windows-assets"
+        },
+        {
+          "type": "build",
+          "name": "windows-assets-install"
+        }
+      ]
+    },
+    {
       "name": "windows-dargbox",
       "steps": [
         {
@@ -895,6 +978,19 @@
       ]
     },
     {
+      "name": "linux-assets",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "linux-assets"
+        },
+        {
+          "type": "build",
+          "name": "linux-assets-install"
+        }
+      ]
+    },
+    {
       "name": "linux-dargbox",
       "steps": [
         {
@@ -1058,6 +1154,19 @@
         {
           "type": "build",
           "name": "macos-editor-install"
+        }
+      ]
+    },
+    {
+      "name": "macos-assets",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "macos-assets"
+        },
+        {
+          "type": "build",
+          "name": "macos-assets-install"
         }
       ]
     },

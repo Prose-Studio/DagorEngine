@@ -1,0 +1,17 @@
+set(FILES
+  gameinput.cpp
+  gamepad_classdrv.cpp
+  gamepad_device.cpp
+  gamepad_composite.cpp
+  flightstick_classdrv.cpp
+  flightstick_device.cpp
+  flightstick_device_impl.cpp
+  keyboard_classdrv.cpp
+  keyboard_device.cpp
+  keyboard_globals.cpp
+  mouse_device.cpp
+  mouse_emu_device.cpp
+  composite_pointing_device.cpp
+  pointing_classdrv.cpp
+  create.cpp
+)

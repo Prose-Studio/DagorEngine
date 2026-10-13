@@ -1,0 +1,12 @@
+set(FILES
+  staticGeometry.cpp
+  staticGeometryContainer.cpp
+  staticGeometryNode.cpp
+  geomObjectCollision.cpp
+  geomObject.cpp
+  staticGeomLoad.cpp
+  staticGeomExport.cpp
+  staticGeomMatSubst.cpp
+  geomResources.cpp
+  geomWater.cpp
+)

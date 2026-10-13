@@ -37,7 +37,7 @@ if(DAGOR_VARIANT STREQUAL "cdk")
     endif()
   endforeach()
   install(DIRECTORY tools/toolsData/ DESTINATION tools COMPONENT cdk PATTERN README.md EXCLUDE)
-elseif(DAGOR_VARIANT STREQUAL "editor")
+elseif(DAGOR_VARIANT STREQUAL "assets")
   # the tools on the shared kernel (daKernel): daBuild with its exporter plugins, ddsxCvt2
   dagor_build_by_default(tools.libTools.daKernel daBuild daBuild-job a2dExp animCharExp collisionExp fastPhysExp fxExp
     impostorExp landClsExp locShadersExp matExp modelExp phObjExp texExp compositRefProv efxRefProv splineRefProv
