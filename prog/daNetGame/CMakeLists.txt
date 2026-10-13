@@ -152,7 +152,11 @@ if(DAGOR_GAME_FX)
   list(APPEND deps engine.libFx gameLibs.daFx gameLibs.effectManager)
 endif()
 _dng_deps("${editor}" gameLibs.daEditorE gameLibs.dasModules.daEditor)
-list(APPEND deps gameLibs.daRg.browser.stub gameLibs.quirrel.sqWebBrowser.stub) # no embedded browser
+if(DAGOR_GAME_EMBEDDED_BROWSER)
+  list(APPEND deps gameLibs.daRg.browser gameLibs.webBrowserHelper gameLibs.quirrel.sqWebBrowser)
+else()
+  list(APPEND deps gameLibs.daRg.browser.stub gameLibs.quirrel.sqWebBrowser.stub)
+endif()
 
 if(DAGOR_GAME_RENDERER)
   list(APPEND deps 3rdPartyLibs.image.avif 3rdPartyLibs.image.jpeg-6b 3rdPartyLibs.image.libpng-1.4.22

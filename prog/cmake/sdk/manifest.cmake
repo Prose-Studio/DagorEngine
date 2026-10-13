@@ -232,3 +232,17 @@ dagor_sdk(vcrtforwarders 1.1.0
     EXTRACT Microsoft.VCRTForwarders.140.nuspec runtimes/win-arm64/native/release/msvcp140_app.dll
       runtimes/win-arm64/native/release/vcruntime140_app.dll
 )
+
+# Chromium Embedded Framework 100.0.24 (Chromium 100.0.4896.127): the binaries of the games' embedded browser, the
+# "minimal" distribution of CEF's automated builds, without its sandbox libraries. The tag is the target's (FindCEF);
+# the headers and the C++ wrapper of this version are in prog/3rdPartyLibs/cef3/v4896.
+set(_cef https://cef-builds.spotifycdn.com/cef_binary_100.0.24%2Bg0783cf8%2Bchromium-100.0.4896.127)
+dagor_sdk(cef 100.0.24
+  windows-x86_64
+    URL ${_cef}_windows64_minimal.tar.bz2
+    SHA256 9f8f437ee81a6896d5f158c2adcfb1268ae87b6d732a9e8202f7d2d82e9d87ea
+    FILE cef_binary_100.0.24_windows64_minimal.tar.bz2
+    EXTRACT */Release/*.dll */Release/*.bin */Release/*.json */Release/libcef.lib */Release/swiftshader/*
+      */Resources/* */include/cef_version.h */LICENSE.txt
+)
+unset(_cef)

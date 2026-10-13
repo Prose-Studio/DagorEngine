@@ -1,18 +1,16 @@
+# Regenerates the C++ of the IPC messages (*_generated.h, kept in the repo) from the schemas here with the engine's
+# flatc: FLATC, or the one of the engine's cdk tree (cd prog && cmake --build --preset <host>-cdk --target flatc).
+import glob
 import os
+import subprocess
 import sys
 
-_dagor2 = os.environ.get('DAGOR2_DIR', os.path.join('D:\\', 'dagor2'))
-_flatc = os.path.join(_dagor2, 'tools', 'util', 'flatc')
-if sys.platform.startswith('win'):
-  _flatc += '.exe'
+_here = os.path.dirname(os.path.abspath(__file__))
+_engine = os.path.normpath(os.path.join(_here, '..', '..', '..', '..', '..', '..'))
+_host = {'win32': 'windows', 'darwin': 'macos'}.get(sys.platform, 'linux')
+_exe = '.exe' if _host == 'windows' else ''
+flatc = os.environ.get('FLATC') or os.path.join(_engine, 'build', _host + '-cdk', 'bin', 'flatc' + _exe)
 
-_args = ['--cpp', '--scoped-enums']
-
-def is_schema(f):
-  return os.path.isfile(f) and f.endswith('.fbs')
-
-schemas = [f for f in os.listdir(os.curdir) if is_schema(f)]
-
-cmd = ' '.join([_flatc] + _args + schemas)
-print(cmd)
-os.system(cmd)
+cmd = [flatc, '--cpp', '--scoped-enums', '-o', _here] + sorted(glob.glob(os.path.join(_here, '*.fbs')))
+print(' '.join(cmd))
+sys.exit(subprocess.call(cmd))

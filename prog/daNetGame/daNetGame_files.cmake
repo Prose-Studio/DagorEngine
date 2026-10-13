@@ -96,7 +96,11 @@ else()
 endif()
 _dng_files(FILES "${webui}" main/webui/webui.cpp)
 _dng_files(FILES "${no_webui}" main/webui/stub.cpp)
-list(APPEND FILES main/browser/webBrowserStub.cpp) # no embedded browser (DAGOR_GAME_EMBEDDED_BROWSER)
+if(DAGOR_GAME_EMBEDDED_BROWSER)
+  list(APPEND FILES main/browser/webBrowser.cpp)
+else()
+  list(APPEND FILES main/browser/webBrowserStub.cpp)
+endif()
 
 # sound
 if(DAGOR_GAME_SOUND)
