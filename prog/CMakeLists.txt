@@ -2,6 +2,11 @@
 # CMakePresets.json, cmake --list-presets). Games are projects of their own whose trees add this directory through
 # find_package(Dagor) (cmake/DagorConfig.cmake): there it is a subproject that builds what the game links.
 cmake_minimum_required(VERSION 4.0)
+if(DAGOR_ALL_PRESETS) # the <host> presets: a tree that builds every tree of the host with its own preset
+  project(DagorEngine LANGUAGES NONE)
+  include(cmake/DagorAll.cmake)
+  return()
+endif()
 project(DagorEngine LANGUAGES C CXX)
 include(cmake/Dagor.cmake)
 

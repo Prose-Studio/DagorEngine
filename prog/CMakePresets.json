@@ -6,9 +6,11 @@
     "patch": 0
   },
   "$comment": [
-    "The engine's trees: cmake --list-presets in prog/. <host>[-<compiler>|-<arch>|-<sanitizer>]-<variant>, e.g.",
-    "cmake --workflow --preset windows-tests (configure, build, test), cmake --workflow --preset linux-cdk (the tools,",
-    "installed into tools/dagor_cdk). The bases are in cmake/presets/base.json; local ones go in CMakeUserPresets.json."
+    "The engine's trees: cmake --list-presets in prog/. cmake --workflow --preset <host>[-<compiler>|-<arch>]",
+    "(windows, windows-msvc, linux, linux-clang, macos, ...) builds every tree of the host on a fresh clone: the SDKs fetched,",
+    "the tools installed into tools/. One tree: <host>[-<compiler>|-<arch>|-<sanitizer>]-<variant>, e.g. cmake --workflow",
+    "--preset windows-tests (configure, build, test). The bases are in cmake/presets/base.json; local ones go in",
+    "CMakeUserPresets.json."
   ],
   "include": [
     "cmake/presets/base.json"
@@ -22,6 +24,150 @@
         "DAGOR_ENGINE_ROOT": "${sourceDir}/.."
       },
       "installDir": "${sourceDir}/.."
+    },
+    {
+      "name": "windows",
+      "inherits": [
+        "engine"
+      ],
+      "$comment": "every tree of the host and toolchain, each built with its preset (cmake --workflow --preset windows)",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      },
+      "cacheVariables": {
+        "DAGOR_ALL_PRESETS": "windows-tests;windows-cdk;windows-assets;windows-editor;windows-dargbox",
+        "DAGOR_ALL_INSTALL": "windows-cdk;windows-assets;windows-editor"
+      },
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/../build/${presetName}"
+    },
+    {
+      "name": "windows-msvc",
+      "inherits": [
+        "engine"
+      ],
+      "$comment": "every tree of the host and toolchain, each built with its preset (cmake --workflow --preset windows-msvc)",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      },
+      "cacheVariables": {
+        "DAGOR_ALL_PRESETS": "windows-msvc-tests;windows-msvc-cdk",
+        "DAGOR_ALL_INSTALL": "windows-msvc-cdk"
+      },
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/../build/${presetName}"
+    },
+    {
+      "name": "windows-arm64",
+      "inherits": [
+        "engine"
+      ],
+      "$comment": "every tree of the host and toolchain, each built with its preset (cmake --workflow --preset windows-arm64)",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      },
+      "cacheVariables": {
+        "DAGOR_ALL_PRESETS": "windows-arm64-tests;windows-arm64-cdk",
+        "DAGOR_ALL_INSTALL": "windows-arm64-cdk"
+      },
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/../build/${presetName}"
+    },
+    {
+      "name": "linux",
+      "inherits": [
+        "engine"
+      ],
+      "$comment": "every tree of the host and toolchain, each built with its preset (cmake --workflow --preset linux)",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      },
+      "cacheVariables": {
+        "DAGOR_ALL_PRESETS": "linux-tests;linux-cdk;linux-assets;linux-editor;linux-dargbox",
+        "DAGOR_ALL_INSTALL": "linux-cdk;linux-assets;linux-editor"
+      },
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/../build/${presetName}"
+    },
+    {
+      "name": "linux-clang",
+      "inherits": [
+        "engine"
+      ],
+      "$comment": "every tree of the host and toolchain, each built with its preset (cmake --workflow --preset linux-clang)",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      },
+      "cacheVariables": {
+        "DAGOR_ALL_PRESETS": "linux-clang-tests;linux-clang-cdk",
+        "DAGOR_ALL_INSTALL": "linux-clang-cdk"
+      },
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/../build/${presetName}"
+    },
+    {
+      "name": "linux-e2k",
+      "inherits": [
+        "engine"
+      ],
+      "$comment": "every tree of the host and toolchain, each built with its preset (cmake --workflow --preset linux-e2k)",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      },
+      "cacheVariables": {
+        "DAGOR_ALL_PRESETS": "linux-e2k-tests;linux-e2k-cdk",
+        "DAGOR_ALL_INSTALL": "linux-e2k-cdk"
+      },
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/../build/${presetName}"
+    },
+    {
+      "name": "macos",
+      "inherits": [
+        "engine"
+      ],
+      "$comment": "every tree of the host and toolchain, each built with its preset (cmake --workflow --preset macos)",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Darwin"
+      },
+      "cacheVariables": {
+        "DAGOR_ALL_PRESETS": "macos-tests;macos-cdk;macos-assets;macos-editor;macos-dargbox",
+        "DAGOR_ALL_INSTALL": "macos-cdk;macos-assets;macos-editor"
+      },
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/../build/${presetName}"
+    },
+    {
+      "name": "macos-universal",
+      "inherits": [
+        "engine"
+      ],
+      "$comment": "every tree of the host and toolchain, each built with its preset (cmake --workflow --preset macos-universal)",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Darwin"
+      },
+      "cacheVariables": {
+        "DAGOR_ALL_PRESETS": "macos-universal-cdk",
+        "DAGOR_ALL_INSTALL": "macos-universal-cdk"
+      },
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/../build/${presetName}"
     },
     {
       "name": "variant-tests",
@@ -69,7 +215,7 @@
       "name": "windows-tests",
       "inherits": [
         "engine",
-        "windows",
+        "toolchain-windows",
         "variant-tests"
       ]
     },
@@ -77,7 +223,7 @@
       "name": "windows-cdk",
       "inherits": [
         "engine",
-        "windows",
+        "toolchain-windows",
         "variant-cdk"
       ]
     },
@@ -85,7 +231,7 @@
       "name": "windows-editor",
       "inherits": [
         "engine",
-        "windows",
+        "toolchain-windows",
         "variant-editor"
       ]
     },
@@ -93,7 +239,7 @@
       "name": "windows-assets",
       "inherits": [
         "engine",
-        "windows",
+        "toolchain-windows",
         "variant-assets"
       ]
     },
@@ -101,7 +247,7 @@
       "name": "windows-dargbox",
       "inherits": [
         "engine",
-        "windows",
+        "toolchain-windows",
         "variant-dargbox"
       ]
     },
@@ -109,7 +255,7 @@
       "name": "windows-maxplug",
       "inherits": [
         "engine",
-        "windows-msvc",
+        "toolchain-windows-msvc",
         "variant-maxplug"
       ],
       "$comment": "3ds Max 2025 and later (VS 2022); Max 2023 and 2024: windows-vc16-maxplug. MaxSDK_ROOT: the Max SDK"
@@ -118,7 +264,7 @@
       "name": "windows-msvc-tests",
       "inherits": [
         "engine",
-        "windows-msvc",
+        "toolchain-windows-msvc",
         "variant-tests"
       ]
     },
@@ -126,7 +272,7 @@
       "name": "windows-msvc-cdk",
       "inherits": [
         "engine",
-        "windows-msvc",
+        "toolchain-windows-msvc",
         "variant-cdk"
       ]
     },
@@ -134,7 +280,7 @@
       "name": "windows-vc16-maxplug",
       "inherits": [
         "engine",
-        "windows-vc16",
+        "toolchain-windows-vc16",
         "variant-maxplug"
       ]
     },
@@ -142,7 +288,7 @@
       "name": "windows-arm64-tests",
       "inherits": [
         "engine",
-        "windows-arm64",
+        "toolchain-windows-arm64",
         "variant-tests"
       ]
     },
@@ -150,7 +296,7 @@
       "name": "windows-arm64-cdk",
       "inherits": [
         "engine",
-        "windows-arm64",
+        "toolchain-windows-arm64",
         "variant-cdk"
       ]
     },
@@ -158,7 +304,7 @@
       "name": "linux-tests",
       "inherits": [
         "engine",
-        "linux",
+        "toolchain-linux",
         "variant-tests"
       ]
     },
@@ -166,7 +312,7 @@
       "name": "linux-cdk",
       "inherits": [
         "engine",
-        "linux",
+        "toolchain-linux",
         "variant-cdk"
       ]
     },
@@ -174,7 +320,7 @@
       "name": "linux-editor",
       "inherits": [
         "engine",
-        "linux",
+        "toolchain-linux",
         "variant-editor"
       ]
     },
@@ -182,7 +328,7 @@
       "name": "linux-assets",
       "inherits": [
         "engine",
-        "linux",
+        "toolchain-linux",
         "variant-assets"
       ]
     },
@@ -190,7 +336,7 @@
       "name": "linux-dargbox",
       "inherits": [
         "engine",
-        "linux",
+        "toolchain-linux",
         "variant-dargbox"
       ]
     },
@@ -198,7 +344,7 @@
       "name": "linux-clang-tests",
       "inherits": [
         "engine",
-        "linux-clang",
+        "toolchain-linux-clang",
         "variant-tests"
       ]
     },
@@ -206,7 +352,7 @@
       "name": "linux-clang-cdk",
       "inherits": [
         "engine",
-        "linux-clang",
+        "toolchain-linux-clang",
         "variant-cdk"
       ]
     },
@@ -214,7 +360,7 @@
       "name": "linux-e2k-tests",
       "inherits": [
         "engine",
-        "linux-e2k",
+        "toolchain-linux-e2k",
         "variant-tests"
       ]
     },
@@ -222,7 +368,7 @@
       "name": "linux-e2k-cdk",
       "inherits": [
         "engine",
-        "linux-e2k",
+        "toolchain-linux-e2k",
         "variant-cdk"
       ]
     },
@@ -230,7 +376,7 @@
       "name": "macos-tests",
       "inherits": [
         "engine",
-        "macos",
+        "toolchain-macos",
         "variant-tests"
       ]
     },
@@ -238,7 +384,7 @@
       "name": "macos-cdk",
       "inherits": [
         "engine",
-        "macos",
+        "toolchain-macos",
         "variant-cdk"
       ]
     },
@@ -246,7 +392,7 @@
       "name": "macos-editor",
       "inherits": [
         "engine",
-        "macos",
+        "toolchain-macos",
         "variant-editor"
       ]
     },
@@ -254,7 +400,7 @@
       "name": "macos-assets",
       "inherits": [
         "engine",
-        "macos",
+        "toolchain-macos",
         "variant-assets"
       ]
     },
@@ -262,7 +408,7 @@
       "name": "macos-dargbox",
       "inherits": [
         "engine",
-        "macos",
+        "toolchain-macos",
         "variant-dargbox"
       ]
     },
@@ -270,7 +416,7 @@
       "name": "macos-universal-cdk",
       "inherits": [
         "engine",
-        "macos-universal",
+        "toolchain-macos-universal",
         "variant-cdk"
       ]
     },
@@ -278,7 +424,7 @@
       "name": "windows-asan-tests",
       "inherits": [
         "engine",
-        "windows",
+        "toolchain-windows",
         "asan",
         "variant-tests"
       ]
@@ -287,7 +433,7 @@
       "name": "linux-asan-tests",
       "inherits": [
         "engine",
-        "linux-clang",
+        "toolchain-linux-clang",
         "asan",
         "variant-tests"
       ]
@@ -296,7 +442,7 @@
       "name": "linux-ubsan-tests",
       "inherits": [
         "engine",
-        "linux-clang",
+        "toolchain-linux-clang",
         "ubsan",
         "variant-tests"
       ]
@@ -305,7 +451,7 @@
       "name": "linux-tsan-tests",
       "inherits": [
         "engine",
-        "linux-clang",
+        "toolchain-linux-clang",
         "tsan",
         "variant-tests"
       ]
@@ -314,13 +460,45 @@
       "name": "linux-coverage-tests",
       "inherits": [
         "engine",
-        "linux-clang",
+        "toolchain-linux-clang",
         "coverage",
         "variant-tests"
       ]
     }
   ],
   "buildPresets": [
+    {
+      "name": "windows",
+      "configurePreset": "windows"
+    },
+    {
+      "name": "windows-msvc",
+      "configurePreset": "windows-msvc"
+    },
+    {
+      "name": "windows-arm64",
+      "configurePreset": "windows-arm64"
+    },
+    {
+      "name": "linux",
+      "configurePreset": "linux"
+    },
+    {
+      "name": "linux-clang",
+      "configurePreset": "linux-clang"
+    },
+    {
+      "name": "linux-e2k",
+      "configurePreset": "linux-e2k"
+    },
+    {
+      "name": "macos",
+      "configurePreset": "macos"
+    },
+    {
+      "name": "macos-universal",
+      "configurePreset": "macos-universal"
+    },
     {
       "name": "windows-tests",
       "configurePreset": "windows-tests",
@@ -712,6 +890,110 @@
     }
   ],
   "workflowPresets": [
+    {
+      "name": "windows",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "windows"
+        },
+        {
+          "type": "build",
+          "name": "windows"
+        }
+      ]
+    },
+    {
+      "name": "windows-msvc",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "windows-msvc"
+        },
+        {
+          "type": "build",
+          "name": "windows-msvc"
+        }
+      ]
+    },
+    {
+      "name": "windows-arm64",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "windows-arm64"
+        },
+        {
+          "type": "build",
+          "name": "windows-arm64"
+        }
+      ]
+    },
+    {
+      "name": "linux",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "linux"
+        },
+        {
+          "type": "build",
+          "name": "linux"
+        }
+      ]
+    },
+    {
+      "name": "linux-clang",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "linux-clang"
+        },
+        {
+          "type": "build",
+          "name": "linux-clang"
+        }
+      ]
+    },
+    {
+      "name": "linux-e2k",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "linux-e2k"
+        },
+        {
+          "type": "build",
+          "name": "linux-e2k"
+        }
+      ]
+    },
+    {
+      "name": "macos",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "macos"
+        },
+        {
+          "type": "build",
+          "name": "macos"
+        }
+      ]
+    },
+    {
+      "name": "macos-universal",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "macos-universal"
+        },
+        {
+          "type": "build",
+          "name": "macos-universal"
+        }
+      ]
+    },
     {
       "name": "windows-tests",
       "steps": [

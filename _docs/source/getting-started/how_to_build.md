@@ -39,8 +39,16 @@ redistributable, is used when you point the build at it (`MaxSDK_ROOT`, for the
 
 ## How to Build: Build from Source Code
 
-The engine is built with the CMake presets of `prog/CMakePresets.json`
-(`cmake --list-presets` lists them), each one a tree in `build/<preset>`:
+On a fresh clone, one command builds everything for the host: it fetches the
+SDKs and builds and installs every tree (the tests, the tools, the asset build,
+the editors, dargbox):
+
+```text
+cmake --workflow --preset windows      (linux, macos; windows-msvc, linux-clang, windows-arm64, ...)
+```
+
+Each tree also has its own presets in `prog/CMakePresets.json`
+(`cmake --list-presets` lists them), in `build/<preset>`:
 
 ```text
 cmake --workflow --preset windows-tests-ci     the engine and its tests (those that need no GPU)

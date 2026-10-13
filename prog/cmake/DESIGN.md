@@ -19,8 +19,12 @@ There is no CMakeLists.txt at the repository root: prog/ is the engine's top lev
 
 ## Trees and presets
 
-A tree is a preset: a target platform and compiler (the hidden bases of cmake/presets/base.json, each with its
-toolchain file) and a variant, `DAGOR_VARIANT`, which sets the defaults of the options (DagorOptions.cmake):
+A tree is a preset: a target platform and compiler (the hidden `toolchain-*` bases of cmake/presets/base.json, each
+with its toolchain file) and a variant, `DAGOR_VARIANT`, which sets the defaults of the options (DagorOptions.cmake).
+The `<host>[-<compiler>|-<arch>]` presets (`windows`, `linux-clang`, ...) are a tree of their own that builds every tree
+of that platform and compiler with its preset, one after the other (DagorAll.cmake, `DAGOR_ALL_PRESETS`):
+`cmake --workflow --preset windows` on a fresh clone does what jam's devtools setup and full build did. A project's
+`<host>` workflow likewise builds the client, its content and a multiplayer game's dedicated server.
 
 | variant | builds by default |
 |---|---|

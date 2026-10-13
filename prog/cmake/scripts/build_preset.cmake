@@ -1,8 +1,9 @@
-# cmake -DSOURCE_DIR=<dir with CMakePresets.json> -DPRESET=<preset> [-DTARGETS=<target>,...] [-DCOMPONENT=<component>]
-#       -P build_preset.cmake
-# Builds another tree a build step needs (the engine's host tools, a game's daScript AOT compiler): configures PRESET
-# once (its tree <SOURCE_DIR>/../build/<PRESET>, the one cmake --preset makes), builds it in Dev (only TARGETS when
-# given) and installs COMPONENT of it. A lock keeps the trees that share it from building it at the same time.
+# cmake -DSOURCE_DIR=<dir with CMakePresets.json> -DPRESET=<preset> [-DTARGETS=<target>,...]
+#       [-DCOMPONENT=<component> | -DINSTALL=ON] -P build_preset.cmake
+# Builds another tree (the engine's host tools, a game's daScript AOT compiler or dedicated server, the trees of the
+# <host> presets): configures PRESET once (its tree <SOURCE_DIR>/../build/<PRESET>, the one cmake --preset makes),
+# builds it in Dev (only TARGETS when given) and installs COMPONENT of it, or all of it with INSTALL. A lock keeps the
+# trees that share it from building it at the same time.
 foreach(var SOURCE_DIR PRESET)
   if(NOT ${var})
     message(FATAL_ERROR "build_preset.cmake: ${var} is not set")
@@ -29,4 +30,6 @@ execute_process(COMMAND "${CMAKE_COMMAND}" --build "${tree}" --config Dev ${targ
 if(COMPONENT)
   execute_process(COMMAND "${CMAKE_COMMAND}" --install "${tree}" --config Dev --component ${COMPONENT}
     COMMAND_ERROR_IS_FATAL ANY)
+elseif(INSTALL)
+  execute_process(COMMAND "${CMAKE_COMMAND}" --install "${tree}" --config Dev COMMAND_ERROR_IS_FATAL ANY)
 endif()

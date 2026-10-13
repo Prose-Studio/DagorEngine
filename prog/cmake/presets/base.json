@@ -19,73 +19,73 @@
       }
     },
     {
-      "name": "windows",
+      "name": "toolchain-windows",
       "hidden": true,
       "inherits": "dagor",
       "toolchainFile": "$env{DAGOR_ENGINE_ROOT}/prog/cmake/toolchains/windows-clang.cmake",
       "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Windows" }
     },
     {
-      "name": "windows-msvc",
+      "name": "toolchain-windows-msvc",
       "hidden": true,
-      "inherits": "windows",
+      "inherits": "toolchain-windows",
       "toolchainFile": "$env{DAGOR_ENGINE_ROOT}/prog/cmake/toolchains/windows-msvc.cmake"
     },
     {
-      "name": "windows-vc16",
+      "name": "toolchain-windows-vc16",
       "$comment": "MSVC 14.29 (VS 2019 16.11), the toolset of the 3ds Max 2023 and 2024 SDKs",
       "hidden": true,
-      "inherits": "windows-msvc",
+      "inherits": "toolchain-windows-msvc",
       "cacheVariables": { "DAGOR_MSVC_TOOLSET": "14.29" }
     },
     {
-      "name": "windows-arm64",
+      "name": "toolchain-windows-arm64",
       "hidden": true,
-      "inherits": "windows",
+      "inherits": "toolchain-windows",
       "cacheVariables": { "DAGOR_ARCH": "arm64" }
     },
     {
-      "name": "linux",
+      "name": "toolchain-linux",
       "hidden": true,
       "inherits": "dagor",
       "toolchainFile": "$env{DAGOR_ENGINE_ROOT}/prog/cmake/toolchains/linux-gcc.cmake",
       "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Linux" }
     },
     {
-      "name": "linux-clang",
+      "name": "toolchain-linux-clang",
       "hidden": true,
-      "inherits": "linux",
+      "inherits": "toolchain-linux",
       "toolchainFile": "$env{DAGOR_ENGINE_ROOT}/prog/cmake/toolchains/linux-clang.cmake"
     },
     {
-      "name": "linux-e2k",
+      "name": "toolchain-linux-e2k",
       "hidden": true,
-      "inherits": "linux",
+      "inherits": "toolchain-linux",
       "toolchainFile": "$env{DAGOR_ENGINE_ROOT}/prog/cmake/toolchains/linux-lcc.cmake",
       "cacheVariables": { "DAGOR_ARCH": "e2k", "DAGOR_WARNINGS_AS_ERRORS": "OFF" }
     },
     {
-      "name": "macos",
+      "name": "toolchain-macos",
       "hidden": true,
       "inherits": "dagor",
       "toolchainFile": "$env{DAGOR_ENGINE_ROOT}/prog/cmake/toolchains/macos.cmake",
       "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Darwin" }
     },
     {
-      "name": "macos-universal",
+      "name": "toolchain-macos-universal",
       "hidden": true,
-      "inherits": "macos",
+      "inherits": "toolchain-macos",
       "cacheVariables": { "DAGOR_ARCH": "universal" }
     },
     {
-      "name": "ios",
+      "name": "toolchain-ios",
       "hidden": true,
       "inherits": "dagor",
       "toolchainFile": "$env{DAGOR_ENGINE_ROOT}/prog/cmake/toolchains/ios.cmake",
       "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Darwin" }
     },
     {
-      "name": "android",
+      "name": "toolchain-android",
       "hidden": true,
       "inherits": "dagor",
       "toolchainFile": "$env{DAGOR_ENGINE_ROOT}/prog/cmake/toolchains/android.cmake"
