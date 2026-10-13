@@ -10,6 +10,13 @@ endif()
 if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
   dagor_compile_definitions(1 __vectorcall=)
 endif()
+# with the shared kernel (daKernel) all the code is -fPIC, the programs' too (not -fPIE): the static libraries go into
+# daKernel and the plugins, and a program reaches daKernel's data through the GOT. -fPIE code would copy that data
+# into the program, and the plugins, loaded with RTLD_DEEPBIND (os_dll_load_deep_bind), bind to daKernel's own copy,
+# which is never set.
+if(DAGOR_KERNEL_LINKAGE STREQUAL "dynamic")
+  dagor_compile_options("${_c_cxx}" -fPIC)
+endif()
 if(DAGOR_ARCH STREQUAL "e2k")
   dagor_compile_definitions(1 _XM_NO_INTRINSICS_)
 endif()
