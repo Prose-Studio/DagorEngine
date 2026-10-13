@@ -122,7 +122,7 @@ needs two mandatory arguments: the path to the `application.blk` and the path to
 the root directory:
 
 ```text
-> G:/dagor2/tools/dagor3_cdk/bin64/impostorBaker-dev.exe ../application.blk -rootdir:G:/dagor2/enlisted/develop [options...]
+> <engine_root>/tools/dagor_cdk/windows-x86_64/impostorBaker-dev.exe ../application.blk -rootdir:<project>/develop [options...]
 ```
 
 The options are:

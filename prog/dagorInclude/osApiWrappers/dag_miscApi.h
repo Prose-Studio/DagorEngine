@@ -151,9 +151,9 @@ KRNLIMP TargetPlatform get_platform_id_by_string(const char *name);
 //! returns string that uniquely identifies platform (that target was build for)
 KRNLIMP const char *get_platform_string_id();
 
-//! returns host platform (uses notation like in jBuild: windows, linux, macOS, etc.)
+//! returns host platform (windows, linux, macOS, etc.)
 KRNLIMP const char *get_host_platform_string();
-//! returns host platform architecture (uses notation like in jBuild: x86_64, arm64, x86, etc.)
+//! returns host platform architecture (x86_64, arm64, x86, etc.)
 KRNLIMP const char *get_host_arch_string();
 
 //! flash window in the taskbar if inactive

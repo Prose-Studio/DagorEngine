@@ -185,12 +185,11 @@ management for projects. This directory includes:
 - `content`: a subdirectory where game assets and content files are stored.
   This typically includes various game resources such as textures, models, audio
   files, and other data required for the game.
-- `create_vfsroms.bat`: a batch script used to create virtual file system (VFS)
-  ROMs, which are packaged file archives that optimize the loading and
-  management of game assets.
-- `mk.vromfs.blk`: a configuration file for the VFS ROM creation process,
-  specifying how files should be packaged and organized within the virtual file
-  system.
+- `prog.vromfs.blk` (in `prog`): the configuration of the virtual file system
+  (VFS) ROM of the game, `vromfsPacker`'s: how the files are packaged and
+  organized in it. The project's content build
+  (`cmake --build --preset <host>-client-content`) packs it into
+  `game/<codename>.vromfs.bin`.
 
 ### `develop`
 

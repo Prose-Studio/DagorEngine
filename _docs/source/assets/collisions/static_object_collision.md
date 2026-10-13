@@ -1656,7 +1656,7 @@ steps:
 1. Run daBuild (you can run it just for collisions for faster results):
 
    ```text
-   ../../tools/dagor3_cdk/bin64/dabuild-dev.exe ../application.blk -q -dry_run -only_res -jobs:3 -rebuild:collision collision_pack.grp
+   ../../tools/dagor_cdk/windows-x86_64/daBuild-dev.exe ../application.blk -q -dry_run -only_res -jobs:3 -rebuild:collision collision_pack.grp
    ```
 
 2. Locate the daBuild logs

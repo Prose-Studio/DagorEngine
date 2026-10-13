@@ -178,7 +178,7 @@ Add `-validate_alpha_test` to the command line to check every rendInst and
 dynModel asset in the build:
 
 ```text
-..\..\tools\dagor3_cdk\bin64\dabuild-dev.exe -target:PC ..\application.blk -rebuild:rendInst -rebuild:dynModel -only_res -validate_alpha_test -keep_building_after_error
+..\..\tools\dagor_cdk\windows-x86_64\daBuild-dev.exe -target:PC ..\application.blk -rebuild:rendInst -rebuild:dynModel -only_res -validate_alpha_test -keep_building_after_error
 ```
 
 When the OMM bake of a mesh produces nothing usable, its alpha-tested
@@ -198,7 +198,7 @@ in the game's settings. Add `:strict` to also report these two cases and
 match that setting:
 
 ```text
-..\..\tools\dagor3_cdk\bin64\dabuild-dev.exe -target:PC ..\application.blk -rebuild:rendInst -rebuild:dynModel -only_res -validate_alpha_test:strict -keep_building_after_error
+..\..\tools\dagor_cdk\windows-x86_64\daBuild-dev.exe -target:PC ..\application.blk -rebuild:rendInst -rebuild:dynModel -only_res -validate_alpha_test:strict -keep_building_after_error
 ```
 
 The same check can run inside Asset Viewer, or without passing anything on
@@ -238,7 +238,7 @@ To build a specific pack, open `dabuild_test.bat` in any text editor, and you
 will see a line like this:
 
 ```text
-..\..\tools\dagor3_cdk\bin64\dabuild-dev.exe -target:PC ..\application.blk -packs_re:usa_gm -Q
+..\..\tools\dagor_cdk\windows-x86_64\daBuild-dev.exe -target:PC ..\application.blk -packs_re:usa_gm -Q
 ```
 
 Replace `usa_gm` with the name of the pack you need to build. The pack is
@@ -312,7 +312,7 @@ an extremely useful feature. There are two options for such builds.
 In the `daBuild` batch file, write:
 
 ```text
-..\..\tools\dagor3_cdk\bin64\dabuild-dev.exe -target:PC ..\application.blk -package:package_name -Q
+..\..\tools\dagor_cdk\windows-x86_64\daBuild-dev.exe -target:PC ..\application.blk -package:package_name -Q
 ```
 
 Replace `package_name` with the name of the package you need to build. This will
@@ -351,7 +351,7 @@ its dependent packages, which is much faster.
 To do this, write the following in the `daBuild` batch file:
 
 ```text
-..\..\tools\dagor3_cdk\bin64\dabuild-dev.exe -target:PC ..\application.blk -package_and_deps:package_name -Q
+..\..\tools\dagor_cdk\windows-x86_64\daBuild-dev.exe -target:PC ..\application.blk -package_and_deps:package_name -Q
 ```
 
 The `package_and_deps` refers to the package and its dependencies.

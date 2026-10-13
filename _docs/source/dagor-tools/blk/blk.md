@@ -281,7 +281,7 @@ The data in a binary `.blk` file consists of *header*, *name* and *string maps*,
 
 ## Useful tools
 
-The `dagor3_cdk` has some useful tools for working with `.blk`:
+The CDK (`tools/dagor_cdk/<platform>-<arch>`) has some useful tools for working with `.blk`:
 
 - `binBlk.exe`: converts binary and text `.blk` files to and from each other.
 - `blkDiff.exe`: performs a syntactic diff between two `.blk` files.

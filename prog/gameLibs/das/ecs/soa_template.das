@@ -336,7 +336,7 @@ struct MakeFuncArg
 
 def should_check_sizes() : bool
   // we aot compile scripts with the same dev aot compiler to reduce amount of possible configurations
-  // for aot compiler to know what kind of build it is compiling we pass -sConfig with the value of the $(config) of the game build
+  // for aot compiler to know what kind of build it is compiling we pass -sConfig with the game build's configuration (dev, rel, ...)
   // this way we can have dev builds with debug checks aoted and release builds with no checks
   if is_in_aot()
     let cmdArgs <- get_command_line_arguments()

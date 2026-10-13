@@ -5,7 +5,7 @@
 #                   [INSTALL <dir> COMPONENT <component>])
 # A target that compiles the shaders of <shaders.blk> with a shader compiler (dsc2-dx12, ...: dagor_host_tool) into the
 # dumps <dir>/<base>.<profile>.shdump.bin, when the compiler or a shader source changes (the .dshl/.hlsl files of the
-# blk's dir and of its incDir dirs). It runs in the blk's dir, as the shader scripts did; the intermediate files go to
+# blk's dir and of its incDir dirs). It runs in the blk's dir (the base of its relative paths); the intermediate files go to
 # the build dir. INSTALL also installs the dumps into <dir> of the install prefix (when the tree made them). Not in the
 # default build: the tree that ships the shaders adds it (dagor_build_by_default).
 include_guard(GLOBAL)

@@ -135,6 +135,10 @@ flags and system libraries are in `platform/<System>.cmake`.
 - SDKs are Find modules (`cmake/find`) that honour `<Pkg>_ROOT` and otherwise
   fetch the version pinned with its SHA256 in `sdk/manifest.cmake` into
   `DAGOR_DEPS_DIR`, from the vendor's own release.
+- Proprietary SDKs are never fetched: you install them, and what needs them is
+  off until you do. The FMOD Engine (FMOD Studio API, `FMOD_ROOT`, by default
+  where its installer puts it) for the games' sound (`DAGOR_GAME_SOUND`); the
+  3ds Max SDKs (`MaxSDK_<version>_ROOT`) for the `maxplug` preset.
 - Build steps that run engine tools (shader compilers, vromfsPacker, daBuild, the
   parser generators) get them from `dagor_host_tool()`: the tree's own target in
   an engine tree, otherwise the engine's host cdk or assets tree, built on demand
@@ -160,6 +164,14 @@ need. The program goes to `<project>/game/<platform>-<arch>`, the content
 bundles on macOS). The switches that are off in Rel builds only (the editor,
 webui, ImGui, the console) are generator expressions, so one tree builds every
 configuration.
+
+The game's options are cache variables of its trees (the project presets set
+them): `DAGOR_GAME_SOUND` (FMOD), `DAGOR_GAME_ASSET_MANAGER` (daBuild in the Windows client: it builds the
+assets the game loads, with `assets_import` in `gamelibs.txt`; its templates
+derive from the game's `rendinst` and `animchar`), and the crash
+reports: `DAGOR_BREAKPAD` (on in Windows and Linux clients, for Rel builds),
+`DAGOR_BREAKPAD_SUBMISSION` (every configuration, with the bpreport sender next
+to the game) and `DAGOR_CRASHPAD` (Windows, instead of breakpad).
 
 Projects start from `templates/` (`dng.py new`): sp-3d, mp-3d, sp-2d and mp-2d,
 layered from `_common`, `_singleplayer` or `_multiplayer`, and `_2d` or `_3d`,

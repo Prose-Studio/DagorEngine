@@ -21,7 +21,7 @@ texture dependencies:
 
 The usage process is consistent across all projects:
 
-1. Navigate to the `<engine_root>/tools/dagor3_cdk/util64/` directory.
+1. Navigate to the `<engine_root>/tools/dagor_cdk/windows-x86_64/` directory.
 
 2. Run the appropriate batch file.
 
@@ -99,7 +99,7 @@ Understanding the internal structure of the tool is crucial for effective usage.
 
 The tool consists of the following components:
 
-- `dbldUtil-dev.exe`: located at `<engine_root>/tools/dagor3_cdk/util/`.
+- `dbldUtil-dev.exe`: located at `<engine_root>/tools/dagor_cdk/windows-x86_64/`.
 
 - Batch Files (`build_deps.cmd`): located at
   `<engine_root>/<project_name>/develop/levels.deps/`.
@@ -117,14 +117,14 @@ The batch files consist of command lines that perform specific tasks.
 **Example:**
 
 ```text
-@for %%f in (..\..\game\content\<project_name>\levels\*.bin) do ..\..\..\tools\dagor3_cdk\util\dbldUtil-dev.exe PC %%f -deps:game_env-cr.blk ><project_name>\%%~nxf.deps
+@for %%f in (..\..\game\content\<project_name>\levels\*.bin) do ..\..\..\tools\dagor_cdk\windows-x86_64\dbldUtil-dev.exe PC %%f -deps:game_env-cr.blk ><project_name>\%%~nxf.deps
 ```
 
 This command means:
 
 - `@for %%f in (..\..\game\content\<project_name>\levels\*.bin)`: for all files
   with a `.bin` extension in the specified directory,
-- `do ..\..\..\tools\dagor3_cdk\util\dbldUtil-dev.exe PC %%f
+- `do ..\..\..\tools\dagor_cdk\windows-x86_64\dbldUtil-dev.exe PC %%f
   -deps:game_env-cr.blk ><project_name>\%%~nxf.deps`: run the tool with the
   <project_name> configuration on a PC, and output the results to the
   `<project_name>` directory with the same filename but with a `.deps`
@@ -136,7 +136,7 @@ file to target specific files.
 For example, to process a specific file:
 
 ```text
-..\..\..\tools\dagor3_cdk\util\dbldUtil-dev.exe PC ..\..\game\content\<project_name>\levels\cr_menu_background.bin -deps:game_env-cr.blk ><project_name>\cr_menu_background.bin.deps
+..\..\..\tools\dagor_cdk\windows-x86_64\dbldUtil-dev.exe PC ..\..\game\content\<project_name>\levels\cr_menu_background.bin -deps:game_env-cr.blk ><project_name>\cr_menu_background.bin.deps
 ```
 
 This command instructs the tool to:
