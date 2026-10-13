@@ -1,4 +1,10 @@
-# the in-game asset manager is not ported (CMakeLists.txt): its stub
-if(DAGOR_GAME_RENDERER)
+if(DAGOR_GAME_ASSET_MANAGER)
+  dagor_glob_sources(FILES DIRS dasModules GLOB *.cpp)
+  dagor_glob_sources(ES_FILES DIRS main GLOB *ES.cpp.inl)
+  dagor_glob_sources(DAS_FILES DIRS main das_includes GLOB *.das)
+  dagor_glob_sources(debug_ui DIRS debug_ui GLOB *.das)
+  list(TRANSFORM debug_ui REPLACE "^(.+)$" "$<$<NOT:$<CONFIG:Rel>>:\\1>")
+  list(APPEND DAS_FILES ${debug_ui})
+elseif(DAGOR_GAME_RENDERER)
   dagor_glob_sources(ES_FILES DIRS stub GLOB *ES.cpp.inl)
 endif()

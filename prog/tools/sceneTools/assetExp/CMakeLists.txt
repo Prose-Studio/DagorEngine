@@ -1,6 +1,19 @@
 # daBuild, the asset build of the content pipeline: daBuild (the program), daBuild-job (its worker processes) and the
 # daBuild library that the editors load, all on daKernel (the assets tree, DAGOR_KERNEL_LINKAGE dynamic). The exporters
-# and reference providers are plugins (exporters/, refProviders/, plugins/dabuild of the CDK).
+# and reference providers are plugins (exporters/, refProviders/, plugins/dabuild of the CDK). A game's asset manager
+# (DAGOR_GAME_ASSET_MANAGER) has the daBuild library built in instead, with its exporters and reference providers.
+if(DAGOR_GAME_ASSET_MANAGER)
+  dagor_add_target(NAME tools.sceneTools.assetExp STATIC LAX
+    FILES_CMAKE assetExp_files.cmake
+    INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/engine/sharedInclude ${DAGOR_PROG_DIR}/engine
+    COMPILE_DEFINITIONS PRIVATE _TARGET_DABUILD_STATIC
+    BUILD_DEPENDENCIES PRIVATE
+      engine.osApiWrappers engine.kernel engine.ioSys engine.baseUtil engine.startup engine.math engine.gameRes
+      engine.lib3d tools.libTools.assetMgr tools.libTools.assetMgrHlp.emb tools.libTools.util tools.libTools.dtx
+      3rdPartyLibs.hash tools.sceneTools.assetExp.exporters tools.sceneTools.assetExp.refProviders
+  )
+  return()
+endif()
 if(NOT DAGOR_KERNEL_LINKAGE STREQUAL "dynamic" OR DAGOR_SANITIZE STREQUAL "address") # daKernel has no ASan build
   return()
 endif()

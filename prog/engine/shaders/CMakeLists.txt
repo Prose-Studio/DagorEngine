@@ -3,7 +3,7 @@
 # The shader variables come from engine.shaders.vars (the bindump's) or, in programs that set the DAGOR_SHADER_VARS
 # target property, from a mock (mock: tests of render code) or a stub (stub); see dagor_add_link_select().
 set(defines)
-if(DAGOR_BUILDING_TOOLS)
+if(DAGOR_BUILDING_TOOLS OR DAGOR_GAME_ASSET_MANAGER) # the tools' second bindump
   list(APPEND defines SHADERS_ALLOW_2_BINDUMP)
 endif()
 # the C++ stcode (shaders_files.cmake adds its sources)

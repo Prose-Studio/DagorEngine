@@ -7,6 +7,32 @@ set(editor ${DAGOR_PROG_DIR}/tools/sceneTools/daEditorX/include)
 set(images 3rdPartyLibs.image.avif 3rdPartyLibs.image.jpeg-6b 3rdPartyLibs.image.psdRead 3rdPartyLibs.image.tiff-4.4.0
   3rdPartyLibs.image.libpng-1.4.22 3rdPartyLibs.arc.zlib-ng)
 
+# a game's asset manager (DAGOR_GAME_ASSET_MANAGER): every exporter in one static library, without the optional ones
+# (vehicles, ship sections, APEX destruction), whose pulls are defined empty
+if(DAGOR_GAME_ASSET_MANAGER)
+  file(CONFIGURE OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/optionalExporters.cpp"
+    CONTENT "int pull_vehicle = 0;\nint pull_shipSections = 0;\nint pull_apex = 0;\n")
+  find_package(Astcenc REQUIRED)
+  dagor_add_target(NAME tools.sceneTools.assetExp.exporters STATIC LAX
+    FILES_CMAKE exporters_files.cmake
+    INCLUDE_DIRECTORIES PRIVATE
+      ${shared} ${editor} ${DAGOR_PROG_DIR}/3rdPartyLibs/convert/nvtt-2.0.7 ${DAGOR_PROG_DIR}/engine/sharedInclude
+      ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/3rdPartyLibs/math/vhacd
+      ${DAGOR_PROG_DIR}/3rdPartyLibs/acl/includes ${DAGOR_PROG_DIR}/3rdPartyLibs/convert/ispc_texcomp
+    COMPILE_DEFINITIONS PRIVATE _TARGET_EXPORTERS_STATIC
+    BUILD_DEPENDENCIES PRIVATE
+      engine.startup engine.math engine.lib3d engine.shaders engine.perfMon engine.image engine.gameRes engine.scene
+      engine.coreUtil engine.consoleProc tools.libTools.assetMgr tools.libTools.assetMgrHlp.emb
+      tools.libTools.shaderResBuilder tools.libTools.dagFileRW tools.libTools.util tools.libTools.ambientOcclusion
+      tools.libTools.pageAsg tools.libTools.fastPhysData tools.libTools.math tools.libTools.collision
+      tools.sceneTools.daEditorX.services.bitMaskMgr tools.sceneTools.assetExp.exporters.scriptHelpersLt
+      commonFx.commonFxTools.emb 3rdPartyLibs.math.srcc_msu 3rdPartyLibs.convert.nvtt-2.0.7 ${images}
+      3rdPartyLibs.math.vhacd 3rdPartyLibs.convert.ispc_texcomp 3rdPartyLibs.eastl Astcenc::Astcenc
+  )
+  target_sources(tools.sceneTools.assetExp.exporters PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/optionalExporters.cpp")
+  return()
+endif()
+
 dabuild_plugin(NAME a2dExp
   FILES_CMAKE a2dExp_files.cmake
   INCLUDE_DIRECTORIES PRIVATE ${shared} ${DAGOR_PROG_DIR}/3rdPartyLibs/acl/includes
