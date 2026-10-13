@@ -19,7 +19,7 @@ function(bullet_test)
     FILES_CMAKE ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/bullet_test_files.cmake
     COMPILE_OPTIONS PRIVATE ${options}
     BUILD_DEPENDENCIES PRIVATE
-      engine.memory.rtl engine.kernel engine.osApiWrappers engine.baseUtil engine.perfMon.daProfilerStub
+      engine.memory.rtl engine.kernel engine.ioSys engine.osApiWrappers engine.baseUtil engine.perfMon.daProfilerStub
       3rdPartyLibs.eastl 3rdPartyLibs.phys.bullet-3 3rdPartyLibs.phys.bullet-3.test.gtest-1.7.0
   )
 endfunction()
