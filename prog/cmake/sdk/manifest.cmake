@@ -201,3 +201,34 @@ dagor_sdk(fltk 1.4.5
     URL https://github.com/fltk/fltk/releases/download/release-1.4.5/fltk-1.4.5-source.tar.gz
     SHA256 eede1fb2b8e9c2e581e77082e15252145855c79aad30070ee3b24aabe2f926f1
 )
+
+# Khronos OpenXR loader 1.1.54: the VR device of the programs with VR (headers, the x64 loader and the arm64 one, a UWP
+# build), and the Android one (arm64-v8a, from the .aar)
+set(_openxr https://github.com/KhronosGroup/OpenXR-SDK-Source/releases/download/release-1.1.54)
+dagor_sdk(openxr 1.1.54
+  any
+    URL ${_openxr}/openxr_loader_windows-1.1.54.zip
+    SHA256 925b9ddab4d0b795d8900d2ef95feebc89c44d5fc03acf6e495ff0c19ca8cfb8
+    EXTRACT include/openxr/* x64/bin/openxr_loader.dll x64/bin/openxr_loader.pdb x64/lib/openxr_loader.lib
+      ARM64_uwp/bin/openxr_loader.dll ARM64_uwp/bin/openxr_loader.pdb ARM64_uwp/lib/openxr_loader.lib
+      share/doc/openxr/LICENSE
+)
+dagor_sdk(openxr_android 1.1.54
+  any
+    URL ${_openxr}/openxr_loader_for_android-1.1.54.aar
+    SHA256 66702fc24475d7a5362688e77444670124c2fa119745d14c2524bcf3eb584834
+    FILE openxr_loader_for_android-1.1.54.zip
+    EXTRACT prefab/modules/headers/include/openxr/* jni/arm64-v8a/libopenxr_loader.so META-INF/LICENSE
+)
+unset(_openxr)
+
+# Microsoft's app-local forwarders of the UWP C++ runtime (msvcp140_app.dll, ...) to the desktop one: what the arm64
+# OpenXR loader, a UWP build, needs next to a desktop program
+dagor_sdk(vcrtforwarders 1.1.0
+  any
+    URL https://www.nuget.org/api/v2/package/Microsoft.VCRTForwarders.140/1.1.0
+    SHA256 681d3a68a32ef866828f9e795e8ecd0cac0e79184ede54839461158f7f67a5bd
+    FILE Microsoft.VCRTForwarders.140.1.1.0.zip
+    EXTRACT Microsoft.VCRTForwarders.140.nuspec runtimes/win-arm64/native/release/msvcp140_app.dll
+      runtimes/win-arm64/native/release/vcruntime140_app.dll
+)

@@ -1,5 +1,6 @@
 # dargbox, the daRg sandbox: runs daRg UI scripts with live reload (the dargbox tree), in tools/dargbox/<platform>-<arch>
 # (on Android and iOS tools/dargbox/<platform>, on macOS the app bundle in tools/dargbox), with the tree's 3d drivers
+# and, on Windows, VR (DAGOR_VR)
 set(out ${DAGOR_ENGINE_ROOT}/tools/dargbox/${DAGOR_PLATFORM}-${DAGOR_ARCH})
 if(ANDROID OR IOS)
   set(out ${DAGOR_ENGINE_ROOT}/tools/dargbox/${DAGOR_PLATFORM})
@@ -24,9 +25,11 @@ set(deps
   engine.drv.drv3d_pc_multi
 )
 set(options)
+set(properties DAGOR_LINUX_GUI ON)
 if(WIN32)
   list(APPEND deps engine.drv.hid_mouse engine.drv.hid_keyboard engine.drv.hid_joystick engine.drv.hid_dinput
     engine.drv.hid_gamepad_xinput engine.drv.hid_dspad_pc gameLibs.quirrel.win_registry)
+  list(APPEND properties DAGOR_VR ON) # OpenXR
 elseif(LINUX)
   list(APPEND deps engine.drv.hid_mouse engine.drv.hid_keyboard engine.drv.hid_joystick_linux
     engine.osApiWrappers.messageBox)
@@ -54,7 +57,7 @@ dagor_add_target(NAME dargbox EXECUTABLE APPLICATION LAX
     ${DAGOR_PROG_DIR}/gameLibs/daRg ${DAGOR_PROG_DIR}/engine/sharedInclude ${DAGOR_PROG_DIR}/engine/drv
   COMPILE_OPTIONS PRIVATE ${options}
   BUILD_DEPENDENCIES PRIVATE ${deps} Dagor::Quirrel
-  PROPERTIES DAGOR_LINUX_GUI ON
+  PROPERTIES ${properties}
 )
 # its content in tools/dargbox: the shaders of the 3d drivers the host's dargbox renders with, and the vromfs of its
 # scripts

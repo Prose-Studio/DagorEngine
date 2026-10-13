@@ -1,6 +1,7 @@
 # AssetViewer (assetViewer2), the asset viewer and editor: a game on daNetGame (asset_viewer_dng, with the daNetGameLibs
 # of av_danetgamelibs.txt) with its own main, on daKernel (the editor tree), with the profiling counters of anim, math
-# and fastPhys (DAGOR_MEASURE_PERF) and the ImGui test engine; its asset type plugins are the dirs below
+# and fastPhys (DAGOR_MEASURE_PERF), the ImGui test engine and VR (DAGOR_VR: OpenXR, and the VR GUI of the render
+# service); its asset type plugins are the dirs below
 set(deps
   engine.startup engine.math engine.coreUtil engine.workCycle engine.lib3d engine.shaders engine.scene engine.image
   engine.guiBase engine.drv.hid_mouse engine.drv.hid_keyboard engine.drv.drv3d_pc_multi engine.gameRes engine.libFx
@@ -66,6 +67,6 @@ int get_build_number() { return -1; }"
     ${DAGOR_PROG_DIR}/gameLibs/rendInst
   LINK_OPTIONS PRIVATE "$<$<CXX_COMPILER_FRONTEND_VARIANT:MSVC>:/OPT:NOREF>" # keep what the plugins call
   BUILD_DEPENDENCIES PRIVATE ${deps} tools.libTools.daKernel
-  PROPERTIES DAGOR_MEASURE_PERF ON DAGOR_IMGUI_TEST_ENGINE ON DAGOR_DAFX_GRAVITY_ZONE ON
+  PROPERTIES DAGOR_MEASURE_PERF ON DAGOR_IMGUI_TEST_ENGINE ON DAGOR_DAFX_GRAVITY_ZONE ON DAGOR_VR ON
   CDK
 )
