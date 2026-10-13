@@ -28,7 +28,7 @@
 #
 # Tests are registered with DAGOR_BUILD_TESTS; the engine's own only in the engine's trees (not in a project's, which
 # have the project's tests), and none that run programs of a cross-compiled tree without an emulator. The target tests
-# builds the programs they run; in the tests variant they are part of the default build.
+# builds the programs they run; in the tests variant and in a game's trees they are part of the default build.
 include_guard(GLOBAL)
 
 set(_dagor_tests_default OFF)
@@ -72,11 +72,11 @@ function(_dagor_test_enabled out)
   set(${out}_RUNS ${runs} PARENT_SCOPE)
 endfunction()
 
-# a program the tests run: built by the target tests, and by default in the tests variant (once the tree is complete:
-# the das interpreter's dir comes after the dirs of the tests it runs)
+# a program the tests run: built by the target tests, and by default in the trees of the tests variant and of games (once
+# the tree is complete: the das interpreter's dir comes after the dirs of the tests it runs)
 function(_dagor_test_program target)
   add_dependencies(tests ${target})
-  if(DAGOR_VARIANT STREQUAL "tests")
+  if(DAGOR_VARIANT MATCHES "^(tests|game)$")
     # (a deferred call evaluates its arguments when it runs: the target's name goes in now)
     cmake_language(EVAL CODE
       "cmake_language(DEFER DIRECTORY [[${CMAKE_SOURCE_DIR}]] CALL dagor_build_by_default [[${target}]])")
