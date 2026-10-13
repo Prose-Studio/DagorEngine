@@ -75,7 +75,9 @@ endfunction()
 function(_dagor_test_program target)
   add_dependencies(tests ${target})
   if(DAGOR_VARIANT STREQUAL "tests")
-    cmake_language(DEFER DIRECTORY "${CMAKE_SOURCE_DIR}" CALL dagor_build_by_default ${target})
+    # (a deferred call evaluates its arguments when it runs: the target's name goes in now)
+    cmake_language(EVAL CODE
+      "cmake_language(DEFER DIRECTORY [[${CMAKE_SOURCE_DIR}]] CALL dagor_build_by_default [[${target}]])")
   endif()
 endfunction()
 

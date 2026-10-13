@@ -8,10 +8,10 @@ foreach(dir providers/common/der providers/implementations/asymciphers providers
 endforeach()
 openssl_collect_c(FILES providers/implementations/ciphers cipher_rc4_hmac_md5_hw.c)
 openssl_collect_c(FILES providers/implementations/macs blake2_mac_impl.c)
-list(APPEND sources providers/baseprov.c providers/defltprov.c providers/nullprov.c providers/prov_running.c
+list(APPEND FILES providers/baseprov.c providers/defltprov.c providers/nullprov.c providers/prov_running.c
   gaijin_stubs/getenv.c)
 if(WIN32)
-  list(APPEND sources providers/implementations/rands/seeding/rand_win.c)
+  list(APPEND FILES providers/implementations/rands/seeding/rand_win.c)
 else()
-  list(APPEND sources providers/implementations/rands/seeding/rand_unix.c)
+  list(APPEND FILES providers/implementations/rands/seeding/rand_unix.c)
 endif()

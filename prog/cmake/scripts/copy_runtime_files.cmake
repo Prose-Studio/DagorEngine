@@ -3,7 +3,7 @@
 # line (the program's DAGOR_RUNTIME_FILES), copied into DEST/<subdir> when they changed.
 file(STRINGS "${LIST}" entries)
 foreach(entry IN LISTS entries)
-  if(NOT entry MATCHES "^([^|]*)\|(.+)$")
+  if(NOT entry MATCHES "^([^|]*)[|](.+)$")
     continue()
   endif()
   set(dir "${DEST}/${CMAKE_MATCH_1}")
