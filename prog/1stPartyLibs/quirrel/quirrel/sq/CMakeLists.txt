@@ -1,8 +1,12 @@
-add_executable(sq sq.cpp sq_test_natives.cpp)
-
-target_link_libraries(sq squirrel sqstdlib sqmodules quirrel-compiler)
-target_include_directories(sq PRIVATE
-  # include/ and sqmodules/ are transitive from linked libraries
-  "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/sqrat/include>"
-  "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/squirrel>" # Needed for sqtypeparser.h
-  )
+# The Quirrel command-line interpreter as a library: sq_interpreter_main() for a program's main, and the test.native
+# module of the interpreter's tests. The engine's build replaces upstream's CMakeLists.txt.
+set(defines SQ_EXCLUDE_DEFAULT_MAIN)
+if(DAGOR_SQ_VAR_TRACE)
+  list(APPEND defines SQ_VAR_TRACE_ENABLED)
+endif()
+dagor_add_target(NAME 1stPartyLibs.quirrel.quirrel.sq STATIC LAX
+  FILES_CMAKE sq_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ../sqmodules ../squirrel
+  COMPILE_DEFINITIONS PRIVATE ${defines}
+  BUILD_DEPENDENCIES PUBLIC Dagor::Quirrel
+)

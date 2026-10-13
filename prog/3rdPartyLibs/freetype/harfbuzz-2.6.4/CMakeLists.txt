@@ -14,3 +14,29 @@ dagor_add_target(NAME 3rdPartyLibs.freetype.harfbuzz-2.6.4 STATIC LAX
   COMPILE_DEFINITIONS PRIVATE ${defines}
   COMPILE_OPTIONS PRIVATE ${options}
 )
+
+# harfbuzz's own test programs: the self-checks run as tests, hb_info, hb_test and the others take a font
+if(DAGOR_ENGINE_TESTS)
+  set(self_checks array bimap number unicode-ranges)
+  if(NOT CMAKE_CXX_COMPILER_ID STREQUAL "MSVC") # these do not compile with MSVC (test-meta not as C++20 at all)
+    list(APPEND self_checks algs iter)
+  endif()
+  set(programs "hb_info|main.cc" "hb_test|test.cc")
+  foreach(name buffer-serialize gpos-size-params gsub-would-substitute ot-glyphname ot-meta ot-name ${self_checks})
+    list(APPEND programs "hb_test-${name}|test-${name}.cc")
+  endforeach()
+  foreach(program IN LISTS programs)
+    string(REPLACE "|" ";" program "${program}")
+    list(GET program 0 name)
+    list(GET program 1 hb_source)
+    dagor_add_target(NAME ${name} EXECUTABLE LAX
+      FILES_CMAKE hb_test_files.cmake
+      INCLUDE_DIRECTORIES PRIVATE src ${DAGOR_PROG_DIR}/3rdPartyLibs/freetype/freetype-2.8/include
+      COMPILE_DEFINITIONS PRIVATE ${defines}
+      BUILD_DEPENDENCIES PRIVATE 3rdPartyLibs.freetype.harfbuzz-2.6.4 3rdPartyLibs.freetype.freetype-2.8
+    )
+  endforeach()
+  foreach(name IN LISTS self_checks)
+    dagor_add_exec_test(3rdPartyLibs.harfbuzz.${name} COMMAND $<TARGET_FILE:hb_test-${name}> TAGS 3rdPartyLibs)
+  endforeach()
+endif()

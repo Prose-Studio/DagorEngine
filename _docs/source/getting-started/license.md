@@ -93,6 +93,7 @@ third-party component as follows:
   prog/3rdPartyLibs/codecs/libtheora-1.0/license
   prog/3rdPartyLibs/codecs/speexdsp-1.2.0/LICENSE
   prog/3rdPartyLibs/convert/detex/LICENSE
+  prog/3rdPartyLibs/draco/LICENSE
   prog/3rdPartyLibs/convert/fastDXT/LICENSE
   prog/3rdPartyLibs/convert/nvtt-2.0.7/LICENSE
   prog/3rdPartyLibs/cpu_features/LICENSE
