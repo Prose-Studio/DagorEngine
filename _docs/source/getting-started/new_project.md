@@ -67,7 +67,7 @@ engineRoot:t="../DagorEngine"   // application.blk: relative to the project, or 
 ```
 
 `python <engine>/dng.py relink <project dir>` points `engineRoot` and `prog/CMakePresets.json` at that engine (after
-either moved). The CMake configure writes the files that depend on the engine and the lib lists; they are not
+either moved, or after an engine update changed the presets a project inherits). The CMake configure writes the files that depend on the engine and the lib lists; they are not
 committed:
 
 | Generated file | For |
