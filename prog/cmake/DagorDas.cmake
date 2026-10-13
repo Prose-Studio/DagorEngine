@@ -57,6 +57,9 @@ size_t ${arg_PULL} = 0;
   set(compiler "$<TARGET_PROPERTY:dagor.dasAotCompiler,DAGOR_EXECUTABLE>")
   set(files)
   foreach(file IN LISTS arg_UNPARSED_ARGUMENTS)
+    if(file MATCHES "^\\$<") # a file of some configurations only (a generator expression): it runs interpreted
+      continue()
+    endif()
     cmake_path(ABSOLUTE_PATH file NORMALIZE)
     list(APPEND files "${file}")
   endforeach()

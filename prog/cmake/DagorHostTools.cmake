@@ -1,8 +1,9 @@
 # The engine's tools that build steps run (the CDK: shader compilers, vromfsPacker, daBuild, the parser generators).
 #
-#   dagor_host_tool(<tool> <out-var>)
+#   dagor_host_tool(<tool> <out-var> [FILE <path in the CDK>])
 #
-# sets <out-var> to the program to run and <out-var>_DEPENDS to what a custom command running it depends on:
+# sets <out-var> to the program to run (or with FILE to that file of the CDK, e.g. plugins/ddsx/pcDdsxConv.dll) and
+# <out-var>_DEPENDS to what a custom command running it depends on:
 #   - DAGOR_HOST_TOOLS_DIR (a CDK, e.g. tools/dagor_cdk/windows-x86_64 of a prebuilt engine): the program there;
 #   - an engine tree that is not cross-compiling: the tree's own target;
 #   - otherwise (games, cross builds) the engine's CDK for the host, built on demand: target dagor.hostTools.<variant>
@@ -26,11 +27,15 @@ set(DAGOR_CDK_NO_POSTFIX binBlk blk2robin blkDiff utf8ranges ltout2img detClient
   dolphin whale duktape flatc flathash pcDdsxConv iosDdsxConv andDdsxConv)
 
 function(dagor_host_tool tool out)
+  cmake_parse_arguments(PARSE_ARGV 2 arg "" "FILE" "")
   set(file "${tool}-dev")
   if(tool IN_LIST DAGOR_CDK_NO_POSTFIX)
     set(file "${tool}")
   endif()
   string(APPEND file "${CMAKE_HOST_EXECUTABLE_SUFFIX}")
+  if(arg_FILE)
+    set(file "${arg_FILE}")
+  endif()
   if(DAGOR_HOST_TOOLS_DIR)
     if(NOT EXISTS "${DAGOR_HOST_TOOLS_DIR}/${file}")
       message(FATAL_ERROR "DAGOR_HOST_TOOLS_DIR='${DAGOR_HOST_TOOLS_DIR}' has no ${file}")
