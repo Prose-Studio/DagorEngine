@@ -5,7 +5,8 @@ test files like any other game script, runs every `[ecs_test]` function and exit
 [test exit code](overview.md#results). Tests see the whole game: every das module, ECS system, template and the loaded
 scene. Two layers use it:
 
-- `ecs`: the headless dedicated server; fast, for gameplay logic over entities and frames.
+- `ecs`: the headless dedicated server (a single-player game: the game itself, headless on the stub driver where it
+  has it); fast, for gameplay logic over entities and frames.
 - `scenario`: the rendering client; for end-to-end behavior, input and screenshots.
 
 ## Writing tests
@@ -58,7 +59,8 @@ keyboards, mice and gamepads are disabled in scenario runs, so the person at the
 `check_screenshot` takes a screenshot without UI, waits for it and compares it with `references/<name>.png`
 (`references/<name>.<3d driver>.png` first). The tolerances are parameters: `channel_tolerance` (default 8),
 `max_rms` (1.0) and `max_bad_pixels_percent` (0.5). Create or update references with
-`python dng.py test run --update-references` and review the images before committing them.
+`DAGOR_TEST_UPDATE_REFERENCES=1 ctest --preset <host>-client -L scenario` and review the images before committing
+them.
 
 A screenshot needs a rendered 3d world: `check_screenshot` fails while the game shows a menu or a level that renders
 nothing (`level__blk:t="__empty__"`). For a world without level data use `level__blk:t="__default__"`: sky and lighting
@@ -84,29 +86,18 @@ The game needs to find dastest and the test harness:
 - two entries in the game's `.das_project`: `"dastest" => "%dastest"` in the module prefixes and
   `"testing" => "%dastest/testing.das"` in the aliases (dastest's own modules require each other by those names).
 
-Tests run from sources (the runner passes `-config:debug/useAddonVromSrc:b=yes`), so neither the tests nor the
-`test_harness` lib need to be in the game's vromfs. The project's root `test.blk` names the game:
+Tests run from sources (`dagor_add_game_test` passes `-config:debug/useAddonVromSrc:b=yes`), so neither the tests
+nor the `test_harness` lib need to be in the game's vromfs. The tests are declared in the CMakeLists of their dir, in
+the tree of the game that runs them (after `dagor_add_dng_game()`): `ecs` tests in the dedicated server's tree, or in
+the client's for a game without one; scenarios in the client's.
 
-```text
-game{
-  codename:t="my_game"                 // executable base name (my_game-dev, my_game-ded-dev)
-  dir:t="game"                         // runtime dir with <platform>-<arch>/ executables
-  build:t="{python} project.py build code" // optional: run once from the project root before in-game targets
-}
+```cmake
+dagor_add_game_test(my_game.ecs LAYER ecs TAGS my_game PATHS . SCENE gamedata/scenes/test.blk CASE_TIMEOUT 60)
+dagor_add_game_test(my_game.scenarios LAYER scenario TAGS my_game PATHS . SCENE gamedata/scenes/test.blk)
 ```
 
-and targets point at test files:
-
-```text
-target{ name:t="myGame.ecs"; layer:t="ecs"; path:t="tests/ecs"; scene:t="gamedata/scenes/test.blk"; caseTimeout:r=60 }
-target{ name:t="myGame.scenarios"; layer:t="scenario"; path:t="tests/scenarios"; scene:t="gamedata/scenes/test.blk" }
-```
-
-`game:t="client"` runs `ecs` tests in the client, `game:t="dedicated"` runs scenarios headless (screenshots then fail).
-Scenario targets require a GPU and a display and never run in parallel with other GPU targets.
-
-`args:t=` adds game arguments, e.g. switches that make the game start the scene directly instead of its menu
-(`args:t="-config:disableMenu:b=yes"`).
+Scenario tests require a GPU and a display (`requires-gpu`, `requires-display`). `ARGS` adds game arguments, e.g.
+switches that make the game start the scene directly instead of its menu (`ARGS -config:disableMenu:b=yes`).
 
 Test functions run like entity systems: `query` and `find_query` work in them, and an `[es]` declared in a test file
 runs every frame of `advance_frames`.

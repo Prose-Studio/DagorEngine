@@ -7,42 +7,36 @@ C++ tests use [Catch2](https://github.com/catchorg/Catch2) (`prog/3rdPartyLibs/c
 
 ```text
 prog/gameLibs/foo/tests/
-  jamfile
+  CMakeLists.txt
+  tests_files.cmake
   main.cpp
   test_foo.cpp
-  test.blk
   references/        // optional: reference images
   data/              // optional: anything the tests read
 ```
 
-`jamfile`: include `prog/_jBuild/unitTest.jam` instead of `defaults.jam`. It makes a console executable with
-exceptions enabled, links Catch2 and the test environment (`engine/unitTest`), and puts it into
-`_output/tests/<platform>-<arch>/`. Target names must be unique.
+`dagor_add_catch2_test` makes a console program with exceptions enabled, links Catch2 and the test environment
+(`engine.unitTest`), puts it into `<build>/tests` and registers each test case as a CTest test `<name>:<case>` (see
+[Running Tests](test_runner.md)). The area's CMakeLists adds the dir with the engine's tests
+(`if(DAGOR_ENGINE_TESTS)`).
 
-```text
-Root    ?= ../../../.. ;
-Location = prog/gameLibs/foo/tests ;
-Target   = foo-tests ;
+```cmake
+# CMakeLists.txt
+dagor_add_catch2_test(NAME foo-tests
+  TAGS gameLibs
+  FILES_CMAKE tests_files.cmake
+  BUILD_DEPENDENCIES PRIVATE gameLibs.foo engine.memory engine.kernel engine.osApiWrappers engine.baseUtil engine.ioSys
+    engine.math engine.perfMon.daProfilerStub 3rdPartyLibs.eastl
+)
 
-include $(Root)/prog/_jBuild/unitTest.jam ;
-
-Sources = main.cpp test_foo.cpp ;
-UseProgLibs += engine/memory engine/kernel engine/osApiWrappers engine/baseUtil engine/ioSys engine/math
-  engine/perfMon/daProfilerStub 3rdPartyLibs/eastl gameLibs/foo ;
-
-include $(Root)/prog/_jBuild/build.jam ;
+# tests_files.cmake
+set(FILES main.cpp test_foo.cpp)
 ```
 
 `main.cpp`:
 
 ```cpp
 #include <unittest/mainCatch2.inc.cpp>
-```
-
-`test.blk` (see [the test runner](test_runner.md)):
-
-```text
-target{ name:t="gameLibs.foo"; layer:t="cpp"; tag:t="gameLibs"; jamfile:t="jamfile"; exe:t="foo-tests" }
 ```
 
 Tests include `<unittest/dag_unitTest.h>`, which brings the Catch2 macros, EASTL printing and the helpers below.
@@ -99,7 +93,7 @@ TEST_CASE("errors can be inspected")
 | `unittest::data_path("x")` | the test's data dir (its source dir unless `--data-dir` is passed) |
 | `unittest::artifact_path("x")` | the case's artifact dir, kept with the report |
 | `unittest::scratch_dir()` | an empty writable dir for the current case |
-| `unittest::http_service(url, root)` | an HTTP server for targets with `requires:t="http_server"` |
+| `unittest::http_service(url, root)` | an HTTP server for tests with `REQUIRES http_server` |
 
 ## Image checks
 
@@ -114,14 +108,15 @@ CHECK_IMAGE(image, "lit_scene", tolerant);
 
 References are looked up as `references/<name>.<variant>.png` first (the variant is the 3d driver name in GPU
 tests), then `references/<name>.png`. On a mismatch the actual, reference and diff images go to the report. A missing
-reference fails; `python dng.py test run --update-references` creates or replaces references with the actual images.
+reference fails; `--update-references` (or `DAGOR_TEST_UPDATE_REFERENCES=1` for a CTest run) creates or replaces
+references with the actual images.
 
 ## Command line
 
 Besides the Catch2 options, test executables accept `--data-dir`, `--artifact-dir`, `--case-timeout <sec>`,
-`--image-variant`, `--gpu-driver` and `--update-references`. `dng.py test` passes them; run executables directly to
-debug a single case:
+`--image-variant`, `--gpu-driver` and `--update-references`. CTest passes them; run the program directly to debug a
+single case:
 
 ```bash
-_output/tests/windows-x86_64/foo-tests-dev.exe "my case name"
+build/windows-tests/tests/foo-tests-dev.exe "my case name"
 ```

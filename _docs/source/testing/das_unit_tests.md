@@ -1,7 +1,7 @@
 # daScript Unit Tests
 
 Pure daScript code (logic that doesn't need the running game) is tested with daScript's own framework, `dastest`
-(`prog/1stPartyLibs/daScript/dastest`), in the engine's das interpreter (`tools/util/das-64-dev`, built on demand).
+(`prog/1stPartyLibs/daScript/dastest`), in the engine's das interpreter (the `das` program of the tree, built with the tests).
 
 ```text
 options gen2
@@ -20,17 +20,13 @@ def damage_is_reduced_by_armor(t : T?) {
 The `T` API: `equal`, `strictEqual`, `numericEqual`, `success`, `failure`, `accept`, `run` (sub tests), `skip`,
 `log`, `error`, `fatal` (`t->fatal(...)`), `skipNow`.
 
-## Target
+## Declaring the tests
 
-```text
-target{
-  name:t="myGame.logic"
-  layer:t="das"
-  path:t="../scripts/my_game"         // repeatable: dirs or files with tests
-  project:t="../scripts/tests.das_project" // optional: module paths for require
-  isolated:b=yes                      // optional: every test file in its own process
-}
+```cmake
+dagor_add_das_test(myGame.logic TAGS my_game
+  PATHS ../scripts/my_game               # dirs or files with tests
+  PROJECT ../scripts/tests.das_project   # optional: module paths for require
+  ISOLATED)                              # optional: every test file in its own process
 ```
 
-The engine registers the daScript language suite as `daScript.suite`. `-c <name>` on the `dng.py test` command line
-selects tests by name prefix.
+The engine registers the daScript language suite as `daScript.suite`; `ctest -R daScript -V` runs it with its output.

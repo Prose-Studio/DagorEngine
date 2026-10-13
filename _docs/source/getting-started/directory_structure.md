@@ -3,11 +3,11 @@
 ## General Directory Structure
 
 At the top level of the Dagor Engine directory structure, the root directory
-is organized into four main sections:
+is organized into these sections:
 
 - [Main Sources](#main-sources). Contain the engine core and associated tools.
 - [Projects](#projects). Contain files specific to individual game projects.
-- [Samples](#samples-1). Include example projects for reference.
+- [Templates](#templates). The starting points of new game projects.
 - [Documentation](#documentation). Provides comprehensive guides and references.
 
 Below is a tree of the general directory structure:
@@ -28,7 +28,7 @@ Below is a tree of the general directory structure:
 │   ├── tools
 │   └── application.blk
 ├── prog
-│   ├── _jBuild
+│   ├── cmake
 │   ├── 1stPartyLibs
 │   ├── 3rdPartyLibs
 │   ├── dagorInclude
@@ -37,9 +37,7 @@ Below is a tree of the general directory structure:
 │   ├── scripts
 │   ├── gameLibs
 │   ├── daNetGame
-│   ├── daNetGameLibs
-│   └── samples
-├── samples
+│   └── daNetGameLibs
 ├── templates
 └── _docs
 ```
@@ -52,9 +50,11 @@ A project can also live outside `<engine_root>`: its `engine.blk` names the engi
 The main sources directory `prog` contains several key parts, each serving a
 specific purpose:
 
-### `_jBuild`
+### `cmake`
 
-Contains common `.jam` file settings used to build code for different platforms.
+The CMake build: the helpers every CMakeLists uses (`dagor_add_target` and the functions on it), the platform data,
+toolchains, presets, Find modules and the pinned SDKs. `prog/CMakeLists.txt` is the engine's top level and
+`prog/CMakePresets.json` its presets; `cmake/DESIGN.md` describes the build.
 
 ### `1stPartyLibs`
 
@@ -87,7 +87,7 @@ applications. They may have dependencies on `1stPartyLibs` and `3rdPartyLibs`.
 Contains the source code for various [Dagor Tools](../dagor-tools/index.rst),
 the `pythonCommon` packages behind `dng.py` in the engine root, and
 `toolsData`: the data the tools load at runtime that is not built (fonts,
-icons, themes, dargbox's UI), which `dng.py build` copies into the engine's
+icons, themes, dargbox's UI), which the build installs into the engine's
 `tools/` directory.
 
 ### `scripts`
@@ -119,15 +119,10 @@ Contains libraries that assist in developing games using the daNetGame
 framework. Dependencies can include `1stPartyLibs`, `3rdPartyLibs`, `engine`,
 `daNetGame`, `daECS`, and some `gameLibs`.
 
-### `samples`
-
-Contains sample projects for both the core engine and game libraries are stored
-here.
-
 ### `templates`
 
-Project templates for `dng.py new` (see [Creating a Project](new_project.md)). Each is a buildable project
-inside the engine, built and tested like the samples.
+Project templates for `dng.py new` (see [Creating a Project](new_project.md)): sp-3d, mp-3d, sp-2d and mp-2d, made
+of the shared layers in the `_`-prefixed dirs.
 
 **Library Development Principles**
 
@@ -335,16 +330,6 @@ directories for the editor. In `application.blk`, can be defined:
   For more information, see
   [application.blk](../assets/all-about-blk/application_blk.md).
   ```
-
-## Samples
-
-The `samples` directory includes example projects that demonstrate the usage of
-the core engine and various game libraries. These sample projects serve as
-practical references, showcasing different aspects of game development with the
-Dagor Engine. They are designed to illustrate best practices and provide a
-starting point for developers to build their own projects. Each sample is
-carefully crafted to highlight specific features and functionalities, making it
-easier for developers to learn and apply the concepts in their own work.
 
 ## Documentation
 

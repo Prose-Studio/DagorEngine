@@ -2,34 +2,22 @@
 
 ## GitHub Actions
 
-`.github/workflows/tests.yaml` runs on every push and pull request to `main` and on demand: on Windows, Linux and
-macOS hosted runners it sets up the devtools (`dng.py devtools` answers its questions itself in CI, see
-`DAGOR_NONINTERACTIVE`), then runs
+The workflows run the CMake workflow presets on Windows, Linux and macOS hosted runners; `.github/actions/setup` installs
+Python, CMake, Ninja and the Linux packages and restores the SDK and compiler caches.
 
-```bash
-python dng.py test run --gpu no -j 4 --out _output/test_results/ci --junit test-results.xml --summary-md "$GITHUB_STEP_SUMMARY"
-```
+- `.github/workflows/cmake.yaml`: the engine's trees, `cmake --workflow --preset <host>-<tree>` for `tests-ci`,
+  `msvc-tests-ci` (Windows), `cdk`, `assets` and `editor`; the Visual Studio and Xcode generators also build one test
+  program.
+- `.github/workflows/template.yaml`: a project from every template (`dng.py new`), its `<host>-test` workflow, its
+  content and packages, checked by `prog/cmake/scripts/verify_game_packages.py`, which also runs the game's ECS tests
+  in the packaged game.
 
-Hosted runners have no GPU: GPU targets are skipped, while their `*.stub` variants run the same tests on the stub 3d
-driver. The HTML report and logs are uploaded as the `test-report-<os>` artifact of the run.
+Hosted runners have no GPU: the `-ci` test presets leave out the tests labeled `requires-gpu` or `requires-display`,
+while their stub driver variants run the same cases on the stub 3d driver. Failed runs upload
+`build/<preset>/test-artifacts`.
 
-In-game targets need a built game, which takes too long for every push: run them on a machine with the game built, or
-in a scheduled job that builds it.
+## Devices
 
-## Device backends
-
-`--device <backend>[:<id>]` runs test executables somewhere else than the host. A backend (see
-`prog/tools/pythonCommon/dagorTest/devices/base.py`) deploys the executable and its data, maps the paths the test needs
-(data dir, artifact dir, result files) to device paths, runs it with a timeout and copies the outputs back. Test
-executables get every path on their command line and write their exit code as the last event of `events.jsonl`, so
-backends work on devices that don't report process exit codes.
-
-| Backend | Platforms | Status |
-|---|---|---|
-| `local` | windows, linux, macOS | the default |
-| `android` | android | skeleton, not verified on a device yet (adb) |
-| `ios` | iOS | skeleton, not verified yet (simctl / devicectl) |
-
-Backends for platforms under NDA (consoles) don't belong in the public engine: put them in your own repository and list
-their directories in `DAGOR_TEST_DEVICE_PATH` (separated like `PATH`). Every `*.py` file there is loaded and its
-`DeviceBackend` subclasses with a `name` become available to `--device`.
+Tests run on the machine that builds them. Running the test programs of a cross-compiled tree (Android, iOS) on a
+device is not set up yet: those trees register only the tests they can run on the host
+(`CMAKE_CROSSCOMPILING_EMULATOR`).

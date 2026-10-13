@@ -3,75 +3,58 @@
 ## How to Build: Environment
 
 ```{important}
-Requirements for building and using the Dagor Engine toolkit:
-- Windows 10 (x64)
-- 16&nbsp;GB of RAM
-- 200&nbsp;GB of HDD/SSD space
+The engine builds with CMake on Windows 10/11 (x64, arm64), Linux (x86_64,
+arm64) and macOS (arm64, x64), and cross builds for Android and iOS. Building
+the engine tools takes 16&nbsp;GB of RAM and 200&nbsp;GB of HDD/SSD space.
 ```
 
-1. Install Git: <https://git-scm.com/download/win>.
+1. Install Git, Python 3.8 or newer, CMake 4.0 or newer and Ninja
+   (`python -m pip install cmake ninja` gives both), and the platform's
+   compiler:
 
-2. Install Python 3.8 or newer.
+   - Windows: Visual Studio 2022 (or its Build Tools) with the C++ workload and
+     a Windows 10/11 SDK. The engine compiles with the pinned LLVM (clang-cl),
+     which the configure fetches, or with MSVC (the `windows-msvc-*` presets).
+   - Linux: GCC 11+ or Clang, and the development packages
+     `libx11-dev libxrandr-dev libxi-dev libxcursor-dev libxkbcommon-dev
+     libfltk1.3-dev libxkbfile-dev libudev-dev libpulse-dev libasound2-dev
+     libcurl4-openssl-dev libssl-dev libdbus-1-dev uuid-dev nasm`
+     (Debian/Ubuntu names).
+   - macOS: Xcode 16 or newer.
 
-3. If you plan to use the FMOD sound library, also install FMOD Studio SDK
-   2.02.15.
-
-4. Create a project directory at the root of any drive.
-
-   ```{note}
-   The directory name should not contain spaces or non-Latin characters.
-   ```
-
-   ```text
-   md X:\develop
-   cd X:\develop
-   ```
-
-5. Clone the Dagor Engine source code:
+2. Clone the Dagor Engine source code into a path without spaces or non-Latin
+   characters:
 
    ```text
    git clone https://github.com/Prose-Studio/DagorEngine.git
-   cd DagorEngine
+   cd DagorEngine/prog
    ```
 
-6. Run `dng.py devtools`.
-
-   It downloads, installs, and configures the build toolkit. Provide the path to
-   the build toolkit directory as an argument; it creates the directory if it
-   doesn't exist and skips what is already set up when run again.
-
-   ```text
-   python dng.py devtools X:\develop\devtools
-   ```
-
-   ```{important}
-   - If the script is not run as an administrator, installers of certain
-     programs may request permission for installation, which you should grant.
-   - If you plan to use plugins for 3ds Max, press `Y` when the script asks if
-     you want to install the 3ds Max SDK.
-   - The script will also ask to add the path `X:\develop\devtools` to the
-     `PATH` environment variable and set the `GDEVTOOL` variable to point to
-     this directory.
-   ```
-
-   After the script completes its work, the `X:\develop\devtools` directory
-   holds the compilers (LLVM, MSVC), the Windows SDKs, the SDKs of the graphics
-   drivers (DXC, Agility SDK, AGS, nvapi, Nsight Aftermath, Streamline,
-   FidelityFX), OpenXR, astcenc, ispc, nasm, ducible and `jam.exe`, the build
-   tool used instead of Make.
-
-7. Restart the command line console to make the new environment variables
-   available.
+The SDKs the build needs (DirectX Shader Compiler, ISPC, Vulkan headers, LLVM,
+...) are downloaded once by the configure, checked against pinned SHA256 sums,
+into `DAGOR_DEPS_DIR` (by default `%LOCALAPPDATA%/dagor`,
+`~/Library/Caches/dagor` or `~/.cache/dagor`). The 3ds Max SDK, which is not
+redistributable, is used when you point the build at it (`MaxSDK_ROOT`, for the
+`windows-maxplug` presets).
 
 ## How to Build: Build from Source Code
 
-Run `python dng.py build` in `DagorEngine` to build the engine toolkit, dargbox
-and the project template from the source code (`python dng.py build -h` lists
-the projects and options). This process may take a considerable amount of
-time.
+The engine is built with the CMake presets of `prog/CMakePresets.json`
+(`cmake --list-presets` lists them), each one a tree in `build/<preset>`:
 
-The data the tools load at runtime and that is not built (the editors'
-`commonData`, dargbox's fonts and UI) is part of the repository, in
-`prog/tools/toolsData`; the build copies it into `tools/`.
+```text
+cmake --workflow --preset windows-tests-ci     the engine and its tests (those that need no GPU)
+cmake --workflow --preset windows-cdk          the tools: shader compilers, packers, converters
+cmake --workflow --preset windows-assets       daBuild and its exporters
+cmake --workflow --preset windows-editor       the editors: daEditor, AssetViewer, impostorBaker
+cmake --workflow --preset windows-dargbox      the UI tool
+```
+
+Use `linux-` and `macos-` on those hosts; `windows-msvc-`, `linux-clang-`,
+`windows-arm64-`, `macos-universal-` and the sanitizer presets build the
+others. The tools are installed into `tools/dagor_cdk/<host>-<arch>`. The data
+the tools load at runtime and that is not built (the editors' `commonData`,
+dargbox's fonts and UI) is part of the repository, in `prog/tools/toolsData`.
+`prog/cmake/DESIGN.md` describes how the build is organized.
 
 To start a game of your own, see [Creating a Project](new_project.md).

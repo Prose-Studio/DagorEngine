@@ -237,8 +237,8 @@ file for this event (currently located at `prog/game/dasEvents.h/cpp`).
 
 To generate the Quirrel stubs and C++ code automatically, run the batch file
 `<game>/scripts/genDasevents.bat`. If the batch file does not work, build the
-daScript compiler manually once by running `jam -sPlatform=win64
--sCheckedContainers=yes` in `<project_name>/prog/aot`.
+game's daScript AOT compiler once: `cmake --preset windows-aot-compiler` and
+`cmake --build --preset windows-aot-compiler` in `<project_name>/prog`.
 
 ## Filters
 

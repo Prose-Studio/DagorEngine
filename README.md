@@ -1,79 +1,52 @@
 ## How to Build: Environment
-Requirements for building and using the Dagor Engine toolkit: Windows 10 (x64), 16 GB of RAM, 200 GB of HDD/SSD space.
 
-* Install Git: https://git-scm.com/download/win
-* Install Python 3.8 or newer
-* If you plan to use the FMOD sound library, also install FMOD Studio SDK 2.02.15
+The engine builds with CMake on Windows 10/11 (x64, arm64), Linux (x86_64, arm64) and macOS (arm64, x64), and cross
+builds for Android and iOS. Building the engine tools takes 16 GB of RAM and 200 GB of disk space.
 
-Create a project folder at the root of any drive (the folder name should not contain spaces or non-Latin characters).
-```
-md X:\develop && cd X:\develop
-```
+* Git, Python 3.8 or newer, CMake 4.0 or newer and Ninja (`python -m pip install cmake ninja` gives both)
+* Windows: Visual Studio 2022 (or its Build Tools) with the C++ workload and a Windows 10/11 SDK; the engine compiles
+  with the pinned LLVM (clang-cl), which the configure fetches, or with MSVC (the `windows-msvc-*` presets)
+* Linux: GCC 11+ or Clang, and the development packages: `libx11-dev libxrandr-dev libxi-dev libxcursor-dev
+  libxkbcommon-dev libfltk1.3-dev libxkbfile-dev libudev-dev libpulse-dev libasound2-dev libcurl4-openssl-dev libssl-dev
+  libdbus-1-dev uuid-dev nasm` (Debian/Ubuntu names)
+* macOS: Xcode 16 or newer
 
-Clone the Dagor Engine source code:
+The SDKs the build needs (DirectX Shader Compiler, ISPC, Vulkan headers, LLVM, ...) are downloaded once, checked against
+pinned SHA256 sums, into `DAGOR_DEPS_DIR` (by default `%LOCALAPPDATA%/dagor`, `~/Library/Caches/dagor` or
+`~/.cache/dagor`); the 3ds Max SDK, which is not redistributable, is used when you point the build at it
+(`MaxSDK_ROOT`, for the `windows-maxplug` presets).
+
+Clone the source code into a path without spaces or non-Latin characters:
 ```
 git clone https://github.com/Prose-Studio/DagorEngine.git
-cd DagorEngine
+cd DagorEngine/prog
 ```
-
-Everything else is done with `dng.py` in the DagorEngine root (`python dng.py <command> -h` lists the options of a command):
-```
-python dng.py devtools X:\develop\devtools          the build toolkit (once, then restart the console)
-python dng.py build                                 the engine tools, dargbox and the project template
-python dng.py new --name MyGame --dest ..\MyGame    a game project of your own
-python dng.py test                                  the engine tests
-```
-
-## How to Build: Build Toolkit
-
-Run `dng.py devtools`. It downloads, installs and configures the build toolkit. Give it the path of the build toolkit folder; it creates the folder if it doesn't exist, and skips what is already set up when run again.
-
-```
-python dng.py devtools X:\develop\devtools
-```
-
-If the script is not run as an administrator, installers of certain programs may request permission for installation, which you should grant. If you plan to use plugins for 3ds Max, press 'Y' when the script asks if you want to install the 3ds Max SDK. The script will also ask to add the path X:\develop\devtools to the PATH environment variable and set the GDEVTOOL variable to point to this folder.
-
-After the script completes its work, the X:\develop\devtools folder will be configured with the following SDKs and tools:
-
-* aftermath-2025.5.0.25317 - NVIDIA Nsight Aftermath
-* Agility.SDK.1.619.3 - DirectX 12 Agility SDK
-* AGS.SDK.6.3.0 - AMD GPU Services
-* astcenc-4.6.1 - Adaptive Scalable Texture Compression (ASTC) Encoder
-* DXC-1.8.2505.1 - DirectX Compiler
-* FidelityFX_SC - a library for image quality enhancement
-* fmod-studio-2.xx.xx [optional] - FMOD sound library
-* ispc-v1.23.0-windows - Implicit SPMD Program Compiler
-* LLVM-21.1.8 - C/C++ compiler and libraries (Clang)
-* max2026.sdk - 3ds Max 2026 SDK
-* nasm - netwide assembler ver 2.x
-* openxr-1.1.54 - library for AR/VR
-* streamline-2.14.1 - NVIDIA SDK for DLSS, DLAA, Reflex, etc.
-* vc2019_16.11.34 - C/C++ compiler and libraries (MSVC)
-* vc2022_17.14.4 - C/C++ compiler and libraries (MSVC)
-* win.sdk.100 - Windows 10 SDK
-* win.sdk.81 - Windows 8.1 SDK
-* ducible.exe - a tool to make builds of Portable Executables (PEs) and PDBs reproducible
-* pdbdump.exe - a tool for dumping the content of PDB files
-* jam.exe - a small build tool (used in DagorEngine instead of Make and similar tools)
-
-Restart the command line console to make the new environment variables available.
 
 ## How to Build: Build from Source Code
 
-Build from the DagorEngine root:
+The engine is built with the CMake presets of `prog/CMakePresets.json` (`cmake --list-presets` lists them), each one a
+tree in `build/<preset>`:
+
 ```
-python dng.py build
+cmake --workflow --preset windows-tests-ci     the engine and its tests (those that need no GPU)
+cmake --workflow --preset windows-cdk          the tools: shader compilers, packers, converters
+cmake --workflow --preset windows-assets       daBuild and its exporters
+cmake --workflow --preset windows-editor       the editors: daEditor, AssetViewer, impostorBaker
+cmake --workflow --preset windows-dargbox      the UI tool
 ```
 
-This builds the engine toolkit (`cdk`), the `dargbox` UI tool and the `dngEmpty` project template from the source code. This process may take a considerable amount of time.
-After the tools are built, each project's resources are built with daBuild and the other tools.
-The data the tools load at runtime and that is not built (the editors' `commonData`, dargbox's fonts and UI, ...) is part of the repository, in `prog/tools/toolsData`, and the build copies it into `tools/`: nothing has to be downloaded.
+(`linux-` and `macos-` on those hosts; `windows-msvc-`, `linux-clang-`, `windows-arm64-`, `macos-universal-` and the
+sanitizer presets build the others.) The tools are installed into `tools/dagor_cdk/<host>-<arch>`. The data the tools
+load at runtime and that is not built (the editors' `commonData`, dargbox's fonts and UI, ...) is part of the
+repository, in `prog/tools/toolsData`: nothing has to be downloaded. See `prog/cmake/DESIGN.md` for how the build is
+organized.
 
-Then create a game project with `python dng.py new`, see [Creating a Project](_docs/source/getting-started/new_project.md).
-
-Projects: `cdk`, `dargbox`, `dngEmpty`.
-`-c` limits the components to build, `code`, `shaders`, `assets`, `vromfs`, `gui`, `tools` (default: everything each project builds), and `--arch` sets the target architecture, e.g. `x86_64`, `arm64` (default: the host's).
+Then create a game project from a template (single-player or multiplayer, 3D or 2D), see
+[Creating a Project](_docs/source/getting-started/new_project.md):
+```
+cd ..
+python dng.py new --template sp-3d --name MyGame --dest ../MyGame
+```
 
 A game project has this layout:
 ```
@@ -82,7 +55,7 @@ A game project has this layout:
          /prog
 ```
 
-* prog - game source code
+* prog - game source code, its CMakeLists.txt and CMakePresets.json
 * develop - initial assets
 * game - directory where assets are placed after building and game executable files are located
 
