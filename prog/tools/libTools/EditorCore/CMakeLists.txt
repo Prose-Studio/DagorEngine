@@ -1,6 +1,4 @@
-if(NOT WIN32 AND LINUX)
-  list(APPEND deps engine.osApiWrappers.linuxGUI)
-endif()
+# (Windows and Linux; on Linux the programs that use it have the GUI layer of DAGOR_LINUX_GUI)
 set(deps tools.libTools.coolConsole gameLibs.render.fx gameLibs.quirrel.bindQuirrelEx)
 
 dagor_add_target(NAME tools.libTools.EditorCore STATIC LAX
