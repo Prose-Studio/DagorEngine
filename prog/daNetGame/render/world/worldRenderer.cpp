@@ -3710,9 +3710,6 @@ void WorldRenderer::beforeRender(float scaled_dt,
   if (sceneload::is_scene_switch_in_progress())
     return;
 
-  if (persp.ortho != orthoView)
-    setOrthoView(persp.ortho);
-
   ShaderGlobal::set_float(var::sky_polarization_filter_term, get_sky_polarization_filter_term());
 
   realDeltaTime = real_dt;
@@ -6746,6 +6743,8 @@ static FeatureRenderFlagMask ortho_unsupported_features()
 
 void WorldRenderer::setOrthoView(bool ortho)
 {
+  if (ortho == orthoView)
+    return;
   debug("orthographic view %s", ortho ? "on" : "off");
   orthoView = ortho;
   const FeatureRenderFlagMask current = get_current_render_features();

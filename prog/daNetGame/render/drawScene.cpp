@@ -320,6 +320,8 @@ void before_draw_scene(int realtime_elapsed_usec, float gametime_elapsed_sec, fl
 
   camtrack::update_record(get_sync_time_d(), camTransform, curPersp.wk);
 
+  if (auto wr = get_world_renderer(); wr && !is_level_loading())
+    wr->setOrthoView(curPersp.ortho); // also without a level (a 2D scene has none)
   if (auto wr = get_world_renderer(); wr && is_level_loaded_not_empty())
   {
     TMatrix4D projTm = calc_camera_proj_tm(curPersp);

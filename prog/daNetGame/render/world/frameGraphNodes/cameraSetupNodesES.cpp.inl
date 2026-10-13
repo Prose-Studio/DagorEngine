@@ -370,7 +370,7 @@ static void create_camera_setup_nodes_es(const OnCameraNodeConstruction &evt)
         camera.jobsMgr = WRDispatcher::getMainCameraVisibilityMgr();
         worldViewPosHndl.ref() = Point4::xyz1(camera.viewItm.col[3]);
 
-        camera.viewVecs = calc_view_vecs(camera.viewTm, camera.jitterProjTm);
+        camera.viewVecs = calc_camera_view_vecs(camera.viewTm, camera.jitterProjTm);
         viewVecsHndl.ref() = camera.viewVecs;
 
         motionVecReprojectTmHndl.ref() = reprojectionTms.motionVecReprojectionTm;
@@ -395,7 +395,7 @@ static void create_camera_setup_nodes_es(const OnCameraNodeConstruction &evt)
           const ReprojectionTransforms reprojectionTms = calc_reprojection_transforms(prevCockpitCameraHndl.ref(), cockpitCamera);
           cockpitCamera.jitteredCamPosToUnjitteredHistoryClip = reprojectionTms.jitteredCamPosToUnjitteredHistoryClip;
 
-          cockpitCamera.viewVecs = calc_view_vecs(cockpitCamera.viewTm, cockpitCamera.jitterProjTm);
+          cockpitCamera.viewVecs = calc_camera_view_vecs(cockpitCamera.viewTm, cockpitCamera.jitterProjTm);
         }
       };
   }));
