@@ -15,7 +15,6 @@
 !/game/*.sh
 /develop/.cache/
 /develop/dabuild-dbg*
-*.das.inl
 *.pyc
 
 # CMake build trees (cmake --preset ...) and local presets

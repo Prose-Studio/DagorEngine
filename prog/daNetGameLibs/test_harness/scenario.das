@@ -5,8 +5,8 @@ options strict_smart_pointers
 
 module scenario shared public
 
-//! Functional (scenario) tests: [ecs_test] functions run by the client game (layer:t="scenario" in test.blk), which drive
-//! the game like a player would and check what's on screen:
+//! Functional (scenario) tests: [ecs_test] functions run by the client game (dagor_add_game_test LAYER scenario),
+//! which drive the game like a player would and check what's on screen:
 //!
 //!   require danetlibs/test_harness/scenario
 //!
@@ -48,9 +48,9 @@ def check_screenshot(t : T?; name : string; channel_tolerance : int = 8; max_rms
                      max_bad_pixels_percent : float = 0.5; max_frames : int = 300) : bool {
   //! Takes a screenshot (without UI) and compares it with references/<name>.png next to the test file
   //! (references/<name>.<3d driver>.png first). Mismatches write actual, reference and diff images to the report.
-  //! A missing reference fails; rerun with dng.py test --update-references to create it.
+  //! A missing reference fails; rerun with DAGOR_TEST_UPDATE_REFERENCES=1 (ctest) to create it.
   if (test_mode_is_dedicated()) {
-    t |> failure("screenshots need a rendering game: use game:t=\"client\" in test.blk")
+    t |> failure("screenshots need a rendering game: register scenario tests in the client's tree (dagor_add_game_test LAYER scenario)")
     return false
   }
   if (!test_mode_renders_world()) {

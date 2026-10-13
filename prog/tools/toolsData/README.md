@@ -4,10 +4,10 @@ Data the engine tools load at runtime that is not built from source: the editors
 brushes, environment lighting, editor textures and settings), the blkEditor's Scintilla/Lexilla DLLs, the 3ds Max
 plugin settings and dargbox's fonts, UI, sounds and launchers.
 
-`dng.py build` copies this directory into `tools/` (the same layout: `dagor_cdk/commonData` goes to
-`tools/dagor_cdk/commonData`, `dargbox` to `tools/dargbox`, ...). A file is copied when it is missing in `tools/` or the
-one here is newer, so local edits in `tools/` (e.g. `tools/dargbox/settings.blk`) stay until this copy changes; nothing
-in `tools/` is deleted. Edit the files here, not in `tools/`.
+The cdk tree's install (`cmake --install build/<host>-cdk --component cdk`, which the `<host>` workflow runs) copies
+this directory into `tools/` (the same layout: `dagor_cdk/commonData` goes to `tools/dagor_cdk/commonData`, `dargbox`
+to `tools/dargbox`, ...). An install replaces the files of `tools/` that differ from these and deletes nothing there.
+Edit the files here, not in `tools/`.
 
 The files are stored byte for byte (`-text` in `.gitattributes`): line endings are never converted.
 

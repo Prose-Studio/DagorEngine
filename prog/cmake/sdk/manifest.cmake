@@ -100,7 +100,7 @@ dagor_sdk(agility 1.619.3
 )
 
 # Microsoft DirectX Shader Compiler 1.8.2505.1 (May 2025, patch 1), loaded at run time by the shader compilers. macOS
-# has no Microsoft build: the fork's release holds the one dng.py devtools used (DXC-1.8.2505.1, every platform).
+# has no Microsoft build: the fork's release holds DXC-1.8.2505.1 builds of every platform.
 dagor_sdk(dxc 1.8.2505.1
   windows-x86_64
     URL https://github.com/microsoft/DirectXShaderCompiler/releases/download/v1.8.2505.1/dxc_2025_07_14.zip

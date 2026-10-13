@@ -3,7 +3,8 @@ require ecs
 require danetlibs/test_harness/scenario
 
 // ctest --preset <host>-client -R starter_game.scenarios
-// References are in references/; recreate them with --update-references after an intended visual change and review them.
+// References are in references/; recreate them with DAGOR_TEST_UPDATE_REFERENCES=1 after an intended visual change and
+// review them.
 
 [ecs_test]
 def the_default_world_renders(t : T?) {
