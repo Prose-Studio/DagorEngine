@@ -141,9 +141,9 @@ private:
 
   void resize()
   {
-#define _SUM_BTNS(s)        \
-  assert(allBtns.y == s.y); \
-  allBtns.x += s.x + pad;   \
+#define _SUM_BTNS(s)                      \
+  assert(!allBtns.y || allBtns.y == s.y); \
+  allBtns.x += s.x + pad;                 \
   allBtns.y = s.y;
     Size allBtns;
     allBtns.x = extra;

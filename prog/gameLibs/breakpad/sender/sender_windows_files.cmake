@@ -1,1 +1,1 @@
-set(FILES windows/main.cpp)
+set(FILES main.cpp)

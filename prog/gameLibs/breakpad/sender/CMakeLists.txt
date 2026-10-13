@@ -1,5 +1,11 @@
-# bpreport, the crash report sender of breakpad's dumps (its dialog on the system's FLTK: Linux; FLTK for
-# Windows and macOS from Gaijin's devtools)
+# bpreport, the crash report sender of breakpad's dumps, with its dialog on FLTK (FindFLTK.cmake)
+find_package(FLTK REQUIRED)
+set(libs)
+if(APPLE)
+  set(libs System::Cocoa)
+endif()
+
+# without the kernel: what osApiWrappers calls of it is in dagorStubs.cpp, and its EASTL asserts (Dbg) in EASTL
 dagor_add_target(NAME bpreport EXECUTABLE APPLICATION NO_CONFIG_POSTFIX
   FILES_CMAKE sender_files.cmake
   INCLUDE_DIRECTORIES PRIVATE
@@ -9,5 +15,6 @@ dagor_add_target(NAME bpreport EXECUTABLE APPLICATION NO_CONFIG_POSTFIX
   COMPILE_DEFINITIONS PRIVATE __B_NO_MEM_BASE_INCLUDE CURL_STATICLIB _HAS_EXCEPTIONS=0 ZIP_EXTERN=
   BUILD_DEPENDENCIES PRIVATE
     3rdPartyLibs.libcurl 3rdPartyLibs.arc.libzip 3rdPartyLibs.arc.zlib-ng engine.osApiWrappers engine.memory.minrtl
-    engine.perfMon.daProfilerStub engine.perfMon.perfTimerStub 3rdPartyLibs.openssl-3.x System::fltk System::X11
+    engine.perfMon.daProfilerStub engine.perfMon.perfTimerStub 3rdPartyLibs.openssl-3.x 3rdPartyLibs.eastl FLTK::FLTK
+    ${libs}
 )

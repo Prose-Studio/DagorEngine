@@ -1,1 +1,1 @@
-set(FILES linux/main.cpp)
+set(FILES main.cpp)

@@ -194,3 +194,10 @@ dagor_sdk(fidelityfx 2.1.1
     EXTRACT */Kits/FidelityFX/api/include/* */Kits/FidelityFX/framegeneration/* */Kits/FidelityFX/upscalers/*
       */Kits/FidelityFX/signedbin/* */Kits/FidelityFX/docs/license.md
 )
+
+# FLTK's source release: the GUI toolkit of bpreport's dialog, built in the tree on Windows and macOS (FindFLTK.cmake)
+dagor_sdk(fltk 1.4.5
+  any
+    URL https://github.com/fltk/fltk/releases/download/release-1.4.5/fltk-1.4.5-source.tar.gz
+    SHA256 eede1fb2b8e9c2e581e77082e15252145855c79aad30070ee3b24aabe2f926f1
+)
