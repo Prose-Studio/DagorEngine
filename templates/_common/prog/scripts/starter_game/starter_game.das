@@ -13,7 +13,7 @@ require %scripts/_libs_init // load_libs(): the libs in prog/danetgamelibs.txt, 
 def load {
   var ok = load_libs()
   ok = load_folder("%scripts/starter_game/es") && ok
-  if (!is_dedicated() || is_in_aot()) {
+  if (is_in_aot() || !is_dedicated()) { // is_in_aot() first: the AOT compiler has no is_dedicated()
     ok = load_optional_folder("%scripts/starter_game/es/client") && ok
   }
   if (is_in_aot()) {

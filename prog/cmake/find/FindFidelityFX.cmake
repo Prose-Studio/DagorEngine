@@ -11,7 +11,8 @@ find_package_handle_standard_args(FidelityFX REQUIRED_VARS FidelityFX_INCLUDE_DI
 if(FidelityFX_FOUND AND NOT TARGET FidelityFX::FidelityFX)
   add_library(FidelityFX::FidelityFX INTERFACE IMPORTED GLOBAL)
   set(_dlls loader framegeneration upscaler)
-  list(TRANSFORM _dlls REPLACE "^(.*)$" ".|${_ffx}/signedbin/amd_fidelityfx_\\1_dx12.dll")
+  list(TRANSFORM _dlls PREPEND ".|${_ffx}/signedbin/amd_fidelityfx_")
+  list(TRANSFORM _dlls APPEND "_dx12.dll")
   set_target_properties(FidelityFX::FidelityFX PROPERTIES
     INTERFACE_INCLUDE_DIRECTORIES "${_ffx};${_ffx}/api/include;${_ffx}/framegeneration/include;${_ffx}/upscalers/include"
     TRANSITIVE_LINK_PROPERTIES DAGOR_RUNTIME_FILES INTERFACE_DAGOR_RUNTIME_FILES "${_dlls}")

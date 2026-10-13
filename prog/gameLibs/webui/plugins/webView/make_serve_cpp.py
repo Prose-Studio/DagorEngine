@@ -1,14 +1,12 @@
-import sys
+"""make_serve_cpp.py <stringify.py> <ServeFiles.cpp> <file>...: the web view plugin table (webui::webview_files_http_plugins)
+serving each file, which stringify.py embeds as a byte array <name>.inl next to ServeFiles.cpp"""
 import os
+import subprocess
+import sys
 
-f = open(sys.argv[1], 'wt')
+stringify_py, out_cpp, src_files = sys.argv[1], sys.argv[2], sys.argv[3:]
 
-srcFiles = sys.argv[2:]
-f.write('#include <webui/httpserver.h>\n')
-f.write('#include <webui/helpers.h>\n')
-f.write('\n')
-
-funtionTemplate = """static void serve_file_{name}(webui::RequestInfo *params) {{
+function_template = """static void serve_file_{name}(webui::RequestInfo *params) {{
   static uint8_t inlinedData[] = {{
 #include "{name}.inl"
   }};
@@ -16,7 +14,7 @@ funtionTemplate = """static void serve_file_{name}(webui::RequestInfo *params) {
 }}
 """
 
-extToMimeType = {
+ext_to_mime_type = {
   '.html': 'text/html',
   '.js': 'text/javascript',
   '.css': 'text/css',
@@ -27,23 +25,22 @@ extToMimeType = {
   '.ico': 'image/x-icon',
 }
 
-rootDir = os.path.dirname(__file__)
-dstDir = os.path.abspath(os.path.dirname(sys.argv[1]))
-stringifyPy = os.path.normpath(os.path.join(rootDir, '..', '..', '..', '..', '_jBuild', '_scripts', 'stringify.py'))
+root_dir = os.path.dirname(os.path.abspath(__file__))
+dst_dir = os.path.abspath(os.path.dirname(out_cpp))
 
-for src in srcFiles:
-  name = os.path.basename(src).replace('.', '_').replace('-', '_')
-  path = os.path.join(rootDir, src)
-  ext = os.path.splitext(src)[1]
-  mime = extToMimeType.get(ext, 'text/plain')
-  os.system('{0} {1} --array {2} {3}/{4}.inl'.format(sys.executable, stringifyPy, path, dstDir, name))
-  f.write(funtionTemplate.format(**locals()))
 
-f.write('webui::HttpPlugin webui::webview_files_http_plugins[] = {\n')
-for src in srcFiles:
-  name = os.path.basename(src).replace('.', '_').replace('-', '_')
-  f.write('  {{ "{0}", NULL, NULL, serve_file_{1} }},\n'.format(src, name))
-f.write('  {NULL}\n')
-f.write('};\n')
+def inl_name(src):
+  return os.path.basename(src).replace('.', '_').replace('-', '_')
 
-f.close()
+
+with open(out_cpp, 'wt') as f:
+  f.write('#include <webui/httpserver.h>\n#include <webui/helpers.h>\n\n')
+  for src in src_files:
+    name = inl_name(src)
+    subprocess.check_call([sys.executable, stringify_py, '--array', os.path.join(root_dir, src),
+                           os.path.join(dst_dir, name + '.inl')])
+    f.write(function_template.format(name=name, mime=ext_to_mime_type.get(os.path.splitext(src)[1], 'text/plain')))
+  f.write('webui::HttpPlugin webui::webview_files_http_plugins[] = {\n')
+  for src in src_files:
+    f.write('  {{ "{0}", NULL, NULL, serve_file_{1} }},\n'.format(src, inl_name(src)))
+  f.write('  {NULL}\n};\n')

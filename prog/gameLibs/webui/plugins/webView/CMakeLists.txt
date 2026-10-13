@@ -21,8 +21,8 @@ set(gen "${CMAKE_CURRENT_BINARY_DIR}/gen/serve")
 set(script "${CMAKE_CURRENT_SOURCE_DIR}/make_serve_cpp.py")
 list(TRANSFORM served PREPEND "${CMAKE_CURRENT_SOURCE_DIR}/" OUTPUT_VARIABLE served_paths)
 add_custom_command(OUTPUT "${gen}/ServeFiles.cpp"
-  COMMAND "${python}" "${script}" "${gen}/ServeFiles.cpp" ${served}
-  DEPENDS ${served_paths} "${script}" "${DAGOR_STRINGIFY_SCRIPT}"
+  COMMAND "${python}" "${script}" "${DAGOR_CODEGEN_DIR}/stringify.py" "${gen}/ServeFiles.cpp" ${served}
+  DEPENDS ${served_paths} "${script}" "${DAGOR_CODEGEN_DIR}/stringify.py"
   COMMENT "Embedding the web view files"
   VERBATIM)
 file(MAKE_DIRECTORY "${gen}")

@@ -19,8 +19,10 @@ endforeach()
 set(options)
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   # warnings that some build systems enable by default: catching them here saves a round trip
-  set(options -Wc++11-narrowing -Wswitch -Wbitfield-constant-conversion -Wunused -Wno-unused-local-typedef
-    -Wno-unused-but-set-variable)
+  # (one SHELL: group: CMake drops a repeated option, and -Wno-unused-local-typedef, which every target has, has to
+  # follow -Wunused)
+  set(options -Wc++11-narrowing -Wswitch -Wbitfield-constant-conversion
+    "SHELL:-Wunused -Wno-unused-local-typedef -Wno-unused-but-set-variable")
 endif()
 
 dagor_add_target(NAME gameLibs.render.daFrameGraph STATIC
