@@ -109,9 +109,10 @@
       "name": "windows-maxplug",
       "inherits": [
         "engine",
-        "windows",
+        "windows-msvc",
         "variant-maxplug"
-      ]
+      ],
+      "$comment": "3ds Max 2025 and later (VS 2022); Max 2023 and 2024: windows-vc16-maxplug. MaxSDK_ROOT: the Max SDK"
     },
     {
       "name": "windows-msvc-tests",

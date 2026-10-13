@@ -26,15 +26,22 @@ toolchain file) and a variant, `DAGOR_VARIANT`, which sets the defaults of the o
 |---|---|
 | `tests` | the engine's unit tests (CTest; the `-ci` test presets skip those that need a GPU or a display) |
 | `cdk` | the command-line tools of the content pipeline on the static kernel; `--install --component cdk` puts them in `tools/dagor_cdk/<platform>-<arch>` |
-| `editor` | daKernel (the shared kernel), daBuild with its exporter plugins, ddsxCvt2 |
-| `maxplug`, `dargbox` | the 3ds Max plugins, the daRg sandbox (their programs are still on jam) |
+| `assets` | the asset build on daKernel (the shared kernel): daBuild with its exporter plugins, ddsxCvt2; the host tools of the games' content |
+| `editor` | the GUI editors on daKernel: daEditor3x with its plugins, AssetViewer, impostorBaker, blkEditor, plodGen |
+| `dargbox` | the daRg sandbox |
+| `maxplug` | the 3ds Max plugin (with the Max SDK: `MaxSDK_ROOT`, `DAGOR_MAX_VERSION`; MSVC, the DLL CRT) |
 | `game` | a project's game: its presets `<host>-client`, `<host>-dedicated`, `<host>-aot-compiler` |
 
 Configurations are Dev (optimized, asserts and logs on), Rel, IRel (Rel with logs) and Dbg, in one Ninja Multi-Config
 tree. Workflow presets chain configure, build and test (or package).
 
-The kernel linkage differs between cdk/tests (static) and editor (dynamic), so they are separate trees rather than
-one tree with two copies of every library.
+Variants are separate trees where jam built separate configurations that one tree cannot hold: the kernel linkage
+(static in cdk and tests, daKernel in assets and editor), and the 3d driver interface, whose `_TARGET_D3D_MULTI` applies
+to all the code of a tree: the assets tree's programs link the null driver directly, the editors' (and dargbox's) the
+platform's drivers through the multi-driver interface. The editors are games on daNetGame (daEditor3x is `editor_dng`,
+AssetViewer `asset_viewer_dng`, each with its list of daNetGameLibs) with the game features off and Jolt; the editor
+tree builds daNetGame for them like a game tree. A tree's command-line tools that link the null driver are not in the
+multi-driver trees.
 
 ## Targets
 
@@ -95,7 +102,7 @@ libraries are in platform/<System>.cmake.
   that honour `<Pkg>_ROOT` and otherwise fetch the version pinned (SHA256) in sdk/manifest.cmake into
   DAGOR_DEPS_DIR. No Gaijin hosts.
 - Build steps that run engine tools (shader compilers, vromfsPacker, daBuild, the parser generators) get them from
-  `dagor_host_tool()`: the tree's own target in an engine tree, otherwise the engine's host cdk/editor tree built on
+  `dagor_host_tool()`: the tree's own target in an engine tree, otherwise the engine's host cdk/assets tree built on
   demand under a lock (scripts/build_preset.cmake), or a prebuilt CDK (DAGOR_HOST_TOOLS_DIR).
 - daScript AOT: the project's `<host>-aot-compiler` tree makes `<game>-aot`, built on demand like the host tools; the
   game trees translate their daScript with it in batches (`DAS_FILES` + `DAS_PULL`).
@@ -119,3 +126,25 @@ builds every configuration.
 - daNetGame's precompiled header is used in every configuration (Ninja cannot have one in some only).
 - jam's `if $(X) in a b` is true when X is unset; the build keeps what jam built (CppStcode both, quirrelHost's
   ENABLE_RE_USE=0 only under the non-ASan sanitizers).
+- One library where jam built per-program flavors with globals: the physics engine of vehiclePhys
+  (`gameLibs.vehiclePhys.jolt` and `.bullet`), the ImGui test engine hooks (link choices), the per-tree settings of
+  the editors (one tree for all of them: the union of their drivers).
+
+## Not ported
+
+The jamfiles below have no CMakeLists: what they build needs what the repository does not have, or was jam's own.
+
+- CEF-based: `3rdPartyLibs/cef3/v4951/libcef_dll`, `1stPartyLibs/webbrowser` (+ `helper`), `gameLibs/webBrowserHelper`,
+  `gameLibs/daRg/browser`, `gameLibs/quirrel/sqWebBrowser`: the CEF binary SDK (jam took it from Gaijin's devtools);
+  their stubs are ported.
+- FMOD Studio: `gameLibs/soundSystem` (+ `voice`, `quirrel`), `gameLibs/daRg/soundSystem`: the SDK is proprietary;
+  the stubs are ported (DAGOR_GAME_SOUND stays off).
+- `engine/drv/vr_device/openXr`: the OpenXR SDK (jam: OpenXrSdkPath); the null and emulator devices are ported.
+- `1stPartyLibs/yuplay2auth`: Gaijin's launcher authentication; `1stPartyLibs/yuplay2` and `3rdPartyLibs/Tencent` are not
+  in the repository.
+- `3rdPartyLibs/webrtc-apm` (+ `avx2`): its WebRTC sources are not in the repository (upstream's neither).
+- `3rdPartyLibs/assimp`: no program of the repository links it.
+- `3rdPartyLibs/phys/bullet-3/test/*`: Bullet's own upstream tests (gtest), not the engine's.
+- tvOS (`engine/drv/hid_tvOS`, `gameLibs/webui/plugins/tvOS`): not a platform of the engine.
+- jam's own: the util jamfiles that listed others (`engine/daECS`, `gameLibs/ecs`, `tools/converters`,
+  `tools/sceneTools`), `gameLibs/vehiclePhys/vehiclePhys-*` (now targets of `gameLibs/vehiclePhys`).

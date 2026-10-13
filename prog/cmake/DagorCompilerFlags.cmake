@@ -19,7 +19,11 @@ if(NOT MSVC)
   set(CMAKE_C_STANDARD 99)
   set(CMAKE_C_EXTENSIONS OFF)
 endif()
+# the static CRT; the 3ds Max plugins the DLL one, as Max loads them
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Dbg>:Debug>")
+if(DAGOR_VARIANT STREQUAL "maxplug")
+  set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Dbg>:Debug>DLL")
+endif()
 if(CMAKE_CXX_COMPILER_LAUNCHER)
   set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT Embedded) # /Z7: one .obj per compile, which compiler caches can store
 else()
@@ -266,7 +270,12 @@ endif()
 include("${DAGOR_PLATFORM_FILE}")
 
 # --- link settings of the compilers -----------------------------------------------------------------------------------
-if(MSVC)
+if(MSVC AND DAGOR_VARIANT STREQUAL "maxplug")
+  # the DLL CRT and never the static one (prog/tools/maxplug/maxPlugin.jam)
+  dagor_link_options("${_linked}" /DEBUG /INCREMENTAL:NO /NODEFAULTLIB:LIBC /NODEFAULTLIB:LIBCP /NODEFAULTLIB:LIBCMT
+    /NODEFAULTLIB:LIBCPMT)
+  dagor_link_options("$<AND:${_linked},$<NOT:${_dbg}>>" /OPT:REF)
+elseif(MSVC)
   # the static CRT (CMAKE_MSVC_RUNTIME_LIBRARY) and never the DLL one a third-party object might ask for
   dagor_link_options("${_linked}" /DEBUG /INCREMENTAL:NO /NODEFAULTLIB:LIBMMT /NODEFAULTLIB:LIBIRC /NODEFAULTLIB:LIBC
     /NODEFAULTLIB:MSVCRT /NODEFAULTLIB:MSVCPRT /NODEFAULTLIB:UCRT /NODEFAULTLIB:VCRUNTIME)

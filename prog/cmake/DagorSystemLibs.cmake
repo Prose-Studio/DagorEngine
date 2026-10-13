@@ -72,7 +72,7 @@ if(WIN32)
     iphlpapi version comdlg32 comctl32 uuid imm32 setupapi hid dxgi d3d11 d3d12 d3dcompiler dxguid dinput8 xinput
     psapi userenv crypt32 bcrypt secur32 normaliz wldap32 winhttp wininet mfplat mfuuid mfreadwrite mf strmiids
     propsys dwmapi uxtheme powrprof wtsapi32 netapi32 mpr rpcrt4 synchronization wbemuuid gdiplus msimg32 opengl32
-    runtimeobject dsound ncrypt delayimp wintrust imagehlp htmlhelp
+    runtimeobject dsound ncrypt delayimp wintrust imagehlp htmlhelp winspool odbc32 odbccp32
     clang_rt.builtins-x86_64 clang_rt.asan_dynamic-x86_64 clang_rt.profile-x86_64)
 else()
   dagor_system_library(m rt dl pthread stdc++)
