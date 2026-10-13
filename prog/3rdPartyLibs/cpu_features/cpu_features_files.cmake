@@ -1,5 +1,5 @@
 set(FILES src/filesystem.c src/stack_line_reader.c src/string_view.c src/impl_aarch64_cpuid.c)
-if(CMAKE_SYSTEM_NAME MATCHES "^(Android|Darwin)$")
+if(CMAKE_SYSTEM_NAME MATCHES "^(Android|Darwin|iOS)$")
   if(DAGOR_ARCH STREQUAL "arm64")
     # the hardware capabilities of an aarch64 unix (getauxval / sysctl)
     list(APPEND FILES src/impl_aarch64_linux_or_android.c src/hwcaps_linux_or_android.c src/hwcaps_freebsd.c
