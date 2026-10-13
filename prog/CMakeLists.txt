@@ -49,10 +49,13 @@ elseif(DAGOR_VARIANT STREQUAL "assets")
     impostorExp landClsExp locShadersExp matExp modelExp phObjExp texExp compositRefProv efxRefProv splineRefProv
     vehicleExp ddsxCvt2)
 elseif(DAGOR_VARIANT STREQUAL "editor")
-  # the GUI editors on the shared kernel: daEditor3x with its plugins, AssetViewer, impostorBaker; blkEditor and plodGen
-  # on Windows
-  dagor_build_by_default(tools.libTools.daKernel daEditor3x staticGeom ivyGen occluders graphEditor csg heightmapLand
-    heightmapLand-aces assetViewer2 impostorBaker)
+  # the GUI editors on the shared kernel: impostorBaker; daEditor3x with its plugins and AssetViewer on Windows and Linux
+  # (EditorCore's windows); blkEditor and plodGen on Windows
+  dagor_build_by_default(tools.libTools.daKernel impostorBaker)
+  if(WIN32 OR LINUX)
+    dagor_build_by_default(daEditor3x staticGeom ivyGen occluders graphEditor csg heightmapLand heightmapLand-aces
+      assetViewer2)
+  endif()
   if(WIN32)
     dagor_build_by_default(blkEditor plodGen)
   endif()
