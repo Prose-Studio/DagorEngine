@@ -31,8 +31,9 @@ if(NOT PROJECT_IS_TOP_LEVEL)
 endif()
 if(DAGOR_VARIANT STREQUAL "cdk")
   # the CDK: the command-line tools of the content pipeline (shader compilers, packers, converters) on the static
-  # kernel, and the GUI shaders of the tools; the data the tools load that is not built is installed with them
-  dagor_build_by_default(dolphin whale duktape csq ddsConverter ddsx2dds ddsxCvt guiTex fontgen2 pcDdsxConv iosDdsxConv
+  # kernel, the GUI shaders of the tools and the Blender add-on; the data the tools load that is not built is installed
+  # with them
+  dagor_build_by_default(dag4blend dolphin whale duktape csq ddsConverter ddsx2dds ddsxCvt guiTex fontgen2 pcDdsxConv iosDdsxConv
     andDdsxConv csvUtil2 dbldUtil dumpGrp resCleanUtil resDiffUtil resUpd binBlk vromfsPacker shaderInfo dsc2-stub
     dsc2-nodeBased)
   foreach(platform_tool dsc2-hlsl11 dsc2-dx12 dsc2-spirv dsc2-metal guiShaders-dx11 guiShaders-dx12 guiShaders-spirv
@@ -48,14 +49,17 @@ elseif(DAGOR_VARIANT STREQUAL "assets")
     impostorExp landClsExp locShadersExp matExp modelExp phObjExp texExp compositRefProv efxRefProv splineRefProv
     vehicleExp ddsxCvt2)
 elseif(DAGOR_VARIANT STREQUAL "editor")
-  # the GUI editors on the shared kernel: daEditor3x with its plugins, AssetViewer, impostorBaker, blkEditor, plodGen
+  # the GUI editors on the shared kernel: daEditor3x with its plugins, AssetViewer, impostorBaker; blkEditor and plodGen
+  # on Windows
   dagor_build_by_default(tools.libTools.daKernel daEditor3x staticGeom ivyGen occluders graphEditor csg heightmapLand
-    heightmapLand-aces assetViewer2 impostorBaker plodGen)
-  if(TARGET blkEditor) # Windows
-    dagor_build_by_default(blkEditor)
+    heightmapLand-aces assetViewer2 impostorBaker)
+  if(WIN32)
+    dagor_build_by_default(blkEditor plodGen)
   endif()
 elseif(DAGOR_VARIANT STREQUAL "dargbox")
   dagor_build_by_default(dargbox)
-elseif(DAGOR_VARIANT STREQUAL "maxplug" AND TARGET dagor) # the plugin, where the Max SDK is there
-  dagor_build_by_default(dagor)
+elseif(DAGOR_VARIANT STREQUAL "maxplug")
+  # the plugin of each 3ds Max SDK found (none without one)
+  get_directory_property(plugins DIRECTORY tools/maxplug BUILDSYSTEM_TARGETS)
+  dagor_build_by_default(${plugins})
 endif()

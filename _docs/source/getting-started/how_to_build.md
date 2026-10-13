@@ -33,9 +33,10 @@ the engine tools takes 16&nbsp;GB of RAM and 200&nbsp;GB of HDD/SSD space.
 The SDKs the build needs (DirectX Shader Compiler, ISPC, Vulkan headers, LLVM,
 ...) are downloaded once by the configure, checked against pinned SHA256 sums,
 into `DAGOR_DEPS_DIR` (by default `%LOCALAPPDATA%/dagor`,
-`~/Library/Caches/dagor` or `~/.cache/dagor`). The 3ds Max SDK, which is not
-redistributable, is used when you point the build at it (`MaxSDK_ROOT`, for the
-`windows-maxplug` presets).
+`~/Library/Caches/dagor` or `~/.cache/dagor`). The 3ds Max SDKs (2025 and
+later), which are not redistributable, are used only by the opt-in
+`windows-maxplug` tree, where they are installed (`MaxSDK_<version>_ROOT` points
+it at another dir).
 
 ## How to Build: Build from Source Code
 
@@ -55,7 +56,8 @@ cmake --workflow --preset windows-tests-ci     the engine and its tests (those t
 cmake --workflow --preset windows-cdk          the tools: shader compilers, packers, converters
 cmake --workflow --preset windows-assets       daBuild and its exporters
 cmake --workflow --preset windows-editor       the editors: daEditor, AssetViewer, impostorBaker
-cmake --workflow --preset windows-dargbox      the UI tool
+cmake --workflow --preset windows-dargbox      the UI tool, its shaders and vromfs
+cmake --workflow --preset windows-maxplug      opt-in: the 3ds Max plugin of each Max SDK installed (2025 and later)
 ```
 
 Use `linux-` and `macos-` on those hosts; `windows-msvc-`, `linux-clang-`,

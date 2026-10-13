@@ -88,7 +88,7 @@ shader my_effect
 file:t = "./source/my_effect.dshl"
 ```
 
-4. Rebuild the shaders (compile_shaders_*.bat in the shaders directory).
+4. Rebuild the shaders: `cmake --build --preset <host>-dargbox` (the dargbox tree builds them into tools/dargbox/shaders).
 
 
 ## Minimal Shader Example

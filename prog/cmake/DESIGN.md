@@ -29,11 +29,11 @@ of that platform and compiler with its preset, one after the other (DagorAll.cma
 | variant | builds by default |
 |---|---|
 | `tests` | the engine's unit tests (CTest; the `-ci` test presets skip those that need a GPU or a display) |
-| `cdk` | the command-line tools of the content pipeline on the static kernel; `--install --component cdk` puts them in `tools/dagor_cdk/<platform>-<arch>` |
+| `cdk` | the command-line tools of the content pipeline on the static kernel and the dag4blend add-on; `--install --component cdk` puts them in `tools/dagor_cdk/<platform>-<arch>` (the add-on in `tools/dagor_cdk/universal`) |
 | `assets` | the asset build on daKernel (the shared kernel): daBuild with its exporter plugins, ddsxCvt2; the host tools of the games' content |
-| `editor` | the GUI editors on daKernel: daEditor3x with its plugins, AssetViewer, impostorBaker, blkEditor, plodGen |
-| `dargbox` | the daRg sandbox |
-| `maxplug` | the 3ds Max plugin (with the Max SDK: `MaxSDK_ROOT`, `DAGOR_MAX_VERSION`; MSVC, the DLL CRT) |
+| `editor` | the GUI editors on daKernel: daEditor3x with its plugins, AssetViewer, impostorBaker, blkEditor and plodGen (Windows) |
+| `dargbox` | the daRg sandbox with its shaders and vromfs (in `tools/dargbox`) |
+| `maxplug` | opt-in (not in the `windows` preset: 3ds Max is paid software): the 3ds Max plugin of each Max SDK found, 2025 and later (`DAGOR_MAX_VERSIONS`, `MaxSDK_<version>_ROOT`; MSVC, the DLL CRT) |
 | `game` | a project's game: its presets `<host>-client`, `<host>-dedicated`, `<host>-aot-compiler` |
 
 Configurations are Dev (optimized, asserts and logs on), Rel, IRel (Rel with logs) and Dbg, in one Ninja Multi-Config

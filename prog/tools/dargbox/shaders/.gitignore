@@ -1,5 +1,3 @@
 *.lib.bin
 Stat.txt
 ShaderLog*
-_output
-shaders_sha~*

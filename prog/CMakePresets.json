@@ -258,7 +258,7 @@
         "toolchain-windows-msvc",
         "variant-maxplug"
       ],
-      "$comment": "3ds Max 2025 and later (VS 2022); Max 2023 and 2024: windows-vc16-maxplug. MaxSDK_ROOT: the Max SDK"
+      "$comment": "Opt-in (not in the windows preset, 3ds Max is paid software): the plugin of each 3ds Max 2025+ SDK found (MaxSDK_<version>_ROOT, by default the installed SDKs)"
     },
     {
       "name": "windows-msvc-tests",
@@ -274,14 +274,6 @@
         "engine",
         "toolchain-windows-msvc",
         "variant-cdk"
-      ]
-    },
-    {
-      "name": "windows-vc16-maxplug",
-      "inherits": [
-        "engine",
-        "toolchain-windows-vc16",
-        "variant-maxplug"
       ]
     },
     {
@@ -570,11 +562,6 @@
       "targets": [
         "install"
       ]
-    },
-    {
-      "name": "windows-vc16-maxplug",
-      "configurePreset": "windows-vc16-maxplug",
-      "configuration": "Dev"
     },
     {
       "name": "windows-arm64-tests",
@@ -1137,19 +1124,6 @@
         {
           "type": "build",
           "name": "windows-msvc-cdk-install"
-        }
-      ]
-    },
-    {
-      "name": "windows-vc16-maxplug",
-      "steps": [
-        {
-          "type": "configure",
-          "name": "windows-vc16-maxplug"
-        },
-        {
-          "type": "build",
-          "name": "windows-vc16-maxplug"
         }
       ]
     },

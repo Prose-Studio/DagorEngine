@@ -14,10 +14,9 @@ cd prog/samples/myProject/shaders
 ../../../../tools/dagor_cdk/windows-x86_64/dsc2-dx12-dev.exe ./shaders_dx12.blk -q -shaderOn -nodisassembly -commentPP -codeDumpErr -o output_dir
 ```
 
-Most samples and games have bat files for this, e.g.
-`prog/samples/myProject/shaders/compile_shaders_dx12.bat`.
-The prebuilt compilers ship at `tools/dagor_cdk/windows-x86_64/`
-(also dx12, spirv, metal variants).
+In the CMake build, `dagor_add_shaders()` (prog/cmake/DagorContent.cmake) runs the compiler this way for the
+engine's own shaders, and a game's tree compiles its shaders with its `content` target. The compilers are installed
+into `tools/dagor_cdk/<platform>-<arch>/` (hlsl11, dx12, spirv, metal).
 
 ## shader_global.dshl
 

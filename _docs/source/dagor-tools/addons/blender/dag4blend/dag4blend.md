@@ -9,7 +9,8 @@
 
    <img src="_images/inst_location.png" alt="Installation" align="center">
 
-3. Navigate to the `dag4blend.zip` add-on file.
+3. Navigate to the `dag4blend.zip` add-on file: `tools/dagor_cdk/universal/dag4blend.zip`, which the engine's CDK
+   build installs (`cmake --workflow --preset <host>`, see [How to build](../../../../getting-started/how_to_build.md)).
 
 ## Initial Configuration
 
