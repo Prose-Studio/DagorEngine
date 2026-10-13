@@ -2,14 +2,15 @@
 
 ## GitHub Actions
 
-The workflows run the CMake workflow presets on Windows, Linux and macOS hosted runners; `.github/actions/setup` installs
-Python, CMake, Ninja and the Linux packages and restores the SDK and compiler caches.
+The workflows run on every push to `main` and every pull request into it (and on demand), with the CMake workflow
+presets on Windows, Linux and macOS hosted runners; `.github/actions/setup` installs Python, CMake, Ninja and the Linux
+packages and restores the SDK and compiler caches.
 
 - `.github/workflows/cmake.yaml`: the engine's trees, `cmake --workflow --preset <host>-<tree>` for `tests-ci`,
   `msvc-tests-ci` (Windows), `cdk`, `assets` and `editor`; the Visual Studio and Xcode generators also build one test
   program.
-- `.github/workflows/template.yaml`: a project from every template (`dng.py new`), its `<host>-test` workflow, its
-  content and packages, checked by `prog/cmake/scripts/verify_game_packages.py`, which also runs the game's ECS tests
+- `.github/workflows/template.yaml`: a project from every template (`dng.py new`), its `<host>` workflow (the game,
+  its content and dedicated server), its `<host>-test` workflow and its packages, checked by `prog/cmake/scripts/verify_game_packages.py`, which also runs the game's ECS tests
   in the packaged game.
 
 Hosted runners have no GPU: the `-ci` test presets leave out the tests labeled `requires-gpu` or `requires-display`,

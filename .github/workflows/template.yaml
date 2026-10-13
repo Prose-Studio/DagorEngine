@@ -1,12 +1,16 @@
 name: template
 
 # Creates a project from each template with dng.py new outside the engine checkout (on Windows on another drive, which
-# makes its engine path absolute), then runs its workflow presets: <host>-test (the game, a multiplayer game's
-# dedicated server, and the tests that need no GPU), and the packages with the game's content, which
-# verify_game_packages.py inspects and runs the ECS tests in. See _docs/source/getting-started/new_project.md.
+# makes its engine path absolute), then runs its workflow presets: <host> (everything: the game, its content, a
+# multiplayer game's dedicated server, the engine tools they need), <host>-test (the tests that need no GPU) and the
+# packages, which verify_game_packages.py inspects and runs the ECS tests in. See _docs/source/getting-started/new_project.md.
 
 on:
-  workflow_dispatch: # manual until the CMake migration is complete and validated
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
 
 concurrency:
   group: template-${{ github.ref }}
@@ -50,7 +54,7 @@ jobs:
         shell: bash
         run: |
           if [ "$RUNNER_OS" = Windows ]; then
-            # another drive than the engine: engine.blk and the presets name it by an absolute path
+            # another drive than the engine: application.blk and the presets name it by an absolute path
             mkdir -p "$RUNNER_TEMP/xdrive"
             cmd //c subst X: "$(cygpath -w "$RUNNER_TEMP/xdrive")"
             echo "PROJECT_DIR=X:/CiGame" >> "$GITHUB_ENV"
@@ -62,17 +66,15 @@ jobs:
         shell: bash
         run: python dng.py new --template ${{ matrix.template }} --name CiGame --dest "$PROJECT_DIR"
 
-      - name: Build and test
+      - name: Build everything
+        shell: bash
+        working-directory: ${{ env.PROJECT_DIR }}/prog
+        run: cmake --workflow --preset ${{ matrix.host }}
+
+      - name: Test
         shell: bash
         working-directory: ${{ env.PROJECT_DIR }}/prog
         run: cmake --workflow --preset ${{ matrix.host }}-test
-
-      - name: Build the content
-        shell: bash
-        working-directory: ${{ env.PROJECT_DIR }}/prog
-        run: |
-          cmake --preset ${{ matrix.host }}-client
-          cmake --build --preset ${{ matrix.host }}-client-content
 
       - name: Package and verify the game
         shell: bash

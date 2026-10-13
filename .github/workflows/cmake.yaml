@@ -5,7 +5,11 @@ name: cmake
 # Studio and Xcode generators also configure the tests tree and build one test program.
 
 on:
-  workflow_dispatch: # manual until the CMake migration is complete and validated
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
 
 concurrency:
   group: cmake-${{ github.ref }}
