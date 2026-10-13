@@ -51,6 +51,7 @@ mountPoints{
   "%dngscripts"{ forSource:t="%engine/prog/daNetGame/scripts/globals/"; forVromfs:t="daNetGame/qscripts"; }
   "%dngdas"    { forSource:t="%engine/prog/daNetGame/scripts/das"; forVromfs:t="das"; }
   "%daslib"    { forSource:t="%engine/prog/1stPartyLibs/daScript/daslib"; forVromfs:t="daslib"; }
+  "%dasImgui"  { forSource:t="%engine/prog/1stPartyLibs/daScript/modules/dasImgui/daslib"; forVromfs:t="dasImgui"; }
   "%gameLibs"  { forSource:t="%engine/prog/gameLibs"; forVromfs:t="gamelibs"; }
   "%danetlibs" { forSource:t="%engine/prog/daNetGameLibs"; forVromfs:t="danetlibs"; }
   "%scripts"   { forSource:t="../prog/scripts"; forVromfs:t="scripts"; }

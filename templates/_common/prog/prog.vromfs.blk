@@ -70,6 +70,10 @@ folder {
   wildcard:t=*.nut
 }
 "@clone-last:folder"{
+  "@override:path":t="%engine/prog/1stPartyLibs/daScript/modules/dasImgui/daslib"
+  "@override:dest_path":t="dasImgui"
+}
+"@clone-last:folder"{
   "@override:path":t="%engine/prog/scripts/game"
   "@override:dest_path":t="game"
 }
