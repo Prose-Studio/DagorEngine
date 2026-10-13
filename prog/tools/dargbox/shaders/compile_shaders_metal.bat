@@ -1,2 +1,0 @@
-@call ..\..\..\..\prog\tools\make_dagor_tools_path.cmd
-@%DAGOR_CDK_DIR%\dsc2-metal-dev.exe ./shaders_metal.blk -q -shaderOn -codeDumpErr -nodisassembly  -o ../../../../_output/shaders/%BRANCH%/dargbox~metal %*

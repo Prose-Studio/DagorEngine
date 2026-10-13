@@ -185,14 +185,14 @@ bool NodeBasedShaderManager::compileScriptedShaders(const String &shader_name, c
 
 #if _TARGET_PC_WIN
   String cmd(0,
-    "call %s\\dsc2-%s-dev.exe %s -q -shaderOn -nodisassembly -commentPP -codeDumpErr -r %s -o %s\\_output\\lshader\\shaders~%s -quiet "
+    "call %s\\dsc2-%s-dev.exe %s -q -shaderOn -nodisassembly -commentPP -codeDumpErr -r %s -o %s\\build\\runtime-shaders\\lshader\\shaders~%s -quiet "
     "> %s",
     toolsPath.str(), DSC_TABLE[get_nbsm_platform()].dscSuff, outputDscBlk, DSC_TABLE[get_nbsm_platform()].additionalArgs,
     rootPath.str(), DSC_TABLE[get_nbsm_platform()].platform, tmpOutputFile);
   cmd.replaceAll("/", "\\");
 #elif _TARGET_PC_LINUX || _TARGET_PC_MACOSX
   String cmd(0,
-    "%s/dsc2-%s-dev %s -q -shaderOn -nodisassembly -commentPP -codeDumpErr -r %s -o %s/_output/lshader/shaders~%s -quiet > %s",
+    "%s/dsc2-%s-dev %s -q -shaderOn -nodisassembly -commentPP -codeDumpErr -r %s -o %s/build/runtime-shaders/lshader/shaders~%s -quiet > %s",
     toolsPath.str(), DSC_TABLE[get_nbsm_platform()].dscSuff, outputDscBlk, DSC_TABLE[get_nbsm_platform()].additionalArgs,
     rootPath.str(), DSC_TABLE[get_nbsm_platform()].platform, tmpOutputFile);
 #else

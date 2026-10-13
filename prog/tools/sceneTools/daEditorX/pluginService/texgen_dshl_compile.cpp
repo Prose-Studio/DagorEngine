@@ -210,17 +210,17 @@ bool TexgenDshlCompiler::compileToDump(const char *dshl_text, const char *dump_n
   // (Parsed preshader / linked / Compressed shaders / Saved bindump in Xms). Off by default.
   const bool profileCompile = ::dgs_get_settings()->getBlockByNameEx("texgen")->getBool("dshlProfileCompile", false);
 
-  // Artifacts under <root>/_output/texgen (same drive as the engine root) so the repo tree stays clean.
-  // base is the loadOrReload base (the loader appends the platform+version suffix). dd_mkpath creates
-  // _output/texgen (it treats the last path element as a file).
-  const String base(0, "%s/_output/texgen/%s", s_rootPath.str(), dump_name_base);
+  // Artifacts under <root>/build/runtime-shaders/texgen (the engine's intermediates dir, same drive as the root) so the
+  // repo tree stays clean. base is the loadOrReload base (the loader appends the platform+version suffix). dd_mkpath
+  // creates the dir (it treats the last path element as a file).
+  const String base(0, "%s/build/runtime-shaders/texgen/%s", s_rootPath.str(), dump_name_base);
   dd_mkpath(base.str());
   const String outputDshl(0, "%s.dshl.tmp", base.str());
   // dsc2 builds the source path as shader_root_dir + "/" + file (main.cpp). Pass shader_root_dir = the
   // absolute root and this file RELATIVE to it: an absolute file with shader_root_dir="." makes dsc2 form
   // ".//<abs>", which simplify_fname reduces to a leading "./" it strips -> the path loses its '/' and
   // won't open on Linux.
-  const String sourceRel(0, "_output/texgen/%s.dshl.tmp", dump_name_base);
+  const String sourceRel(0, "build/runtime-shaders/texgen/%s.dshl.tmp", dump_name_base);
   const String outputDscBlk(0, "%s.blk.tmp", base.str());
   const String tmpLog(0, "%s.log", base.str());
 
@@ -299,7 +299,7 @@ bool TexgenDshlCompiler::compileToDump(const char *dshl_text, const char *dump_n
   // either). Argv is passed to the OS spawn directly, so no shell quoting is needed beyond the
   // space-quoting run_dsc2_process does for CreateProcessW.
   String exe(0, "%s/dsc2-%s-dev%s", s_toolsPath.str(), dscSuff, exeSuffix);
-  String objDir(0, "%s/_output/lshader/shaders~%s", s_rootPath.str(), platform);
+  String objDir(0, "%s/build/runtime-shaders/lshader/shaders~%s", s_rootPath.str(), platform);
   String blkArg(outputDscBlk);
 #if _TARGET_PC_WIN
   exe.replaceAll("/", "\\");

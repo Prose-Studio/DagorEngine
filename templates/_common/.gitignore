@@ -9,7 +9,6 @@
 /stubs/
 
 # build outputs (cmake --build --preset ...)
-/_output/
 /tools/
 /game/*
 !/game/*.cmd

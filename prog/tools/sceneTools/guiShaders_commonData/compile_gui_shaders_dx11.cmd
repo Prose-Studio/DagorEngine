@@ -1,2 +1,0 @@
-@call ..\..\..\..\prog\tools\make_dagor_tools_path.cmd
-%DAGOR_CDK_DIR%\dsc2-hlsl11-dev.exe .\shaders_guiMinimal.blk -out ../../../../tools/dagor_cdk/commonData/guiShaders -q -shaderOn -nodisassembly -commentPP -codeDumpErr  -o ..\..\..\..\_output\shaders\%BRANCH%\tools-guiShaders~dx11 %1 %2 %3

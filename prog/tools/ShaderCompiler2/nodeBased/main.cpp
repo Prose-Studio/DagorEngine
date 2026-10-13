@@ -561,7 +561,7 @@ int DagorWinMain(bool)
 
     String cmd(0,
       "%s%s\\dsc2-%s-dev%s %s -q -shaderOn -nodisassembly -commentPP -codeDumpErr -r -cj0 %s -o "
-      "%s\\..\\..\\..\\_output\\lshader\\shaders~%s~%s -quiet -supressLogs -clearBlkHashInDump %s",
+      "%s\\..\\..\\..\\build\\runtime-shaders\\lshader\\shaders~%s~%s -quiet -supressLogs -clearBlkHashInDump %s",
       call_prefix, exePath, DSC_TABLE[platformId].dscSuff, exe_suffix, outputDscBlk, DSC_TABLE[platformId].additionalArgs, exePath,
       DSC_TABLE[platformId].platform, makeHashedName(outputDshl).str(), forceArgs);
 #if _TARGET_PC_LINUX | _TARGET_PC_MACOSX
