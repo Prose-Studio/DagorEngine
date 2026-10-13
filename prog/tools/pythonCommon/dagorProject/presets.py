@@ -57,8 +57,10 @@ def project_presets(engine_prog: str, multiplayer: bool) -> dict:
         {'type': 'configure', 'name': name}, {'type': 'build', 'name': name + '-rel'},
         {'type': 'package', 'name': name}]})
     name = '{}-{}'.format(host, tested)
+    # a client runs its tests on its content: the build of everything; a dedicated server on its sources
     workflow.append({'name': host + '-test', 'steps': [
-      {'type': 'configure', 'name': name}, {'type': 'build', 'name': name}, {'type': 'test', 'name': name + '-ci'}]})
+      {'type': 'configure', 'name': name}, {'type': 'build', 'name': host if tested == 'client' else name},
+      {'type': 'test', 'name': name + '-ci'}]})
   trees = ('<host>-client and <host>-dedicated build the game and its dedicated server' if multiplayer else
            '<host>-client builds the game')
   return {
