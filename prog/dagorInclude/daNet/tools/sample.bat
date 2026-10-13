@@ -1,6 +1,5 @@
 @echo off
 
-set PATH=%PATH%;%GDEVTOOL%\python
 set CODEGEN_MPI=python codegenMpi.py
 set CODEGEN_ID_BASE=mpiCodegenIdBase.txt
 

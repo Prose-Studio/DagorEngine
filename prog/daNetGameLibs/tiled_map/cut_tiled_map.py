@@ -12,7 +12,7 @@ from pathlib import Path
 
 _SCRIPT_DIR = Path(__file__).resolve().parent  # .../prog/daNetGameLibs/tiled_map
 _REPO_DIR = _SCRIPT_DIR.parents[2]             # .../dagor  (daNetGameLibs -> prog -> dagor)
-sys.path.insert(0, str(_REPO_DIR / '_buildtools' / 'tools'))
+sys.path.insert(0, str(_REPO_DIR / 'prog' / 'tools' / 'pythonCommon'))
 
 import datablock as datablock
 
@@ -119,17 +119,20 @@ def main():
   parser = argparse.ArgumentParser(description='Cut tiled map in top down manner. Mostly intended for fog of war generation.' +
     ' Works with dng games.')
   parser.add_argument("game", type=str, help="Which game to use (should work with any dng game)")
+  parser.add_argument("--project", type=str, help="The game project's dir (default: <engine>/<game>)", default=None)
   parser.add_argument("scene", type=str, help="Path to the scene *.blk file (as it passed to the game)")
   parser.add_argument("image", type=str, help="Path to the input image file")
   parser.add_argument("--fog", action="store_true", help="Save to the fog folder")
   parser.add_argument("--nconvert", type=str, help="Path to nconvert.exe", default=nconvert)
 
   args = parser.parse_args()
+
+  projectDir = args.project or os.path.join(DAGOR_DIR, args.game)
   nconvert = args.nconvert
 
-  scenePath = os.path.join(DAGOR_DIR, args.game, "prog", "gameBase", args.scene)
+  scenePath = os.path.join(projectDir, "prog", "gameBase", args.scene)
   if not os.path.exists(scenePath):
-    scenePath = os.path.join(DAGOR_DIR, args.game, "prog", "gamebase_dev", args.scene)
+    scenePath = os.path.join(projectDir, "prog", "gamebase_dev", args.scene)
 
   tilesPath = ""
   tileWidth = 512
@@ -163,7 +166,7 @@ def main():
 
   outputPrefix = os.path.basename(tilesPath).split(".")[0]
   global outPath
-  outPath = os.path.join(DAGOR_DIR, args.game, "develop", "gui", "maps", outputPrefix)
+  outPath = os.path.join(projectDir, "develop", "gui", "maps", outputPrefix)
   if args.fog:
     outPath = os.path.join(outPath, "fog")
 

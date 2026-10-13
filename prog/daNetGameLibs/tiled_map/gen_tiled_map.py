@@ -12,7 +12,7 @@ from pathlib import Path
 
 _SCRIPT_DIR = Path(__file__).resolve().parent  # .../prog/daNetGameLibs/tiled_map
 _REPO_DIR = _SCRIPT_DIR.parents[2]             # .../dagor  (daNetGameLibs -> prog -> dagor)
-sys.path.insert(0, str(_REPO_DIR / '_buildtools' / 'tools'))
+sys.path.insert(0, str(_REPO_DIR / 'prog' / 'tools' / 'pythonCommon'))
 
 import datablock as datablock
 
@@ -215,6 +215,7 @@ def main():
     'The post processing converts tiff to avif (compact, CPU decode on load) and/or ddsx (BC compressed, no decode) format.'
     )
   parser.add_argument("game", type=str, help="Which game to use (should work with any dng game)")
+  parser.add_argument("--project", type=str, help="The game project's dir (default: <engine>/<game>)", default=None)
   parser.add_argument("scene", type=str, help="Path to the scene *.blk file (as it passed to the game)")
   parser.add_argument("--nconvert", type=str, help="Path to nconvert.exe", default=nconvert)
   parser.add_argument("--format", choices=["avif", "ddsx", "both"], default="avif",
@@ -223,6 +224,8 @@ def main():
   parser.add_argument("--ddsxCvt", type=str, help="Path to ddsxCvt.exe", default=ddsxCvt)
 
   args = parser.parse_args()
+
+  projectDir = args.project or os.path.join(DAGOR_DIR, args.game)
   nconvert = args.nconvert
   formats = ["avif", "ddsx"] if args.format == "both" else [args.format]
   for tool in ([args.ddsConverter, args.ddsxCvt] if "ddsx" in formats else []):
@@ -230,12 +233,12 @@ def main():
       print(f"[ERROR] Tool not found: {tool}")
       exit(1)
 
-  gamePWD = os.path.join(DAGOR_DIR, args.game, "game")
-  gameEXE = os.path.join(gamePWD, "win64", f"{args.game}-dev.exe")
-  scenePath = os.path.join(DAGOR_DIR, args.game, "prog", "gameBase", args.scene)
+  gamePWD = os.path.join(projectDir, "game")
+  gameEXE = os.path.join(gamePWD, "windows-x86_64", f"{args.game}-dev.exe")
+  scenePath = os.path.join(projectDir, "prog", "gameBase", args.scene)
 
   if not os.path.exists(scenePath):
-    scenePath = os.path.join(DAGOR_DIR, args.game, "prog", "gamebase_dev", args.scene)
+    scenePath = os.path.join(projectDir, "prog", "gamebase_dev", args.scene)
 
   tilesPath = ""
   blocks = datablock.DataBlock(scenePath, include_includes = True, preserve_formating = False)
@@ -267,7 +270,7 @@ def main():
 
   outputPrefix = os.path.basename(tilesPath).split(".")[0]
   global outPath
-  outPath = os.path.join(DAGOR_DIR, args.game, "develop", "gui", "maps", outputPrefix)
+  outPath = os.path.join(projectDir, "develop", "gui", "maps", outputPrefix)
   global inputPath
   inputPath = os.path.join(gamePWD, "Screenshots", "genTiledMap")
   print(f"[INFO] Input path: {inputPath}")

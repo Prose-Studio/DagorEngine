@@ -12,7 +12,7 @@ from pathlib import Path
 
 _SCRIPT_DIR = Path(__file__).resolve().parent  # .../prog/daNetGameLibs/tiled_map
 _REPO_DIR = _SCRIPT_DIR.parents[2]             # .../dagor  (daNetGameLibs -> prog -> dagor)
-sys.path.insert(0, str(_REPO_DIR / '_buildtools' / 'tools'))
+sys.path.insert(0, str(_REPO_DIR / 'prog' / 'tools' / 'pythonCommon'))
 
 import datablock as datablock
 
@@ -291,20 +291,23 @@ def main():
 
   parser = argparse.ArgumentParser(description='this script generates one big image from tiled map, needed for lvl designers')
   parser.add_argument("game", type=str, help="Which game to use (should work with any dng game)")
+  parser.add_argument("--project", type=str, help="The game project's dir (default: <engine>/<game>)", default=None)
   parser.add_argument("scene", type=str, help="Path to the scene *.blk file (as it passed to the game)")
   parser.add_argument("--nconvert", type=str, help="Path to nconvert.exe", default=nconvert)
   parser.add_argument("--resolution", type=int, help="Optional final image resolution. If not specified, the original size after assembly is used.")
   parser.add_argument("--output_name", type=str, help="Optional base name for the final output. Defaults to 'big_combined'")
 
   args = parser.parse_args()
+
+  projectDir = args.project or os.path.join(DAGOR_DIR, args.game)
   nconvert = args.nconvert
 
-  gamePWD = os.path.join(DAGOR_DIR, args.game, "game")
-  gameEXE = os.path.join(gamePWD, "win64", f"{args.game}-dev.exe")
-  scenePath = os.path.join(DAGOR_DIR, args.game, "prog", "gameBase", args.scene)
+  gamePWD = os.path.join(projectDir, "game")
+  gameEXE = os.path.join(gamePWD, "windows-x86_64", f"{args.game}-dev.exe")
+  scenePath = os.path.join(projectDir, "prog", "gameBase", args.scene)
 
   if not os.path.exists(scenePath):
-    scenePath = os.path.join(DAGOR_DIR, args.game, "prog", "gamebase_dev", args.scene)
+    scenePath = os.path.join(projectDir, "prog", "gamebase_dev", args.scene)
 
   tilesPath = ""
   blocks = datablock.DataBlock(scenePath, include_includes = True, preserve_formating = False)
@@ -335,8 +338,8 @@ def main():
     exit(1)
 
   outputPrefix = os.path.basename(tilesPath).split(".")[0]
-  outPath = os.path.normpath(os.path.join(DAGOR_DIR, args.game, "develop", "gui", "maps", outputPrefix))
-  inputPath = os.path.normpath(os.path.join(DAGOR_DIR, args.game, "develop", "gui", "maps", outputPrefix))
+  outPath = os.path.normpath(os.path.join(projectDir, "develop", "gui", "maps", outputPrefix))
+  inputPath = os.path.normpath(os.path.join(projectDir, "develop", "gui", "maps", outputPrefix))
   print(f"[INFO] Input path: {inputPath}")
 
   filesToMerge = [f for f in os.listdir(inputPath) if os.path.isfile(os.path.join(inputPath, f)) and len(f.split(".")[0]) == zlevels and f.endswith(".avif")]

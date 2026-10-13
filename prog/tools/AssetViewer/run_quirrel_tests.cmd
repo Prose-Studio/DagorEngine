@@ -1,1 +1,0 @@
-"%GDEVTOOL%/python3/python3" %~dp0..\..\..\_buildtools\apps\asset_viewer\run_quirrel_tests.py %1

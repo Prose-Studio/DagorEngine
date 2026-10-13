@@ -1,5 +1,5 @@
-SET PYTHON_BIN=%GDEVTOOL%\python\python
-SET CLANGFMT=%GDEVTOOL%\LLVM-15.0.7\bin\clang-format
+SET PYTHON_BIN=python
+SET CLANGFMT=clang-format
 
 call %PYTHON_BIN% auto_extract_properties.py %1 %2
 call %PYTHON_BIN% gen_traits.py %1 %2

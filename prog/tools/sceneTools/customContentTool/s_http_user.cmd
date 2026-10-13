@@ -1,3 +1,3 @@
 pushd .storage-user
-start %GDEVTOOL%\python\python.exe -m SimpleHTTPServer
+start python -m http.server
 popd
