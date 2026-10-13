@@ -14,8 +14,8 @@ run and leaves the side-car alone; one that reports none is printed FAILED.
 
 It shows where the VM stands against Lua and Luau. To measure what a VM change
 does, use vmperf/vmperf.py: one build pair mixes the change with code layout.
-It measures the release csq (jam -sConfig=rel in the consoleSq tool); a dev
-build measures its asserts.
+It measures the release csq (the Rel build of csq in the windows-cdk tree); a
+dev build measures its asserts.
 --lua/--luau default to the prebuilt interpreters committed next to the
 workloads (see README.md).
 
@@ -67,7 +67,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("benches", nargs="*")
     ap.add_argument("--quirrel", "--sq", default=CSQ_REL,
-                    help="path to the release csq (default: tools/dagor_cdk/windows-x86_64/csq.exe)")
+                    help="path to the release csq (default: build/windows-cdk/bin/csq.exe)")
     ap.add_argument("--lua", help="path to the lua interpreter (default: committed lua/lua.exe)")
     ap.add_argument("--luau", help="path to luau CLI (default: committed luau/luau.exe)")
     ap.add_argument("--runs", type=int, default=3)
@@ -77,7 +77,8 @@ def main():
 
     if not os.path.exists(args.quirrel):
         raise SystemExit(f"{args.quirrel} is not there; build it with "
-                         "jam -sConfig=rel in the consoleSq tool (see README.md)")
+                         "cmake --build --preset windows-cdk --config Rel --target csq in prog/ "
+                         "(see README.md)")
 
     lua = os.path.abspath(args.lua) if args.lua else os.path.join(HERE, "lua", "lua.exe")
     luau = os.path.abspath(args.luau) if args.luau else os.path.join(HERE, "luau", "luau.exe")

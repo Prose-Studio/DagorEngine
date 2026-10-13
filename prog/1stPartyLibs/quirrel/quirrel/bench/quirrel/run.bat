@@ -1,6 +1,6 @@
 @echo off
-@rem the release csq built from this repo (jam -sConfig=rel in prog/tools/consoleSq)
-if not defined CSQ set CSQ=%~dp0..\..\..\..\..\..\tools\dagor_cdk\windows-x86_64\csq.exe
+@rem the release csq built from this repo (cmake --build --preset windows-cdk --config Rel --target csq in prog/)
+if not defined CSQ set CSQ=%~dp0..\..\..\..\..\..\build\windows-cdk\bin\csq.exe
 pushd %~dp0
 echo Quirrel
 %CSQ% version.nut

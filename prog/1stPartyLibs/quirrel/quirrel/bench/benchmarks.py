@@ -19,9 +19,9 @@ SUSPECT_SPREAD_SECONDS = 0.005
 # relative, for float results of float32 rows
 FLOAT32_TOLERANCE = 1e-3
 
-# release csq: jam -sConfig=rel in prog/tools/consoleSq
+# release csq: cmake --build --preset windows-cdk --config Rel --target csq (in prog/)
 CSQ_REL = os.path.normpath(os.path.join(HERE, "..", "..", "..", "..", "..",
-                                        "tools", "dagor_cdk", "windows-x86_64", "csq.exe"))
+                                        "build", "windows-cdk", "bin", "csq.exe"))
 
 Lang = namedtuple("Lang", "label folder ext cmd float32")
 
@@ -224,8 +224,8 @@ if __name__ == "__main__":
   langs = [l for l in ALL_LANGS if l.label in args.lang]
   if quirrel in langs:
     if not os.path.exists(quirrel.cmd[0]):
-      raise SystemExit(f"{quirrel.cmd[0]} is not there; build it with jam -sConfig=rel in "
-                       "the consoleSq tool or pass --quirrel (see README.md)")
+      raise SystemExit(f"{quirrel.cmd[0]} is not there; build it with cmake --build --preset windows-cdk "
+                       "--config Rel --target csq in prog/ or pass --quirrel (see README.md)")
     check_quirrel_label()
   if args.pin:
     pin_self_and_children(args.cpu)

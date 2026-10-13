@@ -21,14 +21,11 @@ def sprof_exe():
     src, exe = os.path.join(build.HERE, "sprof.cpp"), os.path.join(build.WORK, "sprof.exe")
     if os.path.exists(exe) and os.path.getmtime(exe) > os.path.getmtime(src):
         return exe
-    compiles, _, link, _ = build.jam_commands()
-    cmd = next(iter(compiles.values()))
-    includes = [a for i, a in enumerate(cmd[1:], 1) if a == "-imsvc" or cmd[i - 1] == "-imsvc"]
+    sdk_compile, sdk_link = build.sdk_args()
     os.makedirs(build.WORK, exist_ok=True)
     subprocess.run([os.path.join(build.llvm_bin(), "clang-cl.exe"), "/nologo", "/O2", "/EHsc", "/std:c++17",
-                    "-Wno-deprecated-declarations", *includes, src, "/Fe" + exe,
-                    "/Fo" + os.path.join(build.WORK, "sprof.obj"), "/link",
-                    *[a for a in link if a.startswith("-libpath:")]], check=True)
+                    "-Wno-deprecated-declarations", "-fuse-ld=lld", *sdk_compile, src, "/Fe" + exe,
+                    "/Fo" + os.path.join(build.WORK, "sprof.obj"), "/link", *sdk_link], check=True)
     return exe
 
 

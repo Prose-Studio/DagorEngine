@@ -18,8 +18,8 @@ folder holds idiomatic code for that language and the prebuilt interpreter:
   and the prebuilt `qjs.exe` (QuickJS-ng 0.16.2).
 
 Quirrel itself is not committed as a binary: both harnesses run
-`tools/dagor_cdk/windows-x86_64/csq.exe`, the release build from this tree
-(`jam -sConfig=rel` in `prog/tools/consoleSq`), with `--opt-closure-hoisting`,
+`build/windows-cdk/bin/csq.exe`, the release build from this tree
+(`cmake --build --preset windows-cdk --config Rel --target csq` in `prog/`), with `--opt-closure-hoisting`,
 because the game runtime turns closure hoisting on (`bindQuirrelEx`). That is the
 shipped runtime configuration (clang, mimalloc); a build on the CRT heap, such as
 a plain cmake `sq.exe`, is up to 2x slower on table-sweep workloads, which

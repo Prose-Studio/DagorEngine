@@ -47,9 +47,9 @@ wrong sign.
 
 Example: the commit that removed static memoization. Before it, darg was the
 only workload that used memos, so the others had no reason to change. The
-jam builds before and after it showed primes and life 14% slower,
+plain builds before and after it showed primes and life 14% slower,
 closure_storm 10% slower. `vmperf.py compare` of the commit and its parent
-gives layout means of +1.6%, +2.2% and -0.6%, and darg +4.6%. In the jam
+gives layout means of +1.6%, +2.2% and -0.6%, and darg +4.6%. In the plain
 build, Execute had moved by 16 bytes, and the block crossed into the next
 line by 4 bytes. A binary patch
 that moved only the block back put primes and life within 4% of "before".
@@ -90,12 +90,13 @@ layout, but life and closure_storm become 6-9% slower.
 
 ## vmperf.py
 
-Windows only. It needs git and the jam rel build of `prog/tools/consoleSq`:
-run `jam -sConfig=rel` there after you update the tree. The tool compiles
-only the objects that include Quirrel headers, from the sources of the
-revision (`quirrel/quirrel` and `gameLibs/quirrel/quirrelHost`); all other
-code links from the jam output. The plain build of the sources that jam
-built has the same code (`.text`) as jam's csq.exe.
+Windows only. It needs git and the Rel build of csq in the engine's
+windows-cdk tree (`build/windows-cdk`, `VMPERF_BUILD` names another): run
+`cmake --build --preset windows-cdk --config Rel --target csq` in `prog/` after you update the tree. The tool compiles only the objects that
+include Quirrel headers, from the sources of the revision (`quirrel/quirrel`
+and `gameLibs/quirrel/quirrelHost`), with the commands of that build; all
+other code links from its output. The plain build of the sources that the
+tree built has the same code (`.text`) as its csq.exe.
 
     python vmperf.py compare                   HEAD against the working tree
     python vmperf.py compare HEAD~1 HEAD       two revisions
@@ -108,11 +109,11 @@ built has the same code (`.text`) as jam's csq.exe.
 `compare` takes revisions (`wt` is the working tree) and paths of csq.exe
 files. It builds each revision in five variants: `nat`, the plain build, and
 `k0` `k16` `k32` `k48`, the layout shifts. Builds go to
-`_output/quirrel-vmperf/<sha>/` and stay there while their sources and the
-jam output stay the same (about 260 MB each; delete them when you are done). Then it sets for
+`build/quirrel-vmperf/<sha>/` (`VMPERF_WORK` names another dir) and stay there
+while their sources and the output of the tree stay the same (about 260 MB each; delete them when you are done). Then it sets for
 each workload how many calls make a 200 ms rep, runs `--rounds` (default 4)
 interleaved rounds on a P-core, prints the table and writes the result to
-`_output/quirrel-vmperf/results/`. Default workloads take about 15 minutes.
+`build/quirrel-vmperf/results/`. Default workloads take about 15 minutes.
 Do not use the machine during the run. The first round is often a few
 percent slower (heat from the build); the fastest round is kept.
 
@@ -124,7 +125,7 @@ How to read the table:
 
 - `layout mean`, `delta`: the result.
 - `spread`: (slowest / fastest layout - 1) for each version.
-- `plain build`: the build that jam makes from the same sources. One
+- `plain build`: the build that the tree makes from the same sources. One
   number, with the layout that this build got.
 - First lines: the bytes of its 64-byte line that the dispatch block takes
   in each build. `CROSSES` marks a slow layout.
@@ -144,9 +145,9 @@ admin rights) and prints the share of time per function and per source line
 of `SQVM::Execute<false>`. A line shows its text and its number in the first
 build. A revision means its plain build here.
 
-Limits: the revisions must have the same source files as the tree that jam
-built. For a change that adds or removes a file, build each version with
-jam and give `compare` the csq.exe paths (plain layout only).
+Limits: the revisions must have the same source files as the tree that
+built csq. For a change that adds or removes a file, build each version in
+the tree and give `compare` the csq.exe paths (plain layout only).
 
 Files: `vmperf.py` the commands, `build.py` the builds and layouts,
 `timing.py` pinning and timing, `image.py` symbols and the dispatch block,
