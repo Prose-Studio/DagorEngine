@@ -473,6 +473,16 @@ INLINE TMatrix4 matrix_perspective_reverse(float wk, float hk, float zn, float z
   return res;
 }
 
+//! An orthographic projection with reverse depth (1 at zn, 0 at zf): x and y scaled by wk and hk (2 / the view's width
+//! and height) and offset by ox and oy
+INLINE TMatrix4 matrix_ortho_reverse(float wk, float hk, float zn, float zf, float ox, float oy)
+{
+  return TMatrix4(wk, 0, 0, 0, 0, hk, 0, 0, 0, 0, -1 / (zf - zn), 0, ox, oy, zf / (zf - zn), 1);
+}
+
+//! Whether proj is orthographic (w does not depend on the position)
+INLINE bool is_ortho_projection(const TMatrix4 &proj) { return proj(2, 3) == 0 && proj(3, 3) == 1; }
+
 INLINE TMatrix4 matrix_perspective_reverse(float wk, float hk, float zn, float zf)
 {
   return matrix_perspective_reverse(wk, hk, zn, zf, 0.0f, 0.0f);
@@ -524,10 +534,15 @@ INLINE TMatrix4 matrix_perspective_crop(float l, float r, float b, float t, floa
     -zn / (zf - zn), 1.0f);
 }
 
+//! Offsets the image of proj by ox, oy in normalized device coordinates (clip x += ox * w): a perspective or an
+//! orthographic projection
 INLINE void matrix_perspective_add_jitter(TMatrix4 &proj, const float ox, const float oy)
 {
-  proj(2, 0) += ox;
-  proj(2, 1) += oy;
+  for (int r = 0; r < 4; r++)
+  {
+    proj(r, 0) += ox * proj(r, 3);
+    proj(r, 1) += oy * proj(r, 3);
+  }
 }
 
 INLINE TMatrix tmatrix(const TMatrix4 &a)

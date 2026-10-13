@@ -1,7 +1,7 @@
 // Copyright (C) Gaijin Games KFT.  All rights reserved.
 
 #include "render/world/antiAliasingMode.h"
-#define INSIDE_RENDERER 1 // fixme: move to jam
+#define INSIDE_RENDERER 1 // fixme: define it for the renderer's sources in the build
 
 #include "render/renderEvent.h"
 #include <render/lruCollision.h>
@@ -2083,6 +2083,9 @@ void WorldRenderer::setAntialiasing()
 
   const auto antialiasingMethod = render::antialiasing::get_method();
   currentAntiAliasingMode = convertAntialiasingMethod(antialiasingMethod);
+  // temporal methods reproject the history for a perspective camera only
+  if (orthoView && currentAntiAliasingMode != AntiAliasingMode::OFF && currentAntiAliasingMode != AntiAliasingMode::SSAA)
+    currentAntiAliasingMode = AntiAliasingMode::FXAA;
 
   IPoint2 postFxResolution;
   getPostFxInternalResolution(postFxResolution.x, postFxResolution.y);
@@ -3536,7 +3539,7 @@ void WorldRenderer::setUpView(
   int w, h;
   d3d::get_screen_size(w, h);
 
-  if (camera_in_camera::is_lens_only_zoom_enabled())
+  if (camera_in_camera::is_lens_only_zoom_enabled() && !persp.ortho)
   {
     const Driver3dPerspective unzoomedPerspective =
       calc_camera_perspective(camSetup.fovSettings, camSetup.fovMode, persp.zn, persp.zf, w, h);
@@ -3555,7 +3558,7 @@ void WorldRenderer::setUpView(
     camcamParams = prevCamcamParams = eastl::nullopt;
   }
 
-  if (camSetup.cockpitFov > 0.0f)
+  if (camSetup.cockpitFov > 0.0f && !persp.ortho)
   {
     const Driver3dPerspective cockpitPersp = calc_camera_perspective(camSetup.cockpitFov, camSetup.fovMode, persp.zn, persp.zf, w, h);
     const TMatrix4D cockpitProjTm = dmatrix_perspective_reverse(cockpitPersp.wk, cockpitPersp.hk, cockpitPersp.zn, cockpitPersp.zf,
@@ -3706,6 +3709,9 @@ void WorldRenderer::beforeRender(float scaled_dt,
 {
   if (sceneload::is_scene_switch_in_progress())
     return;
+
+  if (persp.ortho != orthoView)
+    setOrthoView(persp.ortho);
 
   ShaderGlobal::set_float(var::sky_polarization_filter_term, get_sky_polarization_filter_term());
 
@@ -4153,7 +4159,7 @@ void WorldRenderer::draw(uint32_t frame_id, float realDt)
   ShaderGlobal::set_float(pixel_scaleVarId, 1.0 / (persp.hk * renderingHeight));
 
   // TODO: figure out why this causes gray flickering on screen when put before probes update
-  ShaderGlobal::set_float4(zn_zfarVarId, persp.zn, persp.zf, 0, 0);
+  ShaderGlobal::set_float4(zn_zfarVarId, persp.zn, persp.zf, persp.ortho ? 1 : 0, 0);
 
   {
     // walkers should be beforeRender'ed here
@@ -4633,7 +4639,7 @@ void WorldRenderer::draw(uint32_t frame_id, float realDt)
 
   // TODO frame graph assumes this is off by default, we should get rid of grs_draw_wire changing wireframe mode everywhere
   d3d::setwire(false);
-  ShaderGlobal::set_float4(zn_zfarVarId, persp.zn, persp.zf, 0, 0);
+  ShaderGlobal::set_float4(zn_zfarVarId, persp.zn, persp.zf, persp.ortho ? 1 : 0, 0);
 
   resource_slot::resolve_access();
   dafg::metronome::update();
@@ -6606,6 +6612,8 @@ WorldRenderer::GiQuality WorldRenderer::getGiQuality() const
     return GiAlgorithm::LOW;
   };
 
+  if (orthoView)
+    return {GiAlgorithm::OFF, 0};
   const DataBlock *graphicsBlk = ::dgs_get_settings()->getBlockByNameEx("graphics");
   GiAlgorithm settingsAlgorithm = getGiAlgorithm(graphicsBlk->getStr("giAlgorithm", NULL));
   GiAlgorithm algorithm =
@@ -6725,8 +6733,42 @@ void WorldRenderer::toggleFeatures(const FeatureRenderFlagMask &f, bool turn_on)
   changeFeatures(newFeatures);
 }
 
+// what reconstructs positions or slices the view for a perspective camera only
+static FeatureRenderFlagMask ortho_unsupported_features()
+{
+  FeatureRenderFlagMask mask;
+  for (auto f : {FeatureRenderFlags::VOLUME_LIGHTS, FeatureRenderFlags::VOLUME_LIGHTS_PER_PIXEL_FX_APPLY, FeatureRenderFlags::SSAO,
+         FeatureRenderFlags::CONTACT_SHADOWS, FeatureRenderFlags::SSR, FeatureRenderFlags::CLUSTERED_LIGHTS,
+         FeatureRenderFlags::WATER_REFLECTION, FeatureRenderFlags::CAMERA_IN_CAMERA, FeatureRenderFlags::HAZE})
+    mask.set(f);
+  return mask;
+}
+
+void WorldRenderer::setOrthoView(bool ortho)
+{
+  debug("orthographic view %s", ortho ? "on" : "off");
+  orthoView = ortho;
+  const FeatureRenderFlagMask current = get_current_render_features();
+  if (ortho)
+  {
+    orthoSuppressedFeatures = current & ortho_unsupported_features();
+    changeFeatures(current); // validateFeatures() turns them off
+  }
+  else
+  {
+    changeFeatures(current | orthoSuppressedFeatures);
+    orthoSuppressedFeatures.reset();
+  }
+  setGIQualityFromSettings();
+  setAntialiasing();
+  if (auto *skies = get_daskies())
+    skies->setSolidColorMode(ortho, E3DCOLOR(40, 44, 52));
+}
+
 void WorldRenderer::validateFeatures(FeatureRenderFlagMask &features, const FeatureRenderFlagMask &)
 {
+  if (orthoView)
+    features &= ~ortho_unsupported_features();
   if (features.test(FeatureRenderFlags::SSR) && !features.test(FeatureRenderFlags::FULL_DEFERRED))
   {
     logerr("SSR currently not implemented for thinGBuffer");

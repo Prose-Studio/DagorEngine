@@ -162,8 +162,8 @@ macro DOWNSAMPLE_DEPTH2X_CORE(code)
     downsample_uv_transform@f4 = downsample_uv_transform;
     downsample_uv_transformi@i2 = downsample_uv_transformi;
     //prev_zn_zfar@f4 = (prev_zn_zfar.x, prev_zn_zfar.y, prev_zn_zfar.x/(prev_zn_zfar.x * prev_zn_zfar.y), (prev_zn_zfar.y-prev_zn_zfar.x)/(prev_zn_zfar.x * prev_zn_zfar.y));
-    prev_zn_zfar@f4 = (zn_zfar.x, zn_zfar.y, 1/zn_zfar.y, (zn_zfar.y-zn_zfar.x)/(zn_zfar.x * zn_zfar.y));
-    zn_zfar@f4 = (zn_zfar.x, zn_zfar.y, 1/zn_zfar.y, (zn_zfar.y-zn_zfar.x)/(zn_zfar.x * zn_zfar.y));
+    prev_zn_zfar@f4 = (zn_zfar.x, zn_zfar.y, (1 - zn_zfar.z) / zn_zfar.y - zn_zfar.z * zn_zfar.y, (1 - zn_zfar.z) * (zn_zfar.y-zn_zfar.x)/(zn_zfar.x * zn_zfar.y) + zn_zfar.z * (zn_zfar.y-zn_zfar.x)); // as INIT_ZNZFAR
+    zn_zfar@f4 = (zn_zfar.x, zn_zfar.y, (1 - zn_zfar.z) / zn_zfar.y - zn_zfar.z * zn_zfar.y, (1 - zn_zfar.z) * (zn_zfar.y-zn_zfar.x)/(zn_zfar.x * zn_zfar.y) + zn_zfar.z * (zn_zfar.y-zn_zfar.x)); // as INIT_ZNZFAR
   }
 
   //fixme: that is only correct if we downsample from exactly 2x size of current rt.

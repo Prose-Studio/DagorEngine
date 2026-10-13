@@ -863,13 +863,13 @@ void ShadowsManager::prepareShadowsMatrices(
   csm->setDepthBiasSettings(csmSettings);
   const float staticDist = staticShadows ? staticShadows->getDistance() : 1e6f;
   // Adjust shadow distance based on FOV (roughly keep top-down frustum area constant)
-  const float fovMultiplier = csmShadowsDistanceFovScaling ? p.wk : 1.0f;
+  const float fovMultiplier = csmShadowsDistanceFovScaling && !p.ortho ? p.wk : 1.0f;
   const float adjustedMaxDist = fovMultiplier * csmShadowsMaxDist;
   csm_mode.maxDist = clamp(adjustedMaxDist, (csm_mode.numCascades > 1) ? 16.f : 0.f, staticDist * 0.5f);
   csm_mode.powWeight = pow_weight_override.get() >= 0 ? pow_weight_override.get() : cvt(csm_mode.maxDist, 30.f, 50.f, 0.7f, 0.9f);
   csm_mode.cascade0Dist = cascade0_dist_override.get() >= 0 ? cascade0_dist_override.get() : cascade0_dist;
   csm_mode.shadowStart = p.zn + csmStartOffsetDistance;
-  csm_mode.cameraFov = min(p.hk, p.wk);
+  csm_mode.cameraFov = p.ortho ? 1.f : min(p.hk, p.wk); // a 90 degree fov stands for an orthographic camera
   G_ASSERT(shadowInfoProvider.getRendinstShadowVisibilities().size() >= csm_mode.numCascades);
   csm->prepareShadowCascades(csm_mode, shadowInfoProvider.getDirToSun(IShadowInfoProvider::DirToSunType::CSM),
     orthonormalized_inverse(itm), itm.getcol(3), proj_tm, frustum, Point2(p.zn, p.zf), p.zn);

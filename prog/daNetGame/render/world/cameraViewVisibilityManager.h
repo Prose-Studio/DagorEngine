@@ -119,6 +119,7 @@ private:
   const char *cameraPrefix = nullptr;
 
   Occlusion occlusion;
+  bool orthoFrame = false; // an orthographic camera this frame: no occlusion culling
   OcclusionMaskApplier occlusionMaskApplier;
   eastl::unique_ptr<ParallelOcclusionRasterizer> occlusionRasterizer;
   eastl::unique_ptr<OcclusionLandMeshManager> occlusionLandMeshManager;

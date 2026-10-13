@@ -527,6 +527,11 @@ public:
   void toggleFeatures(const FeatureRenderFlagMask &f, bool turn_on);
   void changeFeatures(const FeatureRenderFlagMask &f);
   void validateFeatures(FeatureRenderFlagMask &features, const FeatureRenderFlagMask &changed_features);
+  // An orthographic camera (camera__orthoHeight): what needs a perspective one is off while it is active (the features
+  // of ortho_unsupported_features(), GI, temporal antialiasing; the sky is a solid color)
+  void setOrthoView(bool ortho);
+  bool orthoView = false;
+  FeatureRenderFlagMask orthoSuppressedFeatures;
 
   bool forceEnableMotionVectors() const;
   bool needMotionVectors() const;

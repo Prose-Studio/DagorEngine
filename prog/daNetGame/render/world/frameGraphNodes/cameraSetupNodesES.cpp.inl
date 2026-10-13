@@ -330,9 +330,11 @@ static void create_camera_setup_nodes_es(const OnCameraNodeConstruction &evt)
         auto ndcToPixel = [&](const Point2 &ndc) { return Point2(ndc.x * renderRes.x * 0.5f, -ndc.y * renderRes.y * 0.5f); };
         auto ndcToUv = [](const Point2 &ndc) { return Point2(ndc.x * 0.5f, -ndc.y * 0.5f); };
 
+        // an orthographic camera has no temporal antialiasing (WorldRenderer::setOrthoView), so no jitter for it
         const Point2 jitterNdc =
           superPixels == 1 && subPixels == 1
-            ? calc_antialiasing_jitter_ndc(::dagor_get_global_frame_id() + multiplexing_index.subSample, renderRes)
+            ? (jitterPersp.ortho ? Point2(0, 0)
+                                 : calc_antialiasing_jitter_ndc(::dagor_get_global_frame_id() + multiplexing_index.subSample, renderRes))
             : calc_screenshot_jitter_ndc(superPixels, subPixels, superSample, subSample, displayRes);
         jitterPersp.ox = jitterNdc.x;
         jitterPersp.oy = jitterNdc.y;

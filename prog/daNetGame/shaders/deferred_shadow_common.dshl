@@ -260,6 +260,7 @@ macro USE_DEFERRED_SHADOW_PER_SAMPLE(code)
   assume_if_not_assumed use_contact_shadows = use_shadows;
 
   USE_SHADOW_MODIFICATIONS(code)
+  INIT_VIEW_ORTHO(code)
   hlsl(code) {
   ##if !hardware.scarlett
     #define __XBOX_WAVESIM_ITERATION 1
@@ -299,7 +300,7 @@ macro USE_DEFERRED_SHADOW_PER_SAMPLE(code)
     {
       float distSq = dot(pointToEye,pointToEye);
       float invRsqrt = rsqrt(distSq);
-      float3 view  = pointToEye*invRsqrt;
+      float3 view  = ortho_view_dir_or(pointToEye*invRsqrt);
       float dist = rcp(invRsqrt);
 
       // Translucency is used to store SSS eye fake shadow mask, so we must assume SSS eye material to have 0 translucency.

@@ -285,6 +285,12 @@ INLINE TMatrix4D dmatrix_perspective_reverse(double wk, double hk, double zn, do
   return res;
 }
 
+//! An orthographic projection with reverse depth (1 at zn, 0 at zf), see matrix_ortho_reverse
+INLINE TMatrix4D dmatrix_ortho_reverse(double wk, double hk, double zn, double zf, double ox, double oy)
+{
+  return TMatrix4D(wk, 0, 0, 0, 0, hk, 0, 0, 0, 0, -1 / (zf - zn), 0, ox, oy, zf / (zf - zn), 1);
+}
+
 INLINE TMatrix4D dmatrix_perspective_reverse(double wk, double hk, double zn, double zf)
 {
   return dmatrix_perspective_reverse(wk, hk, zn, zf, 0.0, 0.0);
@@ -301,10 +307,15 @@ INLINE TMatrix4D dmatrix_perspective(double wk, double hk, double z_near, double
   return dmatrix_perspective_reverse(wk, hk, z_near, z_far);
 }
 
+//! Offsets the image of proj by ox, oy in normalized device coordinates (clip x += ox * w): a perspective or an
+//! orthographic projection
 INLINE void dmatrix_perspective_add_jitter(TMatrix4D &proj, const double ox, const double oy)
 {
-  proj(2, 0) += ox;
-  proj(2, 1) += oy;
+  for (int r = 0; r < 4; r++)
+  {
+    proj(r, 0) += ox * proj(r, 3);
+    proj(r, 1) += oy * proj(r, 3);
+  }
 }
 
 INLINE TMatrix4D orthonormalized_inverse(const TMatrix4D &a)

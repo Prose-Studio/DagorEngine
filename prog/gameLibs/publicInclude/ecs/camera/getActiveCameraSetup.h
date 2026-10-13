@@ -29,6 +29,8 @@ struct CameraSetup
   float cockpitFov = -1.0f;
   float znear = 0.1f;
   float zfar = 5000.f;
+  //! > 0: an orthographic camera, its view this many world units high (the width follows the view's aspect); fov unused
+  float orthoHeight = 0.f;
 
   FovMode fovMode = EFM_HOR_PLUS;
 
@@ -60,6 +62,8 @@ HorVerFov calc_hor_ver_fov(const float fov_degree, const FovMode mode, const int
 Driver3dPerspective calc_camera_perspective(const CameraSetup &camera_setup, int view_w, int view_h);
 Driver3dPerspective calc_camera_perspective(const float fov_degree, const FovMode fov_mode, const float z_near, const float z_far,
   int view_w, int view_h);
+//! The projection matrix of persp (reverse depth): perspective, or orthographic when persp.ortho
+TMatrix4D calc_camera_proj_tm(const Driver3dPerspective &persp);
 TMatrix4D calc_camera_view(const TMatrix4 &view_itm, const DPoint3 &view_pos);
 
 //! sets camera parameters to D3D

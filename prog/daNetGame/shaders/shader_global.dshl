@@ -484,17 +484,22 @@ hlsl {
   {
     return dot(col, half3(0.299, 0.587, 0.114));
   }
+  // decode_depth is zn_zfar.zw of INIT_ZNZFAR: (1/zf, (zf-zn)/(zn*zf)) for a perspective camera, whose raw (reverse)
+  // depth is hyperbolic; (-zf, zf-zn) for an orthographic one, whose raw depth is linear (zf - raw*(zf-zn))
   float linearize_z(float rawDepth, float2 decode_depth)
   {
-    return rcp(decode_depth.x + decode_depth.y * rawDepth);
+    float d = decode_depth.x + decode_depth.y * rawDepth;
+    return decode_depth.x >= 0 ? rcp(d) : -d;
   }
   float4 linearize_z4(float4 rawDepth, float2 decode_depth)
   {
-    return rcp(decode_depth.xxxx + decode_depth.y*rawDepth);
+    float4 d = decode_depth.xxxx + decode_depth.y*rawDepth;
+    return decode_depth.x >= 0 ? rcp(d) : -d;
   }
   float inv_linearizeZ(float d, float4 zn_zfar)
   {
-    return (zn_zfar.y*rcp(d) - 1) * zn_zfar.x * rcp(zn_zfar.y - zn_zfar.x);
+    return zn_zfar.z >= 0 ? (zn_zfar.y*rcp(d) - 1) * zn_zfar.x * rcp(zn_zfar.y - zn_zfar.x)
+                          : (zn_zfar.y - d) * rcp(zn_zfar.y - zn_zfar.x);
   }
   // These are aliasis for the linearize_z and inv_linearizeZ functions
   float linearize_distance(float rawDistance, float2 decode_depth)
@@ -507,11 +512,14 @@ hlsl {
   }
 }
 
+// (zn, zf, 1 for an orthographic camera (0: perspective), 0); INIT_ZNZFAR packs the depth decoding of linearize_z into zw
 float4 zn_zfar = (1, 20000, 0, 0);
 float4 rendering_res = (1280, 720, 0,0);
 
 macro INIT_ZNZFAR_STAGE(code)
-  (code) { zn_zfar@f4 = (zn_zfar.x, zn_zfar.y, 1.0 / zn_zfar.y, (zn_zfar.y-zn_zfar.x)/(zn_zfar.x * zn_zfar.y)); }
+  (code) { zn_zfar@f4 = (zn_zfar.x, zn_zfar.y,
+    (1 - zn_zfar.z) / zn_zfar.y - zn_zfar.z * zn_zfar.y,
+    (1 - zn_zfar.z) * (zn_zfar.y-zn_zfar.x)/(zn_zfar.x * zn_zfar.y) + zn_zfar.z * (zn_zfar.y-zn_zfar.x)); }
 endmacro
 
 macro INIT_ZNZFAR()
@@ -623,7 +631,7 @@ macro USE_DECODE_DEPTH_STAGE(code)
 hlsl(code) {
   float4 linearize_z4(float4 rawDepth)
   {
-    return rcp(zn_zfar.zzzz + zn_zfar.w*rawDepth);
+    return linearize_z4(rawDepth, zn_zfar.zw);
   }
 }
 endmacro

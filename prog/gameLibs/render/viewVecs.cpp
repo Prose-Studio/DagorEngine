@@ -11,7 +11,7 @@
   VAR(view_vecLT)      \
   VAR(view_vecRT)      \
   VAR(view_vecLB)      \
-  VAR(view_vecRB)
+  VAR(view_vecRB)        VAR(view_ortho_dir)
 
 #define VAR(a) static ShaderVariableInfo a##VarId(#a, true);
 VIEW_VARS_LIST
@@ -32,6 +32,16 @@ void set_inv_globtm_to_shader(const TMatrix4 &view_tm, const TMatrix4 &proj_tm, 
 
 ViewVecs calc_view_vecs(const TMatrix &view_tm, const TMatrix4 &proj_tm)
 {
+  if (is_ortho_projection(proj_tm))
+  {
+    // the corners in the plane through the camera: ndc x = wk * x + ox
+    TMatrix viewItm = orthonormalized_inverse(view_tm);
+    const Point3 right = viewItm.getcol(0), up = viewItm.getcol(1);
+    auto corner = [&](float x, float y) {
+      return Point4::xyz0(right * ((x - proj_tm(3, 0)) / proj_tm(0, 0)) + up * ((y - proj_tm(3, 1)) / proj_tm(1, 1)));
+    };
+    return {corner(-1, 1), corner(1, 1), corner(-1, -1), corner(1, -1), Point4::xyzV(viewItm.getcol(2), 1.f)};
+  }
   TMatrix4 viewTmOffs = TMatrix4(view_tm);
   viewTmOffs.setrow(3, 0.f, 0.f, 0.f, 1.0f);
   TMatrix4 viewRotProjInv = inverse44(viewTmOffs * proj_tm);
@@ -47,11 +57,13 @@ void set_viewvecs_to_shader(Point4 &view_vec_lt, Point4 &view_vec_rt, Point4 &vi
   view_vec_rt = viewVecs.viewVecRT;
   view_vec_lb = viewVecs.viewVecLB;
   view_vec_rb = viewVecs.viewVecRB;
+  set_viewvecs_to_shader(viewVecs);
+}
 
-  ShaderGlobal::set_float4(view_vecLTVarId, Color4(&view_vec_lt.x));
-  ShaderGlobal::set_float4(view_vecRTVarId, Color4(&view_vec_rt.x));
-  ShaderGlobal::set_float4(view_vecLBVarId, Color4(&view_vec_lb.x));
-  ShaderGlobal::set_float4(view_vecRBVarId, Color4(&view_vec_rb.x));
+void set_viewvecs_to_shader(const ViewVecs &view_vecs)
+{
+  set_viewvecs_to_shader(view_vecs.viewVecLT, view_vecs.viewVecRT, view_vecs.viewVecLB, view_vecs.viewVecRB);
+  ShaderGlobal::set_float4(view_ortho_dirVarId, Color4(&view_vecs.orthoDir.x));
 }
 
 void set_viewvecs_to_shader(const Point4 &view_vec_lt, const Point4 &view_vec_rt, const Point4 &view_vec_lb, const Point4 &view_vec_rb)
