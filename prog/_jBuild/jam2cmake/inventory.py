@@ -7,7 +7,7 @@ sources with their full compile commands, and the libraries a program links. Res
 
   inventory.json      every target of every root (input of parity.py)
   variant_matrix.md   source dirs that jam builds as more than one library, or with different flags, among the roots of
-                      one CMake tree: each needs a tree option, a selector library or a decision in decisions.md
+                      one CMake tree: each needs a tree option, a selector library or a decision in prog/cmake/DESIGN.md
 
 python inventory.py [--platform windows] [--arch x86_64] [--config dev] [--tree <tree>...] [--out <dir>]
 """

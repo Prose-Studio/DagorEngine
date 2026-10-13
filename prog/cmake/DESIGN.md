@@ -1,0 +1,121 @@
+# The Dagor CMake build
+
+How the engine and its projects build with CMake, and why. The reference of each function is the comment at the top of
+its module; this file is the map and the decisions behind it.
+
+## Layout
+
+```
+prog/CMakeLists.txt       the engine: project(DagorEngine), include(cmake/Dagor.cmake), the areas
+prog/CMakePresets.json    the engine's trees (cmake --list-presets), on cmake/presets/base.json
+prog/cmake/               Dagor.cmake (the entry), DagorConfig.cmake (find_package(Dagor)), the Dagor*.cmake modules,
+                          platform/<CMAKE_SYSTEM_NAME>.cmake, toolchains/, presets/, find/ (SDKs), sdk/manifest.cmake,
+                          scripts/, templates/
+<project>/prog/CMakeLists.txt + CMakePresets.json   a game (templates/, dng.py new)
+```
+
+There is no CMakeLists.txt at the repository root: prog/ is the engine's top level. Build trees are
+`build/<preset>` next to prog/ (of the engine or the project); only intermediates go there.
+
+## Trees and presets
+
+A tree is a preset: a target platform and compiler (the hidden bases of cmake/presets/base.json, each with its
+toolchain file) and a variant, `DAGOR_VARIANT`, which sets the defaults of the options (DagorOptions.cmake):
+
+| variant | builds by default |
+|---|---|
+| `tests` | the engine's unit tests (CTest; the `-ci` test presets skip those that need a GPU or a display) |
+| `cdk` | the command-line tools of the content pipeline on the static kernel; `--install --component cdk` puts them in `tools/dagor_cdk/<platform>-<arch>` |
+| `editor` | daKernel (the shared kernel), daBuild with its exporter plugins, ddsxCvt2 |
+| `maxplug`, `dargbox` | the 3ds Max plugins, the daRg sandbox (their programs are still on jam) |
+| `game` | a project's game: its presets `<host>-client`, `<host>-dedicated`, `<host>-aot-compiler` |
+
+Configurations are Dev (optimized, asserts and logs on), Rel, IRel (Rel with logs) and Dbg, in one Ninja Multi-Config
+tree. Workflow presets chain configure, build and test (or package).
+
+The kernel linkage differs between cdk/tests (static) and editor (dynamic), so they are separate trees rather than
+one tree with two copies of every library.
+
+## Targets
+
+One CMakeLists.txt per module dir, one `dagor_add_target()` call per target in it (like O3DE's `ly_add_target`):
+
+```cmake
+dagor_add_target(NAME engine.math STATIC
+  FILES_CMAKE math_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/engine/sharedInclude
+  COMPILE_DEFINITIONS PRIVATE ${defines}
+  BUILD_DEPENDENCIES PRIVATE 3rdPartyLibs.eastl
+)
+```
+
+- The sources are in `<name>_files.cmake` next to it (`FILES`, `ES_FILES`, `DAS_FILES`, `STRINGIFY_FILES`,
+  `STRINGIFY_ARRAY_FILES`); `<name>_<platform>_files.cmake` adds a platform's (windows, linux, macos, ios, android;
+  apple for both Apple platforms) and `<name>_<platform>.cmake` its settings. Adding or removing a source edits a
+  `_files.cmake`; a CMakeLists.txt changes only when targets or dependencies do.
+- The areas (prog/3rdPartyLibs, 1stPartyLibs, engine, commonFx, gameLibs, daNetGameLibs, tools) add every module dir
+  themselves, by relative path, under the conditions it builds on. Module dirs add none, so no variable leaks from
+  one module into another.
+- Targets are named after their dir under prog/ with dots (`engine.math`); a few have `Dagor::` aliases for what
+  projects link (Dagor::Quirrel, Dagor::Phys). `CMAKE_LINK_LIBRARIES_ONLY_TARGETS` is on: a misspelled dependency is
+  a configure error. System libraries are `System::<name>` imported targets.
+- Kinds: STATIC (default), OBJECT, SHARED, MODULE, HEADERONLY (an INTERFACE library), EXECUTABLE [APPLICATION]
+  [MACOSX_BUNDLE]. The INTERFACE and WIN32 keywords are spelt HEADERONLY and APPLICATION because the scope INTERFACE and
+  the define WIN32 are values of the other keywords.
+- Kinds of target with more to them are functions with the same arguments: `dagor_add_catch2_test`,
+  `dagor_add_dng_module`, `dagor_add_dng_game`, `dabuild_plugin`, `dsc2_compiler`. They append their own
+  `FILES_CMAKE`/`BUILD_DEPENDENCIES` to the caller's (repeated multi-value keywords accumulate).
+- Libraries are built for the programs that link them (EXCLUDE_FROM_ALL); the variant names its programs
+  (`dagor_build_by_default`, prog/CMakeLists.txt); a project's programs are built by default.
+- First-party code gets the strict warning set (errors with DAGOR_WARNINGS_AS_ERRORS); LAX gives third-party code the
+  lax one. Settings of the whole tree are directory-level (add_compile_options & co. with generator expressions,
+  DagorCompilerFlags.cmake and platform/), not per-target boilerplate.
+
+## Choices a program makes
+
+jam set some things with globals for a whole build; here each program chooses through the libraries it links:
+- library variants are always declared and built only when linked: `engine.memory.<allocator>.<debug level>`,
+  `engine.shaders.vars|varsMock|varsStub`, the stub of a feature (`gameLibs.bvh`, `engine.lowLatency.stub`);
+- link choices (`dagor_add_link_choice/select`): a property of the program (DAGOR_MEASURE_PERF, DAGOR_LINUX_GUI,
+  DAGOR_NO_GPU, DAGOR_SHADER_VARS, DAGOR_DAS_CONSOLE, DAGOR_LOW_LATENCY) picks the implementation, also for libraries
+  in between.
+- Custom transitive properties carry what a program collects from its whole link closure: DAGOR_LICENSE_FILES (its
+  LICENSE-<program> file), DAGOR_RUNTIME_FILES (SDK DLLs copied next to it), DAGOR_GAME_PULLS.
+
+## Platforms
+
+Platforms come from CMake: CMAKE_SYSTEM_NAME, WIN32, LINUX, APPLE, IOS, ANDROID, the compiler IDs. `DAGOR_PLATFORM`
+and `DAGOR_ARCH` only name output dirs. Toolchain files (presets) pick the compiler: clang-cl (pinned LLVM) or MSVC on
+Windows, clang (pinned) or gcc on Linux, Apple clang, the NDK for Android. Platform defines, flags and system
+libraries are in platform/<System>.cmake.
+
+## SDKs and host tools
+
+- SDKs are Find modules (cmake/find: DXC, Agility, NVAPI, AGS, Aftermath, FidelityFX, Astcenc, Oodle, Streamline)
+  that honour `<Pkg>_ROOT` and otherwise fetch the version pinned (SHA256) in sdk/manifest.cmake into
+  DAGOR_DEPS_DIR. No Gaijin hosts.
+- Build steps that run engine tools (shader compilers, vromfsPacker, daBuild, the parser generators) get them from
+  `dagor_host_tool()`: the tree's own target in an engine tree, otherwise the engine's host cdk/editor tree built on
+  demand under a lock (scripts/build_preset.cmake), or a prebuilt CDK (DAGOR_HOST_TOOLS_DIR).
+- daScript AOT: the project's `<host>-aot-compiler` tree makes `<game>-aot`, built on demand like the host tools; the
+  game trees translate their daScript with it in batches (`DAS_FILES` + `DAS_PULL`).
+
+## Games
+
+A project's prog/CMakeLists.txt finds the engine (`find_package(Dagor)`, which adds prog/ as a subproject compiled with
+the game's settings) and declares the game with `dagor_add_dng_game()`: daNetGame's main, the code game.jam generated
+(gameproj::, auth keys, the pull of every module) and the libraries of danetgamelibs.txt/gamelibs.txt, whose
+`_lib.cmake` add what they need. The program goes to `<project>/game/<platform>-<arch>`, the content (target `content`
+of the client tree) into `<project>/game`, packages through CPack (`dagor_package_game`, app bundles on macOS).
+Switches jam turned off in Rel only (the editor, webui, ImGui, the console) are generator expressions, so one tree
+builds every configuration.
+
+## What differs from jam
+
+- Tools jam always built in rel (binBlk, ddsx2dds, ddsxCvt, dolphin, whale, the ddsxConv plugins) build in the tree's
+  configuration under jam's file names (NO_CONFIG_POSTFIX).
+- Generated sources (ES codegen, parsers, ISPC headers, stringified files) go to the build dir, never the source tree.
+- MSVC links without identical-code folding (/OPT:NOICF): daFrameGraph compares function addresses.
+- daNetGame's precompiled header is used in every configuration (Ninja cannot have one in some only).
+- jam's `if $(X) in a b` is true when X is unset; the build keeps what jam built (CppStcode both, quirrelHost's
+  ENABLE_RE_USE=0 only under the non-ASan sanitizers).

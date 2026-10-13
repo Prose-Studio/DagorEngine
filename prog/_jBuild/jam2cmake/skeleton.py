@@ -706,7 +706,7 @@ class Converter:
     if s.get('cdk'):
       args.append('CDK')
     if s.get('Config') == ['rel']:
-      args.append('NO_CONFIG_POSTFIX')  # jam built it in rel only, so without a config suffix (decisions.md)
+      args.append('NO_CONFIG_POSTFIX')  # jam built it in rel only, so without a config suffix (prog/cmake/DESIGN.md)
     for var, prop in (('Exceptions', 'EXCEPTIONS'), ('Rtti', 'RTTI')):
       if s.get(var) in (['yes'], ['no']):
         args.append('{} {}'.format(prop, 'ON' if s[var] == ['yes'] else 'OFF'))
