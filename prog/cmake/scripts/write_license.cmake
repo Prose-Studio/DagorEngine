@@ -1,6 +1,6 @@
 # cmake -DLIST=<file> -DPROGRAM=<file name> -DOUT=<LICENSE file> -P write_license.cmake
 # Writes the LICENSE file of a program or shared library: the license texts of the libraries it links (LIST, one file
-# per line: its DAGOR_LICENSE_FILES), each headed by its directory's name, as jam wrote them. Unchanged, the file is
+# per line: its DAGOR_LICENSE_FILES), each headed by its directory's name. Unchanged, the file is
 # left alone.
 file(STRINGS "${LIST}" files)
 set(body "")

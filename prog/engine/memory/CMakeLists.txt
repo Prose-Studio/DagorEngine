@@ -1,4 +1,4 @@
-# The engine's memory manager. Programs choose its allocator and debug level with the variant they link (jam's global
+# The engine's memory manager. Programs choose its allocator and debug level with the variant they link (no global
 # UseMemoryAllocator and UseMemoryDebugLevel): engine.memory[.<allocator>[.<debug level>]]
 #   <allocator>    default (dlmalloc on Windows without sanitizers, else rtl), rtl, minrtl, dlmalloc, mimalloc, imported
 #   <debug level>  default (off in Rel and IRel), off, min, dbg, dbg2
@@ -33,7 +33,7 @@ function(_engine_memory allocator debug)
       list(APPEND deps 3rdPartyLibs.memAllocators.dlmalloc)
     endif()
   elseif(allocator STREQUAL "mimalloc")
-    # mimalloc's own checks (MI_DEBUG 2) in Dev and Dbg, none with the debug level off (jam's MimDebug)
+    # mimalloc's own checks (MI_DEBUG 2) in Dev and Dbg, none with the debug level off
     list(APPEND includes ${DAGOR_PROG_DIR}/3rdPartyLibs/memAllocators/mimalloc/include
                          ${DAGOR_PROG_DIR}/3rdPartyLibs/memAllocators/mimalloc/mimalloc/include)
     if(debug STREQUAL "off")

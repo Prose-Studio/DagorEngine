@@ -1,4 +1,0 @@
-if $(DasAotCompilerBuild) = yes {
-  Target = $(Target:S=~stubAot.lib) ;
-  CPPopt += -DDAS_AOT_COMPILER ;
-}

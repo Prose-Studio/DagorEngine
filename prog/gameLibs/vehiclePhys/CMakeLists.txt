@@ -1,4 +1,4 @@
-# Vehicle physics (ray cars) on each physics engine, gameLibs.vehiclePhys.jolt and .bullet (jam's vehiclePhys-JOLT and
+# Vehicle physics (ray cars) on each physics engine, gameLibs.vehiclePhys.jolt and .bullet (
 # -BULLET); gameLibs.vehiclePhys is the tree's (DAGOR_PHYS)
 foreach(phys Jolt Bullet)
   string(TOLOWER "${phys}" name)

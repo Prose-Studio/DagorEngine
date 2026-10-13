@@ -55,7 +55,7 @@ set(FILES
   ${P}/1stPartyLibs/daScript/modules/dasStdDlg/src/dasStdDlgTray.cpp
   ${P}/1stPartyLibs/daScript/modules/dasStdDlg/src/dasStdDlgTrayNotImplemented.cpp
 
-  # the daScript bindings of libraries (their _aot.jam)
+  # the daScript bindings of libraries (their _aot.cmake)
   ${P}/gameLibs/render/outline/dasModules/outline.cpp
   ${P}/gameLibs/rendInst/aot/stub.cpp
   ${P}/gameLibs/daEditorE/aot/stub.cpp

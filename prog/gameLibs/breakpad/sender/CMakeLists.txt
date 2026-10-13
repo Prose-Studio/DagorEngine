@@ -1,4 +1,4 @@
-# bpreport, the crash report sender of breakpad's dumps (its dialog on the system's FLTK: Linux; jam took FLTK for
+# bpreport, the crash report sender of breakpad's dumps (its dialog on the system's FLTK: Linux; FLTK for
 # Windows and macOS from Gaijin's devtools)
 dagor_add_target(NAME bpreport EXECUTABLE APPLICATION NO_CONFIG_POSTFIX
   FILES_CMAKE sender_files.cmake

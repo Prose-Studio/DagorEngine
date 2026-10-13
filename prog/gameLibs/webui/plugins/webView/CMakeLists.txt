@@ -10,7 +10,7 @@ set(folders
   vue/vendor/font-awesome/fonts
 )
 set(served)
-foreach(pattern *.vue *.eot *.svg *.ttf *.woff *.woff2 *.js *.css *.html) # in jam's order, the plugin table's
+foreach(pattern *.vue *.eot *.svg *.ttf *.woff *.woff2 *.js *.css *.html) # the plugin table's order
   foreach(folder IN LISTS folders)
     file(GLOB files RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/${folder}/${pattern}")
     list(SORT files)

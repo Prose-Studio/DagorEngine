@@ -33,7 +33,7 @@ measure it.
 3. On hybrid CPUs, pin to a P-core (`SetThreadAffinityMask`; Windows enumerates them first), run
    the variants interleaved over several passes, and report the minimum and median: noise falls
    from ~7% to ~2%.
-4. Use the shipping compiler and flags (jam's `cl.exe` with `/fp:fast`, clang with the console or
+4. Use the shipping compiler and flags (`cl.exe` with `/fp:fast`, clang with the console or
    server `-march`). Put noinline variants (`__declspec` on MSVC) in one TU and read `-FA`/`-S`
    for the per-function instruction mix.
 5. Use llvm-mca for structure and port pressure, not for a ranking: its recent-core models have

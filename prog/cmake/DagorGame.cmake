@@ -3,8 +3,8 @@
 # them), the game program and its content.
 include_guard(GLOBAL)
 
-# --- the game's switches (prog/daNetGame/setup.jam) -------------------------------------------------------------------
-# DAGOR_GAME_<X> is ON or OFF for the whole tree. Those jam left out of Rel builds only are generator expressions that
+# --- the game's switches ---------------------------------------------------------------------------------------------
+# DAGOR_GAME_<X> is ON or OFF for the whole tree. Those left out of Rel builds only are generator expressions that
 # are true in the other configurations, for $<IF:...> and $<...:...> (DAGOR_GAME_DEV: not Rel):
 #   DAGOR_GAME_EDITOR (embedded daEditorE), DAGOR_GAME_WEBUI, DAGOR_GAME_CONSOLE, DAGOR_GAME_IMGUI
 set(DAGOR_GAME_DEV "$<NOT:$<CONFIG:Rel>>")
@@ -57,7 +57,7 @@ if(DAGOR_GAME_RENDERER)
   set(DAGOR_GAME_IMGUI "${DAGOR_GAME_DEV}")
 endif()
 unset(_desktop)
-# the GUI editors are daNetGame without its game features (their jamfiles)
+# the GUI editors are daNetGame without its game features
 if(DAGOR_VARIANT STREQUAL "editor")
   foreach(_switch OVERLAY_UI DNG_INPUT SOUND SOUND_NET)
     set(DAGOR_GAME_${_switch} OFF)
@@ -66,7 +66,7 @@ if(DAGOR_VARIANT STREQUAL "editor")
   set(DAGOR_GAME_CONSOLE 0)
 endif()
 
-# the include dirs of daNetGame and the game programs (prog/daNetGame/setup.jam), and their options: clang's unused
+# the include dirs of daNetGame and the game programs, and their options: clang's unused
 # variables are errors there
 set(DAGOR_DNG_INCLUDES
   ${DAGOR_PROG_DIR}/daNetGame
@@ -124,7 +124,7 @@ function(_dagor_pull_file target file kind variable)
   _dagor_generate_source(${target} "${file}" "${text}")
 endfunction()
 
-# --- modules (prog/_jBuild/build_module.jam) --------------------------------------------------------------------------
+# --- modules ---------------------------------------------------------------------------------------------------------
 # dagor_add_dng_module(NAME <target> <dagor_add_target arguments> [DAS] [PULL_VARS <name>...])
 # A game module (daNetGameLibs/<module>, or a gameLibs dir built like one): a strict static library with the pull file
 # that references its entity systems (ES_FILES) and PULL_VARS as framework_<module>_pull (<module> is the directory's
@@ -323,15 +323,15 @@ function(_dagor_game_project_files prog codename dng_libs game_libs)
   file(CONFIGURE OUTPUT "${prog}/tools/_libs_init.das" CONTENT "${das_init}")
 endfunction()
 
-# --- the game program (prog/daNetGame/game.jam) -----------------------------------------------------------------------
+# --- the game program ------------------------------------------------------------------------------------------------
 # dagor_add_dng_game(NAME <target> GAME <codename> [WINDOW_TITLE <title>] [USER_DIR <dir>] [MAIN_VROM <path>]
 #   [AUTH_KEY_<PLATFORM> <20 bytes>] (PLATFORM: WINDOWS LINUX MACOS ANDROID IOS) [DEDICATED_AUTH <prefix> <platform>...]
 #   [LOG_CRYPT_KEY <128 bytes>] [PULLS <pull>...] [DNG_LIBS <danetgamelibs.txt>] [GAME_LIBS <gamelibs.txt>]
 #   [AOT_FILES_CMAKE <file>...] [MAIN_CODE <code>] [VERSION_CODE <code>] <dagor_add_target arguments>)
-# The game program: daNetGame's main, the files of FILES_CMAKE, the code game.jam generated (gameproj:: names and paths,
+# The game program: daNetGame's main, the files of FILES_CMAKE, the generated code (gameproj:: names and paths,
 # auth keys, the pull of every module and library) and the libraries of the lists, whose _lib.cmake add what they need
 # to it (dagor_game_lib). A program with a main of its own (the editors) gives the code of what daNetGame's main and
-# version would have defined in MAIN_CODE and VERSION_CODE (jam's gameMain and gameVersion). The client is named
+# version would have defined in MAIN_CODE and VERSION_CODE (the program's own main and version). The client is named
 # <codename> (OUTPUT_NAME another name), the dedicated server <codename>-ded. LOG_CRYPT_KEY encrypts
 # the logs of Rel and IRel builds with DAGOR_FORCE_LOGS. In the tree of the game's daScript AOT compiler
 # (DAGOR_DAS_AOT_COMPILER) it makes <codename>-aot instead, of the files of AOT_FILES_CMAKE and what the libraries'
@@ -408,13 +408,13 @@ function(dagor_add_dng_game)
   _dagor_target_arguments(args)
   dagor_add_target(${args})
   set_property(GLOBAL PROPERTY DAGOR_GAME_TARGET "${target}")
-  # daNetGame's settings (jam: the game's jamfile included setup.jam): its include dirs, options and physics
+  # daNetGame's settings: its include dirs, options and physics
   target_include_directories(${target} PRIVATE ${DAGOR_DNG_INCLUDES})
   target_compile_options(${target} PRIVATE ${DAGOR_DNG_OPTIONS})
   target_link_libraries(${target} PRIVATE Dagor::Quirrel Dagor::Phys)
 
   # gameproj:: and the auth keys: the client's own; the dedicated server's for the clients it checks (outside Rel and
-  # IRel unless on Linux, as jam built them)
+  # IRel unless on Linux)
   set(gen "${CMAKE_CURRENT_BINARY_DIR}/gen/${target}")
   set(CLIENT_ONLY "")
   if(NOT DAGOR_DEDICATED)

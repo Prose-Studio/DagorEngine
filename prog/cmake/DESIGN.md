@@ -135,9 +135,15 @@ the template's `multiplayer` asks for. The templates are not built in place; CI 
   (`gameLibs.vehiclePhys.jolt` and `.bullet`), the ImGui test engine hooks (link choices), the per-tree settings of
   the editors (one tree for all of them: the union of their drivers).
 
+jam itself is gone from the repository (its rules, jamfiles, the committed ES codegen output); upstream still builds
+with it, so this document keeps the names of jam's settings where they explain a choice. The shader compilers'
+`-cppStcode` writes a CMake project of the generated state code (`_stcodeTemplates/CMakeLists.txt.fmt`) and builds it
+with `scripts/build_stcode.cmake` and the platform's toolchain.
+
 ## Not ported
 
-The jamfiles below have no CMakeLists: what they build needs what the repository does not have, or was jam's own.
+Upstream's jamfiles below have no CMakeLists: what they build needs what the repository does not have, or was jam's
+own.
 
 - CEF-based: `3rdPartyLibs/cef3/v4951/libcef_dll`, `1stPartyLibs/webbrowser` (+ `helper`), `gameLibs/webBrowserHelper`,
   `gameLibs/daRg/browser`, `gameLibs/quirrel/sqWebBrowser`: the CEF binary SDK (jam took it from Gaijin's devtools);
@@ -151,5 +157,8 @@ The jamfiles below have no CMakeLists: what they build needs what the repository
 - `3rdPartyLibs/assimp`: no program of the repository links it.
 - `3rdPartyLibs/phys/bullet-3/test/*`: Bullet's own upstream tests (gtest), not the engine's.
 - tvOS (`engine/drv/hid_tvOS`, `gameLibs/webui/plugins/tvOS`): not a platform of the engine.
+- Tools of jam's workflow: `tools/miscUtils/fastdep` (jam's dependency scanner), the other utilities of
+  `tools/sceneTools/utils` (binBlk is ported), the bsdiff tools of `gameLibs/compressionUtils`, Quirrel's
+  `sq_llvm_fuzzer` and `bench/vmperf` (which replays a jam build).
 - jam's own: the util jamfiles that listed others (`engine/daECS`, `gameLibs/ecs`, `tools/converters`,
   `tools/sceneTools`), `gameLibs/vehiclePhys/vehiclePhys-*` (now targets of `gameLibs/vehiclePhys`).

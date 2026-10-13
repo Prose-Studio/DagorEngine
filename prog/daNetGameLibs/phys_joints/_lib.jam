@@ -1,2 +1,0 @@
-gamePulls += daNetGameLibs_phys_joints_DAS_pull_AOT ;
-UseProgLibs += daNetGameLibs/phys_joints ;

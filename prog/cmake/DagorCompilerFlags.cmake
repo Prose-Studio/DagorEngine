@@ -98,7 +98,7 @@ set(_no_sp "$<AND:${_c_cxx},$<NOT:${_stack_protection}>>")
 
 # dagor_compile_options(<condition> <option>...), dagor_compile_definitions(<condition> <definition>...),
 # dagor_link_options(<condition> <option>...): tree settings under a condition (1: always). The definitions are not
-# passed to the assemblers, as in jam.
+# passed to the assemblers.
 function(dagor_compile_options cond)
   foreach(value IN LISTS ARGN)
     if(cond STREQUAL "1")
@@ -141,7 +141,7 @@ if(DAGOR_ARCH MATCHES "^(x86_64|e2k)$" AND NOT APPLE)
 endif()
 
 # --- include dirs and the forced includes -----------------------------------------------------------------------------
-# the base include dirs come before a target's own, as in jam: headers like daScript/das_config.h resolve to the
+# the base include dirs come before a target's own: headers like daScript/das_config.h resolve to the
 # engine's (prog/1stPartyLibs/daScript) rather than to a library's include dir
 include_directories(BEFORE
   "${DAGOR_PROG_DIR}/dagorInclude"
@@ -210,7 +210,7 @@ else() # gcc, clang and lcc
   dagor_compile_options("${_cxx}" -Wno-invalid-offsetof)
   dagor_compile_options("${_cxx_exceptions}" -fexceptions)
   dagor_compile_options("${_cxx_no_exceptions}" -fno-exceptions)
-  # C++ only: Objective-C++ keeps the compiler's default RTTI, as jam compiled it (the Metal driver's dynamic_casts)
+  # C++ only: Objective-C++ keeps the compiler's default RTTI (the Metal driver's dynamic_casts)
   dagor_compile_options("$<AND:$<COMPILE_LANGUAGE:CXX>,${_rtti}>" -frtti)
   dagor_compile_options("$<AND:$<COMPILE_LANGUAGE:CXX>,$<NOT:${_rtti}>>" -fno-rtti)
   if(DAGOR_FP_MODEL STREQUAL "fast")
@@ -271,7 +271,7 @@ include("${DAGOR_PLATFORM_FILE}")
 
 # --- link settings of the compilers -----------------------------------------------------------------------------------
 if(MSVC AND DAGOR_VARIANT STREQUAL "maxplug")
-  # the DLL CRT and never the static one (prog/tools/maxplug/maxPlugin.jam)
+  # the DLL CRT and never the static one (3ds Max loads the plugins)
   dagor_link_options("${_linked}" /DEBUG /INCREMENTAL:NO /NODEFAULTLIB:LIBC /NODEFAULTLIB:LIBCP /NODEFAULTLIB:LIBCMT
     /NODEFAULTLIB:LIBCPMT)
   dagor_link_options("$<AND:${_linked},$<NOT:${_dbg}>>" /OPT:REF)

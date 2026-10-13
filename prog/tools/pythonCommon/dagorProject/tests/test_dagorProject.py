@@ -94,11 +94,11 @@ class TemplateFilesTest(unittest.TestCase):
   def test_gitignore_fallback(self):
     d = tempfile.mkdtemp()
     try:
-      for rel in ('keep.txt', 'game/run.cmd', 'game/x/big.exe', 'prog/_engine.jam', 'a/b/c.pyc', 'template.blk'):
+      for rel in ('keep.txt', 'game/run.cmd', 'game/x/big.exe', 'prog/_libs.vromfs.blk', 'a/b/c.pyc', 'template.blk'):
         os.makedirs(os.path.dirname(os.path.join(d, rel)) or d, exist_ok=True)
         open(os.path.join(d, rel), 'w').close()
       with open(os.path.join(d, '.gitignore'), 'w') as f:
-        f.write('/prog/_engine.jam\n/game/*\n!/game/*.cmd\n*.pyc\n')
+        f.write('/prog/_libs.vromfs.blk\n/game/*\n!/game/*.cmd\n*.pyc\n')
       files = sorted(create._gitignore_files(d))
       self.assertEqual(files, ['.gitignore', 'game/run.cmd', 'keep.txt', 'template.blk'])
     finally:

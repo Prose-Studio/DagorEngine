@@ -1,5 +1,0 @@
-# to be included with osApiWrappers
-
-if $(Platform) in android {
-   UseAndroidNativeMessageBox = yes ;
-}

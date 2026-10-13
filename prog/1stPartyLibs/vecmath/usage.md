@@ -1,8 +1,8 @@
 # Using vecmath
 
 SIMD C API over SSE2/SSSE3/SSE4.1 and NEON, with a scalar per-lane backend (`_TARGET_SIMD_SCALAR`,
-auto-selected without a SIMD ISA, e.g. Cortex-M or RISC-V without V). `vecMathUnitTest`
-validates it on x64 via `jam -sVecMathScalar=yes`; the rest of the engine still assumes SSE or
+auto-selected without a SIMD ISA, e.g. Cortex-M or RISC-V without V); defining `_TARGET_SIMD_SCALAR` forces
+it on x64 for testing. The rest of the engine still assumes SSE or
 NEON. Vecmath serves transforms, physics, BVH, culling and animation.
 
 `vecmath/dag_vecMath.h` is the complete API reference, with a comment on every `v_` function.

@@ -1,4 +1,0 @@
-if $(HaveRenderer) = yes {
-  gamePulls += framework_transparent_partition_pull ;
-  UseProgLibs += daNetGameLibs/transparent_partition ;
-}

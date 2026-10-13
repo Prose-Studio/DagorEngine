@@ -29,7 +29,7 @@ static inline const char *es_order_fpath() { return "config/es_order.blk"; }
 
 //! [mandatory] default statsd URL to be used when stats_url:t= not set
 extern const char *default_statsd_url();
-//! [mandatory] crash report upload URL (UseGameCrashReportURL jam var), nullptr keeps crash dumps local
+//! [mandatory] crash report upload URL , nullptr keeps crash dumps local
 extern const char *crash_report_url();
 //! [mandatory] statsd key
 extern const char *statsd_key();
@@ -49,15 +49,15 @@ extern const unsigned char *partner_public_key_DER(int i);
 //! [mandatory] length of partner public SHA256 key
 extern unsigned partner_public_key_DER_len(int i);
 
-//! [optional] additional code may be implemented by project if UseGameCallbacks = yes in jamfile
+//! [optional] additional code may be implemented by project
 extern void before_init_video();
-//! [optional] additional code may be implemented by project if UseGameCallbacks = yes in jamfile
+//! [optional] additional code may be implemented by project
 extern void init_before_main_loop();
-//! [optional] additional code may be implemented by project if UseGameCallbacks = yes in jamfile
+//! [optional] additional code may be implemented by project
 extern void update_before_dagor_work_cycle();
-//! [optional] additional code may be implemented by project if UseGameCallbacks = yes in jamfile
+//! [optional] additional code may be implemented by project
 extern void post_shutdown_handler();
-//! [optional] additional code may be implemented by project if UseGameCallbacks = yes in jamfile
+//! [optional] additional code may be implemented by project
 extern void reset_game_resources();
 
 

@@ -3,7 +3,7 @@
 #   dagor_target_das_aot(<target> PULL <variable> <file>.das...)
 #
 # translates the files to C++ with the game's AOT compiler and compiles them into <target>, in batches of
-# DAGOR_DAS_AOT_BATCH (jam's AotCompileBatchedGeneratedDAS). Each batch defines aot_<batch>_pull; <variable> references
+# DAGOR_DAS_AOT_BATCH. Each batch defines aot_<batch>_pull; <variable> references
 # them all (in a program: is just defined), and the code that pulls the target's daScript in names it (e.g.
 # ecs_aot_DAS_pull_AOT of gameLibs/das/ecs). Without DAGOR_DAS_AOT <variable> is 0, for the code that names it anyway
 # (the game's pull of its modules).
@@ -121,7 +121,7 @@ size_t ${arg_PULL} = 0;
     set_property(TARGET ${target}.dasAot PROPERTY FOLDER "dagor")
     add_dependencies(${target} ${target}.dasAot)
   endif()
-  # what the translated scripts include (prog/gameLibs/das/common.jam)
+  # what the translated scripts include
   target_include_directories(${target} PRIVATE ${DAGOR_PROG_DIR}/1stPartyLibs/daScript/include
     ${DAGOR_PROG_DIR}/gameLibs/publicInclude)
 endfunction()

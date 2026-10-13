@@ -13,14 +13,15 @@
 #   dagor_install_cdk(<target> [SUBDIR <dir>])
 #
 # installs a tool of the CDK (component cdk) into tools/dagor_cdk/<platform>-<arch>[/<dir>] of the install prefix (the
-# engine root in the engine's presets) with its runtime files, its LICENSE file and its debug info.
+# engine root in the engine's presets) with its runtime files, its LICENSE file and its debug info, when the tree built
+# it: the tool trees all declare the CDK tools, and each installs those of its default build (prog/CMakeLists.txt).
 include_guard(GLOBAL)
 
 set(DAGOR_HOST_TOOLS_DIR "" CACHE PATH "A CDK (prebuilt engine tools) for the build steps; empty builds the engine's")
 
 # the CDK tools of the assets tree (on the shared kernel; daBuild loads the exporter plugins built with it)
 set(_DAGOR_ASSETS_HOST_TOOLS daBuild ddsxCvt2)
-# the CDK tools jam built rel only, without a config postfix (dagor_install_cdk checks this list)
+# the CDK tools that are always optimized and named without a config postfix (dagor_install_cdk checks this list)
 set(DAGOR_CDK_NO_POSTFIX binBlk ddsx2dds ddsxCvt dolphin whale duktape pcDdsxConv iosDdsxConv andDdsxConv)
 
 function(dagor_host_tool tool out)
@@ -74,5 +75,5 @@ function(dagor_install_cdk target)
   if(arg_SUBDIR)
     string(APPEND dest "/${arg_SUBDIR}")
   endif()
-  dagor_install_program(${target} DESTINATION "${dest}" COMPONENT cdk)
+  dagor_install_program(${target} DESTINATION "${dest}" COMPONENT cdk OPTIONAL) # what the tree built (its default build)
 endfunction()

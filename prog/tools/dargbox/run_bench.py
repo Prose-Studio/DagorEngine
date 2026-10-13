@@ -46,7 +46,7 @@ ACT_RATE = 1000
 DARGBOX_DIR = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "../../../tools/dargbox"))
 
 
-# exe lives in a per-arch subdir of tools/dargbox (see prog/tools/dargbox/jamfile)
+# exe lives in a per-arch subdir of tools/dargbox (see prog/tools/dargbox/CMakeLists.txt)
 def default_dargbox_exe():
     arch = (os.environ.get("PROCESSOR_ARCHITEW6432") or os.environ.get("PROCESSOR_ARCHITECTURE", "")).upper()
     # arm64 hosts can run the x86_64 exe through emulation; the reverse cannot work

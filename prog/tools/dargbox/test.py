@@ -3,7 +3,7 @@ import sys
 import subprocess
 import multiprocessing
 
-# exe lives in a per-arch subdir of tools/dargbox (see prog/tools/dargbox/jamfile);
+# exe lives in a per-arch subdir of tools/dargbox (see prog/tools/dargbox/CMakeLists.txt);
 # all paths here are relative to tools/dargbox, the cwd when dargbox is run
 def get_dargbox_exe():
   arch = (os.environ.get("PROCESSOR_ARCHITEW6432") or os.environ.get("PROCESSOR_ARCHITECTURE", "")).upper()

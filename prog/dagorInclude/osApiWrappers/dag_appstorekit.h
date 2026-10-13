@@ -12,7 +12,7 @@ namespace apple
 {
 
 // if you want to test api on non-tvOS,
-// add in jam gameLibs/tvOS/developapi/developapi.h
+// needs gameLibs/tvOS/developapi/developapi.h
 
 struct Kit
 {

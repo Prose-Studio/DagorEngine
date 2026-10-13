@@ -1,2 +1,0 @@
-gamePulls += DaeditorPlotDebugModule_pull ;
-UseProgLibs += gameLibs/daeditorPlotDebug ;

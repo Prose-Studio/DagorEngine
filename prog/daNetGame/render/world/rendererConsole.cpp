@@ -1,6 +1,6 @@
 // Copyright (C) Gaijin Games KFT.  All rights reserved.
 
-#define INSIDE_RENDERER 1 // fixme: move to jam
+#define INSIDE_RENDERER 1 // fixme: define it for the renderer's sources in the build
 // #include "main/console.h"
 #include <gamePhys/collision/collisionLib.h>
 #include <daECS/core/componentTypes.h>

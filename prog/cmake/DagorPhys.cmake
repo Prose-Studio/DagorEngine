@@ -1,4 +1,4 @@
-# The physics engine of the tree (jam's PhysName, prog/3rdPartyLibs/phys/setup-phys.jam): Dagor::Phys, which the
+# The physics engine of the tree: Dagor::Phys, which the
 # libraries that use it link, carries its definitions, include dir and engine/phys library (engine.phys.physJolt or
 # engine.phys.physBullet). DAGOR_PHYS is Jolt, or Bullet in the tool trees.
 include_guard(GLOBAL)
@@ -6,7 +6,7 @@ include_guard(GLOBAL)
 add_library(DagorPhys INTERFACE)
 add_library(Dagor::Phys ALIAS DagorPhys)
 _dagor_configs(_dagor_phys_checked ${DAGOR_CHECKED_CONTAINERS_CONFIGS})
-# Jolt's own settings (joltPhysics/setup.jam), for Jolt, engine/phys/physJolt and the users of Dagor::Phys
+# Jolt's own settings, for Jolt, engine/phys/physJolt and the users of Dagor::Phys
 add_library(DagorJoltSettings INTERFACE)
 add_library(Dagor::JoltSettings ALIAS DagorJoltSettings)
 target_compile_definitions(DagorJoltSettings INTERFACE JPH_CROSS_PLATFORM_DETERMINISTIC JPH_DEFAULT_ALLOCATE_ALIGNMENT=16)
@@ -27,7 +27,7 @@ if(DAGOR_ARCH STREQUAL "e2k")
   target_compile_options(DagorJoltSettings INTERFACE -w2810)
 endif()
 
-# Bullet's own settings (bullet-3/setup.jam), for Bullet, engine/phys/physBullet and the users of Dagor::Phys
+# Bullet's own settings, for Bullet, engine/phys/physBullet and the users of Dagor::Phys
 add_library(DagorBulletSettings INTERFACE)
 add_library(Dagor::BulletSettings ALIAS DagorBulletSettings)
 target_include_directories(DagorBulletSettings INTERFACE "${DAGOR_PROG_DIR}/3rdPartyLibs/phys/bullet-3/src")

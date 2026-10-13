@@ -3,7 +3,7 @@
 #   hlsl11 (DX11 bytecode through FXC), dx12 (DXIL through DXC), spirv (Vulkan, through DXC), metal (through DXC and
 #   SPIRV-Cross), stub (no bytecode)
 # Windows builds them all, Linux spirv and stub, macOS metal and stub. They run with mimalloc, without the memory
-# debug checks, outside Dbg (as jam's tools did).
+# debug checks, outside Dbg.
 set(common_includes
   ${CMAKE_CURRENT_SOURCE_DIR}
   ${DAGOR_PROG_DIR}/tools/sharedInclude

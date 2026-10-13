@@ -1,4 +1,4 @@
-# The game's collision (prog/gameLibs/gamePhys/collision/jamfile-General, built without APEX): the sources are in the
+# The game's collision (without APEX): the sources are in the
 # parent dir
 set(options)
 dagor_deterministic_fp(options)

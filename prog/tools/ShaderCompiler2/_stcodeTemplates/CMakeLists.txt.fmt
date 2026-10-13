@@ -1,0 +1,26 @@
+R"(# The shaders' state code as C++, written by the shader compiler (-cppStcode) and built by
+# prog/cmake/scripts/build_stcode.cmake: a library of the generated sources with the engine's settings, no engine code
+cmake_minimum_required(VERSION 4.0)
+project(stcode LANGUAGES C CXX)
+include("${Dagor_DIR}/Dagor.cmake")
+
+if(MSVC)
+  set(fast_math /clang:-Ofast)
+elseif(APPLE)
+  set(fast_math -O3 -ffast-math)
+else()
+  set(fast_math -Ofast)
+endif()
+dagor_add_target(NAME stcode SHARED LAX
+  FILES_CMAKE stcode_files.cmake
+  OUTPUT_NAME ${DAGOR_STCODE_NAME}
+  OUTPUT_DIRECTORY ${DAGOR_STCODE_OUTPUT_DIRECTORY}
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/engine/sharedInclude
+  COMPILE_DEFINITIONS PRIVATE __GENERATED_STCODE_FILE ROUTINE_VISIBILITY=%s
+  COMPILE_OPTIONS PRIVATE ${fast_math}
+)
+set_property(TARGET stcode PROPERTY DAGOR_EXCEPTIONS OFF)
+if(IOS) # the app embeds it as a framework
+  set_target_properties(stcode PROPERTIES FRAMEWORK ON)
+endif()
+)"

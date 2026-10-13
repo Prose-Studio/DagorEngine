@@ -1,4 +1,4 @@
-# The tool side of the common effects (their editor classes and the effect list of prog/commonFx/fxList.jam), for the
+# The tool side of the common effects (their editor classes and the effect list of commonFxGame), for the
 # effect exporter and the editors. The emb variant: the build embedded in games (_TARGET_EXPORTERS_STATIC).
 foreach(variant "" .emb)
   set(name commonFx.commonFxTools${variant})

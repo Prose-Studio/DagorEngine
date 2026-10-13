@@ -1,5 +1,5 @@
-# binBlk: converts BLK files between text and binary form (the CDK's; jam built it rel only, so without a config
-# suffix). The other utilities of this directory (jamfile, jamfile-misc) are not ported yet.
+# binBlk: converts BLK files between text and binary form (the CDK's; always optimized, so without a config
+# suffix). The other utilities of this directory are not ported (prog/cmake/DESIGN.md).
 set(deps engine.osApiWrappers engine.kernel engine.memory engine.ioSys engine.baseUtil engine.perfMon.daProfilerStub
   tools.libTools.util 3rdPartyLibs.openssl-3.x)
 if(LINUX)

@@ -1,4 +1,0 @@
-if $(HaveRenderer) = yes {
-  gamePulls += framework_lens_flare_pull ;
-  UseProgLibs += daNetGameLibs/lens_flare ;
-}

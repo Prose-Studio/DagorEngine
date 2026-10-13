@@ -19,7 +19,7 @@
 
 #if _TARGET_PC_WIN
 #define WIN32_LEAN_AND_MEAN
-#ifndef NOMINMAX // msvc-sets.jam / clang-sets.jam already pass -DNOMINMAX globally
+#ifndef NOMINMAX // the build already passes -DNOMINMAX globally
 #define NOMINMAX
 #endif
 #include <windows.h>

@@ -26,7 +26,7 @@ Front-end (parsing):
 - `loadShaders.*` - loads shader obj files (not parsing).
 - `shlex.dlp` / `shsyn.whl` - dolphin/whale grammar sources for the
   DSHL lexer/parser; outputs (`shlex.*`, `shsyn.*`, `shsyntok.h`) are
-  regenerated automatically by jam (`jamfile-parser-gen`), or manually
+  regenerated automatically by the build (dagor_legacy_parsers), or manually
   via `mkd.bat` / `mkw.bat` (`mk_cond.bat` for the condition parser).
   Edit the .dlp/.whl, not the generated .cpp.
 - `parser/` - base lexer/parser framework (bparser, base_lex, base_par).

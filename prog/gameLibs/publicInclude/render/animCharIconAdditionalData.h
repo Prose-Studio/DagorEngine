@@ -14,7 +14,7 @@ namespace animchar_icon
 // One packer per block name under animchar_additional_data{} in an icon description.
 // pack() reads its block and writes the slot into the icon animchar's additional data.
 // Register a packer with REGISTER_ANIMCHAR_ICON_ADDITIONAL_DATA in the lib that owns the slot.
-// The registering module must list animchar_icon_additional_data_<block_name> in its jamfile
+// The registering module must list animchar_icon_additional_data_<block_name> in its pulls (dagor_game_lib(PULL))
 // AddPullVars, or the linker drops the registration with the unreferenced object file.
 // List it under the same HaveRenderer condition as the registering source, or a dedicated
 // server build references a symbol that no compiled file defines.

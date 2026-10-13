@@ -220,7 +220,7 @@ static void showUsage()
     "  -cppStcode       - compile cpp stcode along with bytecode (overrides compileCppStcode:b from blk). use "
     "-cppStcode=[regular|brances] for specific mode (regular is default).\n"
     "  -noCppStcode     - complie only bytecode stcode (overrides compileCppStcode:b from blk).\n"
-    "  -noCppStcodeJam  - generate cpp stcode, but no run jam (for tests)\n"
+    "  -noCppStcodeBuild - generate cpp stcode, but do not build it (for tests)\n"
     "  -cppUnityBuild   - use unity build for cpp stcode.\n"
     "  -cppStcodeArch   - Arch for stcode compilation. Default is chosen when it is not specified. Opts: "
     "  -cppStcodeConfig - build config for cpp stcode [dev|rel|dbg]. Default is dev.\n"
@@ -1457,9 +1457,9 @@ int DagorWinMain(bool debugmode)
       }
       useCppStcodeOverride.emplace(shader_layout::ExternalStcodeMode::NONE);
     }
-    else if (dd_stricmp("-noCppStcodeJam", __argv[i]) == 0)
+    else if (dd_stricmp("-noCppStcodeBuild", __argv[i]) == 0)
     {
-      globalConfigRW.cppStcodeNoJam = true;
+      globalConfigRW.cppStcodeNoBuild = true;
     }
     else if (dd_stricmp("-cppUnityBuild", __argv[i]) == 0)
     {

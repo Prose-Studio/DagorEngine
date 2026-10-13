@@ -1,5 +1,5 @@
 # The Quirrel compiler and static analyzer, which report errors with C++ exceptions: they are on for its code whatever
-# the tree's exception settings (as jam did); the engine's build replaces upstream's CMakeLists.txt
+# the tree's exception settings; the engine's build replaces upstream's CMakeLists.txt
 set(defines)
 if(DAGOR_SQ_VAR_TRACE)
   list(APPEND defines SQ_VAR_TRACE_ENABLED)

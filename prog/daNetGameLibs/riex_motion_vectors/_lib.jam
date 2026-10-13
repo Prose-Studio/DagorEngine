@@ -1,4 +1,0 @@
-if $(HaveRenderer) = yes {
-  gamePulls += framework_riex_motion_vectors_pull ;
-  UseProgLibs += daNetGameLibs/riex_motion_vectors ;
-}

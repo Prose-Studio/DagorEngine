@@ -3,8 +3,7 @@
 #   dagor_target_es_sources(<target> <file>...)
 #       the entity systems of <file>ES.cpp.inl (or of a .cpp that the generated file includes; it is not compiled
 #       itself then): their registration code, made by prog/cmake/scripts/codegen/gen_es.py (libclang) from each file
-#       with the target's own definitions and include dirs. $<cond:path> for those of some configurations. With
-#       DAGOR_ES_CODEGEN off, the <name>.gen.es.cpp committed next to each file instead.
+#       with the target's own definitions and include dirs. $<cond:path> for those of some configurations.
 #   dagor_target_stringify(<target> [ARRAY] <file>...)
 #       <file>.inl with the file's text as a C string literal (ARRAY: a byte array), for embedding scripts such as
 #       daScript modules (#include "<file>.inl" from the dir of the including source)
@@ -154,22 +153,6 @@ function(dagor_target_es_sources target)
   # <condition>|<file> of each, for the pull of a game module's or the framework's entity systems (_dagor_es_pulls)
   set_property(TARGET ${target} APPEND PROPERTY DAGOR_ES_FILES ${files})
 
-  if(NOT DAGOR_ES_CODEGEN)
-    foreach(entry IN LISTS files)
-      string(REGEX MATCH "^[^|]*" cond "${entry}")
-      string(REGEX REPLACE "^[^|]*\\|" "" path "${entry}")
-      string(REGEX REPLACE "\\.[^./]+$" ".gen.es.cpp" generated "${path}")
-      if(NOT EXISTS "${generated}")
-        message(FATAL_ERROR "${target}: ${path} has no generated ${generated} (DAGOR_ES_CODEGEN is off)")
-      endif()
-      if(cond)
-        set(generated "$<${cond}:${generated}>")
-      endif()
-      target_sources(${target} PRIVATE "${generated}")
-    endforeach()
-    return()
-  endif()
-
   dagor_python(python)
   if(NOT DAGOR_ES_LLVM_DIR)
     if(DAGOR_LLVM_DIR)
@@ -188,9 +171,9 @@ function(dagor_target_es_sources target)
     cmake_path(GET src FILENAME name)
     string(REGEX REPLACE "\\.[^.]+$" ".gen.es.cpp" out_name "${name}") # <name>ES.cpp.inl, or a .cpp it includes
     set(out "${gen_dir}/${out_name}")
-    # the generated file includes the source by its name, as the committed ones do: through a file next to it
+    # the generated file includes the source by its name: through a file next to it
     file(CONFIGURE OUTPUT "${gen_dir}/${name}" CONTENT "#include \"${src}\"\n")
-    # the descriptors record the source relative to the engine root, as jam ran it (absolute on another drive)
+    # the descriptors record the source relative to the engine root (absolute on another drive)
     cmake_path(RELATIVE_PATH src BASE_DIRECTORY "${DAGOR_ENGINE_ROOT}" OUTPUT_VARIABLE input)
     if(IS_ABSOLUTE "${input}")
       set(input "${src}")

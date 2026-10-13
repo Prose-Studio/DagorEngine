@@ -1,5 +1,5 @@
 # The DDSx texture converter plugins of daBuild and the tools (plugins/ddsx): pcDdsxConv (PC formats), iosDdsxConv and
-# andDdsxConv (the mobile formats of iOS and Android). jam built them rel only, so without a config suffix.
+# andDdsxConv (the mobile formats of iOS and Android). Always optimized, so without a config suffix.
 foreach(plugin pc ios and)
   set(defines)
   if(plugin STREQUAL "ios")

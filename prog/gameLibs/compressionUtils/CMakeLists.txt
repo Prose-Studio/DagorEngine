@@ -1,6 +1,6 @@
 # The compression of vromfs and network data: zlib and zstd. The full set (lz4, snappy, bzip2) needs
-# 3rdPartyLibs/arc/snappy-1.1.9 and bzip2-1.0.3, which the fork has not, so this is the minimum set jam built without
-# them (DAGOR_MINIMUM_COMPR_UTILS). jamfile-utils (the bsdiff tools) is not ported.
+# 3rdPartyLibs/arc/snappy-1.1.9 and bzip2-1.0.3, which the fork has not, so this is the minimum set without
+# them (DAGOR_MINIMUM_COMPR_UTILS). The bsdiff tools are not ported (prog/cmake/DESIGN.md).
 dagor_add_target(NAME gameLibs.compressionUtils STATIC LAX
   FILES_CMAKE compressionUtils_files.cmake
   INCLUDE_DIRECTORIES PRIVATE

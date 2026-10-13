@@ -1,5 +1,5 @@
 # dabuild_plugin(NAME <name> <dagor_add_target arguments>): a daBuild plugin (an exporter or reference provider) in
-# plugins/dabuild of the CDK, on daKernel with the asset manager helpers (jam's dabuild_plugin_common.jam); included by
+# plugins/dabuild of the CDK, on daKernel with the asset manager helpers; included by
 # the plugins' directories
 include_guard(GLOBAL)
 function(dabuild_plugin)

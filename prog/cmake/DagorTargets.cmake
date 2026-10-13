@@ -34,7 +34,7 @@
 #     first-party code that is not warning-free yet) the lax set instead (DagorCompilerFlags.cmake)
 #   - libraries are built for the programs that link them (EXCLUDE_FROM_ALL, unless DAGOR_BUILD_ALL); the engine's
 #     programs are built by default when the tree's variant names them (dagor_build_by_default), a project's always
-#   - programs and shared libraries are named <name>[-asan|-ubsan|...][-cov]-<config> as jam named them (no suffix in Rel,
+#   - programs and shared libraries are named <name>[-asan|-ubsan|...][-cov]-<config> (no suffix in Rel,
 #     or with NO_CONFIG_POSTFIX), in OUTPUT_DIRECTORY (default <build>/bin) for every configuration; next to them, the
 #     runtime files of the libraries they link (dagor_target_runtime_files) and LICENSE-<file name> with the licenses of
 #     those libraries (DagorLicenses.cmake): a library's are the license files of its directory, or LICENSES (files, or
@@ -235,7 +235,7 @@ macro(_dagor_target_defaults target)
   set_property(TARGET ${target} APPEND PROPERTY TRANSITIVE_LINK_PROPERTIES DAGOR_LICENSE_FILES DAGOR_RUNTIME_FILES
     DAGOR_GAME_PULLS)
   get_property(_dagor_type TARGET ${target} PROPERTY TYPE)
-  # a program's own licenses are not listed in its LICENSE file, as in jam; LICENSES replace those of the dir
+  # a program's own licenses are not listed in its LICENSE file; LICENSES replace those of the dir
   if(NOT _dagor_type STREQUAL "EXECUTABLE" AND NOT arg_LICENSES)
     _dagor_dir_licenses(_dagor_licenses)
     set_property(TARGET ${target} APPEND PROPERTY INTERFACE_DAGOR_LICENSE_FILES ${_dagor_licenses})
@@ -251,7 +251,7 @@ macro(_dagor_target_defaults target)
     endif()
     _dagor_folder(_dagor_folder)
     set_property(TARGET ${target} PROPERTY FOLDER "${_dagor_folder}")
-    # the assembler of a source by its extension, as jam chose it (CMake's own mapping lets MASM claim .asm)
+    # the assembler of a source by its extension (CMake's own mapping lets MASM claim .asm)
     get_property(_dagor_sources TARGET ${target} PROPERTY SOURCES)
     foreach(_dagor_source IN LISTS _dagor_sources)
       if(_dagor_source MATCHES "\\.(asm|nasm|nas)$")
@@ -319,7 +319,7 @@ endfunction()
 
 # dagor_target_runtime_files(<target> [SUBDIR <dir>] <file>...): files a program loads at run time (an SDK's DLLs, say),
 # copied next to it after each build (into <dir> there) and installed with it. For a library, every program that links
-# it gets them (jam's BundleCopy of a driver's SDK DLLs).
+# it gets them (a driver's SDK DLLs).
 function(dagor_target_runtime_files target)
   cmake_parse_arguments(PARSE_ARGV 1 arg "" "SUBDIR" "")
   set(subdir ".")
@@ -358,14 +358,18 @@ function(_dagor_program_files target)
   set_property(TARGET ${target} PROPERTY DAGOR_PROGRAM_FILES_DIR "${gen}")
 endfunction()
 
-# dagor_install_program(<target> DESTINATION <dir> COMPONENT <component>): installs a program or shared library with its
-# runtime files, its LICENSE file and (MSVC) its debug info
+# dagor_install_program(<target> DESTINATION <dir> COMPONENT <component> [OPTIONAL]): installs a program or shared
+# library with its runtime files, its LICENSE file and (MSVC) its debug info; OPTIONAL: when the tree built it
 function(dagor_install_program target)
-  cmake_parse_arguments(PARSE_ARGV 1 arg "" "DESTINATION;COMPONENT" "")
+  cmake_parse_arguments(PARSE_ARGV 1 arg "OPTIONAL" "DESTINATION;COMPONENT" "")
+  set(optional)
+  if(arg_OPTIONAL)
+    set(optional OPTIONAL)
+  endif()
   install(TARGETS ${target}
-    RUNTIME DESTINATION "${arg_DESTINATION}" COMPONENT ${arg_COMPONENT}
-    LIBRARY DESTINATION "${arg_DESTINATION}" COMPONENT ${arg_COMPONENT}
-    BUNDLE DESTINATION "${arg_DESTINATION}" COMPONENT ${arg_COMPONENT})
+    RUNTIME DESTINATION "${arg_DESTINATION}" COMPONENT ${arg_COMPONENT} ${optional}
+    LIBRARY DESTINATION "${arg_DESTINATION}" COMPONENT ${arg_COMPONENT} ${optional}
+    BUNDLE DESTINATION "${arg_DESTINATION}" COMPONENT ${arg_COMPONENT} ${optional})
   if(MSVC)
     install(FILES "$<TARGET_PDB_FILE:${target}>" DESTINATION "${arg_DESTINATION}" COMPONENT ${arg_COMPONENT} OPTIONAL)
   endif()
@@ -380,11 +384,14 @@ function(dagor_install_program target)
     set(license_dest "${arg_DESTINATION}/$<TARGET_FILE_NAME:${target}>.app/Contents/Resources")
     set(license_dir "$<TARGET_FILE_DIR:${target}>/../Resources")
   endif()
+  # (OPTIONAL: nothing for a program this tree did not build)
   install(CODE "set(_prefix \"\$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}\")
-execute_process(COMMAND \"${CMAKE_COMMAND}\" \"-DLIST=${gen}/runtime-$<CONFIG>.txt\" \"-DDEST=\${_prefix}/${dest}\"
-  -P \"${DAGOR_CMAKE_DIR}/scripts/copy_runtime_files.cmake\" COMMAND_ERROR_IS_FATAL ANY)
-if(EXISTS \"${license_dir}/LICENSE-$<TARGET_FILE_BASE_NAME:${target}>\")
-  file(INSTALL \"${license_dir}/LICENSE-$<TARGET_FILE_BASE_NAME:${target}>\" DESTINATION \"\${_prefix}/${license_dest}\")
+if(EXISTS \"$<TARGET_FILE:${target}>\")
+  execute_process(COMMAND \"${CMAKE_COMMAND}\" \"-DLIST=${gen}/runtime-$<CONFIG>.txt\" \"-DDEST=\${_prefix}/${dest}\"
+    -P \"${DAGOR_CMAKE_DIR}/scripts/copy_runtime_files.cmake\" COMMAND_ERROR_IS_FATAL ANY)
+  if(EXISTS \"${license_dir}/LICENSE-$<TARGET_FILE_BASE_NAME:${target}>\")
+    file(INSTALL \"${license_dir}/LICENSE-$<TARGET_FILE_BASE_NAME:${target}>\" DESTINATION \"\${_prefix}/${license_dest}\")
+  endif()
 endif()"
     COMPONENT ${arg_COMPONENT})
 endfunction()
@@ -405,8 +412,8 @@ function(dagor_target_force_include target)
 endfunction()
 
 # dagor_glob_sources(<out-var> DIRS <dir>... [GLOB <pattern>...] [EXCLUDE <regex>...]): appends to <out-var> the files
-# of the dirs (relative to the calling dir, not recursive) that match the patterns (default *.cpp *.c), sorted;
-# *.gen.es.cpp files are made by the ES codegen and never listed. jam's AutoscanBuildLists.
+# of the dirs (relative to the calling dir, not recursive) that match the patterns (default *.cpp *.c), sorted: for
+# a dir whose contents are its source list
 function(dagor_glob_sources out)
   cmake_parse_arguments(PARSE_ARGV 1 arg "" "" "DIRS;GLOB;EXCLUDE")
   if(NOT arg_GLOB)
@@ -418,7 +425,6 @@ function(dagor_glob_sources out)
     set(patterns ${arg_GLOB})
     list(TRANSFORM patterns PREPEND "${dir}/")
     file(GLOB found CONFIGURE_DEPENDS ${patterns})
-    list(FILTER found EXCLUDE REGEX "\\.gen\\.es\\.cpp$")
     foreach(regex IN LISTS arg_EXCLUDE)
       list(FILTER found EXCLUDE REGEX "${regex}")
     endforeach()
@@ -430,7 +436,7 @@ endfunction()
 
 # dagor_add_link_choice(<name> PROPERTY <property> ON <target> OFF <target>): an interface library that links <ON>
 # into the programs whose <property> is true and <OFF> into the others. A program sets the property, or gets it from a
-# library it links that sets INTERFACE_<property> ON. This is how a choice jam made with a global variable is made per
+# library it links that sets INTERFACE_<property> ON. This is how a choice a global setting would make is made per
 # program when libraries in between depend on the chosen one; both implementations are built only for the programs
 # that use them.
 function(dagor_add_link_choice name)

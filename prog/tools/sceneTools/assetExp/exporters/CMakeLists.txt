@@ -1,6 +1,6 @@
 # The exporters of daBuild, one plugin per asset type: animations (a2dExp), anim chars, collision, fast physics, effects,
 # impostors, land classes, local shaders, materials, models (rendinsts, dynamic models, skeletons, grass), physics
-# objects and textures. (jam's static exporters library is for the static daBuild, which no build uses.)
+# objects and textures.
 include(../dabuildPlugin.cmake)
 set(shared ${DAGOR_PROG_DIR}/tools/sharedInclude)
 set(editor ${DAGOR_PROG_DIR}/tools/sceneTools/daEditorX/include)

@@ -25,13 +25,13 @@ class ScannerTest(unittest.TestCase):
   def test_hash_comments(self):
     self.assertEqual(hosts('# gaijin.net\nx = "gaijin.net"  # gaijin.lan', 'prog/cmake/scripts/codegen/x.py'),
                      [(2, 'gaijin.net')])
-    self.assertEqual(hosts('x = \\# gaijin.net ;', 'prog/daNetGame/jamfile'), [(1, 'gaijin.net')])
+    self.assertEqual(hosts('set(x \\# gaijin.net)', 'prog/daNetGame/CMakeLists.txt'), [(1, 'gaijin.net')])
 
   def test_java_packages_are_not_hosts(self):
     self.assertEqual(hosts('package com.gaijinent.common;', 'prog/engine/a.java'), [])
 
   def test_upstream_releases_only_in_build_scripts(self):
-    url = 'u = "https://github.com/GaijinEntertainment/jam/releases"'
+    url = 'u = "https://github.com/GaijinEntertainment/DagorEngine/releases"'
     self.assertEqual(hosts(url, 'prog/cmake/scripts/x.py'), [(1, 'github.com/GaijinEntertainment')])
     self.assertEqual(hosts(url, '.github/workflows/tests.yaml'), [(1, 'github.com/GaijinEntertainment')])
     self.assertEqual(hosts(url, 'prog/engine/a.py'), [])

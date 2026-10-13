@@ -1,2 +1,0 @@
-Root ?= ../../.. ;
-include $(Root)/prog/gameLibs/vehiclePhys/vehiclePhys-BULLET/jamfile ;

@@ -17,7 +17,7 @@ set(includes
   ${DAGOR_PROG_DIR}/3rdPartyLibs/imgui
   ${DAGOR_PROG_DIR}/3rdPartyLibs/imgui-node-editor
 )
-# jam linked engine/imgui's stub in Rel; its programs all link engine/imgui, whose objects came first in jam's order
+# engine/imgui's stub is not linked in Rel: the programs all link engine/imgui
 set(deps engine.drv.drv3d_commonCode engine.drv.shadersMetaData.spirv 3rdPartyLibs.vulkan.smol-v engine.imgui)
 list(APPEND deps "$<${dev}:3rdPartyLibs.imgui-node-editor>")
 set(libs)

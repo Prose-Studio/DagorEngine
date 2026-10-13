@@ -7,7 +7,7 @@ function(_dng_glob var cond glob)
   endif()
   set(found)
   dagor_glob_sources(found DIRS ${ARGN} GLOB ${glob}
-    EXCLUDE "/main/(main|version)\\.cpp$" "_ps[45]\\.cpp$") # main.cpp and version.cpp are the game's (game.jam)
+    EXCLUDE "/main/(main|version)\\.cpp$" "_ps[45]\\.cpp$") # main.cpp and version.cpp are the game's (dagor_add_dng_game)
   if(NOT cond STREQUAL "1")
     list(TRANSFORM found REPLACE "^(.+)$" "$<${cond}:\\1>")
   endif()

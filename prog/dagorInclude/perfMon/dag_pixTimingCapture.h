@@ -4,7 +4,7 @@
 //
 #pragma once
 
-// Programmatic PIX timing (CPU) capture. Real only where USE_PIX is compiled in (perfMon/jamfile),
+// Programmatic PIX timing (CPU) capture. Real only where USE_PIX is compiled in (engine/perfMon),
 // stubs elsewhere, so callers need no guards of their own.
 
 // returned by the stub, so a build without PIX can be told apart from a PIX that said no

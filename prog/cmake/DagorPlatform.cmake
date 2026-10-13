@@ -1,6 +1,6 @@
 # The target platform as the engine names it in paths, and the languages its sources use.
 #
-#   DAGOR_PLATFORM  windows, linux, macOS, iOS or android: the names of jam's output dirs (<project>/game/<platform>-<arch>,
+#   DAGOR_PLATFORM  windows, linux, macOS, iOS or android: the names of the output dirs (<project>/game/<platform>-<arch>,
 #                   tools/dagor_cdk/<platform>-<arch>). Code tests the platform with CMake's own variables (WIN32,
 #                   LINUX, APPLE, IOS, ANDROID, CMAKE_SYSTEM_NAME) or $<PLATFORM_ID:...>.
 #   DAGOR_ARCH      x86_64, arm64, e2k or universal (macOS: both archs in one binary), from the toolchain.
@@ -46,7 +46,7 @@ else()
   set(DAGOR_DATA_FORMAT PC)
 endif()
 
-# the assemblers, by extension as in jam: .asm/.nasm/.nas NASM, .masm MASM (Windows x86_64), .s/.S the GNU assembler (the
+# the assemblers, by extension: .asm/.nasm/.nas NASM, .masm MASM (Windows x86_64), .s/.S the GNU assembler (the
 # C compiler; LLVM's clang on Windows arm64). Enabled here, in the top-level directory, for every target of the tree.
 set(CMAKE_ASM_NASM_SOURCE_FILE_EXTENSIONS asm nasm nas)
 set(CMAKE_ASM_MASM_SOURCE_FILE_EXTENSIONS masm)

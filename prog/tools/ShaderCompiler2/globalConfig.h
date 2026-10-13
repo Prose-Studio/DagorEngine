@@ -142,7 +142,7 @@ struct CompilerConfig
   bool cppStcodeUnityBuild : 1 = false;
   bool cppStcodeDeleteDebugInfo : 1 = true;
   bool cppStcodeSaveDebugInfoAndSourcesToZip : 1 = false;
-  bool cppStcodeNoJam : 1 = false;
+  bool cppStcodeNoBuild : 1 = false;
   bool disallowHlslHardcodedRegs : 1 = false;
   bool compileRefinedBlock : 1 = true;
   bool shaderRequiredByDefault : 1 = false;

@@ -1991,12 +1991,12 @@ public:
 
 `prog/gameLibs/render/raytracedToroidalStaticShadow/`, with the public
 header in the library directory (`prog/gameLibs/CLAUDE.md`) and a plain
-jamfile like `render/rtdl`. `gameLibs/build_module.jam` is not used: it
-adds an ECS pull file and Quirrel, which this library does not need.
+`dagor_add_target` like `render/rtdl`: not a game module (`dagor_add_dng_module`), which adds an ECS pull file and
+Quirrel, which this library does not need.
 
 ```
-jamfile                                   // gameLibs/render/raytracedToroidalStaticShadow.lib
-_lib.jam                                  // for installable consumers
+CMakeLists.txt, *_files.cmake            // gameLibs.render.raytracedToroidalStaticShadow
+_lib.cmake                                // for installable consumers
 _shaders.blk                              // rtss_build, rtss_debug
 raytracedToroidalStaticShadow_api.h       // public header
 raytracedToroidalStaticShadow.cpp         // class, GPU resources, render(), the raster producer (7.3), the trace batches (7.2)
@@ -2005,7 +2005,7 @@ core/rtssSettings.h                       // the settings structs, shared with t
 core/rtssScheduler.h, rtssScheduler.cpp   // windows, sweeps, budget, jobs; the stats structs, shared with the public header
 core/rtssRasterPlan.h                     // order, cull groups, matrices and skips of the raster producer (7.3)
 core/rtssCpuLookup.h                      // CPU copy of the 9.3 lookup, for the tests
-tests/jamfile, tests/*.cpp                // Catch2 test of core
+tests/CMakeLists.txt, tests/*.cpp       // Catch2 test of core
 tests/rtssTestSim.h                       // the simulation harness of the tests
 shaders/rtss_common.hlsli                 // structs shared by C++ and HLSL
 shaders/rtss_lookup.dshl, rtss_lookup.hlsl
@@ -2029,8 +2029,8 @@ shaders/rtss_trace_hwrt.dshl              // rtss_trace_hwrt_cs, the HW tracer o
 - No code or string of the library may contain the word "daNetGame":
   codecheck `check_code_dependencies` fails a gameLibs file (but a .md or
   .txt file) that names it outside a comment line (`//` in code and
-  shaders, `#` in jamfiles and Python). Write "DNG" everywhere.
-- testGI includes its `_lib.jam` in its jamfile and adds the shaders to
+  shaders, `#` in CMake files and Python). Write "DNG" everywhere.
+- testGI lists the library in its game libs (its `_lib.cmake`) and adds the shaders to
   its lists: `_shaders.blk` and the tracer shaders it uses. testGI has
   no `setup_libs.py`.
 

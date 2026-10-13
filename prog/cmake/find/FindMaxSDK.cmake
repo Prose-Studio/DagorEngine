@@ -1,6 +1,6 @@
 # The Autodesk 3ds Max SDK of DAGOR_MAX_VERSION (Max2023 ... Max2027) for the 3ds Max plugins (the maxplug tree).
 #   MaxSDK::MaxSDK  its headers and the libraries of the plugins (maxutil, core, bmm, mesh, geom, flt, MNMath, maxscrpt)
-# MaxSDK_ROOT: the SDK's dir (<install>/maxsdk, jam's $(_DEVTOOL)/<version>.sdk). It is proprietary: never fetched.
+# MaxSDK_ROOT: the SDK's dir (<install>/maxsdk). It is proprietary: never fetched.
 set(DAGOR_MAX_VERSION Max2027 CACHE STRING "The 3ds Max version of the plugins")
 set_property(CACHE DAGOR_MAX_VERSION PROPERTY STRINGS Max2023 Max2024 Max2025 Max2026 Max2027)
 set(MaxSDK_ROOT "$ENV{MaxSDK_ROOT}" CACHE PATH "The 3ds Max SDK (<install>/maxsdk) of DAGOR_MAX_VERSION")

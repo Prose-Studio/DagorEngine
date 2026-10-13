@@ -1,5 +1,5 @@
 // Provides storage for daScript globals that upstream lives in src/hal/debug_break.cpp.
-// Dagor's jamfile doesn't build src/hal/ (games supply their own os_debug_break, crash
+// Dagor's build doesn't build src/hal/ (games supply their own os_debug_break, crash
 // handlers, file access hooks), but the smart_ptr and JobStatus tracking globals are
 // referenced unconditionally after the `smart_ptr: remove debug macros, always-on
 // tracking` change -- put them here so every dagor executable gets them via daScript.lib.

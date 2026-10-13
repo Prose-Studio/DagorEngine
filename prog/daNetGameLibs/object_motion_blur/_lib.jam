@@ -1,4 +1,0 @@
-if $(HaveRenderer) = yes {
-  gamePulls += framework_object_motion_blur_pull ;
-  UseProgLibs += daNetGameLibs/object_motion_blur ;
-}

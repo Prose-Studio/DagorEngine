@@ -1,5 +1,0 @@
-if $(HaveRenderer) = yes {
-  gamePulls += framework_screen_droplets_pull ;
-  AddIncludes +=  $(Root)/prog/gameLibs/render/daFrameGraph ;
-  UseProgLibs += daNetGameLibs/screen_droplets ;
-}

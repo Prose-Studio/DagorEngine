@@ -4,7 +4,7 @@ set(options)
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   set(options -Wc++11-narrowing -Wswitch -Wbitfield-constant-conversion -Wmissing-field-initializers)
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-  set(options /wd4458) # locals that hide members (jam builds these tests with clang only)
+  set(options /wd4458) # locals that hide members
 endif()
 dagor_add_catch2_test(NAME daFrameGraph-tests
   TIMEOUT 1200

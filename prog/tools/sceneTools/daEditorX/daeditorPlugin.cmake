@@ -1,5 +1,5 @@
 # daeditor_plugin(NAME <name> <dagor_add_target arguments>): a plugin of daEditor3x in plugins/daEditorX of the tools
-# (jam's plugin_setup.jam), on daKernel and the editor's core (de3dllCore); included by the plugins' directories
+# on daKernel and the editor's core (de3dllCore); included by the plugins' directories
 include_guard(GLOBAL)
 function(daeditor_plugin)
   dagor_add_target(${ARGN} SHARED LAX

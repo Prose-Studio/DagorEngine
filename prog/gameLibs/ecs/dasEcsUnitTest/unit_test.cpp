@@ -625,7 +625,7 @@ extern "C" int main(int argc, char **argv)
   eastl::string engineRoot = DAS_ECS_TEST_ENGINE_ROOT "/"; // the CMake build passes the engine checkout
 #else
   char buf[512];
-  eastl::string engineRoot; // jam builds the program into <engine>/tools/util
+  eastl::string engineRoot; // the program is installed into <engine>/tools/util
   if (strstr(dgs_argv[0], "/") || strstr(dgs_argv[0], "\\"))
     engineRoot = eastl::string(dd_get_fname_location(buf, dgs_argv[0])) + "../../";
   else

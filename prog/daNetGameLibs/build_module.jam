@@ -1,3 +1,0 @@
-ModulePrefix = daNetGameLibs ;
-
-include $(Root)/prog/_jBuild/build_module.jam ;

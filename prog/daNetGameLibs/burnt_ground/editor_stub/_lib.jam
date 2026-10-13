@@ -1,2 +1,0 @@
-gamePulls += framework_burnt_ground_editor_stub_pull ;
-UseProgLibs += daNetGameLibs/burnt_ground/editor_stub ;

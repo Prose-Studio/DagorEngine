@@ -1,4 +1,4 @@
-# the Quirrel debugger of the games' Dev and Dbg builds on the desktop (prog/daNetGame/setup.jam)
+# the Quirrel debugger of the games' Dev and Dbg builds on the desktop
 set(defines)
 if(DAGOR_VARIANT STREQUAL "game" AND CMAKE_SYSTEM_NAME MATCHES "^(Darwin|Linux|Windows)$")
   set(defines "$<$<CONFIG:Dev,Dbg>:DARG_WITH_SQDEBUGGER>")

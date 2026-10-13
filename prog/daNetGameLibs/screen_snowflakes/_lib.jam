@@ -1,4 +1,0 @@
-if $(HaveRenderer) = yes {
-  gamePulls += framework_screen_snowflakes_pull ;
-  UseProgLibs += daNetGameLibs/screen_snowflakes ;
-}

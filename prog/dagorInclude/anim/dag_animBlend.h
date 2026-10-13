@@ -806,7 +806,7 @@ struct BlendNodeCreatorRegistrator
   BlendNodeCreatorRegistrator(blend_node_creator_t creator) { register_blend_node_creator(creator); }
 };
 
-// consumers must reference ClassName##_pull (e.g. through gamePulls in jam) for the registration to survive static-lib linking
+// consumers must reference ClassName##_pull (e.g. through the game pulls, dagor_game_lib(PULL)) for the registration to survive static-lib linking
 #define AUTO_REGISTER_ANIM_BLEND_NODE(ClassName, block_name)                                                     \
   static bool create_blend_node_##ClassName(AnimV20::AnimationGraph &graph, const DataBlock &blk)                \
   {                                                                                                              \

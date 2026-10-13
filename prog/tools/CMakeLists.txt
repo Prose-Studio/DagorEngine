@@ -72,7 +72,6 @@ if(DAGOR_VARIANT MATCHES "^(cdk|assets|editor|maxplug|dargbox)$")
   add_subdirectory(dagUtils/dagScripter)
   add_subdirectory(dagUtils/DagTexRemap)
   add_subdirectory(dagUtils/texSeamsRemover)
-  add_subdirectory(miscUtils/fastdep-0.16)
   add_subdirectory(relay)
   # the asset build (daBuild with its plugins, ddsxCvt2): on daKernel with the null driver
   if(DAGOR_VARIANT STREQUAL "assets")

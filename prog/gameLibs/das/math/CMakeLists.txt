@@ -1,4 +1,4 @@
-# daScript modules of the games (prog/gameLibs/das/common.jam): pull.cpp references them; with DAGOR_DAS_AOT their
+# daScript modules of the games: pull.cpp references them; with DAGOR_DAS_AOT their
 # scripts are compiled into the library
 set(defines)
 if(DAGOR_DAS_AOT)

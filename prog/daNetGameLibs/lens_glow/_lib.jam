@@ -1,4 +1,0 @@
-if $(HaveRenderer) = yes {
-  gamePulls += framework_lens_glow_pull ;
-  UseProgLibs += daNetGameLibs/lens_glow ;
-}

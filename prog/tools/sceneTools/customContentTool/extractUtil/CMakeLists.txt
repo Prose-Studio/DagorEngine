@@ -1,4 +1,4 @@
-# extractSkins and extractDecals: the skins and decals of the assets, next to their sources as jam built them
+# extractSkins and extractDecals: the skins and decals of the assets, next to their sources
 foreach(tool extractSkins extractDecals)
   dagor_add_target(NAME ${tool} EXECUTABLE LAX
     OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}

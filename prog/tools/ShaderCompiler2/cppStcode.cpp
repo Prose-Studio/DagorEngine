@@ -40,8 +40,9 @@ eastl::optional<shader_layout::ExternalStcodeMode> arg_str_to_cpp_stcode_mode(co
 
 static constexpr const char *CONFIG_NAMES[] = {"dev", "rel", "dbg"};
 static constexpr const char *CONFIG_SUFFICES[] = {"-dev", "", "-dbg"};
+static constexpr const char *CONFIG_BUILD_NAMES[] = {"Dev", "Rel", "Dbg"}; // the engine's configurations
 
-static const char *config_to_name(StcodeDynlibConfig config) { return CONFIG_NAMES[size_t(config)]; }
+static const char *config_to_build_name(StcodeDynlibConfig config) { return CONFIG_BUILD_NAMES[size_t(config)]; }
 static const char *config_to_mangled_suffix(StcodeDynlibConfig config) { return CONFIG_SUFFICES[size_t(config)]; }
 
 bool set_stcode_config_from_arg(const char *str, shc::CompilerConfig &config_rw)
@@ -76,6 +77,21 @@ static const char *arch_name(StcodeTargetArch arch)
     case StcodeTargetArch::ARM64_EC: return "arm64ec";
   }
   return nullptr;
+}
+
+// the arch as the engine's build names it (DAGOR_ARCH), nullptr for those it doesn't build
+static const char *arch_name_for_build(StcodeTargetArch arch)
+{
+  switch (arch)
+  {
+    case StcodeTargetArch::X86_64: return "x86_64";
+    case StcodeTargetArch::ARM64:
+    case StcodeTargetArch::ARM64_V8A:
+    case StcodeTargetArch::ARM64_E: return "arm64";
+    case StcodeTargetArch::MAC_X86_64_ARM64_UNIVERSAL: return "universal";
+    case StcodeTargetArch::E2K: return "e2k";
+    default: return nullptr;
+  }
 }
 
 static const char *arch_name_for_dll_name(StcodeTargetArch arch)
@@ -335,13 +351,28 @@ static void write_file(const char *fn, const char *src, size_t src_len)
   return;
 }
 
+// a build file the build tool watches: rewritten only when it changes, so the build is not configured again for nothing
+static void write_file_if_changed(const char *fn, const eastl::string &src)
+{
+  if (file_ptr_t f = df_open(fn, DF_READ))
+  {
+    eastl::string old;
+    old.resize(df_length(f));
+    const bool same = df_read(f, old.data(), int(old.size())) == int(old.size()) && old == src;
+    df_close(f);
+    if (same)
+      return;
+  }
+  write_file(fn, src.c_str(), src.length());
+}
+
 static constexpr char CPPFILE_HEADER_TEMPLATE[] = "/* xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx */\n";
 static constexpr size_t CPPFILE_HEADER_LEN = LITSTR_LEN(CPPFILE_HEADER_TEMPLATE);
 static constexpr char CPPFILE_HEADER_FMT[] =
   "/* %02hhx%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx */\n";
-static constexpr char JAMFILE_HEADER_TEMPLATE[] = "# xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n";
-static constexpr size_t JAMFILE_HEADER_LEN = LITSTR_LEN(JAMFILE_HEADER_TEMPLATE);
-static constexpr char JAMFILE_HEADER_FMT[] =
+static constexpr char STAMP_HEADER_TEMPLATE[] = "# xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n";
+static constexpr size_t STAMP_HEADER_LEN = LITSTR_LEN(STAMP_HEADER_TEMPLATE);
+static constexpr char STAMP_HEADER_FMT[] =
   "# %02hhx%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx\n";
 
 template <size_t HEADER_LEN, auto HEADER_TEMPLATE>
@@ -586,12 +617,12 @@ static eastl::optional<StcodeSourceFileStat> get_files_pack_stat(std::initialize
   for (const char *fn : filenames)
   {
     bool isCpp = strstr(fn, ".cpp") || strstr(fn, ".h");
-    bool isJam = strstr(fn, ".jam") || strstr(fn, "jamfile");
-    G_ASSERT(isCpp || isJam);
-    G_ASSERT(!(isCpp && isJam));
+    bool isStamp = strstr(fn, ".stamp") != nullptr;
+    G_ASSERT(isCpp || isStamp);
+    G_ASSERT(!(isCpp && isStamp));
 
     auto statMaybe = isCpp ? get_file_stat<CPPFILE_HEADER_LEN, CPPFILE_HEADER_TEMPLATE>(fn)
-                           : get_file_stat<JAMFILE_HEADER_LEN, JAMFILE_HEADER_TEMPLATE>(fn);
+                           : get_file_stat<STAMP_HEADER_LEN, STAMP_HEADER_TEMPLATE>(fn);
 
     if (!statMaybe)
       return eastl::nullopt;
@@ -623,9 +654,9 @@ eastl::optional<StcodeSourceFileStat> get_main_cpp_files_stat(const ShCompilatio
   const char *stcodeDir = comp.stcodeDirs().stcodeDir.c_str();
   const eastl::string gvarFileName{eastl::string::CtorSprintf{}, "%s/glob_shadervars.stcode.gen.cpp", stcodeDir};
   const eastl::string mainFileName{eastl::string::CtorSprintf{}, "%s/stcode_main.stcode.gen.cpp", stcodeDir};
-  const eastl::string jamfileName{eastl::string::CtorSprintf{}, "%s/jamfile", stcodeDir};
+  const eastl::string stampName{eastl::string::CtorSprintf{}, "%s/stcode.stamp", stcodeDir};
 
-  return get_files_pack_stat({gvarFileName.c_str(), mainFileName.c_str(), jamfileName.c_str()});
+  return get_files_pack_stat({gvarFileName.c_str(), mainFileName.c_str(), stampName.c_str()});
 }
 
 static int speculate_root_depth_from_path(const char *path)
@@ -677,7 +708,7 @@ static auto split_by_lowest_dir(const char *path, size_t path_len)
            : eastl::make_pair(eastl::string{}, eastl::string{path, path_len});
 }
 
-struct JamCompilationDirs
+struct StcodeBuildDirs
 {
   eastl::string root;
   eastl::string location;
@@ -685,7 +716,7 @@ struct JamCompilationDirs
   eastl::string outDir;
 };
 
-static JamCompilationDirs generate_dirs_with_provided_root(const char *engine_root, const char *out_dir,
+static StcodeBuildDirs generate_dirs_with_provided_root(const char *engine_root, const char *out_dir,
   const StcodeCompilationDirs &stcode_dirs)
 {
   const eastl::string cwd = get_cwd();
@@ -746,7 +777,7 @@ static JamCompilationDirs generate_dirs_with_provided_root(const char *engine_ro
   const eastl::string stcodeDirAbs = toAbs(stcode_dirs.stcodeDir.c_str());
   const eastl::string stcodeCacheDirAbs = toAbs(stcode_dirs.stcodeCompilationCacheDirUnmangled.c_str());
 
-  JamCompilationDirs res{};
+  StcodeBuildDirs res{};
   res.root = makeRelPath(cwd.c_str(), engineRootAbs.c_str());
   res.location = makeRelPath(engineRootAbs.c_str(), stcodeDirAbs.c_str());
   res.cache = makeRelPath(engineRootAbs.c_str(), stcodeCacheDirAbs.c_str());
@@ -754,7 +785,7 @@ static JamCompilationDirs generate_dirs_with_provided_root(const char *engine_ro
   return res;
 }
 
-static JamCompilationDirs generate_dirs_with_inferred_root_from_rel_path(const char *out_dir, const StcodeCompilationDirs &stcode_dirs)
+static StcodeBuildDirs generate_dirs_with_inferred_root_from_rel_path(const char *out_dir, const StcodeCompilationDirs &stcode_dirs)
 {
   const char *stcodeDir = stcode_dirs.stcodeDir.c_str();
 
@@ -873,26 +904,6 @@ dag::Expected<Tab<proc::ProcessTask>, StcodeMakeTaskError> make_stcode_compilati
     }
   }
 
-  // Write jamfile
-  constexpr char jamTemplate[] =
-#include "_stcodeTemplates/jamfile.fmt"
-    ;
-
-  // Override inappropriate target mangling when autocompleting target for some platforms
-  const char *extension =
-#if _TARGET_PC_LINUX && (_CROSS_TARGET_SPIRV | _CROSS_TARGET_EMPTY)
-    platform_switch<const char *>(".so", "", "")
-#elif _TARGET_PC_MACOSX && (_CROSS_TARGET_METAL | _CROSS_TARGET_EMPTY)
-    ".dylib"
-#else
-    ""
-#endif
-    ;
-
-  // @HACK Due to jam limits on string size, the path needs to be mangled to be shortened
-  eastl::string targetHashedRelPath{};
-  eastl::string libCodeName{};
-
   // Check version file
   bool versionsMatch = false;
   int ver = -1;
@@ -929,82 +940,19 @@ dag::Expected<Tab<proc::ProcessTask>, StcodeMakeTaskError> make_stcode_compilati
       CPP_STCODE_COMMON_VER);
   }
 
-  auto reduceTokens = [](const auto &s) {
-    constexpr int REDUCED_TOKEN_SIZE = 2;
-    eastl::string out{};
-    out.reserve(s.size());
-    int charStreak = 0;
-    for (char c : s)
-    {
-      if (c >= 'a' && c <= 'z')
-        ++charStreak;
-      else
-        charStreak = 0;
-      if (charStreak < REDUCED_TOKEN_SIZE)
-        out.push_back(c);
-    }
-    return out;
-  };
+  // The library's CMake project (built by prog/cmake/scripts/build_stcode.cmake) and the stamp of this generation
+  constexpr char cmakeListsTemplate[] =
+#include "_stcodeTemplates/CMakeLists.txt.fmt"
+    ;
+  const char *routineVisibility = shc::config().cppStcodeUnityBuild ? "static" : "extern";
+  write_file_if_changed((stcodeDir + "/CMakeLists.txt").c_str(),
+    eastl::string{eastl::string::CtorSprintf{}, cmakeListsTemplate, routineVisibility});
+  write_file_if_changed((stcodeDir + "/stcode_files.cmake").c_str(),
+    eastl::string{eastl::string::CtorSprintf{}, "set(FILES\n  stcode_main.stcode.gen.cpp\n%s)\n", sourcesList.c_str()});
+  const eastl::string stamp = make_header_from_blk_hash<STAMP_HEADER_LEN, STAMP_HEADER_FMT>(comp.targetBlkHash());
+  write_file((stcodeDir + "/stcode.stamp").c_str(), stamp.c_str(), stamp.length());
 
-  {
-    auto makeHashedName = [](const auto &s) {
-      uint64_t hash = str_hash_fnv1<64>(s.c_str());
-      return string_f("stc.%llx", hash);
-    };
-
-    auto [baseDir, targetRelNameBase] = split_by_lowest_dir(stcodeCacheRelPath.c_str(), stcodeCacheRelPath.length());
-    targetHashedRelPath = makeHashedName(targetRelNameBase);
-
-    // Verify that hashes don't collide w/ an on-disk table
-    auto targetHashTablePath = rootRelPath + "/" + baseDir + "stcode_pathes_table.blk";
-    if (!versionsMatch) // The version also encompasses changes in hashing policy, so the table may have become stale
-      dd_erase(targetHashTablePath.c_str());
-    DataBlock hashedPathesTable{};
-    hashedPathesTable.load(targetHashTablePath.c_str()); // Ok to fail here -- then we just create.
-    if (int id = hashedPathesTable.findParam(targetHashedRelPath.c_str()); id != -1)
-    {
-      if (!streq(hashedPathesTable.getStr(id), targetRelNameBase.c_str()))
-      {
-        sh_debug(SHLOG_ERROR,
-          "Stcode name hashing collision (%s, %s) -> %s. Change the name or remove outdated entries from "
-          "*output-dir*/stcode_pathes_table.blk",
-          targetRelNameBase.c_str(), hashedPathesTable.getStr(id), targetHashedRelPath.c_str());
-      }
-    }
-    else
-      hashedPathesTable.addStr(targetHashedRelPath.c_str(), targetRelNameBase.c_str());
-
-    if (!hashedPathesTable.saveToTextFile(targetHashTablePath.c_str()))
-      sh_debug(SHLOG_ERROR, "Failed to save stcode path hash table to %s", targetHashTablePath.c_str());
-  }
-
-  {
-    String libCodeNameBase{lib_name}; // Not dynLibName, cause we don't need to encode platform/arch in lib code name
-    libCodeNameBase.replace("-stcode", "");
-    libCodeNameBase.replace("ps", "");
-    libCodeName = reduceTokens(libCodeNameBase);
-  }
-
-  eastl::string dynlibName = eastl::string{lib_name};
-  if (!arch_and_platform_is_fixed_for_shaders())
-    dynlibName += "-$(Platform)-$(CppStcodeArch)";
-  if (shc::config().cppStcodeCustomTag)
-  {
-    dynlibName += "-";
-    dynlibName += shc::config().cppStcodeCustomTag;
-  }
-
-  const char *customCppOpts = shc::config().cppStcodeUnityBuild ? "-DROUTINE_VISIBILITY=static" : "-DROUTINE_VISIBILITY=extern";
-
-  const eastl::string jamPath{eastl::string::CtorSprintf{}, "%s/jamfile", stcodeDir.c_str()};
-  const eastl::string blkHashHeader = make_header_from_blk_hash<JAMFILE_HEADER_LEN, JAMFILE_HEADER_FMT>(comp.targetBlkHash());
-
-  const eastl::string jamContent{eastl::string::CtorSprintf{}, jamTemplate, blkHashHeader.c_str(), rootRelPath.c_str(),
-    stcodeRelPath.c_str(), outDirRelPath.c_str(), targetHashedRelPath.c_str(), dynlibName.c_str(), extension, libCodeName.c_str(),
-    sourcesList.c_str(), customCppOpts};
-  write_file(jamPath.c_str(), jamContent.c_str(), jamContent.length());
-
-  if (shc::config().cppStcodeNoJam)
+  if (shc::config().cppStcodeNoBuild)
     return dag::Unexpected(StcodeMakeTaskError::DISABLED);
 
   auto requiredArchs = shc::config().cppStcodeArchs;
@@ -1029,7 +977,7 @@ dag::Expected<Tab<proc::ProcessTask>, StcodeMakeTaskError> make_stcode_compilati
     SET_ARCH_WITH_DEF(StcodeTargetArch::X86_64);
 #endif
 
-    const char *jamPlatform =
+    const char *platform =
 #if _CROSS_TARGET_DX12
       platform_switch<const char *>("windows", "xboxOne", "scarlett")
 #elif _CROSS_TARGET_DX11
@@ -1054,24 +1002,23 @@ dag::Expected<Tab<proc::ProcessTask>, StcodeMakeTaskError> make_stcode_compilati
 #endif
 
 #if _TARGET_PC_LINUX
-    const char *jamPlatform = platform_switch<const char *>("linux", "android", "nswitch");
+    const char *platform = platform_switch<const char *>("linux", "android", "nswitch");
     SET_ARCH_WITH_DEF(platform_switch(StcodeTargetArch::X86_64, StcodeTargetArch::ARM64_V8A, StcodeTargetArch::ARM64));
 #else
 #if _CROSS_TARGET_METAL
-    const char *jamPlatform = if_ios<const char *>("iOS", "macOS");
+    const char *platform = if_ios<const char *>("iOS", "macOS");
     SET_ARCH_WITH_DEF(if_ios(StcodeTargetArch::ARM64, StcodeTargetArch::X86_64));
 #else
-    const char *jamPlatform = "android";
+    const char *platform = "android";
     SET_ARCH_WITH_DEF(StcodeTargetArch::ARM64_V8A);
 #endif
 #endif
 
 #endif
 
-    G_ASSERT(jamPlatform);
+    G_ASSERT(platform);
 
-    const char *targetType = "dll";
-    const char *config = config_to_name(shc::config().cppStcodeCompConfig);
+    const char *config = config_to_build_name(shc::config().cppStcodeCompConfig);
 
     proc::ProcessTask task{};
     task.isExternal = true;
@@ -1088,7 +1035,7 @@ dag::Expected<Tab<proc::ProcessTask>, StcodeMakeTaskError> make_stcode_compilati
     if (!arch_and_platform_is_fixed_for_shaders())
     {
       concreteDynlibName += "-";
-      concreteDynlibName += jamPlatform;
+      concreteDynlibName += platform;
       concreteDynlibName += "-";
       concreteDynlibName += arch_name_for_dll_name(arch);
     }
@@ -1098,6 +1045,7 @@ dag::Expected<Tab<proc::ProcessTask>, StcodeMakeTaskError> make_stcode_compilati
       concreteDynlibName += shc::config().cppStcodeCustomTag;
     }
 
+    const eastl::string payloadDynlibName = concreteDynlibName;
     // Pointer to fit fixed lambda size limit
     auto payload = eastl::make_unique<CompilationCompletionCbPayload>(eastl::move(concreteDynlibName), eastl::string{out_dir},
       comp.stcodeDirs().stcodeDir, rootRelPath);
@@ -1111,43 +1059,30 @@ dag::Expected<Tab<proc::ProcessTask>, StcodeMakeTaskError> make_stcode_compilati
       cleanup_after_stcode_compilation(payload->outDir.c_str(), payload->dynlibName.c_str());
     };
 
+#if _TARGET_PC_WIN || _TARGET_PC_LINUX || _TARGET_PC_MACOSX
+
+    const char *buildArch = arch_name_for_build(arch);
+    if (!buildArch)
+    {
+      sh_debug(SHLOG_ERROR, "Cpp stcode can't be built for arch %s", arch_name(arch));
+      return dag::Unexpected(StcodeMakeTaskError::DISABLED);
+    }
 #if _TARGET_PC_WIN
-
-    eastl::string stcodeDirWin = stcodeDir;
-    replace_char(stcodeDirWin.data(), stcodeDirWin.length(), '/', '\\');
-
-    task.argv.emplace_back("C:\\windows\\system32\\cmd.exe");
+    task.argv.emplace_back("C:\\windows\\system32\\cmd.exe"); // finds cmake in PATH
     task.argv.emplace_back("/c");
-    task.argv.emplace_back("jam.exe");
-    task.argv.push_back(string_f("-sPlatform=%s", jamPlatform));
-    task.argv.push_back(string_f("-sPlatformArch=%s", arch_name(arch)));
-    task.argv.push_back(string_f("-sCppStcodeArch=%s", arch_name_for_dll_name(arch)));
-    task.argv.push_back(string_f("-sTargetType=%s", targetType));
-    task.argv.push_back(string_f("-sConfig=%s", config));
-    task.argv.emplace_back("-f");
-    task.argv.push_back(string_f("%s\\jamfile", stcodeDirWin.c_str()));
-    if (!versionsMatch)
-      task.argv.emplace_back("-a");
-
-#elif _TARGET_PC_LINUX || _TARGET_PC_MACOSX
-
-    task.argv.emplace_back("jam");
-    task.argv.push_back(string_f("-sPlatform=%s", jamPlatform));
-    task.argv.push_back(string_f("-sPlatformArch=%s", arch_name(arch)));
-    task.argv.push_back(string_f("-sCppStcodeArch=%s", arch_name_for_dll_name(arch)));
-    task.argv.push_back(string_f("-sTargetType=%s", targetType));
-    task.argv.push_back(string_f("-sConfig=%s", config));
-    task.argv.emplace_back("-f");
-    task.argv.push_back(string_f("%s/jamfile", stcodeDir.c_str()));
-    if (!versionsMatch)
-      task.argv.emplace_back("-a");
-
-#if _TARGET_PC_MACOSX && _CROSS_TARGET_METAL
-    if (is_ios())
-      task.argv.push_back(eastl::string("-sBuildAsFramework=yes"));
-    else if (arch == StcodeTargetArch::MAC_X86_64_ARM64_UNIVERSAL)
-      task.argv.push_back(eastl::string("-sMacUniversalBinary=yes"));
 #endif
+    task.argv.emplace_back("cmake");
+    task.argv.push_back(string_f("-DSOURCE_DIR=%s", stcodeDir.c_str()));
+    task.argv.push_back(string_f("-DBINARY_DIR=%s/build-%s-%s", stcodeDir.c_str(), platform, buildArch));
+    task.argv.push_back(string_f("-DPLATFORM=%s", platform));
+    task.argv.push_back(string_f("-DARCH=%s", buildArch));
+    task.argv.push_back(string_f("-DCONFIG=%s", config));
+    task.argv.push_back(string_f("-DNAME=%s", payloadDynlibName.c_str()));
+    task.argv.push_back(string_f("-DOUTPUT_DIR=%s", out_dir));
+    if (!versionsMatch)
+      task.argv.emplace_back("-DCLEAN=ON");
+    task.argv.emplace_back("-P");
+    task.argv.push_back(string_f("%s/prog/cmake/scripts/build_stcode.cmake", rootRelPath.c_str()));
 
 #else // Stub
 

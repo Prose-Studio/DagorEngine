@@ -105,7 +105,7 @@ def public build_llvm_aot_ctors(ctx : LLVMContextRef; mod : LLVMOpaqueModule?; v
     return emit_aot_register_ctor_dtor(types, funcs, uids, prog, glob_ctor)
 }
 
-//! jam links an AOT object in only through the aot_<obj>_pull symbol its pull list names.
+//! the build links an AOT object in only through the aot_<obj>_pull symbol its pull list names.
 def public emit_aot_pull_anchor(mod : LLVMOpaqueModule?; var types : PrimitiveTypes?; obj_name : string) {
     var anchor = LLVMAddGlobal(mod, types.t_int64, "aot_{obj_name}_pull")
     LLVMSetInitializer(anchor, LLVMConstInt(types.t_int64, 0ul, 0))

@@ -6,8 +6,6 @@
 *.hpp text
 *.inl text
 *.inc text
-*.jam text
-*jamfile text
 *.py text
 *.nut text
 *.as text

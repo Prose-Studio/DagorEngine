@@ -1,3 +1,0 @@
-gamePulls += framework_burnt_ground_pull ;
-UseProgLibs += daNetGameLibs/burnt_ground ;
-

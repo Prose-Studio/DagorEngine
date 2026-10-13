@@ -11,7 +11,7 @@ sources through FMOD. The public API is `publicInclude/soundSystem/voiceCommunic
 | --- | --- | --- |
 | FMOD | through `gameLibs/soundSystem` | mic record, the playback DSPs, the echo reference DSP on the master channel group |
 | WebRTC APM | `3rdPartyLibs/webrtc-apm` (mid-2025 snapshot, local changes in `gaijin.patch`) | AEC3 echo cancellation, AGC2 gain, the noise suppressor of a build without RNNoise |
-| RNNoise | `3rdPartyLibs/codecs/rnnoise` | denoise and the speech probability for the speech gate, on every platform (`USE_RNNOISE_DENOISER` in the jamfile) |
+| RNNoise | `3rdPartyLibs/codecs/rnnoise` | denoise and the speech probability for the speech gate, on every platform (`USE_RNNOISE_DENOISER` in the CMakeLists) |
 | SpeexDSP 1.2.0 | `3rdPartyLibs/codecs/speexdsp-1.2.0` | the resamplers: capture to output rate, source to mixer rate, mixer to capture rate |
 | Opus 1.1 | `3rdPartyLibs/codecs/opus-1.1`, wrapped by `gameLibs/voiceChatCodecs/opus` | proximity voice encode and decode, concealment, inband FEC |
 | Dear ImGui | `3rdPartyLibs/imgui`, `engine/imgui` | the metrics overlay, dev and dbg builds only |
@@ -55,7 +55,7 @@ on the whole processed span after that loop:
 1. AEC3 echo cancellation (`echoAP`). Before the mic frame, the processor gives the ready frames of the echo
    reference to `ProcessReverseStream`.
 2. Record volume.
-3. RNNoise denoise, which also gives a speech probability. The jamfile sets `USE_RNNOISE_DENOISER` on every
+3. RNNoise denoise, which also gives a speech probability. The CMakeLists sets `USE_RNNOISE_DENOISER` on every
    platform; a build without it uses the WebRTC noise suppressor and has no speech gate.
 4. AGC2 adaptive digital gain (`gainAP`).
 5. Speech detector and gate (`SpeechDetector`, `SpeechGate`). The closed gate opens after

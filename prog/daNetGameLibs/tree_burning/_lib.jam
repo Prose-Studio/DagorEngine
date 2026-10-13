@@ -1,2 +1,0 @@
-gamePulls += framework_tree_burning_pull ;
-UseProgLibs += daNetGameLibs/tree_burning ;

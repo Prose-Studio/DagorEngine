@@ -2567,7 +2567,7 @@ static void register_base_vars(lcexpr::NameMap &vm, uint16_t &nv, lcexpr::VarTyp
 // saveData) but writes directly into the sampler instead of going through a
 // BinDumpSaveCB roundtrip. PropPanel's CubicPolynomCB / CubicPSplineCB live in
 // libTools/propPanel/commonWindow/w_curve_math.h -- private to libTools, but
-// HeightmapLand's jamfile adds that path so we can use them here without
+// HeightmapLand's CMakeLists adds that path so we can use them here without
 // duplicating the cubic-spline solver.
 static void build_curve_sampler(CubicCurveSampler &out, const TypedVar &v)
 {

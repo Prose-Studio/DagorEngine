@@ -20,7 +20,7 @@
 #include "game/gameEvents.h"
 #include <util/dag_finally.h>
 
-#define INSIDE_RENDERER 1 // fixme: move to jam
+#define INSIDE_RENDERER 1 // fixme: define it for the renderer's sources in the build
 
 #include "animCharRenderUtil.h"
 #include <shaders/dag_dynSceneRes.h>

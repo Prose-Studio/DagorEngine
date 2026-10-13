@@ -1,6 +1,6 @@
 # daNetGame: the framework of the games on it (the client or the dedicated server of a game tree, DAGOR_DEDICATED),
 # which link it with their own code (dagor_add_dng_game). Its switches are the tree's (DagorGame.cmake); those that
-# jam turned off in Rel are generator expressions here, so these lists have parts that only some configurations build.
+# off in Rel are generator expressions here, so these lists have parts that only some configurations build.
 set(deps)
 set(pulls)
 set(system_libs)
@@ -115,7 +115,7 @@ if(DAGOR_GAME_RENDERER)
 else()
   list(APPEND deps gameLibs.render.animatedSplashScreen.stub)
 endif()
-# the camera manager, ambient occlusion and multi-line debug labels (their _lib.jam)
+# the camera manager, ambient occlusion and multi-line debug labels
 if(DAGOR_GAME_RENDERER)
   list(APPEND deps gameLibs.cameraManager gameLibs.render.ambientOcclusion)
   list(APPEND pulls framework_cameraManager_pull)
@@ -281,7 +281,7 @@ file(CONFIGURE OUTPUT "${gen}/dasAot.cpp" CONTENT "#include <stddef.h>\n${text}"
 list(APPEND generated "${gen}/dasAot.cpp")
 
 # --- the library -----------------------------------------------------------------------------------------------------
-# the precompiled header (jam: Windows, Dev and Dbg only); not on Apple platforms, whose SDK has no <malloc.h>
+# the precompiled header (Windows, Dev and Dbg only); not on Apple platforms, whose SDK has no <malloc.h>
 set(pch)
 if(CMAKE_SYSTEM_NAME MATCHES "^(Linux|Windows)$")
   set(pch precompile.h)

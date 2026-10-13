@@ -1,4 +1,0 @@
-if $(HaveRenderer) = yes {
-  gamePulls += framework_tiled_map_pull ;
-  UseProgLibs += daNetGameLibs/tiled_map ;
-}

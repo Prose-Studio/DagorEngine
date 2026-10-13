@@ -1,4 +1,4 @@
-# Ported from prog/gameLibs/userSystemInfo/jamfile (jam2cmake/skeleton.py; no Steam or Epic store libraries in the fork)
+# The user system info (no Steam or Epic store libraries in the fork)
 list(APPEND deps 3rdPartyLibs.openssl-3.x)
 if(WIN32)
   list(APPEND libs System::iphlpapi System::rpcrt4 System::wbemuuid)

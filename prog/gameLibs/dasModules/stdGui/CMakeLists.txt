@@ -2,7 +2,7 @@ if(WIN32)
   list(APPEND options /wd4548)
 endif()
 if(DAGOR_DAS_AOT_COMPILER)
-  list(APPEND defines DAS_AOT_COMPILER) # the AOT compiler's stubs (prog/gameLibs/dasModules/module_common.jam)
+  list(APPEND defines DAS_AOT_COMPILER) # the AOT compiler's stubs
 endif()
 
 dagor_add_target(NAME gameLibs.dasModules.stdGui STATIC

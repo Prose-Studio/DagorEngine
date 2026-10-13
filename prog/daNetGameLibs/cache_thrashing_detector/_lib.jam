@@ -1,4 +1,0 @@
-if $(HaveRenderer) = yes {
-  gamePulls += framework_cache_thrashing_detector_pull ;
-  UseProgLibs += daNetGameLibs/cache_thrashing_detector ;
-}

@@ -31,7 +31,7 @@ elements in flight cannot branch separately. A loop full of `v_dot3`, horizontal
 | PC client | Main build: Windows x86-64, SSE4.1. SSE4.1 is the compatibility floor; a typical PC is Skylake/Zen or newer with AVX2+FMA. Favor recent big cores, but laptop and budget chips have few or no P-cores, so the small-core guidance applies to them too. |
 | Current consoles | Xbox Series X/S and PS5, AMD Zen2: Scarlett builds with `-march=znver2` (PS5 Sony clang targets the same CPU). AVX2+FMA+BMI2 with real 256-bit datapaths. |
 | Previous consoles | Xbox One and PS4, AMD Jaguar: Xbox One builds with `-march=btver2 -mno-bmi2` (PS4 Sony clang targets the same CPU). AVX but no FMA and no BMI2; 256-bit ops are slow (2x128). |
-| Servers | Linux x64, `-march=haswell`: AVX2+FMA+BMI2 (`skyquake/prog/jamfile`). |
+| Servers | Linux x64, `-march=haswell`: AVX2+FMA+BMI2 (`DAGOR_MARCH`). |
 | Mobile | ARMv8, mostly Android, first-class: NEON code quality matters as much as SSE. |
 | Switch | AArch64 Cortex-A57: 128-bit ASIMD without the A53/A55 64-bit split, but asymmetric pipes. Integer SIMD dual-issues more than FP; 128-bit FP FMA is ~1/cycle (half of A76+), 128-bit integer multiply ~0.5/cycle; FP divide blocks for 7-32 cycles. |
 

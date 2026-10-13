@@ -1056,7 +1056,7 @@ uint32_t ESModuleGroupData::es_resolve_function_ptrs(EsContext *ctx, dag::Vector
     aotSystems += isCompiled ? 1 : 0;
 #if DAGOR_DBGLEVEL > 1 || DAECS_EXTENSIVE_CHECKS // we can't get logs from consoles in release
     // Only complain about a missing AOT entry when this binary was built with AOT
-    // codegen linked in (per jamfile's $(NeedDasAotCompile) selecting aot.cpp vs
+    // codegen linked in (DAGOR_DAS_AOT selecting aot.cpp vs
     // aotstub.cpp); otherwise every non-debug ES would log a line per reload.
     if (!isCompiled && aot_mode_is_required == AotModeIsRequired::YES && ::NEED_DAS_AOT_COMPILE)
       debug("daScript: register_es %s<%s>%s, with 0x%X update mask and %d%s events before<%s> after<%s> tags=<%s> , tracked "

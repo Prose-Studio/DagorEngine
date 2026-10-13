@@ -1608,7 +1608,7 @@ VECTORCALL VECMATH_FINLINE int v_test_vec_x_le_0(vec3f v);
 // Native F16C is supported on the vast majority of modern x86-64 platforms (>96%) including XBox One and PS4.
 // Not every processor with AVX supports F16C, but every processor with F16C support also has AVX. AVX2 implies F16C support.
 // Default Dagor builds using SSE4 or AVX will fall back to software-emulated Float16 conversions unless F16C is explicitly
-// enabled for a specific *.cpp in jamfile. If you want use HW acceleration, manual check for F16C flag support and fallback
+// enabled for a specific *.cpp in its CMakeLists. If you want use HW acceleration, manual check for F16C flag support and fallback
 // to software emulated code also required.
 // On ARM (AArch64), all processors supported by vecmath library provide fast native half-to-float and float-to-half (RTNE)
 // conversions. Other rounding modes are partially emulated in software.

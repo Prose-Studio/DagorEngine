@@ -1,4 +1,4 @@
-# A benchmark of Quirrel's ECS-computed values (ecsFrpBench), next to its sources as jam built it
+# A benchmark of Quirrel's ECS-computed values (ecsFrpBench), next to its sources
 dagor_add_target(NAME ecsFrpBench EXECUTABLE NO_CONFIG_POSTFIX
   OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
   FILES_CMAKE bench_files.cmake

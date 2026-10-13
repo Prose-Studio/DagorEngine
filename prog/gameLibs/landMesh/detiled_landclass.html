@@ -761,7 +761,7 @@ detail {
   </ul>
 
   <h3>The testLandClass harness</h3>
-  <p>This is where you tune without a re-export. It lives in <code>samples/testLandClass</code>: build <code>prog</code> with jam, compile its shaders (<code>../../../../tools/dagor_cdk/windows-x86_64/dsc2-dx12-dev.exe ./shaders_dx12.blk -shaderOn</code> in <code>prog/shaders</code>, which writes <code>game/compiledShaders/gameDX12</code>), run the exe in <code>game</code>, and point it at a level through <code>settings.blk</code> or a <code>-config</code> override. Then edit the de-tiling live from the console and look.</p>
+  <p>This is where you tune without a re-export: a game that renders the level edits the de-tiling live from the console. (Upstream's <code>samples/testLandClass</code> harness is not in this repository.)</p>
   <div class="tw">
     <table>
       <thead><tr><th class="mono">Command</th><th>What it does</th></tr></thead>

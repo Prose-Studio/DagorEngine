@@ -1,5 +1,5 @@
 # The tree's options. A build tree is one variant of the engine, which its preset names (DAGOR_VARIANT): the variant
-# gives the options below their defaults (jam's per-variant globals) and decides which programs the default build makes
+# gives the options below their defaults and decides which programs the default build makes
 # (prog/CMakeLists.txt). Every option applies to every target of the tree.
 include_guard(GLOBAL)
 
@@ -57,7 +57,7 @@ if(DAGOR_VARIANT STREQUAL "game")
     set(_linux_server ON)
   endif()
 elseif(NOT DAGOR_VARIANT STREQUAL "tests")
-  set(_tools ON) # prog/tools/tools_setup.jam: SSE2 on Windows, precise floating point, Bullet
+  set(_tools ON) # the tools: SSE2 on Windows, precise floating point, Bullet
 endif()
 
 # --- code generation -------------------------------------------------------------------------------------------------
@@ -71,7 +71,7 @@ if(_tools)
   set(_fp precise)
 endif()
 dagor_option(DAGOR_FP_MODEL ${_fp} "Floating point model" CHOICES fast precise strict)
-# Linux x86_64 games build for Haswell, the minimum of the servers and the clients (jam's MArch)
+# Linux x86_64 games build for Haswell, the minimum of the servers and the clients
 set(_march "")
 if(_game AND LINUX AND DAGOR_ARCH STREQUAL "x86_64")
   set(_march haswell)
@@ -84,7 +84,7 @@ if(DAGOR_VARIANT MATCHES "^(assets|editor)$")
 endif()
 dagor_option(DAGOR_KERNEL_LINKAGE ${_kernel} "The kernel linked into each program (static) or shared as daKernel (dynamic)"
   CHOICES static dynamic)
-set(_strict_aliasing OFF) # type-based alias analysis in every fast math build (jam's StrictAliasing)
+set(_strict_aliasing OFF) # type-based alias analysis in every fast math build
 if(DAGOR_FP_MODEL STREQUAL "fast")
   set(_strict_aliasing ON)
 endif()
@@ -95,7 +95,7 @@ set(_exceptions "Dev;Dbg")
 set(_checked "Dbg")
 set(_stack_protection "Dev;Dbg")
 if(_game)
-  set(_exceptions "") # daNetGame's games have none (prog/daNetGame/setup.jam)
+  set(_exceptions "") # daNetGame's games have none
   set(_checked "Dev;Dbg")
 elseif(DAGOR_VARIANT STREQUAL "tests")
   set(_exceptions "Dev;Rel;IRel;Dbg")
@@ -103,7 +103,7 @@ elseif(DAGOR_VARIANT STREQUAL "tests")
 elseif(DAGOR_VARIANT STREQUAL "maxplug")
   set(_exceptions "Dev;Rel;IRel;Dbg")
 elseif(DAGOR_VARIANT STREQUAL "editor")
-  set(_exceptions "Dev;Rel;IRel;Dbg") # daEditor3x and AssetViewer (their jamfiles)
+  set(_exceptions "Dev;Rel;IRel;Dbg") # daEditor3x and AssetViewer
   set(_checked "")
 endif()
 dagor_option(DAGOR_SANITIZE none "Sanitizer" CHOICES none address undefined thread leak memory)
@@ -154,7 +154,7 @@ if(DAGOR_VARIANT STREQUAL "dargbox")
 endif()
 option(DAGOR_SQ_VAR_TRACE "Quirrel variable tracing (dargbox's script debugging)" ${_sq_var_trace})
 
-# the 3d drivers of the tree's programs (jam's UseD3DMultiList): one is linked directly, several (or one with
+# the 3d drivers of the tree's programs: one is linked directly, several (or one with
 # DAGOR_D3D_MULTI_FORCED) through the multi-driver interface (drv3d_pc_multi, _TARGET_D3D_MULTI). A game client has the
 # drivers of its platform; the AOT compiler is headless.
 set(_d3d_valid_windows null stub vulkan DX11 DX12)
@@ -167,7 +167,7 @@ set(_d3d_client_linux vulkan)
 set(_d3d_client_macOS Metal)
 set(_d3d_client_iOS Metal)
 set(_d3d_client_android vulkan)
-# the GUI editors and dargbox render through the platform's drivers and the stub (jam's UseD3DMultiList of daEditor3x,
+# the GUI editors and dargbox render through the platform's drivers and the stub (daEditor3x,
 # AssetViewer, impostorBaker, dargbox)
 set(_d3d_editor_windows DX11 DX12 vulkan stub)
 set(_d3d_editor_linux vulkan stub)
@@ -204,7 +204,7 @@ set(_building_tools OFF)
 if(DAGOR_VARIANT MATCHES "^(assets|editor)$")
   set(_building_tools ON)
 endif()
-option(DAGOR_BUILDING_TOOLS "The tree builds the editor tools (jam's BuildingTools: a second bindump, ...)" ${_building_tools})
+option(DAGOR_BUILDING_TOOLS "The tree builds the editor tools (a second bindump, ...)" ${_building_tools})
 set(_cam_stub ON)
 if(_client)
   set(_cam_stub OFF)
@@ -214,7 +214,6 @@ dagor_option(DAGOR_CPP_STCODE both "Shader state code as C++ (both: with the int
   CHOICES both enable validate disable)
 option(DAGOR_CPP_STCODE_BRANCHED "C++ state code with dynamic branching" OFF)
 option(DAGOR_PROFILE_STCODE "Profile the shader state code" OFF)
-option(DAGOR_ES_CODEGEN "Generate the entity systems' registration code in the build; off compiles the committed <name>ES.cpp.gen.es.cpp files" ON)
 
 # development features in the programs' non-Rel builds
 option(DAGOR_NET_IMGUI "netImgui (remote ImGui) in the Dev, IRel and Dbg builds" ON)

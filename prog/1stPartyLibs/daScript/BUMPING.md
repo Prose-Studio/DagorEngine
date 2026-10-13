@@ -46,14 +46,14 @@ Rules that keep the subset curated:
   dasGlfw, dasOPENAI, dasOpenGL, dasStbImage).
 - **Preserve, do not overwrite**: `modules/dasImgui` and `modules/dasQuirrel` (generated
   here, against dagor's own imgui), `das_config.h` (dagor override: EASTL +
-  `ska::flat_hash_map`), every `jamfile`/`*.jam`, `dagorAdapter/`, `das-fmt/`,
+  `ska::flat_hash_map`), every `CMakeLists.txt`/`*.cmake`, `dagorAdapter/`, `das-fmt/`,
   `_colorer4/`, `far3colorer/`, `include/daScript/das_common.h`,
   `daslib/quirrel_boost.das`, and `utils/daScript/` except `main.cpp`. dagor's CLI
   `utils/daScript/main.cpp` is upstream's `utils/daslang/main.cpp`: copy it from there and
   re-apply its row in step 3.
 
-Of `src/hal`, dagor carries **`crash_handler.cpp` and nothing else**, and the `jamfile`
-names `src/hal` in its autoscan list with `project_specific_file_info.cpp` and
+Of `src/hal`, dagor carries **`crash_handler.cpp` and nothing else**, and `daScript_files.cmake`
+names `src/hal` in its glob with `project_specific_file_info.cpp` and
 `performance_time.cpp` in the exclusion regex. Do not "simplify" this into dropping the
 directory. `crash_handler.cpp` is what defines `das::print_current_stack_trace`, which
 `src/misc/gc_node.cpp` calls unconditionally from the gc break, so dropping it makes the
@@ -91,7 +91,7 @@ delete the row rather than leaving a future bump hunting for it.
 | `daslib/decs.das` | `[never_inline]` on `create_entities_from_cmp`. Auto-inline splices the block literal into the caller, and `ensure_capacity` - a generic from a privately required builtin - then fails privacy outside `decs` |
 | `daslib/debugger.das` | `@ignore_heap_usage` on `g_installed_agents`. Without it dagor's "global variable requires heap memory" check logs an error per script that requires the module, which is **fatal on WT** (`visualErr` asserts `!total_logerr` at shutdown) |
 | `daslib/debugger.das`, `daslib/quote.das`, `daslib/rtti.das`, `daslib/lint.das` | `options no_global_variables = false`. A mutable global in a daslib module otherwise fails every game script with `error[30930]` |
-| `modules/dasLLVM/daslib/llvm_aot.das`, `llvm_jit_run.das`, `llvm_jit_common.das` | an LLVM-AOT object defines the `aot_<obj>_pull` anchor jam's pull list links it in by, moves every `llvm.global_ctors` entry into `.init_array` on ELF (the C API leaves UseInitArray off, so the list lands in legacy `.ctors`, which lld and mold never run), and is written with the suffix jam names it by (`.obj` on windows). **Losing this breaks every LLVM-AOT game link** |
+| `modules/dasLLVM/daslib/llvm_aot.das`, `llvm_jit_run.das`, `llvm_jit_common.das` | an LLVM-AOT object defines the `aot_<obj>_pull` anchor the game's pull list links it in by, moves every `llvm.global_ctors` entry into `.init_array` on ELF (the C API leaves UseInitArray off, so the list lands in legacy `.ctors`, which lld and mold never run), and is written with the suffix the build names it by (`.obj` on windows). **Losing this breaks every LLVM-AOT game link** |
 | `modules/dasLLVM/daslib/llvm_macro.das`, `modules/dasLLVM/daslib/llvm_tune.das` | `options no_global_variables = false`, and `no_aliasing = false` on the tuner: its sidecar reader returns a table built from json values, which the aliasing pass sees as reaching json's null sentinel, so a host compiling with `no_aliasing` cannot load it |
 | `src/simulate/debug_info.cpp`, `include/daScript/simulate/debug_info.h`, `src/ast/ast_module.cpp` | `cppBindingLineInfo`'s cache is releasable and `Module::shutdownInternal` frees it once the last environment is gone. Upstream leaves ~2000 `FileInfo`s immortal behind an `AllocTrackerInternalGuard`, which hides them from das's own tracker but not from dagor's, and a dagor dev build **fails the run** on `!!! MEMORY LEAKS !!!`. Belongs upstream |
 | `utils/daScript/main.cpp` (copy of upstream `utils/daslang/main.cpp`) | no `modules/external_declare.inc` / `external_pull.inc` (dagor has no daspkg-generated modules), and the leaked-smart-pointer `exit(1)` sits under `#ifndef DAS_AOT_COMPILER` - game contexts live to exit by design |
@@ -140,7 +140,7 @@ These are not line patches - never overwrite them from upstream: `modules/dasImg
 generated files, built against dagor's own imgui) and `modules/dasQuirrel`.
 
 Roughly 185 tracked files here have no upstream counterpart at all: `das_config.h` (the
-EASTL / `ska::flat_hash_map` override), every `jamfile` and `*.jam`, `dagorAdapter/`,
+EASTL / `ska::flat_hash_map` override), every `CMakeLists.txt` and `*.cmake`, `dagorAdapter/`,
 `utils/daScript/` other than `main.cpp`, `das-fmt/`, `_colorer4/`, `far3colorer/`,
 `include/daScript/das_common.h`, `daslib/quirrel_boost.das`, and this file.
 
@@ -178,16 +178,16 @@ as a guide to the shape of the work:
   `LineInfo`) needs `das::cppBindingLineInfo()` at every C++ binding site.
 - A removed `Function` flag needs its setters removed from the binders here
   (`modules/dasImgui`, `modules/dasQuirrel`).
-- A macro upstream's CMake defines for every `libDaScript` target has no jam twin, so the
-  vendored `jamfile` has to define it: `DAS_ENABLE_DYN_INCLUDES=1` is one, and without it
+- A macro upstream's CMake defines for every `libDaScript` target has no twin in the Dagor build, so the
+  daScript `CMakeLists.txt` has to define it: `DAS_ENABLE_DYN_INCLUDES=1` is one, and without it
   `src/builtin/jit_runtime.cpp` calls `describe_pending_dynamic_modules` with the header its
   own `#ifdef` skipped.
 - A generated helper that moves to another module takes its visibility with it: `typeFactory<vector<TT>>`
   now registers `dasvector`TT`, `length` and the rest in the ELEMENT type's home module rather
   than `library.front()`, so a script that reaches such a vector through a wrapper module needs
   that module re-exported - `addBuiltinDependency(lib, require("<home>"), true)`.
-- A module dagor builds that gains an upstream source needs its `jamfile` updated: the
-  jamfiles are dagor-only and name every source, so a new file is silently not compiled and
+- A module dagor builds that gains an upstream source needs its `_files.cmake` updated: the
+  files lists are dagor-only and name every source, so a new file is silently not compiled and
   the module's own registration then fails to link. `modules/dasStdDlg` gained the tray API
   this way; dagor wires only the shared layer and `dasStdDlgTrayNotImplemented.cpp`, since no
   dagor host shows a tray icon and the linux backend wants libdbus-1 headers.
@@ -208,16 +208,17 @@ hand with C++ linkage, some of them `__cdecl`.
 
 Build with clang and keep the load down (`-j10`, or `-j15` under `nice`).
 
-1. `cd utils/daScript && jam -j10 -sPlatformSpec=clang` - builds `tools/util/das-dev`.
+1. `cd prog && cmake --preset linux-clang-tests && cmake --build --preset linux-clang-tests --target das` - builds
+   `build/linux-clang-tests/bin/das-dev`.
    Missing symbols here usually mean upstream split a file into new ones that step 2 did
-   not copy, or added a `src/` subdirectory that the `jamfile` autoscan list does not name.
+   not copy, or added a `src/` subdirectory that `daScript_files.cmake` does not name.
 2. The vendored suite, which is what the `dascompile` CI job runs:
 
-       cd tests && ../../../../tools/util/das-dev -dasroot .. \
+       cd tests && ../../../../build/linux-clang-tests/bin/das-dev -dasroot .. \
          _dasroot_/dastest/dastest.das -- --color --test .
 
-3. Each game's AOT tool: `cd <game>/prog/aot && jam -j8 -sPlatformSpec=clang -sConfig=dev
-   -sUseDlss=no`. Build the tool before using it; a pre-bump binary reads the new `daslib`
+3. Each game's AOT tool: `cd <game>/prog && cmake --preset linux-aot-compiler && cmake --build --preset
+   linux-aot-compiler`. Build the tool before using it; a pre-bump binary reads the new `daslib`
    and fails in ways that look like script bugs.
 4. Each game's `validateDascripts` arg set (see `validateDascripts.py`/`.bat` per game),
    with `--ast-verify-batch` added. Judge by `[E]` lines, not the exit code: a non-zero
@@ -245,9 +246,7 @@ Nothing in step 5 catches a bump that costs the game its AOT: the vendored suite
 tools and the `--ast-verify-batch` sweeps all pass while every entity system silently falls
 back to the interpreter. Build one game with C++ AOT and run it.
 
-    cd <game>/prog && jam -j8 -sPlatformSpec=clang -sConfig=dev -sUseDlss=no \
-        -sNeedDasAotCompile=yes
-    # repeat until it links: generated AOT sources are only picked up on a following pass
+    cd <game>/prog && cmake --preset linux-client && cmake --build --preset linux-client
     cd <game>/prog && ../../tools/dagor_cdk/linux-x86_64/vromfsPacker-dev prog.vromfs.blk
     cd ../game && ./linux64/<game>-dev gamedata/scenes/test_all.blk \
         -config:circuit:t=am-dev -config:game_das_enable_serialization:b=no \
@@ -280,8 +279,8 @@ If the counts are non-zero, they are hash mismatches, and the cause is one of:
   records hashes the runtime never computes. `cop.no_aliasing` is the one that has bitten:
   the runtime sets it, it gates `Program::patchInline`'s plain-call auto-inline tier, and
   without it in the driver the tool inlines what the game does not.
-- **A stale artifact.** `-sForceDasAotRebuild=yes` (`jBuild.jam`: `ALWAYS` on every AOT
-  target) regenerates every AOT source with the current compiler.
+- **A stale artifact.** Building the AOT targets with `--clean-first` regenerates every AOT source with the current
+  compiler.
 
 ## 7. Satisfy the CI checks that only exist in CI
 

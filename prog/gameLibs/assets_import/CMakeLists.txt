@@ -1,7 +1,7 @@
 list(APPEND deps Dagor::Phys)
 if(DAGOR_GAME_RENDERER)
   if(WIN32 AND DAGOR_GAME_ASSET_MANAGER)
-    # jam built daBuild into the game for it (DabuildEmbeddedInGame) and the shaders with a second bindump
+    # daBuild built into the game for it and the shaders with a second bindump
     message(FATAL_ERROR "gameLibs/assets_import: the in-game asset manager (DAGOR_GAME_ASSET_MANAGER) is not ported yet")
   endif()
 endif()

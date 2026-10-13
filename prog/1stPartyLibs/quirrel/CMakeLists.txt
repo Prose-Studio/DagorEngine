@@ -1,5 +1,5 @@
 # Quirrel, the engine's script language: the VM and its libraries (quirrel/), and what the code that uses it links
-# (jam's add_quirrel.jam): Dagor::QuirrelHeaders, its headers and settings; Dagor::Quirrel, those with the VM, its module
+# Dagor::QuirrelHeaders, its headers and settings; Dagor::Quirrel, those with the VM, its module
 # system and the engine's Quirrel host
 dagor_add_target(NAME 1stPartyLibs.quirrel.headers HEADERONLY
   INCLUDE_DIRECTORIES INTERFACE

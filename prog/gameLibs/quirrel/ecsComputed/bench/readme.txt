@@ -68,7 +68,7 @@ independent read of the components.
 
 Built and run in place, from this directory. Measure with the release config,
 the dev config skews timing:
-  jam -sConfig=rel
+  cmake --build --preset <host>-tests --config Rel --target ecsFrpBench
   ecsFrpBench.exe -mode:pull -shape:map -entities:8 -changes:4
 
 Measured 2026-08-14, windows x86_64 rel build (vc17), event-carried-copies

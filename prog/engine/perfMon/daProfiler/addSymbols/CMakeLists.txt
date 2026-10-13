@@ -1,4 +1,4 @@
-# addSymbols: adds the symbols of the programs to a daProfiler dump (tools/util, as jam built it)
+# addSymbols: adds the symbols of the programs to a daProfiler dump (tools/util)
 dagor_add_target(NAME addSymbols EXECUTABLE LAX
   OUTPUT_DIRECTORY ${DAGOR_ENGINE_ROOT}/tools/util
   FILES_CMAKE addSymbols_files.cmake

@@ -91,7 +91,7 @@ void RenderDocCaptureModule::endCapture()
 const char *RenderDocCaptureModule::getLibName()
 {
 #if _TARGET_ANDROID
-  // To get access to this lib just add following line to jamfile
+  // To get access to this lib just add the following include dir to the CMakeLists
   // AndroidRenderDocLayer = yes ;
   return "libVkLayer_GLES_RenderDoc.so";
 

@@ -27,7 +27,7 @@ dagor_add_target(NAME daBuild-job EXECUTABLE LAX
   BUILD_DEPENDENCIES PRIVATE ${program_deps} 3rdPartyLibs.arc.zlib-ng
   CDK
 )
-# the library of the editors (named daBuild too; its debug info is daBuild-dll.pdb, as jam named it)
+# the library of the editors (named daBuild too; its debug info is daBuild-dll.pdb)
 dagor_add_target(NAME daBuildLib SHARED LAX
   OUTPUT_NAME daBuild
   FILES_CMAKE assetExp_files.cmake

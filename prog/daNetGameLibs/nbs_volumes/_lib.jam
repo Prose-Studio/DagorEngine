@@ -1,4 +1,0 @@
-if $(HaveRenderer) = yes {
-  gamePulls += framework_nbs_volumes_pull ;
-  UseProgLibs += daNetGameLibs/nbs_volumes ;
-}

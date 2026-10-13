@@ -1,4 +1,4 @@
-# the daNetGameLibs of AssetViewer (dirs in prog/daNetGameLibs, its _libs.jam)
+# the daNetGameLibs of AssetViewer (dirs in prog/daNetGameLibs)
 render_debug
 cables
 screen_vhs

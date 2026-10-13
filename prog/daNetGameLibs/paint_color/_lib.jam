@@ -1,4 +1,0 @@
-if $(HaveRenderer) = yes {
-  gamePulls += daNetGameLibs_paint_color_DAS_pull_AOT ;
-  UseProgLibs += daNetGameLibs/paint_color ;
-}

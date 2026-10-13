@@ -1,6 +1,6 @@
 if(WIN32)
   list(APPEND options /wd4548)
-  list(APPEND defines "$<$<NOT:$<CONFIG:Rel>>:ANIM_PBC_HOT_RELOAD_ENABLED>") # jam had it on Windows only
+  list(APPEND defines "$<$<NOT:$<CONFIG:Rel>>:ANIM_PBC_HOT_RELOAD_ENABLED>")
 endif()
 
 dagor_add_target(NAME gameLibs.dasModules.generic STATIC

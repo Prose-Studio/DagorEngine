@@ -29,9 +29,9 @@ SLASH = ('//', '/*')
 HASH = ('#',)
 COMMENT_STYLES = {
   '.cpp': SLASH, '.h': SLASH, '.inl': SLASH, '.c': SLASH, '.java': SLASH, '.nut': SLASH, '.das': SLASH, '.dshl': SLASH,
-  '.blk': SLASH, '.py': HASH, '.jam': HASH, '.yaml': HASH, '.yml': HASH, '.txt': (), '.cmake': HASH, '.json': (),
+  '.blk': SLASH, '.py': HASH, '.yaml': HASH, '.yml': HASH, '.txt': (), '.cmake': HASH, '.json': (),
 }
-HASH_COMMENTED_NAMES = ('jamfile', 'CMakeLists.txt')
+HASH_COMMENTED_NAMES = ('CMakeLists.txt',)
 
 # {repo-relative path: why the hosts there are kept}; an entry must still have findings, so it is dropped once fixed
 ALLOWLIST = {
@@ -70,7 +70,7 @@ def code_lines(text, style):
         i += 2
       else:
         i += 1
-    elif c == '\\' and i + 1 < n and text[i + 1] != '\n':  # escapes in strings, and jam's \# outside of them
+    elif c == '\\' and i + 1 < n and text[i + 1] != '\n':  # escapes in strings, and CMake's \# outside of them
       cur.append(text[i:i + 2])
       i += 2
     elif quote:

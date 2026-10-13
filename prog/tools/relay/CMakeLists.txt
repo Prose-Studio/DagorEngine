@@ -1,4 +1,4 @@
-# The network relay server of daNet (jam built it into a project's game dir; here into the tree's bin)
+# The network relay server of daNet (into the tree's bin)
 dagor_add_target(NAME relay EXECUTABLE LAX
   FILES_CMAKE relay_files.cmake
   INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/3rdPartyLibs/enet/include

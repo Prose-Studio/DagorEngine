@@ -141,7 +141,7 @@ int DagorWinMain(bool /*debugmode*/)
   }
 
   char buf[512];
-  // the jamfile builds the exe into this directory, so game/ sits next to it
+  // the build puts the exe into this directory, so game/ sits next to it
   eastl::string path(dd_get_fname_location(buf, dgs_argv[0]));
   dd_add_base_path(path.c_str());
 

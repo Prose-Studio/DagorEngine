@@ -1,4 +1,4 @@
-# netImgui (remote ImGui) for the engine's ImGui libraries, outside Rel (jam's addNetImgui.jam): sets
+# netImgui (remote ImGui) for the engine's ImGui libraries, outside Rel: sets
 # NET_IMGUI_DEFINES, NET_IMGUI_INCLUDES and NET_IMGUI_DEPS
 set(NET_IMGUI_DEFINES)
 set(NET_IMGUI_INCLUDES)
