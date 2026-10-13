@@ -6851,7 +6851,9 @@ void WorldRenderer::changeFeatures(const FeatureRenderFlagMask &f)
   if (changedFeatures.test(FeatureRenderFlags::VOLUME_LIGHTS))
   {
     resetVolumeLights();
-    volfog_load_from_resources(root_fog_graph, volumeLightLowRange, volumeLightHighRange, volumeLightLowHeight, volumeLightHighHeight);
+    if (!root_fog_graph.empty()) // the level's fog graph, when it has one
+      volfog_load_from_resources(root_fog_graph, volumeLightLowRange, volumeLightHighRange, volumeLightLowHeight,
+        volumeLightHighHeight);
     reapplySettings |= true;
   }
 
