@@ -26,7 +26,7 @@
 # keywords and _DAGOR_TARGET_OPTIONS, _ONE_VALUE and _MULTI_VALUE, and passes on what _dagor_target_arguments() gives.
 #
 # HEADERONLY is an INTERFACE library (usage requirements only), APPLICATION a GUI program (WIN32: no console window on
-# Windows), STATIC the default.
+# Windows; on Android the shared library of its NativeActivity, dagor_android_apk), STATIC the default.
 #
 # Targets are named after their directory under prog/, '/' as '.' (prog/engine/math: engine.math), and linked by those
 # names. The defaults:
@@ -100,7 +100,11 @@ function(dagor_add_target)
     endforeach()
   endforeach()
 
-  if(arg_EXECUTABLE)
+  if(arg_EXECUTABLE AND arg_APPLICATION AND ANDROID)
+    # an Android app is the shared library its NativeActivity loads, through the kernel's app glue
+    add_library(${target} SHARED ${FILES})
+    target_link_options(${target} PRIVATE LINKER:-u,ANativeActivity_onCreate)
+  elseif(arg_EXECUTABLE)
     set(kind)
     if(arg_APPLICATION)
       list(APPEND kind WIN32)
@@ -128,7 +132,7 @@ function(dagor_add_target)
   _dagor_target_defaults(${target})
   get_property(type TARGET ${target} PROPERTY TYPE)
   cmake_path(IS_PREFIX DAGOR_PROG_DIR "${CMAKE_CURRENT_SOURCE_DIR}" NORMALIZE in_engine)
-  if(type MATCHES "^(STATIC_LIBRARY|OBJECT_LIBRARY)$" OR (type STREQUAL "EXECUTABLE" AND in_engine))
+  if(type MATCHES "^(STATIC_LIBRARY|OBJECT_LIBRARY)$" OR (arg_EXECUTABLE AND in_engine))
     if(NOT DAGOR_BUILD_ALL)
       set_property(TARGET ${target} PROPERTY EXCLUDE_FROM_ALL ON)
     endif()
@@ -233,7 +237,7 @@ endfunction()
 # the defaults of every target (the calling function's arg_LAX)
 macro(_dagor_target_defaults target)
   set_property(TARGET ${target} APPEND PROPERTY TRANSITIVE_LINK_PROPERTIES DAGOR_LICENSE_FILES DAGOR_RUNTIME_FILES
-    DAGOR_GAME_PULLS)
+    DAGOR_GAME_PULLS DAGOR_ANDROID_JAVA)
   get_property(_dagor_type TARGET ${target} PROPERTY TYPE)
   # a program's own licenses are not listed in its LICENSE file; LICENSES replace those of the dir
   if(NOT _dagor_type STREQUAL "EXECUTABLE" AND NOT arg_LICENSES)

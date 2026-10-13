@@ -4,7 +4,8 @@ dagor_compile_definitions(1 _TARGET_ANDROID ANDROID_NDK ANDROID _TARGET_64BIT _T
 dagor_compile_definitions("${_cxx}" __STDC_INT64__)
 dagor_compile_options("${_c_cxx}" -fpic -fno-data-sections -Wno-pointer-sign -Wno-varargs -Wno-pointer-bool-conversion
   -Wno-nullability-completeness -Wno-c++17-compat-mangling -Wno-unsupported-floating-point-opt -Wno-ignored-pragmas)
-dagor_link_options("${_linked}" LINKER:--gc-sections LINKER:-z,noexecstack)
+# 16 KB pages: what Android 15 devices may use, and what Google Play asks of apps
+dagor_link_options("${_linked}" LINKER:--gc-sections LINKER:-z,noexecstack LINKER:-z,max-page-size=16384)
 dagor_system_library(log android)
 foreach(_lib System::log System::android System::dl System::m)
   link_libraries("$<${_linked}:${_lib}>")

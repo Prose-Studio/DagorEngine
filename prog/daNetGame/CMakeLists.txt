@@ -220,7 +220,8 @@ else()
     set(system_libs System::ws2_32 System::shlwapi)
   elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
   elseif(NOT LINUX)
-    message(FATAL_ERROR "daNetGame: the ${DAGOR_PLATFORM} client is not ported yet")
+    message(FATAL_ERROR "daNetGame has no ${DAGOR_PLATFORM} client: its platform libraries (gameLibs/ios, "
+      "gameLibs/android: accounts, billing, the platform's services) are not part of the engine's sources")
   endif()
   # keyboard, mouse and game controllers
   list(APPEND deps engine.drv.hid_keyboard engine.drv.hid_mouse)

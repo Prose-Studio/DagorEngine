@@ -36,7 +36,7 @@ its content and a multiplayer game's dedicated server.
 | `cdk` | the command-line tools of the content pipeline on the static kernel and the dag4blend add-on; the `cdk` install component puts them in `tools/dagor_cdk/<platform>-<arch>` (the add-on in `tools/dagor_cdk/universal`) |
 | `assets` | the asset build on daKernel (the shared kernel): daBuild with its exporter plugins, ddsxCvt2 |
 | `editor` | the GUI editors on daKernel: daEditor3x with its plugins, AssetViewer, impostorBaker; blkEditor and plodGen on Windows |
-| `dargbox` | the daRg sandbox with its shaders and vromfs, in `tools/dargbox` |
+| `dargbox` | the daRg sandbox with its shaders and vromfs, in `tools/dargbox`; cross-built, its APK (`android-dargbox`, `dagor_android_apk`) and its iOS app bundle (`ios-dargbox`) |
 | `maxplug` | opt-in, not in the `windows` preset: the 3ds Max plugin of each 3ds Max SDK found, 2025 and later (`DAGOR_MAX_VERSIONS`, `MaxSDK_<version>_ROOT`) |
 | `game` | a project's game: its presets `<host>-client`, `<host>-dedicated`, `<host>-aot-compiler` |
 

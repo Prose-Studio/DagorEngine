@@ -1,6 +1,6 @@
 # dargbox, the daRg sandbox: runs daRg UI scripts with live reload (the dargbox tree), in tools/dargbox/<platform>-<arch>
-# (on Android and iOS tools/dargbox/<platform>, on macOS the app bundle in tools/dargbox), with the tree's 3d drivers
-# and, on Windows, VR (DAGOR_VR)
+# (on Android its APK and on iOS its app bundle in tools/dargbox/<platform>, on macOS the app bundle in tools/dargbox),
+# with the tree's 3d drivers and, on Windows, VR (DAGOR_VR)
 set(out ${DAGOR_ENGINE_ROOT}/tools/dargbox/${DAGOR_PLATFORM}-${DAGOR_ARCH})
 if(ANDROID OR IOS)
   set(out ${DAGOR_ENGINE_ROOT}/tools/dargbox/${DAGOR_PLATFORM})
@@ -34,8 +34,6 @@ elseif(LINUX)
   list(APPEND deps engine.drv.hid_mouse engine.drv.hid_keyboard engine.drv.hid_joystick_linux
     engine.osApiWrappers.messageBox)
 elseif(ANDROID)
-  # TODO(android): the APK (com.gaijinent.dargbox: the Java activities of platform/android.bundle, the vromfs and
-  # shaders in its assets)
   list(APPEND deps engine.drv.hid_android engine.drv.hid_nulldrv)
 elseif(IOS)
   list(APPEND deps engine.drv.hid_iOS engine.drv.hid_nulldrv System::AVFoundation)
@@ -59,15 +57,15 @@ dagor_add_target(NAME dargbox EXECUTABLE APPLICATION LAX
   BUILD_DEPENDENCIES PRIVATE ${deps} Dagor::Quirrel
   PROPERTIES ${properties}
 )
-# its content in tools/dargbox: the shaders of the 3d drivers the host's dargbox renders with, and the vromfs of its
-# scripts
+# its content in tools/dargbox: the shaders of the 3d drivers the platform's dargbox renders with, and the vromfs of its
+# scripts (the iOS app bundle carries no content)
 set(shaders ${DAGOR_ENGINE_ROOT}/tools/dargbox/shaders)
 if(WIN32)
   dagor_add_shaders(dargbox-shaders-dx11 COMPILER dsc2-hlsl11 BLK shaders/shaders_dx11.blk OUTPUT ${shaders}/game)
   dagor_add_shaders(dargbox-shaders-dx12 COMPILER dsc2-dx12 BLK shaders/shaders_dx12.blk OUTPUT ${shaders}/gameDX12)
   dagor_build_by_default(dargbox-shaders-dx11 dargbox-shaders-dx12)
 endif()
-if(CMAKE_SYSTEM_NAME MATCHES "^(Linux|Windows)$")
+if(CMAKE_SYSTEM_NAME MATCHES "^(Linux|Windows|Android)$")
   dagor_add_shaders(dargbox-shaders-spirv COMPILER dsc2-spirv BLK shaders/shaders_spirv.blk OUTPUT ${shaders}/gameSpirV)
   dagor_build_by_default(dargbox-shaders-spirv)
 endif()
@@ -75,14 +73,27 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
   dagor_add_shaders(dargbox-shaders-metal COMPILER dsc2-metal BLK shaders/shaders_metal.blk OUTPUT ${shaders}/gameMTL)
   dagor_build_by_default(dargbox-shaders-metal)
 endif()
-if(NOT CMAKE_CROSSCOMPILING)
+if(NOT IOS)
   dagor_add_content_step(dargbox-vromfs TOOL vromfsPacker ARGS darg.vromfs.blk -platform:PC -quiet
     COMMENT "dargbox's vromfs")
   dagor_build_by_default(dargbox-vromfs)
 endif()
 
-if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+if(APPLE)
   dagor_apple_bundle(dargbox NAME dargbox ID com.gaijinent.dargbox)
-elseif(IOS)
-  # TODO(ios): the app bundle (com.gaijinent.dargbox)
+elseif(ANDROID)
+  # the APK: the activities of platform/android.bundle, the vromfs of the scripts and of the platform's settings, the
+  # Vulkan shaders
+  dagor_add_content_step(dargbox-vromfs-android TOOL vromfsPacker ARGS android.vromfs.blk -platform:and -quiet
+    COMMENT "dargbox's Android vromfs")
+  set(java platform/android.bundle/src)
+  set(dargbox_dir ${DAGOR_ENGINE_ROOT}/tools/dargbox)
+  dagor_android_apk(dargbox ID com.gaijinent.dargbox ACTIVITY com.gaijinent.dargbox.Dargbox LABEL Dargbox
+    PERMISSIONS INTERNET ACCESS_NETWORK_STATE ACCESS_WIFI_STATE VIBRATE
+    JAVA ${java}/Dargbox.java ${java}/DagorCommonActivity.java ${java}/DagorBaseActivity.java
+    ASSETS
+      "dargbox.vromfs.bin|${dargbox_dir}/dargbox.vromfs.bin" "android.vromfs.bin|${dargbox_dir}/android.vromfs.bin"
+      "shaders/gameSpirV.ps50.shdump.bin|${shaders}/gameSpirV.ps50.shdump.bin"
+    DEPENDS dargbox-vromfs dargbox-vromfs-android dargbox-shaders-spirv)
+  dagor_build_by_default(dargbox.apk)
 endif()

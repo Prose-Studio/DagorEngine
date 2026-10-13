@@ -405,6 +405,22 @@
       ]
     },
     {
+      "name": "android-dargbox",
+      "inherits": [
+        "engine",
+        "toolchain-android",
+        "variant-dargbox"
+      ]
+    },
+    {
+      "name": "ios-dargbox",
+      "inherits": [
+        "engine",
+        "toolchain-ios",
+        "variant-dargbox"
+      ]
+    },
+    {
       "name": "macos-universal-cdk",
       "inherits": [
         "engine",
@@ -713,6 +729,16 @@
     {
       "name": "macos-dargbox",
       "configurePreset": "macos-dargbox",
+      "configuration": "Dev"
+    },
+    {
+      "name": "android-dargbox",
+      "configurePreset": "android-dargbox",
+      "configuration": "Dev"
+    },
+    {
+      "name": "ios-dargbox",
+      "configurePreset": "ios-dargbox",
       "configuration": "Dev"
     },
     {
@@ -1437,6 +1463,32 @@
         {
           "type": "build",
           "name": "macos-dargbox"
+        }
+      ]
+    },
+    {
+      "name": "android-dargbox",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "android-dargbox"
+        },
+        {
+          "type": "build",
+          "name": "android-dargbox"
+        }
+      ]
+    },
+    {
+      "name": "ios-dargbox",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "ios-dargbox"
+        },
+        {
+          "type": "build",
+          "name": "ios-dargbox"
         }
       ]
     },

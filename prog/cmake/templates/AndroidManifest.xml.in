@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The manifest of an APK of dagor_android_apk(): a NativeActivity app on Vulkan, its code in lib@DAGOR_APK_LIB@.so -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+  package="@DAGOR_APK_ID@"
+  android:versionCode="@DAGOR_APK_VERSION_CODE@"
+  android:versionName="@DAGOR_APK_VERSION@">
+  <uses-sdk android:minSdkVersion="@DAGOR_ANDROID_API@" android:targetSdkVersion="@DAGOR_ANDROID_TARGET_API@" />
+@DAGOR_APK_PERMISSIONS@
+  <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
+  <uses-feature android:name="android.hardware.gamepad" android:required="false" />
+  <uses-feature android:name="android.hardware.vulkan.compute" android:version="0" android:required="true" />
+  <uses-feature android:name="android.hardware.vulkan.level" android:version="0" android:required="true" />
+  <uses-feature android:name="android.hardware.vulkan.version" android:version="0x400003" android:required="true" />
+  <application @DAGOR_APK_ICON@android:label="@string/app_name" android:extractNativeLibs="true" android:hasCode="true">
+    <activity
+      android:name="@DAGOR_APK_ACTIVITY@"
+      android:launchMode="singleTask"
+      android:label="@string/app_name"
+      android:configChanges="orientation|screenSize|uiMode|keyboard|keyboardHidden|mcc|mnc"
+      android:alwaysRetainTaskState="true"
+      android:clearTaskOnLaunch="false"
+      android:hardwareAccelerated="true"
+      android:resizeableActivity="false"
+      android:screenOrientation="@DAGOR_APK_ORIENTATION@"
+      android:exported="true"
+      android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
+      <meta-data android:name="android.app.lib_name" android:value="@DAGOR_APK_LIB@" />
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+        <category android:name="android.intent.category.LAUNCHER" />
+      </intent-filter>
+    </activity>
+  </application>
+</manifest>

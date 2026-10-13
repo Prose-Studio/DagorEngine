@@ -5,7 +5,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 elseif(LINUX)
   set(FILES linuxMessageBox.cpp)
 elseif(ANDROID)
-  set(FILES and_MessageBox.cpp) # TODO(phase5): MessageBoxWrapper.java and android_mb.proguard go into the APK
+  set(FILES and_MessageBox.cpp)
 elseif(IOS)
   set(FILES iosMessageBox.mm)
 endif()

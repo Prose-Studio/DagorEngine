@@ -67,4 +67,18 @@ the tools load at runtime and that is not built (the editors' `commonData`,
 dargbox's fonts and UI) is part of the repository, in `prog/tools/toolsData`.
 [Build System](build_system.md) describes how the build is organized.
 
+dargbox also cross-builds for the mobile platforms, with the host's tools for
+its content:
+
+```text
+cmake --workflow --preset android-dargbox      its APK, in tools/dargbox/android
+cmake --workflow --preset ios-dargbox          its app bundle, in tools/dargbox/iOS (on macOS)
+```
+
+Android needs the Android SDK with the NDK, build tools and the platform of
+API level 35 (`sdkmanager "ndk;<version>" "build-tools;<version>"
+"platforms;android-35"`; `ANDROID_HOME` names the SDK) and a JDK 17. The APK
+is signed with the Android debug keystore unless `DAGOR_ANDROID_KEYSTORE` names
+another (`cmake/scripts/android_apk.py`).
+
 To start a game of your own, see [Creating a Project](new_project.md).
