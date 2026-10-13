@@ -10,6 +10,7 @@
 #include <mach/mach_time.h>
 #include <sys/sysctl.h>
 #include <sys/mman.h>
+#include <unistd.h>
 #include <errno.h>
 #else
 #include "LinearMath/btAlignedAllocator.h"
@@ -116,7 +117,8 @@ double TicksToSeconds(uint64_t delta)
 #pragma mark -
 #pragma mark GuardCalloc
 
-#define kPageSize 4096
+// the guard pages are whole pages of the system (16 KiB on Apple silicon, where 4096 protected the data next to them)
+#define kPageSize ((size_t)sysconf(_SC_PAGESIZE))
 
 typedef struct BufInfo
 {
