@@ -5,6 +5,7 @@ them: the dedicated server, or a single-player game headless on the stub driver 
 import json
 import os
 from pathlib import Path
+import re
 import signal
 import shutil
 import subprocess
@@ -62,7 +63,7 @@ def main(argv):
         if not os.access(launcher, os.X_OK):
           raise RuntimeError('launcher is not executable: {}'.format(launcher))
       if sys.platform == 'darwin' and not dedicated:
-        bundle, = root.glob('*.app')
+        bundle, = root.glob('*/*.app')  # in <platform>-<arch>/, as the program elsewhere
         subprocess.run(['codesign', '--verify', '--deep', '--strict', str(bundle)], check=True)
       if archive == tested:
         # Test support is intentionally absent from production archives. Supply only
@@ -71,7 +72,13 @@ def main(argv):
         shutil.copytree(engine / 'prog' / '1stPartyLibs' / 'daScript' / 'dastest', root / 'dastest')
         shutil.copytree(engine / 'prog' / 'daNetGameLibs' / 'test_harness', root / 'danetlibs' / 'test_harness')
         out = project / 'build' / 'package-checks' / 'ecs'
-        command = ['cmd.exe', '/d', '/c', launcher.name] if os.name == 'nt' else [str(launcher)]
+        if os.name != 'nt':
+          command = [str(launcher)]
+        elif dedicated:
+          command = ['cmd.exe', '/d', '/c', launcher.name]
+        else:  # the client's launcher starts it detached (start): the program it names
+          program, = re.findall(r'"%~dp0([^"]+)"', launcher.read_text(encoding='utf-8'))
+          command = [str(root / program)]
         if not dedicated:
           command += ['-config:video/driver:t=stub', '-config:input/hidDriversInit:i=-7']
         command += ['-stdout', '-quiet', '-nolisten', '-nostatsd', '-nonetenc', '-nopeerauth',
