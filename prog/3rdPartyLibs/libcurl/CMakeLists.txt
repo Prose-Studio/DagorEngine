@@ -1,12 +1,4 @@
 # libcurl (HTTP and WebSockets) on the vendored OpenSSL 3, zlib-ng, zstd and brotli
-set(includes
-  lib
-  include
-  ${DAGOR_PROG_DIR}/3rdPartyLibs/arc/zlib-ng
-  ${DAGOR_PROG_DIR}/3rdPartyLibs/arc/zstd-1.4.5
-  ${DAGOR_PROG_DIR}/3rdPartyLibs/arc/brotli/include
-)
-list(APPEND deps 3rdPartyLibs.arc.zlib-ng 3rdPartyLibs.arc.zstd-1.4.5 3rdPartyLibs.arc.brotli)
 if(WIN32)
   list(APPEND libs System::ws2_32 System::crypt32 System::bcrypt)
 endif()
@@ -14,8 +6,6 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
   list(APPEND options -Wno-deprecated-declarations)
   list(APPEND libs "$<LINK_LIBRARY:FRAMEWORK,SystemConfiguration>")
 endif()
-list(APPEND includes ${DAGOR_PROG_DIR}/3rdPartyLibs/openssl-3.x/include)
-list(APPEND deps 3rdPartyLibs.openssl-3.x)
 set(c_options
   -DCURL_STATICLIB
   -DBUILDING_LIBCURL
@@ -52,10 +42,12 @@ endif()
 
 dagor_add_target(NAME 3rdPartyLibs.libcurl STATIC LAX
   FILES_CMAKE libcurl_files.cmake
-  INCLUDE_DIRECTORIES PRIVATE ${includes}
+  INCLUDE_DIRECTORIES PRIVATE
+    lib include ${DAGOR_PROG_DIR}/3rdPartyLibs/arc/zlib-ng ${DAGOR_PROG_DIR}/3rdPartyLibs/arc/zstd-1.4.5
+    ${DAGOR_PROG_DIR}/3rdPartyLibs/arc/brotli/include ${DAGOR_PROG_DIR}/3rdPartyLibs/openssl-3.x/include
   COMPILE_DEFINITIONS PRIVATE ${defines}
   COMPILE_OPTIONS PRIVATE ${options} "$<$<COMPILE_LANGUAGE:C>:${c_options}>"
   BUILD_DEPENDENCIES
     PUBLIC ${libs}
-    PRIVATE ${deps}
+    PRIVATE 3rdPartyLibs.arc.zlib-ng 3rdPartyLibs.arc.zstd-1.4.5 3rdPartyLibs.arc.brotli 3rdPartyLibs.openssl-3.x
 )

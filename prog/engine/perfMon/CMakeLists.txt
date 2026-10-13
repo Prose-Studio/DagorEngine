@@ -1,7 +1,7 @@
 # Performance monitoring: profiler modes and settings, statistics, memory reports, platform events, the GPU profiler.
 # Programs without a 3d driver set the DAGOR_NO_GPU target property: they get the GPU profiler stub
 # (engine/perfMon/gpuProfilerStub) instead of gpuProfiler.cpp, see dagor_add_link_choice().
-set(includes ${DAGOR_PROG_DIR}/engine/sharedInclude ${DAGOR_PROG_DIR}/engine/perfMon)
+set(includes ${DAGOR_PROG_DIR}/engine/perfMon)
 dagor_add_target(NAME engine.perfMon.gpuProfiler STATIC
   FILES_CMAKE gpuProfiler_files.cmake
   INCLUDE_DIRECTORIES PRIVATE ${includes}

@@ -9,7 +9,7 @@ endif()
 dagor_add_target(NAME das_ecs_test EXECUTABLE
   FILES_CMAKE dasEcsUnitTest_files.cmake
   INCLUDE_DIRECTORIES PRIVATE
-    . ${DAGOR_PROG_DIR}/engine/dagorInclude ${DAGOR_PROG_DIR}/gameLibs/publicInclude
+    .
     ${DAGOR_PROG_DIR}/1stPartyLibs/daScript/include
   COMPILE_DEFINITIONS PRIVATE "DAS_ECS_TEST_ENGINE_ROOT=\"${DAGOR_ENGINE_ROOT}\""
   BUILD_DEPENDENCIES PRIVATE

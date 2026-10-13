@@ -18,7 +18,6 @@ dagor_add_target(NAME shaderInfo EXECUTABLE LAX
     ${DAGOR_PROG_DIR}/engine/shaders ${DAGOR_PROG_DIR}/engine/sharedInclude
     ${DAGOR_PROG_DIR}/tools/ShaderCompiler2/shaderBlobDisassembler/include ${DAGOR_PROG_DIR}/gameLibs/publicInclude
     ${DAGOR_PROG_DIR}/3rdPartyLibs/vulkan/include ${DAGOR_PROG_DIR}/3rdPartyLibs/rapidjson/include
-    ${DAGOR_PROG_DIR}/tools/sharedInclude
   COMPILE_DEFINITIONS PRIVATE SET_DEFAULT_MAX_SHVARS=8192
   BUILD_DEPENDENCIES
     PUBLIC ${libs}

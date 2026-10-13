@@ -7,7 +7,7 @@ endif()
 dagor_add_target(NAME engine.image STATIC LAX
   FILES_CMAKE image_files.cmake
   INCLUDE_DIRECTORIES PRIVATE
-    ${DAGOR_PROG_DIR}/engine/sharedInclude ${DAGOR_PROG_DIR}/3rdPartyLibs/arc/zlib-ng
+    ${DAGOR_PROG_DIR}/3rdPartyLibs/arc/zlib-ng
     ${DAGOR_PROG_DIR}/3rdPartyLibs/binPack2D/include ${DAGOR_PROG_DIR}/3rdPartyLibs/image/avif/include
     ${DAGOR_PROG_DIR}/3rdPartyLibs/convert/fastDXT
   COMPILE_OPTIONS PRIVATE ${options}

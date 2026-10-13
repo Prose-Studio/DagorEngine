@@ -7,7 +7,7 @@ endif()
 dagor_add_target(NAME gameLibs.render.denoiser STATIC
   FILES_CMAKE denoiser_files.cmake
   INCLUDE_DIRECTORIES PRIVATE
-    ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/3rdPartyLibs/math/sse2neon
+    ${DAGOR_PROG_DIR}/3rdPartyLibs/math/sse2neon
     ${DAGOR_PROG_DIR}/3rdPartyLibs/math/MathLib ${DAGOR_PROG_DIR}/3rdPartyLibs/NRD
   # sse2neon's advisory #warning is fatal as an error
   COMPILE_DEFINITIONS PRIVATE SSE2NEON_SUPPRESS_WARNINGS

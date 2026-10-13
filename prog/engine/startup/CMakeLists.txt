@@ -6,6 +6,6 @@ list(APPEND deps 3rdPartyLibs.eastl)
 
 dagor_add_target(NAME engine.startup STATIC LAX
   FILES_CMAKE startup_files.cmake
-  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/engine/sharedInclude ${DAGOR_PROG_DIR}/3rdPartyLibs
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/3rdPartyLibs
   BUILD_DEPENDENCIES PRIVATE ${deps}
 )

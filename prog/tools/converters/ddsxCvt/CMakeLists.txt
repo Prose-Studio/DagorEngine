@@ -7,7 +7,6 @@ endif()
 
 dagor_add_target(NAME ddsxCvt EXECUTABLE LAX NO_CONFIG_POSTFIX
   FILES_CMAKE ddsxCvt_files.cmake
-  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/tools/sharedInclude
   BUILD_DEPENDENCIES PRIVATE ${deps}
   CDK
 )

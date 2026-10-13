@@ -30,7 +30,6 @@ endif()
 foreach(vars vars varsMock varsStub)
   dagor_add_target(NAME engine.shaders.${vars} STATIC LAX
     FILES_CMAKE ${vars}_files.cmake
-    INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/engine/sharedInclude
     COMPILE_DEFINITIONS PRIVATE ${defines}
   )
 endforeach()
@@ -39,7 +38,6 @@ dagor_add_link_select(engine.shaders.variables PROPERTY DAGOR_SHADER_VARS DEFAUL
 
 dagor_add_target(NAME engine.shaders STATIC LAX
   FILES_CMAKE shaders_files.cmake
-  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/engine/sharedInclude
   COMPILE_DEFINITIONS PRIVATE ${defines}
   BUILD_DEPENDENCIES PRIVATE
     engine.shaders.variables 3rdPartyLibs.eastl 3rdPartyLibs.meshoptimizer 3rdPartyLibs.hash.BLAKE3

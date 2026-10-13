@@ -13,7 +13,7 @@ endif()
 dagor_add_target(NAME gameLibs.render.omm STATIC LAX
   FILES_CMAKE omm_files.cmake
   INCLUDE_DIRECTORIES PRIVATE
-    ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/3rdPartyLibs/omm_sdk/include
+    ${DAGOR_PROG_DIR}/3rdPartyLibs/omm_sdk/include
     ${DAGOR_PROG_DIR}/3rdPartyLibs/omm_sdk/src ${DAGOR_PROG_DIR}/3rdPartyLibs/omm_sdk/shaders
     ${DAGOR_PROG_DIR}/3rdPartyLibs/stb ${DAGOR_PROG_DIR}/3rdPartyLibs/hash ${DAGOR_PROG_DIR}/3rdPartyLibs/arc/lz4
   COMPILE_DEFINITIONS PRIVATE

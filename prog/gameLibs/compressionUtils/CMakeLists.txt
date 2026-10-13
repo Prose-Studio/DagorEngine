@@ -4,7 +4,7 @@
 dagor_add_target(NAME gameLibs.compressionUtils STATIC LAX
   FILES_CMAKE compressionUtils_files.cmake
   INCLUDE_DIRECTORIES PRIVATE
-    ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/gameLibs/publicInclude/compressionUtils
+    ${DAGOR_PROG_DIR}/gameLibs/publicInclude/compressionUtils
     ${DAGOR_PROG_DIR}/engine/sharedInclude ${DAGOR_PROG_DIR}/tools/sharedInclude
     ${DAGOR_PROG_DIR}/3rdPartyLibs/arc/zlib-ng ${DAGOR_PROG_DIR}/3rdPartyLibs/arc/zstd-1.4.5
     ${DAGOR_PROG_DIR}/3rdPartyLibs/openssl-3.x/include

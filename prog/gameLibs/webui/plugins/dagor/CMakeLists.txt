@@ -5,6 +5,6 @@ endif()
 dagor_add_target(NAME gameLibs.webui.plugins.dagor STATIC
   FILES_CMAKE dagor_files.cmake
   INCLUDE_DIRECTORIES PRIVATE
-    ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/gameLibs/webui ${DAGOR_PROG_DIR}/dagorInclude
+    ${DAGOR_PROG_DIR}/gameLibs/webui
   COMPILE_DEFINITIONS PRIVATE ${defines}
 )

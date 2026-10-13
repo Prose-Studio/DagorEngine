@@ -1,13 +1,4 @@
 # Ported from prog/gameLibs/userSystemInfo/jamfile (jam2cmake/skeleton.py; no Steam or Epic store libraries in the fork)
-set(includes
-  ${DAGOR_PROG_DIR}/gameLibs/publicInclude
-  ${DAGOR_PROG_DIR}/gameLibs/publicInclude/compressionUtils
-  ${DAGOR_PROG_DIR}/1stPartyLibs/jsoncpp/include
-  ${DAGOR_PROG_DIR}/3rdPartyLibs
-  ${DAGOR_PROG_DIR}/engine/sharedInclude
-  ${DAGOR_PROG_DIR}/tools/sharedInclude
-)
-list(APPEND includes ${DAGOR_PROG_DIR}/3rdPartyLibs/openssl-3.x/include)
 list(APPEND deps 3rdPartyLibs.openssl-3.x)
 if(WIN32)
   list(APPEND libs System::iphlpapi System::rpcrt4 System::wbemuuid)
@@ -29,7 +20,10 @@ endif()
 
 dagor_add_target(NAME gameLibs.userSystemInfo STATIC LAX
   FILES_CMAKE userSystemInfo_files.cmake
-  INCLUDE_DIRECTORIES PRIVATE ${includes}
+  INCLUDE_DIRECTORIES PRIVATE
+    ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/gameLibs/publicInclude/compressionUtils
+    ${DAGOR_PROG_DIR}/1stPartyLibs/jsoncpp/include ${DAGOR_PROG_DIR}/3rdPartyLibs ${DAGOR_PROG_DIR}/engine/sharedInclude
+    ${DAGOR_PROG_DIR}/tools/sharedInclude ${DAGOR_PROG_DIR}/3rdPartyLibs/openssl-3.x/include
   COMPILE_DEFINITIONS PRIVATE ${defines}
   BUILD_DEPENDENCIES
     PUBLIC ${libs}

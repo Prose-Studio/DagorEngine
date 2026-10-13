@@ -7,7 +7,6 @@ endif()
 
 dagor_add_target(NAME gameLibs.heightmap STATIC LAX
   FILES_CMAKE heightmap_files.cmake
-  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/gameLibs/publicInclude
   COMPILE_DEFINITIONS PRIVATE ${defines}
   BUILD_DEPENDENCIES PRIVATE engine.heightMapLand gameLibs.frustumCulling
 )

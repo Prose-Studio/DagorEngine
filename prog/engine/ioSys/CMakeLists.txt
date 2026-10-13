@@ -14,7 +14,7 @@ endif()
 dagor_add_target(NAME engine.ioSys STATIC
   FILES_CMAKE ioSys_files.cmake
   INCLUDE_DIRECTORIES PRIVATE
-    ${DAGOR_PROG_DIR}/engine/sharedInclude ${DAGOR_PROG_DIR}/3rdPartyLibs/arc/zlib-ng
+    ${DAGOR_PROG_DIR}/3rdPartyLibs/arc/zlib-ng
     ${DAGOR_PROG_DIR}/3rdPartyLibs/arc/zstd-1.4.5 ${DAGOR_PROG_DIR}/3rdPartyLibs/arc/brotli/include
   COMPILE_DEFINITIONS PRIVATE __B_KERNEL_LIB USE_ZLIB_VER=0xFF0000
   BUILD_DEPENDENCIES PRIVATE ${deps}

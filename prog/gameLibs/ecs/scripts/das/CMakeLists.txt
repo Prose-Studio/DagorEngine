@@ -12,7 +12,6 @@ endif()
 dagor_add_target(NAME gameLibs.ecs.scripts.das STATIC
   FILES_CMAKE das_files.cmake
   INCLUDE_DIRECTORIES PRIVATE
-    ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/engine/dagorInclude
     ${DAGOR_PROG_DIR}/1stPartyLibs/daScript/include ${DAGOR_PROG_DIR}/gameLibs/publicInclude/quirrel
     ${DAGOR_PROG_DIR}/1stPartyLibs/jsoncpp/include
   COMPILE_DEFINITIONS PRIVATE ${defines}

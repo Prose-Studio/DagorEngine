@@ -3,7 +3,6 @@
 # jam turned off in Rel are generator expressions here, so these lists have parts that only some configurations build.
 set(deps)
 set(pulls)
-set(includes)
 set(system_libs)
 
 # _dng_not(<out> <cond>): the negation of a condition
@@ -110,7 +109,6 @@ list(APPEND deps engine.startup engine.coreUtil engine.math engine.lib3d engine.
   gameLibs.render.indoorProbes gameLibs.gpuMemoryDumper gameLibs.resourcePool gameLibs.render.autoGraphics
   gameLibs.gpuMemoryInspector gameLibs.ecs.debug # the ECS debug tools (their pull: ecsDebug)
 )
-list(APPEND includes ${DAGOR_PROG_DIR}/gameLibs/render/animatedSplashScreen/public_api)
 if(DAGOR_GAME_RENDERER)
   list(APPEND deps gameLibs.render.animatedSplashScreen gameLibs.render.cameraInCamera)
   list(APPEND pulls framework_cameraInCamera_pull)
@@ -124,7 +122,6 @@ if(DAGOR_GAME_RENDERER)
 else()
   list(APPEND deps gameLibs.cameraManager.stub)
 endif()
-list(APPEND includes ${DAGOR_PROG_DIR}/gameLibs/render/ambientOcclusion)
 list(APPEND deps gameLibs.render.debugMultiTextLabels)
 
 if(DAGOR_GAME_DNG_INPUT)
@@ -293,7 +290,8 @@ dagor_add_target(NAME daNetGame STATIC
   FILES_CMAKE daNetGame_files.cmake
   INCLUDE_DIRECTORIES PRIVATE
     ${DAGOR_DNG_INCLUDES} ${DAGOR_PROG_DIR}/3rdPartyLibs/openssl-3.x/include ${DAGOR_PROG_DIR}/engine/sharedInclude
-    ${DAGOR_PROG_DIR}/engine ${DAGOR_PROG_DIR}/gameLibs ${includes}
+    ${DAGOR_PROG_DIR}/engine ${DAGOR_PROG_DIR}/gameLibs ${DAGOR_PROG_DIR}/gameLibs/render/animatedSplashScreen/public_api
+    ${DAGOR_PROG_DIR}/gameLibs/render/ambientOcclusion
   COMPILE_DEFINITIONS PRIVATE DISABLE_SYNC_DEBUG # the fork has no gameLibs/syncDebug
   COMPILE_OPTIONS PRIVATE ${DAGOR_DNG_OPTIONS}
   BUILD_DEPENDENCIES

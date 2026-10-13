@@ -5,7 +5,7 @@ endif()
 
 dagor_add_target(NAME tools.libTools.util STATIC LAX
   FILES_CMAKE util_files.cmake
-  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/tools/sharedInclude ${DAGOR_PROG_DIR}/gameLibs/publicInclude
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/gameLibs/publicInclude
   BUILD_DEPENDENCIES
     PUBLIC ${libs}
     PRIVATE 3rdPartyLibs.hash 3rdPartyLibs.regExp

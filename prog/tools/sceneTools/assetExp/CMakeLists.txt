@@ -5,7 +5,7 @@ if(NOT DAGOR_KERNEL_LINKAGE STREQUAL "dynamic" OR DAGOR_SANITIZE STREQUAL "addre
   return()
 endif()
 
-set(includes ${DAGOR_PROG_DIR}/tools/sharedInclude ${DAGOR_PROG_DIR}/engine/sharedInclude ${DAGOR_PROG_DIR}/engine)
+set(includes ${DAGOR_PROG_DIR}/engine/sharedInclude ${DAGOR_PROG_DIR}/engine)
 set(program_deps engine.startup engine.math engine.gameRes engine.lib3d engine.drv.drv3d_null
   engine.perfMon.daProfilerStub tools.libTools.assetMgr tools.libTools.assetMgrHlp tools.libTools.util
   tools.libTools.dtx 3rdPartyLibs.hash tools.libTools.daKernel)

@@ -1,6 +1,5 @@
 dagor_add_target(NAME gameLibs.contentUpdater.utils STATIC
   FILES_CMAKE utils_files.cmake
-  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/gameLibs/publicInclude
   BUILD_DEPENDENCIES PRIVATE Dagor::Quirrel
 )
 # the updater's version numbers have one digit after the dot

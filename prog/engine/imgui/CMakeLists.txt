@@ -8,7 +8,7 @@ foreach(build standard testEngine)
   endif()
   dagor_add_target(NAME engine.imgui.${build} STATIC LAX
     FILES_CMAKE imgui_files.cmake
-    INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/engine/sharedInclude ${NET_IMGUI_INCLUDES}
+    INCLUDE_DIRECTORIES PRIVATE ${NET_IMGUI_INCLUDES}
     COMPILE_DEFINITIONS PRIVATE ${defines}
     BUILD_DEPENDENCIES PRIVATE 3rdPartyLibs.imgui ${NET_IMGUI_DEPS}
   )

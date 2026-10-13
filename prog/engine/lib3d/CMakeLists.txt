@@ -21,7 +21,7 @@ endif()
 dagor_add_target(NAME engine.lib3d STATIC
   FILES_CMAKE lib3d_files.cmake
   INCLUDE_DIRECTORIES PRIVATE
-    ${DAGOR_PROG_DIR}/engine/sharedInclude ${DAGOR_PROG_DIR}/3rdPartyLibs/binPack2D/include
+    ${DAGOR_PROG_DIR}/3rdPartyLibs/binPack2D/include
     ${DAGOR_PROG_DIR}/engine/drv/drv3d_commonCode
   COMPILE_DEFINITIONS PRIVATE ${defines}
   BUILD_DEPENDENCIES PRIVATE ${deps}

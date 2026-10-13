@@ -2,6 +2,6 @@
 dagor_add_target(NAME gameLibs.render.lights STATIC LAX
   FILES_CMAKE lights_files.cmake
   INCLUDE_DIRECTORIES PRIVATE
-    ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${CMAKE_CURRENT_SOURCE_DIR} ${DAGOR_PROG_DIR}/gameLibs/render/shaders
+    ${CMAKE_CURRENT_SOURCE_DIR} ${DAGOR_PROG_DIR}/gameLibs/render/shaders
     ${DAGOR_PROG_DIR}/3rdPartyLibs/binPack2D/include
 )

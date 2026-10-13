@@ -2,5 +2,5 @@
 dagor_add_target(NAME engine.perfMon.perfTimerStub STATIC
   FILES_CMAKE perfTimerStub_files.cmake
   INCLUDE_DIRECTORIES PRIVATE
-    ${DAGOR_PROG_DIR}/engine/sharedInclude ${DAGOR_PROG_DIR}/engine/perfMon ${DAGOR_PROG_DIR}/engine/perfMon/daProfiler
+    ${DAGOR_PROG_DIR}/engine/perfMon ${DAGOR_PROG_DIR}/engine/perfMon/daProfiler
 )

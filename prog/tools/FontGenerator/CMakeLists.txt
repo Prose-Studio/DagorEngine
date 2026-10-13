@@ -9,7 +9,7 @@ endif()
 dagor_add_target(NAME fontgen2 EXECUTABLE LAX
   FILES_CMAKE FontGenerator_files.cmake
   INCLUDE_DIRECTORIES PRIVATE
-    ${DAGOR_PROG_DIR}/3rdPartyLibs/freetype/freetype-2.8/include ${DAGOR_PROG_DIR}/tools/sharedInclude
+    ${DAGOR_PROG_DIR}/3rdPartyLibs/freetype/freetype-2.8/include
     ${DAGOR_PROG_DIR}/engine/sharedInclude
   BUILD_DEPENDENCIES PRIVATE ${deps}
   CDK

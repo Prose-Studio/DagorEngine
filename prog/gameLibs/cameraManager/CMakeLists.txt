@@ -6,6 +6,6 @@ if(DAGOR_GAME_RENDERER)
 endif()
 dagor_add_dng_module(NAME gameLibs.cameraManager
   FILES_CMAKE cameraManager_files.cmake
-  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/gameLibs ${DAGOR_PROG_DIR}/gameLibs/publicInclude
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/gameLibs
   BUILD_DEPENDENCIES PRIVATE ${deps}
 )

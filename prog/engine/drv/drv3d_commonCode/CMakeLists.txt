@@ -1,7 +1,7 @@
 # Code the 3d drivers share: GPU and display info, base textures, the resource checker, vendor integrations (NVAPI,
 # AMD anti-lag and FSR, Streamline), hang handling
 set(drivers ${DAGOR_D3D_DRIVERS})
-set(includes ${DAGOR_PROG_DIR}/engine/sharedInclude ${DAGOR_PROG_DIR}/engine/drv/drv3d_commonCode)
+set(includes ${DAGOR_PROG_DIR}/engine/drv/drv3d_commonCode)
 set(defines)
 if(DAGOR_D3D_MULTI AND drivers STREQUAL "stub")
   list(APPEND defines D3D_STUB_DRIVER_ONLY)

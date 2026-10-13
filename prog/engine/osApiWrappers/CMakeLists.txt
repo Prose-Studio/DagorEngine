@@ -4,7 +4,7 @@
 # stubs otherwise. A program chooses with the DAGOR_LINUX_GUI target property (dagor_add_target(... PROPERTIES
 # DAGOR_LINUX_GUI ON)), or gets ON from a library that sets INTERFACE_DAGOR_LINUX_GUI (the Vulkan driver); see
 # dagor_add_link_choice().
-set(includes ${DAGOR_PROG_DIR}/engine/sharedInclude)
+set(includes)
 set(deps)
 set(libs)
 set(options)

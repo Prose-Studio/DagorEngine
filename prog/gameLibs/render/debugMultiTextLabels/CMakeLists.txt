@@ -5,6 +5,6 @@ if(DAGOR_GAME_RENDERER)
 endif()
 dagor_add_dng_module(NAME gameLibs.render.debugMultiTextLabels
   FILES_CMAKE debugMultiTextLabels_files.cmake
-  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/gameLibs ${DAGOR_PROG_DIR}/gameLibs/publicInclude
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/gameLibs
   BUILD_DEPENDENCIES PRIVATE ${deps}
 )

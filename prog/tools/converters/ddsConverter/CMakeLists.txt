@@ -8,7 +8,6 @@ endif()
 
 dagor_add_target(NAME ddsConverter EXECUTABLE LAX
   FILES_CMAKE ddsConverter_files.cmake
-  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/tools/sharedInclude
   BUILD_DEPENDENCIES PRIVATE ${deps}
   CDK
 )

@@ -13,7 +13,7 @@ foreach(driver IN LISTS DAGOR_D3D_DRIVERS)
 endforeach()
 dagor_add_target(NAME engine.drv.drv3d_pc_multi STATIC
   FILES_CMAKE drv3d_pc_multi_files.cmake
-  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/engine/sharedInclude ${DAGOR_PROG_DIR}/engine/drv/drv3d_commonCode
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/engine/drv/drv3d_commonCode
   COMPILE_DEFINITIONS PRIVATE ${defines}
   BUILD_DEPENDENCIES PRIVATE engine.drv.drv3d_commonCode ${driver_deps}
 )

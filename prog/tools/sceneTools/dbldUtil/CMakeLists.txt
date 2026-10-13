@@ -12,7 +12,7 @@ endif()
 dagor_add_target(NAME dbldUtil EXECUTABLE LAX
   FILES_CMAKE dbldUtil_files.cmake
   INCLUDE_DIRECTORIES PRIVATE
-    ${DAGOR_PROG_DIR}/tools/sharedInclude ${DAGOR_PROG_DIR}/engine ${DAGOR_PROG_DIR}/gameLibs/publicInclude
+    ${DAGOR_PROG_DIR}/engine ${DAGOR_PROG_DIR}/gameLibs/publicInclude
   BUILD_DEPENDENCIES PRIVATE ${deps}
   CDK
 )

@@ -8,7 +8,7 @@ endif()
 
 dagor_add_target(NAME binBlk EXECUTABLE LAX NO_CONFIG_POSTFIX
   FILES_CMAKE utils_files.cmake
-  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/tools/sharedInclude ${DAGOR_PROG_DIR}/3rdPartyLibs/openssl-3.x/include
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/3rdPartyLibs/openssl-3.x/include
   BUILD_DEPENDENCIES PRIVATE ${deps}
   CDK
 )

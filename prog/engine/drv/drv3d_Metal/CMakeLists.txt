@@ -9,7 +9,7 @@ endif()
 
 dagor_add_target(NAME engine.drv.drv3d_Metal STATIC LAX
   FILES_CMAKE drv3d_Metal_files.cmake
-  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/engine/sharedInclude ${DAGOR_PROG_DIR}/engine/drv/drv3d_commonCode
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/engine/drv/drv3d_commonCode
   COMPILE_DEFINITIONS PRIVATE ${defines}
   BUILD_DEPENDENCIES
     PUBLIC ${system_libs}

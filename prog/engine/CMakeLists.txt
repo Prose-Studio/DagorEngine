@@ -1,4 +1,6 @@
-# the modules of prog/engine
+# the modules of prog/engine, which all compile against the engine's internal headers (engine/sharedInclude: one dir
+# per subsystem, nothing at its top to shadow a module's own headers)
+include_directories(${DAGOR_PROG_DIR}/engine/sharedInclude)
 add_subdirectory(ADT)
 add_subdirectory(anim)
 add_subdirectory(animChar)

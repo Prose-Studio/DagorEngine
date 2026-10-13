@@ -1,5 +1,7 @@
 # the modules of prog/tools: the tools' libraries (the games' embedded editor and vromfs packing use some), the Python
-# tools' tests, and the programs of the tool variants
+# tools' tests, and the programs of the tool variants; they all compile against the tools' headers (tools/sharedInclude:
+# one dir per library, nothing at its top to shadow a module's own headers)
+include_directories(${DAGOR_PROG_DIR}/tools/sharedInclude)
 add_subdirectory(libTools/ambientOcclusion)
 add_subdirectory(libTools/assetMgr)
 add_subdirectory(libTools/assetMgrHlp)

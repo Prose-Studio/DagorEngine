@@ -7,7 +7,7 @@ endif()
 
 dagor_add_target(NAME resCleanUtil EXECUTABLE LAX
   FILES_CMAKE resClean_files.cmake
-  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/engine ${DAGOR_PROG_DIR}/tools/sharedInclude
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/engine
   BUILD_DEPENDENCIES PRIVATE ${deps}
   CDK
 )

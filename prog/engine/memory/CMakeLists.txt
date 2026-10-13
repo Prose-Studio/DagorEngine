@@ -19,7 +19,7 @@ function(_engine_memory allocator debug)
   endif()
 
   set(defines __B_KERNEL_LIB)
-  set(includes ${DAGOR_PROG_DIR}/engine/sharedInclude)
+  set(includes)
   set(deps)
 
   if(allocator MATCHES "^(rtl|minrtl)$")

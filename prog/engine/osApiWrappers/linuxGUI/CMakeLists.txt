@@ -25,7 +25,6 @@ endif()
 
 dagor_add_target(NAME engine.osApiWrappers.linuxGUI STATIC
   FILES_CMAKE linuxGUI_files.cmake
-  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/engine/sharedInclude
   COMPILE_DEFINITIONS PRIVATE ${defines}
   BUILD_DEPENDENCIES
     PUBLIC ${libs}

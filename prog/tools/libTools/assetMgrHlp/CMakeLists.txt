@@ -4,7 +4,7 @@ foreach(variant "" .emb)
   set(name tools.libTools.assetMgrHlp${variant})
   dagor_add_target(NAME ${name} STATIC LAX
     FILES_CMAKE assetMgrHlp_files.cmake
-    INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/tools/sharedInclude ${DAGOR_PROG_DIR}/engine/sharedInclude
+    INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/engine/sharedInclude
     BUILD_DEPENDENCIES PRIVATE 3rdPartyLibs.hash
   )
 endforeach()

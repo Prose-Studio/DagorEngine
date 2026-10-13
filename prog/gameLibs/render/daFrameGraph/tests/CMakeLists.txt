@@ -9,7 +9,7 @@ endif()
 dagor_add_catch2_test(NAME daFrameGraph-tests
   TIMEOUT 1200 TAGS gameLibs render ARGS --gpu-driver stub
   FILES_CMAKE tests_files.cmake
-  INCLUDE_DIRECTORIES PRIVATE .. ${DAGOR_PROG_DIR}/gameLibs/publicInclude
+  INCLUDE_DIRECTORIES PRIVATE ..
   COMPILE_OPTIONS PRIVATE ${options}
   BUILD_DEPENDENCIES PRIVATE
     engine.memory engine.kernel engine.osApiWrappers engine.coreUtil engine.baseUtil engine.ioSys engine.math

@@ -8,7 +8,7 @@ endif()
 
 dagor_add_target(NAME guiTex EXECUTABLE LAX
   FILES_CMAKE GuiTex_files.cmake
-  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/tools/sharedInclude ${DAGOR_PROG_DIR}/engine/sharedInclude
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/engine/sharedInclude
   BUILD_DEPENDENCIES PRIVATE ${deps}
   CDK
 )

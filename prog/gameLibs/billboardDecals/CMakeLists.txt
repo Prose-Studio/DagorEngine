@@ -4,7 +4,7 @@ endif()
 
 dagor_add_target(NAME gameLibs.billboardDecals STATIC
   FILES_CMAKE billboardDecals_files.cmake
-  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${CMAKE_CURRENT_SOURCE_DIR}
+  INCLUDE_DIRECTORIES PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
   COMPILE_DEFINITIONS PRIVATE ${defines}
   BUILD_DEPENDENCIES PRIVATE engine.lib3d gameLibs.decalMatrices
 )

@@ -1,6 +1,6 @@
 # BVH ray tracing (DAGOR_GAME_BVH), or its stub. The parts of the scene it covers are features, each with its stub;
 # DAGOR_BVH_STUBS lists those a tree builds as stubs (a game's: DagorGame.cmake).
-set(includes ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/1stPartyLibs/jsoncpp/include)
+set(includes ${DAGOR_PROG_DIR}/1stPartyLibs/jsoncpp/include)
 if(NOT DAGOR_GAME_BVH)
   dagor_add_target(NAME gameLibs.bvh STATIC
     FILES_CMAKE bvh_stub_files.cmake

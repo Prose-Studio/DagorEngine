@@ -21,7 +21,6 @@ dagor_add_target(NAME gameLibs.spirv STATIC LAX
   FILES_CMAKE spirv_files.cmake
   INCLUDE_DIRECTORIES PRIVATE
     ${DAGOR_PROG_DIR}/3rdPartyLibs/vulkan/include ${DAGOR_PROG_DIR}/3rdPartyLibs/vulkan/spirv-tools/include
-    ${DAGOR_PROG_DIR}/gameLibs/publicInclude
   COMPILE_DEFINITIONS PRIVATE ${defines}
   COMPILE_OPTIONS PRIVATE ${options}
   BUILD_DEPENDENCIES

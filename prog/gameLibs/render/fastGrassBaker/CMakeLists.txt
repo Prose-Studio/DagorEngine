@@ -1,4 +1,4 @@
-set(includes ${DAGOR_PROG_DIR}/gameLibs/publicInclude)
+set(includes)
 # the baker on Windows outside Rel and IRel, the stub elsewhere
 set(baker 0)
 if(WIN32)

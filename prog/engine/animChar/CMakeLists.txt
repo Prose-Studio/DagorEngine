@@ -11,7 +11,7 @@ foreach(build standard measurePerf)
   endif()
   dagor_add_target(NAME engine.animChar.${build} STATIC
     FILES_CMAKE animChar_files.cmake
-    INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/engine/sharedInclude ${DAGOR_PROG_DIR}/3rdPartyLibs/acl/includes
+    INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/3rdPartyLibs/acl/includes
     COMPILE_DEFINITIONS PRIVATE ${defines}
     COMPILE_OPTIONS PRIVATE ${options}
     BUILD_DEPENDENCIES PRIVATE engine.anim engine.phys.fastPhys

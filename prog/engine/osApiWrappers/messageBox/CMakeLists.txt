@@ -15,7 +15,7 @@ endif()
 
 dagor_add_target(NAME engine.osApiWrappers.messageBox STATIC
   FILES_CMAKE messageBox_files.cmake
-  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/engine/sharedInclude ${includes}
+  INCLUDE_DIRECTORIES PRIVATE ${includes}
   COMPILE_DEFINITIONS PRIVATE __B_KERNEL_LIB __B_NO_MEM_BASE_INCLUDE
   COMPILE_OPTIONS PRIVATE ${options}
   BUILD_DEPENDENCIES PUBLIC ${libs}

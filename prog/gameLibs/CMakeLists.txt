@@ -1,4 +1,6 @@
-# the modules of prog/gameLibs
+# the modules of prog/gameLibs, which all compile against the headers of gameLibs/publicInclude (one dir per library:
+# <gameMath/...>, nothing at its top to shadow a module's own headers)
+include_directories(${DAGOR_PROG_DIR}/gameLibs/publicInclude)
 add_subdirectory(GIWindows)
 add_subdirectory(asyncHTTPClient)
 add_subdirectory(asyncResolveAddr)

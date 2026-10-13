@@ -1,4 +1,4 @@
-set(includes ${DAGOR_PROG_DIR}/3rdPartyLibs/libev ${DAGOR_PROG_DIR}/gameLibs/publicInclude)
+set(includes ${DAGOR_PROG_DIR}/3rdPartyLibs/libev)
 if(WIN32)
   list(APPEND includes ${DAGOR_PROG_DIR}/3rdPartyLibs/posix/include/win32)
 endif()

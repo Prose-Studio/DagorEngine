@@ -7,7 +7,7 @@ endif()
 
 dagor_add_target(NAME gameLibs.dasModules.stdGui STATIC
   FILES_CMAKE stdGui_files.cmake
-  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/1stPartyLibs/daScript/include
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/1stPartyLibs/daScript/include
   COMPILE_DEFINITIONS PRIVATE ${defines}
   COMPILE_OPTIONS PRIVATE ${options}
   BUILD_DEPENDENCIES PRIVATE 1stPartyLibs.daScript

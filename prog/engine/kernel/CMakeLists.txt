@@ -1,6 +1,6 @@
 # Fatal errors, logging, debug dumps, CPU frequency and hardware exception handling
 set(not_rel "$<NOT:$<CONFIG:Rel>>")
-set(includes ${DAGOR_PROG_DIR}/engine/sharedInclude)
+set(includes)
 set(deps)
 if(WIN32 AND DAGOR_ARCH STREQUAL "x86_64")
   list(APPEND includes "$<${not_rel}:${DAGOR_PROG_DIR}/3rdPartyLibs/minhook/Include>")

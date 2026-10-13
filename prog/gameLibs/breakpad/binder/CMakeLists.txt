@@ -12,6 +12,6 @@ dagor_add_target(NAME gameLibs.breakpad.binder STATIC
   FILES_CMAKE binder_files.cmake
   INCLUDE_DIRECTORIES PRIVATE
     ${DAGOR_PROG_DIR}/3rdPartyLibs/breakpad ${DAGOR_PROG_DIR}/engine/sharedInclude
-    ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/3rdPartyLibs/minhook/include
+    ${DAGOR_PROG_DIR}/3rdPartyLibs/minhook/include
   BUILD_DEPENDENCIES PRIVATE ${deps}
 )

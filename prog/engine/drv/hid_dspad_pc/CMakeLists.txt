@@ -4,5 +4,4 @@ if(NOT WIN32 AND NOT LINUX)
 endif()
 dagor_add_target(NAME engine.drv.hid_dspad_pc STATIC LAX
   FILES_CMAKE hid_dspad_pc_files.cmake
-  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/engine/sharedInclude
 )

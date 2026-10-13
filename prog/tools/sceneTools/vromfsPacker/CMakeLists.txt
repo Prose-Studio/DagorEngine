@@ -12,7 +12,7 @@ endif()
 
 dagor_add_target(NAME vromfsPacker EXECUTABLE LAX
   FILES_CMAKE vromfsPacker_files.cmake
-  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/tools/sharedInclude ${DAGOR_PROG_DIR}/gameLibs/publicInclude
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/gameLibs/publicInclude
   BUILD_DEPENDENCIES
     PUBLIC ${libs}
     PRIVATE ${deps}

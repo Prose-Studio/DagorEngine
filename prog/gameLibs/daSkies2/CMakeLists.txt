@@ -7,6 +7,6 @@ endif()
 
 dagor_add_target(NAME gameLibs.daSkies2 STATIC
   FILES_CMAKE daSkies2_files.cmake
-  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${CMAKE_CURRENT_SOURCE_DIR} shaders
+  INCLUDE_DIRECTORIES PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} shaders
   BUILD_DEPENDENCIES PRIVATE ${deps}
 )

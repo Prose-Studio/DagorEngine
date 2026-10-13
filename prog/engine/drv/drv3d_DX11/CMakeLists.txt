@@ -1,5 +1,5 @@
 # The Direct3D 11 driver (Windows), with NVAPI, AMD's ADL and DX extensions when their SDKs are there, and Aftermath
-set(includes ${DAGOR_PROG_DIR}/engine/sharedInclude ${DAGOR_PROG_DIR}/engine/drv/drv3d_commonCode)
+set(includes ${DAGOR_PROG_DIR}/engine/drv/drv3d_commonCode)
 set(defines INSIDE_DRIVER)
 set(deps engine.drv.drv3d_commonCode engine.drv.shadersMetaData.dx11)
 find_package(NVAPI)

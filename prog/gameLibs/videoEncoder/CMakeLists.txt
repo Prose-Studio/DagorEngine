@@ -4,6 +4,6 @@ endif()
 
 dagor_add_target(NAME gameLibs.videoEncoder STATIC LAX
   FILES_CMAKE videoEncoder_files.cmake
-  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/engine/drv/drv3d_commonCode
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/engine/drv/drv3d_commonCode
   BUILD_DEPENDENCIES PUBLIC ${libs}
 )

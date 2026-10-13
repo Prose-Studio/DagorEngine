@@ -1,5 +1,5 @@
 # daProfiler: the engine's CPU/GPU profiler with its capture and dump formats
-set(includes ${DAGOR_PROG_DIR}/engine/perfMon/daProfiler ${DAGOR_PROG_DIR}/engine/sharedInclude)
+set(includes ${DAGOR_PROG_DIR}/engine/perfMon/daProfiler)
 if(ANDROID)
   list(APPEND includes ${DAGOR_PROG_DIR}/3rdPartyLibs/libunwind/include)
   list(APPEND deps 3rdPartyLibs.libunwind)
