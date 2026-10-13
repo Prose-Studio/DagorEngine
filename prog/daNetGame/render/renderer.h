@@ -73,6 +73,9 @@ public:
     const Driver3dPerspective &persp,
     const TMatrix4D &proj_tm) = 0;
   virtual void draw(uint32_t frame_id, float real_dt) = 0;
+  // the camera's projection: an orthographic one (camera__orthoHeight) turns off what needs a perspective view; set each
+  // frame, with or without a level (a 2D scene has none)
+  virtual void setOrthoView(bool ortho) = 0;
   virtual void debugDraw() = 0;
   virtual void beforeLoadLevel(const DataBlock &level_blk) = 0; // to be called from main thread
 

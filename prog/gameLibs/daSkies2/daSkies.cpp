@@ -862,7 +862,8 @@ void DaSkies::renderSkyWithoutOverlay(SkiesData *data, const TMatrix &view_tm, c
   const Point3 &origin = data->preparedOrigin;
   ShaderGlobal::set_float4(skies_world_view_posVarId, origin.x, origin.y, origin.z, 0);
   useFog(origin, data, view_tm, proj_tm, UpdateSky::Off);
-  set_viewvecs_to_shader(view_tm, proj_tm);
+  if (!solidColorMode) // the solid color needs no view vectors: the caller's stay
+    set_viewvecs_to_shader(view_tm, proj_tm);
 
   ShaderGlobal::set_float(render_sunVarId, (data->renderSunMoon & 1) ? 1 : 0);
   if (solidColorMode)

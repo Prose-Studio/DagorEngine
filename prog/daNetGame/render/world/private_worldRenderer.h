@@ -529,7 +529,7 @@ public:
   void validateFeatures(FeatureRenderFlagMask &features, const FeatureRenderFlagMask &changed_features);
   // An orthographic camera (camera__orthoHeight): what needs a perspective one is off while it is active (the features
   // of ortho_unsupported_features(), GI, temporal antialiasing; the sky is a solid color)
-  void setOrthoView(bool ortho);
+  void setOrthoView(bool ortho) override;
   bool orthoView = false;
   FeatureRenderFlagMask orthoSuppressedFeatures;
 
