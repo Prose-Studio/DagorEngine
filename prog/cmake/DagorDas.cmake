@@ -47,10 +47,10 @@ function(dagor_target_das_aot target)
   endif()
   set(gen "${CMAKE_CURRENT_BINARY_DIR}/gen/${target}/das")
   if(NOT DAGOR_DAS_AOT)
-    file(CONFIGURE OUTPUT "${gen}/${arg_PULL}.cpp" CONTENT "#include <stddef.h>
+    file(CONFIGURE OUTPUT "${gen}/pull.cpp" CONTENT "#include <stddef.h>
 size_t ${arg_PULL} = 0;
 ")
-    target_sources(${target} PRIVATE "${gen}/${arg_PULL}.cpp")
+    target_sources(${target} PRIVATE "${gen}/pull.cpp")
     return()
   endif()
   get_target_property(type ${target} TYPE)
@@ -103,8 +103,8 @@ size_t ${arg_PULL} = 0;
       COMMENT "daScript AOT: ${anchor}"
       VERBATIM)
     list(APPEND aot_outputs ${outputs})
-    file(GENERATE OUTPUT "${gen}/$<CONFIG>/${anchor}.cpp" CONTENT "${text}")
-    target_sources(${target} PRIVATE "${gen}/$<CONFIG>/${anchor}.cpp")
+    file(GENERATE OUTPUT "${gen}/$<CONFIG>/batch${batch_index}.cpp" CONTENT "${text}")
+    target_sources(${target} PRIVATE "${gen}/$<CONFIG>/batch${batch_index}.cpp")
     math(EXPR batch_index "${batch_index} + 1")
   endwhile()
 
@@ -116,8 +116,8 @@ size_t ${arg_PULL} = 0;
     list(JOIN anchors " + " sum)
     set(text "#include <stddef.h>\nextern size_t ${externs};\nsize_t ${arg_PULL} = 0 + ${sum};\n")
   endif()
-  file(CONFIGURE OUTPUT "${gen}/${arg_PULL}.cpp" CONTENT "${text}")
-  target_sources(${target} PRIVATE "${gen}/${arg_PULL}.cpp")
+  file(CONFIGURE OUTPUT "${gen}/pull.cpp" CONTENT "${text}")
+  target_sources(${target} PRIVATE "${gen}/pull.cpp")
   # the batches include the translated scripts (their dependency files then track them): made before the target compiles
   if(aot_outputs)
     add_custom_target(${target}.dasAot DEPENDS ${aot_outputs})
