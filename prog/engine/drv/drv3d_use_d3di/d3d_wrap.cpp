@@ -19,6 +19,10 @@ const char *get_last_error() { return d3di.get_last_error(); }
 
 void *get_device() { return nullptr; }
 unsigned get_dedicated_gpu_memory_system_internal_overhead_kb() { return d3di.get_dedicated_gpu_memory_system_internal_overhead_kb(); }
+
+// the functions of the interface table: in a multi-driver tree (_TARGET_D3D_MULTI) the headers make them inline calls
+// through d3di, only those above are defined here
+#if !_TARGET_D3D_MULTI
 const DriverDesc &get_driver_desc() { return d3di.drvDesc; }
 
 int driver_command(Drv3dCommand cmd, void *p1, void *p2, void *p3) { return d3di.driver_command(cmd, p1, p2, p3); }
@@ -384,4 +388,5 @@ const char *get_texture_format_str(const BaseTexture *tex) { return d3di.get_tex
 void *get_native_surface(BaseTexture *tex) { return d3di.get_native_surface(tex); }
 } // namespace pcwin
 #endif
+#endif // !_TARGET_D3D_MULTI
 }; // namespace d3d

@@ -125,15 +125,19 @@ function(_dagor_pull_file target file kind variable)
 endfunction()
 
 # --- modules ---------------------------------------------------------------------------------------------------------
-# dagor_add_dng_module(NAME <target> <dagor_add_target arguments> [DAS] [PULL_VARS <name>...])
+# dagor_add_dng_module(NAME <target> <dagor_add_target arguments> [DAS] [MODULE_NAME <module>]
+#                      [PULL_VARS <name>...])
 # A game module (daNetGameLibs/<module>, or a gameLibs dir built like one): a strict static library with the pull file
-# that references its entity systems (ES_FILES) and PULL_VARS as framework_<module>_pull (<module> is the directory's
-# name). A DAS module's daScript (DAS_FILES) is pulled by <area>_<module>_DAS_pull_AOT.
+# that references its entity systems (ES_FILES) and PULL_VARS as framework_<module>_pull (<module>: the directory's
+# name unless MODULE_NAME names it). A DAS module's daScript (DAS_FILES) is pulled by <area>_<module>_DAS_pull_AOT.
 function(dagor_add_dng_module)
-  cmake_parse_arguments(PARSE_ARGV 0 arg "${_DAGOR_TARGET_OPTIONS};DAS" "${_DAGOR_TARGET_ONE_VALUE}"
+  cmake_parse_arguments(PARSE_ARGV 0 arg "${_DAGOR_TARGET_OPTIONS};DAS" "${_DAGOR_TARGET_ONE_VALUE};MODULE_NAME"
                         "${_DAGOR_TARGET_MULTI_VALUE};PULL_VARS")
   set(target ${arg_NAME})
-  cmake_path(GET CMAKE_CURRENT_SOURCE_DIR FILENAME module)
+  set(module "${arg_MODULE_NAME}")
+  if(NOT module)
+    cmake_path(GET CMAKE_CURRENT_SOURCE_DIR FILENAME module)
+  endif()
   cmake_path(RELATIVE_PATH CMAKE_CURRENT_SOURCE_DIR BASE_DIRECTORY "${DAGOR_PROG_DIR}" OUTPUT_VARIABLE rel)
   string(REGEX MATCH "^[^/]+" area "${rel}")
   if(arg_DAS)
@@ -141,7 +145,7 @@ function(dagor_add_dng_module)
   endif()
   _dagor_target_arguments(args)
   dagor_add_target(${args})
-  target_link_libraries(${target} PRIVATE Dagor::Quirrel)
+  target_link_libraries(${target} PRIVATE Dagor::Quirrel Dagor::Phys) # daNetGame's headers expect its scripting and physics
   target_compile_definitions(${target} PRIVATE DISABLE_SYNC_DEBUG) # the fork has no gameLibs/syncDebug
 
   _dagor_es_pulls(${target} pulls)
@@ -332,7 +336,8 @@ endfunction()
 # auth keys, the pull of every module and library) and the libraries of the lists, whose _lib.cmake add what they need
 # to it (dagor_game_lib). A program with a main of its own (the editors) gives the code of what daNetGame's main and
 # version would have defined in MAIN_CODE and VERSION_CODE (the program's own main and version). The client is named
-# <codename> (OUTPUT_NAME another name), the dedicated server <codename>-ded. LOG_CRYPT_KEY encrypts
+# <codename> (OUTPUT_NAME another name), the dedicated server <codename>-ded; with DAGOR_DEDICATED_PRESET (the presets
+# of a multiplayer project) the client's tree has a target dedicated that builds that tree. LOG_CRYPT_KEY encrypts
 # the logs of Rel and IRel builds with DAGOR_FORCE_LOGS. In the tree of the game's daScript AOT compiler
 # (DAGOR_DAS_AOT_COMPILER) it makes <codename>-aot instead, of the files of AOT_FILES_CMAKE and what the libraries'
 # _aot.cmake add, and no <target>.
@@ -359,9 +364,12 @@ function(dagor_add_dng_game)
   if(NOT MAIN_VROM)
     set(MAIN_VROM "${GAME}.vromfs.bin")
   endif()
-  cmake_path(GET MAIN_VROM PARENT_PATH VROM_DIR)
-  if(MAIN_VROM STREQUAL "*") # no vromfs of its own (the editors)
-    set(VROM_DIR "*")
+  # the main vromfs; the editors have none of their own (MAIN_VROM *): theirs comes from application.blk
+  set(VROM_CODE "")
+  if(NOT MAIN_VROM STREQUAL "*")
+    cmake_path(GET MAIN_VROM PARENT_PATH VROM_DIR)
+    set(VROM_CODE "const char *main_vromfs_fpath() { return \"${MAIN_VROM}\"; }
+const char *main_vromfs_mount_dir() { return \"${VROM_DIR}\"; }")
   endif()
   foreach(var IN LISTS key_args)
     list(LENGTH arg_${var} n)
@@ -408,10 +416,19 @@ function(dagor_add_dng_game)
   _dagor_target_arguments(args)
   dagor_add_target(${args})
   set_property(GLOBAL PROPERTY DAGOR_GAME_TARGET "${target}")
-  # daNetGame's settings: its include dirs, options and physics
+  # a multiplayer game's client tree also builds its dedicated server's tree (target dedicated; the <host> workflow)
+  if(DAGOR_DEDICATED_PRESET AND NOT DAGOR_DEDICATED)
+    add_custom_target(dedicated
+      COMMAND "${CMAKE_COMMAND}" -DSOURCE_DIR=${CMAKE_SOURCE_DIR} -DPRESET=${DAGOR_DEDICATED_PRESET}
+        -P "${DAGOR_CMAKE_DIR}/scripts/build_preset.cmake"
+      COMMENT "The dedicated server (${DAGOR_DEDICATED_PRESET})"
+      USES_TERMINAL
+      VERBATIM)
+  endif()
+  # daNetGame and its settings: its include dirs, options and physics
   target_include_directories(${target} PRIVATE ${DAGOR_DNG_INCLUDES})
   target_compile_options(${target} PRIVATE ${DAGOR_DNG_OPTIONS})
-  target_link_libraries(${target} PRIVATE Dagor::Quirrel Dagor::Phys)
+  target_link_libraries(${target} PRIVATE daNetGame Dagor::Quirrel Dagor::Phys)
 
   # gameproj:: and the auth keys: the client's own; the dedicated server's for the clients it checks (outside Rel and
   # IRel unless on Linux)

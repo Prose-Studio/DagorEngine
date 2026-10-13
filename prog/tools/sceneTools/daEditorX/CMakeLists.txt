@@ -1,6 +1,6 @@
 # daEditor3x, the level editor: a game on daNetGame (editor_dng, with the daNetGameLibs of editor_danetgamelibs.txt)
 # with its own main, on daKernel (the editor tree), its plugins in plugins/daEditorX (daeditor_plugin, the plugin dirs)
-set(deps
+set(deps gameLibs.render.ambientOcclusion
   engine.startup engine.math engine.lib3d engine.shaders engine.guiBase engine.osApiWrappers.messageBox engine.workCycle
   engine.drv.drv3d_pc_multi engine.drv.hid_mouse engine.drv.hid_keyboard engine.anim engine.animChar engine.gameRes
   engine.phys.fastPhys engine.libFx engine.image engine.coreUtil engine.scene engine.streaming tools.libTools.propPanel

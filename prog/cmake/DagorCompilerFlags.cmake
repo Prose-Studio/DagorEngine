@@ -270,6 +270,18 @@ endif()
 include("${DAGOR_PLATFORM_FILE}")
 
 # --- link settings of the compilers -----------------------------------------------------------------------------------
+# GNU-style linkers resolve a static library only against what comes before it, and the engine's libraries need each
+# other both ways (osApiWrappers, perfMon, memory and kernel, ...): a program's libraries link as one group
+if(CMAKE_SYSTEM_NAME MATCHES "^(Linux|Android)$")
+  foreach(_lang C CXX)
+    foreach(_rule LINK_EXECUTABLE CREATE_SHARED_LIBRARY CREATE_SHARED_MODULE)
+      string(REPLACE "<LINK_LIBRARIES>" "-Wl,--start-group <LINK_LIBRARIES> -Wl,--end-group" CMAKE_${_lang}_${_rule}
+        "${CMAKE_${_lang}_${_rule}}")
+    endforeach()
+  endforeach()
+  unset(_lang)
+  unset(_rule)
+endif()
 if(MSVC AND DAGOR_VARIANT STREQUAL "maxplug")
   # the DLL CRT and never the static one (3ds Max loads the plugins)
   dagor_link_options("${_linked}" /DEBUG /INCREMENTAL:NO /NODEFAULTLIB:LIBC /NODEFAULTLIB:LIBCP /NODEFAULTLIB:LIBCMT

@@ -15,7 +15,7 @@ dagor_add_dng_game(NAME starter_game GAME starter_game
   AOT_FILES_CMAKE starter_game_aot_files.cmake
   OUTPUT_DIRECTORY ../game/${DAGOR_PLATFORM}-${DAGOR_ARCH}
   INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/daNetGameLibs ${DAGOR_PROG_DIR}/gameLibs
-  BUILD_DEPENDENCIES PRIVATE daNetGame daNetGameLibs.dm.stub
+  BUILD_DEPENDENCIES PRIVATE daNetGameLibs.dm.stub
   DAS_PULL starter_game_DAS_pull_AOT
 )
 if(DAGOR_DAS_AOT_COMPILER)

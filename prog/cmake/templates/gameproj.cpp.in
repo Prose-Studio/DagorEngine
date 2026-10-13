@@ -5,8 +5,7 @@
 namespace gameproj
 {
 const char *game_codename() { return "@GAME@"; }
-const char *main_vromfs_fpath() { return "@MAIN_VROM@"; }
-const char *main_vromfs_mount_dir() { return "@VROM_DIR@"; }
+@VROM_CODE@
 const char *game_user_dir_name() { return "@USER_DIR@"; }
 const char *config_name_prefix() { return "@GAME@.config"; }
 const char *game_window_title() { return "@WINDOW_TITLE@"; }

@@ -291,7 +291,6 @@ dagor_add_target(NAME daNetGame STATIC
   INCLUDE_DIRECTORIES PRIVATE
     ${DAGOR_DNG_INCLUDES} ${DAGOR_PROG_DIR}/3rdPartyLibs/openssl-3.x/include ${DAGOR_PROG_DIR}/engine/sharedInclude
     ${DAGOR_PROG_DIR}/engine ${DAGOR_PROG_DIR}/gameLibs ${DAGOR_PROG_DIR}/gameLibs/render/animatedSplashScreen/public_api
-    ${DAGOR_PROG_DIR}/gameLibs/render/ambientOcclusion
   COMPILE_DEFINITIONS PRIVATE DISABLE_SYNC_DEBUG # the fork has no gameLibs/syncDebug
   COMPILE_OPTIONS PRIVATE ${DAGOR_DNG_OPTIONS}
   BUILD_DEPENDENCIES
