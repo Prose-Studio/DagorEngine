@@ -194,8 +194,51 @@ static struct Reset3DCallback : public IDrv3DResetCB
 } drv_3d_reset_cb;
 
 
+#if _TARGET_PC_WIN | _TARGET_PC_LINUX
+// dargbox runs in the dir of its settings.blk and vromfs (tools/dargbox, or a project's UI dir); started anywhere else,
+// e.g. from its program's dir tools/dargbox/<platform>-<arch>, it changes to the dir above the program when that has them
+static void change_to_data_dir_if_started_elsewhere()
+{
+  if (dd_file_exists("settings.blk") || dd_file_exists("dargbox.vromfs.bin"))
+    return;
+#if _TARGET_PC_WIN
+  wchar_t dir[DAGOR_MAX_PATH];
+  DWORD len = GetModuleFileNameW(NULL, dir, countof(dir));
+  if (len == 0 || len >= countof(dir))
+    return;
+  wchar_t *slash = wcsrchr(dir, L'\\');
+  if (!slash || wcslen(dir) + 20 >= countof(dir))
+    return;
+  wcscpy(slash, L"\\..\\settings.blk");
+  if (GetFileAttributesW(dir) == INVALID_FILE_ATTRIBUTES)
+    return;
+  slash[3] = 0; // <program dir>\..
+  if (SetCurrentDirectoryW(dir))
+    debug("dargbox: started outside its data dir, changed to the dir above its program");
+#else
+  char dir[DAGOR_MAX_PATH];
+  ssize_t len = readlink("/proc/self/exe", dir, sizeof(dir) - 20);
+  if (len <= 0)
+    return;
+  dir[len] = 0;
+  char *slash = strrchr(dir, '/');
+  if (!slash)
+    return;
+  strcpy(slash, "/../settings.blk");
+  if (access(dir, F_OK) != 0)
+    return;
+  slash[3] = 0; // <program dir>/..
+  if (chdir(dir) == 0)
+    debug("dargbox: started outside its data dir, changed to the dir above its program");
+#endif
+}
+#endif
+
 static void dagor_main(int nCmdShow)
 {
+#if _TARGET_PC_WIN | _TARGET_PC_LINUX
+  change_to_data_dir_if_started_elsewhere();
+#endif
 #if _TARGET_PC
   ::measure_cpu_freq();
 #elif _TARGET_C3
