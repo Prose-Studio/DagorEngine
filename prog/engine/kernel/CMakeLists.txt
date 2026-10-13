@@ -12,6 +12,7 @@ if(NOT DAGOR_SANITIZE STREQUAL "none" AND CMAKE_SYSTEM_NAME MATCHES "^(Darwin|Li
   list(APPEND defines DAGOR_CAPTURE_STDERR) # the sanitizers write to stderr; this disables asynchronous log writes
 endif()
 if(ANDROID)
+  list(APPEND defines ANDROID_ENABLE_SIGNAL_LOG) # the log of a fatal signal's stack (dagorHwExcept.cpp)
   list(APPEND includes ${DAGOR_ANDROID_NDK}/sources/android/cpufeatures)
 endif()
 if(DAGOR_BREAKPAD)
