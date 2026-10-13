@@ -1,15 +1,15 @@
 set(FILES
-  CheckVersion.cpp
-  CompileState.cpp
-  Define.cpp
-  Element.cpp
-  Expression.cpp
+  checkVersion.cpp
+  compileState.cpp
+  define.cpp
+  element.cpp
+  expression.cpp
   fastdep.cpp
-  FileCache.cpp
-  FileStructure.cpp
-  If.cpp
-  Include.cpp
-  MappedFile.cpp
+  fileCache.cpp
+  fileStructure.cpp
+  if.cpp
+  include.cpp
+  mappedFile.cpp
   realpath.cpp
-  Sequence.cpp
+  sequence.cpp
 )

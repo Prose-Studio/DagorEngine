@@ -1,1 +1,1 @@
-set(FILES DagOpt.cpp)
+set(FILES dagOpt.cpp)

@@ -1,10 +1,10 @@
 set(FILES
   winmain_con.cpp
-  T3dloader.cpp
+  t3dLoader.cpp
   tokenizer.cpp
-  Polygon.cpp
+  polygon.cpp
   t3d2dag.cpp
-  math/Color.cpp
-  math/Plane.cpp
-  math/Vertex.cpp
+  Math/color.cpp
+  Math/plane.cpp
+  Math/vertex.cpp
 )

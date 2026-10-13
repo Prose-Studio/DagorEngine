@@ -45,7 +45,10 @@ elseif(DAGOR_VARIANT STREQUAL "assets")
 elseif(DAGOR_VARIANT STREQUAL "editor")
   # the GUI editors on the shared kernel: daEditor3x with its plugins, AssetViewer, impostorBaker, blkEditor, plodGen
   dagor_build_by_default(tools.libTools.daKernel daEditor3x staticGeom ivyGen occluders graphEditor csg heightmapLand
-    heightmapLand-aces assetViewer2 impostorBaker blkEditor plodGen)
+    heightmapLand-aces assetViewer2 impostorBaker plodGen)
+  if(TARGET blkEditor) # Windows
+    dagor_build_by_default(blkEditor)
+  endif()
 elseif(DAGOR_VARIANT STREQUAL "dargbox")
   dagor_build_by_default(dargbox)
 elseif(DAGOR_VARIANT STREQUAL "maxplug" AND TARGET dagor) # the plugin, where the Max SDK is there
