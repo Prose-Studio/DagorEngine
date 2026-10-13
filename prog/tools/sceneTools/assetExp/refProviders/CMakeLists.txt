@@ -3,8 +3,7 @@ include(../dabuildPlugin.cmake)
 foreach(provider composit efx spline)
   dabuild_plugin(NAME ${provider}RefProv
     FILES_CMAKE ${provider}RefProv_files.cmake
-    INCLUDE_DIRECTORIES PRIVATE
-      ${DAGOR_PROG_DIR}/tools/sceneTools/daEditorX/include
+    INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/tools/sceneTools/daEditorX/include
     BUILD_DEPENDENCIES PRIVATE engine.startup tools.libTools.assetMgr
   )
 endforeach()

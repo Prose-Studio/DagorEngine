@@ -7,7 +7,9 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
   set(options /wd4458) # locals that hide members (jam builds these tests with clang only)
 endif()
 dagor_add_catch2_test(NAME daFrameGraph-tests
-  TIMEOUT 1200 TAGS gameLibs render ARGS --gpu-driver stub
+  TIMEOUT 1200
+  TAGS gameLibs render
+  ARGS --gpu-driver stub
   FILES_CMAKE tests_files.cmake
   INCLUDE_DIRECTORIES PRIVATE ..
   COMPILE_OPTIONS PRIVATE ${options}

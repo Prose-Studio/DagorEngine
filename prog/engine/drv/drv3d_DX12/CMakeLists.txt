@@ -24,9 +24,8 @@ endif()
 dagor_add_target(NAME engine.drv.drv3d_DX12 STATIC
   FILES_CMAKE drv3d_DX12_files.cmake
   INCLUDE_DIRECTORIES PRIVATE
-    ${DAGOR_PROG_DIR}/engine/drv/drv3d_commonCode
-    ${DAGOR_PROG_DIR}/engine/drv/drv3d_DX12 ${DAGOR_PROG_DIR}/engine/shaders ${DAGOR_PROG_DIR}/3rdPartyLibs/imgui
-    ${DAGOR_PROG_DIR}/1stPartyLibs/jsoncpp/include
+    ${DAGOR_PROG_DIR}/engine/drv/drv3d_commonCode ${DAGOR_PROG_DIR}/engine/drv/drv3d_DX12
+    ${DAGOR_PROG_DIR}/engine/shaders ${DAGOR_PROG_DIR}/3rdPartyLibs/imgui ${DAGOR_PROG_DIR}/1stPartyLibs/jsoncpp/include
   COMPILE_DEFINITIONS PRIVATE INSIDE_DRIVER D3DX12_NO_STATE_OBJECT_HELPERS
   BUILD_DEPENDENCIES PRIVATE ${deps}
   FORCE_INCLUDES d3d_config.h

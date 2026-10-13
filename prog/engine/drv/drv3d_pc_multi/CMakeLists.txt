@@ -3,7 +3,9 @@
 set(driver_deps ${DAGOR_D3D_DRIVERS})
 list(TRANSFORM driver_deps PREPEND engine.drv.drv3d_)
 if(NOT DAGOR_D3D_MULTI)
-  dagor_add_target(NAME engine.drv.drv3d_pc_multi HEADERONLY BUILD_DEPENDENCIES INTERFACE ${driver_deps})
+  dagor_add_target(NAME engine.drv.drv3d_pc_multi HEADERONLY
+    BUILD_DEPENDENCIES INTERFACE ${driver_deps}
+  )
   return()
 endif()
 

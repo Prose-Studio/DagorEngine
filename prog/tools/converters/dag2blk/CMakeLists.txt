@@ -1,4 +1,5 @@
-dagor_add_target(NAME dag2blk EXECUTABLE LAX OUTPUT_DIRECTORY ${DAGOR_ENGINE_ROOT}/tools/converters/dag2blk
+dagor_add_target(NAME dag2blk EXECUTABLE LAX
+  OUTPUT_DIRECTORY ${DAGOR_ENGINE_ROOT}/tools/converters/dag2blk
   FILES_CMAKE dag2blk_files.cmake
   COMPILE_DEFINITIONS PRIVATE __B_MAIN
   BUILD_DEPENDENCIES PRIVATE

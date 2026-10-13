@@ -47,7 +47,8 @@ if(APPLE AND NOT IOS)
   list(APPEND deps "$<LINK_LIBRARY:FRAMEWORK,CoreAudio>" "$<LINK_LIBRARY:FRAMEWORK,AudioUnit>")
 endif()
 
-dagor_add_target(NAME dargbox EXECUTABLE APPLICATION LAX OUTPUT_DIRECTORY ${out}
+dagor_add_target(NAME dargbox EXECUTABLE APPLICATION LAX
+  OUTPUT_DIRECTORY ${out}
   FILES_CMAKE dargbox_files.cmake
   INCLUDE_DIRECTORIES PRIVATE
     ${DAGOR_PROG_DIR}/gameLibs ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/gameLibs/publicInclude/quirrel

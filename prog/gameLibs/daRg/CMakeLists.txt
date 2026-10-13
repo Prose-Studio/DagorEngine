@@ -7,10 +7,9 @@ endif()
 dagor_add_target(NAME gameLibs.daRg STATIC
   FILES_CMAKE daRg_files.cmake
   INCLUDE_DIRECTORIES PRIVATE
-    ${DAGOR_PROG_DIR}/gameLibs/publicInclude/quirrel
-    ${DAGOR_PROG_DIR}/engine/sharedInclude ${DAGOR_PROG_DIR}/1stPartyLibs/quirrel
-    ${DAGOR_PROG_DIR}/1stPartyLibs/daScript/include ${DAGOR_PROG_DIR}/gameLibs/daRg
-    ${DAGOR_PROG_DIR}/1stPartyLibs/jsoncpp/include
+    ${DAGOR_PROG_DIR}/gameLibs/publicInclude/quirrel ${DAGOR_PROG_DIR}/engine/sharedInclude
+    ${DAGOR_PROG_DIR}/1stPartyLibs/quirrel ${DAGOR_PROG_DIR}/1stPartyLibs/daScript/include
+    ${DAGOR_PROG_DIR}/gameLibs/daRg ${DAGOR_PROG_DIR}/1stPartyLibs/jsoncpp/include
   COMPILE_DEFINITIONS PRIVATE ${defines}
   BUILD_DEPENDENCIES PRIVATE
     Dagor::Quirrel 3rdPartyLibs.eastl 1stPartyLibs.daScript gameLibs.quirrel.frp gameLibs.frameTimeMetrics

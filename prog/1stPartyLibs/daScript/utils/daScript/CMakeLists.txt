@@ -6,7 +6,8 @@ else()
   set(output_name das)
 endif()
 
-dagor_add_target(NAME das EXECUTABLE LAX OUTPUT_NAME ${output_name}
+dagor_add_target(NAME das EXECUTABLE LAX
+  OUTPUT_NAME ${output_name}
   FILES_CMAKE daScript_files.cmake
   INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/1stPartyLibs/daScript/include
   COMPILE_DEFINITIONS PRIVATE DAS_USE_BASE_CRASH_HANDLER=1

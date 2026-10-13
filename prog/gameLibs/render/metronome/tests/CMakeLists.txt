@@ -5,7 +5,8 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   set(options -Wc++11-narrowing -Wswitch -Wbitfield-constant-conversion -Wmissing-field-initializers)
 endif()
 dagor_add_catch2_test(NAME metronome-tests
-  TAGS gameLibs render ARGS --gpu-driver stub
+  TAGS gameLibs render
+  ARGS --gpu-driver stub
   FILES_CMAKE tests_files.cmake
   INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/gameLibs/render/daFrameGraph
   COMPILE_OPTIONS PRIVATE ${options}

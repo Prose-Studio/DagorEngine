@@ -4,9 +4,7 @@ dagor_deterministic_fp(options)
 
 dagor_add_target(NAME engine.phys.physJolt STATIC LAX
   FILES_CMAKE physJolt_files.cmake
-  INCLUDE_DIRECTORIES PRIVATE
-    ${DAGOR_PROG_DIR}/3rdPartyLibs/phys/joltPhysics
-    ${DAGOR_PROG_DIR}/gameLibs/publicInclude
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/3rdPartyLibs/phys/joltPhysics ${DAGOR_PROG_DIR}/gameLibs/publicInclude
   COMPILE_OPTIONS PRIVATE ${options}
 )
 target_compile_definitions(engine.phys.physJolt PRIVATE USE_JOLT_PHYSICS VECMATH_NO_FMA # v_madd on NEON is explicit vfmaq that ignores ffp-contract=off

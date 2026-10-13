@@ -3,7 +3,10 @@
 # the plugins' directories
 include_guard(GLOBAL)
 function(dabuild_plugin)
-  dagor_add_target(${ARGN} SHARED LAX OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/plugins/dabuild CDK_SUBDIR plugins/dabuild)
+  dagor_add_target(${ARGN} SHARED LAX
+    OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/plugins/dabuild
+    CDK_SUBDIR plugins/dabuild
+  )
   cmake_parse_arguments(PARSE_ARGV 0 arg "" "NAME" "")
   target_link_libraries(${arg_NAME} PRIVATE tools.libTools.assetMgrHlp tools.libTools.util tools.libTools.daKernel)
 endfunction()

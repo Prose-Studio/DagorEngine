@@ -6,8 +6,8 @@ endif()
 dagor_add_target(NAME gameLibs.quirrel.quirrelHost STATIC LAX
   FILES_CMAKE quirrelHost_files.cmake
   INCLUDE_DIRECTORIES PRIVATE
-    ${DAGOR_PROG_DIR}/engine/sharedInclude
-    ${DAGOR_PROG_DIR}/1stPartyLibs/quirrel/quirrel/squirrel ${DAGOR_PROG_DIR}/1stPartyLibs/quirrel/quirrel/internal
+    ${DAGOR_PROG_DIR}/engine/sharedInclude ${DAGOR_PROG_DIR}/1stPartyLibs/quirrel/quirrel/squirrel
+    ${DAGOR_PROG_DIR}/1stPartyLibs/quirrel/quirrel/internal
   COMPILE_DEFINITIONS PRIVATE ${defines}
   BUILD_DEPENDENCIES PRIVATE Dagor::QuirrelHeaders
 )

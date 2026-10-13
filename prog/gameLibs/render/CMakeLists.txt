@@ -7,8 +7,8 @@ endif()
 dagor_add_target(NAME gameLibs.render STATIC
   FILES_CMAKE render_files.cmake
   INCLUDE_DIRECTORIES PRIVATE
-    ${DAGOR_PROG_DIR}/3rdPartyLibs/binPack2D/include
-    ${CMAKE_CURRENT_SOURCE_DIR} shaders ${DAGOR_PROG_DIR}/commonFx/commonFxGame
+    ${DAGOR_PROG_DIR}/3rdPartyLibs/binPack2D/include ${CMAKE_CURRENT_SOURCE_DIR} shaders
+    ${DAGOR_PROG_DIR}/commonFx/commonFxGame
   BUILD_DEPENDENCIES
     PUBLIC ${libs}
     PRIVATE

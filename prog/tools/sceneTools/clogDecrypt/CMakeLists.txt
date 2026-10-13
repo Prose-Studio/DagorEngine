@@ -1,5 +1,6 @@
 # clogDecrypt: decrypts the logs that Rel builds encrypt (DAGOR_FORCE_LOGS), with the engine's default key (tools/util)
-dagor_add_target(NAME clogDecrypt EXECUTABLE LAX NO_CONFIG_POSTFIX OUTPUT_DIRECTORY ${DAGOR_ENGINE_ROOT}/tools/util
+dagor_add_target(NAME clogDecrypt EXECUTABLE LAX NO_CONFIG_POSTFIX
+  OUTPUT_DIRECTORY ${DAGOR_ENGINE_ROOT}/tools/util
   FILES_CMAKE clogDecrypt_files.cmake
   COMPILE_DEFINITIONS PRIVATE __B_NO_MEM_BASE_INCLUDE
 )

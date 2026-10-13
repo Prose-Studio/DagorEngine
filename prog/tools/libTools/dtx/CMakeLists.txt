@@ -6,8 +6,6 @@ endif()
 
 dagor_add_target(NAME tools.libTools.dtx STATIC LAX
   FILES_CMAKE dtx_files.cmake
-  INCLUDE_DIRECTORIES PRIVATE
-    ${DAGOR_PROG_DIR}/3rdPartyLibs/convert/nvtt-2.0.7
-    ${DAGOR_PROG_DIR}/engine/sharedInclude
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/3rdPartyLibs/convert/nvtt-2.0.7 ${DAGOR_PROG_DIR}/engine/sharedInclude
   BUILD_DEPENDENCIES PRIVATE ${deps}
 )

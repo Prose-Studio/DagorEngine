@@ -1,4 +1,5 @@
-dagor_add_target(NAME bsp2dag EXECUTABLE LAX OUTPUT_DIRECTORY ${DAGOR_ENGINE_ROOT}/tools/converters
+dagor_add_target(NAME bsp2dag EXECUTABLE LAX
+  OUTPUT_DIRECTORY ${DAGOR_ENGINE_ROOT}/tools/converters
   FILES_CMAKE bsp_files.cmake
   INCLUDE_DIRECTORIES PRIVATE
     ${DAGOR_PROG_DIR}/tools/converters/ ${DAGOR_PROG_DIR}/tools/converters/bsp

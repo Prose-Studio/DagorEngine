@@ -8,7 +8,7 @@ endif()
 dagor_add_dng_module(NAME gameLibs.assets_import DAS
   FILES_CMAKE assets_import_files.cmake
   INCLUDE_DIRECTORIES PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR} ${DAGOR_PROG_DIR}/engine/sharedInclude
-    ${DAGOR_PROG_DIR}/tools/sharedInclude ${DAGOR_PROG_DIR}/1stPartyLibs/daScript/include
+    ${CMAKE_CURRENT_SOURCE_DIR} ${DAGOR_PROG_DIR}/engine/sharedInclude ${DAGOR_PROG_DIR}/tools/sharedInclude
+    ${DAGOR_PROG_DIR}/1stPartyLibs/daScript/include
   BUILD_DEPENDENCIES PRIVATE ${deps}
 )

@@ -1,4 +1,5 @@
-dagor_add_target(NAME plants2asset EXECUTABLE LAX OUTPUT_DIRECTORY ${DAGOR_ENGINE_ROOT}/tools/converters
+dagor_add_target(NAME plants2asset EXECUTABLE LAX
+  OUTPUT_DIRECTORY ${DAGOR_ENGINE_ROOT}/tools/converters
   FILES_CMAKE plants2asset_files.cmake
   INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/tools/sceneTools
   BUILD_DEPENDENCIES PRIVATE

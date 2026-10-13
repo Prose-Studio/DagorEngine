@@ -17,7 +17,8 @@ elseif(LINUX)
   set(options -fvisibility=hidden)
 endif()
 
-dagor_add_target(NAME tools.libTools.daKernel SHARED OUTPUT_NAME daKernel
+dagor_add_target(NAME tools.libTools.daKernel SHARED
+  OUTPUT_NAME daKernel
   FILES_CMAKE daKernel_files.cmake
   INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/engine/sharedInclude
   COMPILE_DEFINITIONS PRIVATE __B_KERNEL_LIB

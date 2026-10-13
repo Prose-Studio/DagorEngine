@@ -17,8 +17,8 @@ endif()
 dagor_add_target(NAME tools.sceneTools.daEditorX.services.riMgr STATIC LAX
   FILES_CMAKE riMgr_files.cmake
   INCLUDE_DIRECTORIES PRIVATE
-    ${DAGOR_PROG_DIR}/tools/sceneTools/daEditorX/include
-    ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/gameLibs/rendInst
+    ${DAGOR_PROG_DIR}/tools/sceneTools/daEditorX/include ${DAGOR_PROG_DIR}/gameLibs/publicInclude
+    ${DAGOR_PROG_DIR}/gameLibs/rendInst
   COMPILE_DEFINITIONS PRIVATE ${defines}
   BUILD_DEPENDENCIES PRIVATE ${deps}
 )

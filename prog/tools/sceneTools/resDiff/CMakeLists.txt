@@ -7,8 +7,7 @@ endif()
 
 dagor_add_target(NAME resDiffUtil EXECUTABLE LAX
   FILES_CMAKE resDiff_files.cmake
-  INCLUDE_DIRECTORIES PRIVATE
-    ${DAGOR_PROG_DIR}/engine/sharedInclude ${DAGOR_PROG_DIR}/engine
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/engine/sharedInclude ${DAGOR_PROG_DIR}/engine
   BUILD_DEPENDENCIES PRIVATE ${deps}
   CDK
 )

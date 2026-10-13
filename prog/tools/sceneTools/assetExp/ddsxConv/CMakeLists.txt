@@ -7,7 +7,8 @@ foreach(plugin pc ios and)
   elseif(plugin STREQUAL "and")
     set(defines TEGRA_EXP BUILD_FOR_MOBILE_TEXFMT)
   endif()
-  dagor_add_target(NAME ${plugin}DdsxConv SHARED LAX NO_CONFIG_POSTFIX OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/plugins/ddsx
+  dagor_add_target(NAME ${plugin}DdsxConv SHARED LAX NO_CONFIG_POSTFIX
+    OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/plugins/ddsx
     FILES_CMAKE ddsxConv_files.cmake
     INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/engine/sharedInclude
     COMPILE_DEFINITIONS PRIVATE ${defines}

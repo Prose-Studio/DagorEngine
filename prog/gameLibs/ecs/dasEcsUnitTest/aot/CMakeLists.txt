@@ -1,5 +1,6 @@
 # The daScript AOT compiler of the daECS unit tests (tools/util, as jam built it; the system allocator)
-dagor_add_target(NAME das_ecs_test-aot EXECUTABLE LAX OUTPUT_DIRECTORY ${DAGOR_ENGINE_ROOT}/tools/util
+dagor_add_target(NAME das_ecs_test-aot EXECUTABLE LAX
+  OUTPUT_DIRECTORY ${DAGOR_ENGINE_ROOT}/tools/util
   FILES_CMAKE aot_files.cmake
   INCLUDE_DIRECTORIES PRIVATE
     ${DAGOR_PROG_DIR}/gameLibs/ecs/dasEcsUnitTest ${DAGOR_PROG_DIR}/3rdPartyLibs/rapidjson/include

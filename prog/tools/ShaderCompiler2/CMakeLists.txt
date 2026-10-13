@@ -77,7 +77,8 @@ if(WIN32)
     BUILD_DEPENDENCIES PRIVATE System::d3dcompiler
   )
   # DXC in dxc-dx12/pc next to it, as the compiler looks for it there
-  dsc2_compiler(NAME dsc2-dx12 DXC RUNTIME_SUBDIR dxc-dx12/pc
+  dsc2_compiler(NAME dsc2-dx12 DXC
+    RUNTIME_SUBDIR dxc-dx12/pc
     FILES_CMAKE dsc2-dx12_files.cmake
     INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/gameLibs/publicInclude
     COMPILE_DEFINITIONS PRIVATE _CROSS_TARGET_DX12 ${dxc_defines} USE_BINDLESS_FOR_STATIC_TEX

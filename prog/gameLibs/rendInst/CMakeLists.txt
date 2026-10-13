@@ -12,8 +12,7 @@ dagor_deterministic_fp(options KEEP_TRAPPING_MATH)
 # the debug mesh rendering outside Rel
 dagor_add_target(NAME gameLibs.rendInst STATIC
   FILES_CMAKE rendInst_files.cmake
-  INCLUDE_DIRECTORIES PRIVATE
-    ${DAGOR_PROG_DIR}/engine/sharedInclude ${CMAKE_CURRENT_SOURCE_DIR}
+  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/engine/sharedInclude ${CMAKE_CURRENT_SOURCE_DIR}
   COMPILE_DEFINITIONS PRIVATE ${defines}
   COMPILE_OPTIONS PRIVATE ${options}
   BUILD_DEPENDENCIES PRIVATE

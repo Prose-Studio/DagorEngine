@@ -1,6 +1,7 @@
 # Data cache web backend unit tests (against a local HTTP server)
 dagor_add_catch2_test(NAME datacacheWeb-tests LAX
-  TAGS gameLibs net REQUIRES http_server
+  TAGS gameLibs net
+  REQUIRES http_server
   FILES_CMAKE tests_files.cmake
   INCLUDE_DIRECTORIES PRIVATE
     ${DAGOR_PROG_DIR}/3rdPartyLibs/arc/zlib-ng ${DAGOR_PROG_DIR}/3rdPartyLibs/openssl-3.x/include
