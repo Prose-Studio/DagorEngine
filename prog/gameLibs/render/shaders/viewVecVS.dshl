@@ -2,6 +2,26 @@ float4 view_vecLT;
 float4 view_vecRT;
 float4 view_vecLB;
 float4 view_vecRB;
+// xyz: the camera's forward axis, w: 1 for an orthographic camera, whose view vectors are offsets in the plane through
+// the camera (0: perspective, view vectors are directions with a view space z of 1); see ViewVecs in render/viewVecs.h
+float4 view_ortho_dir;
+
+// The view vector math of both projections: view_vec_to_rel_pos() is the camera-relative position of a pixel with
+// view vector view_vec (lerped from view_vecLT...) and linear depth linear_depth, ortho_view_dir_or() the unit vector to
+// the eye: that of an orthographic camera, or the given one of a perspective camera
+macro INIT_VIEW_ORTHO(code)
+  (code) { view_ortho_dir@f4 = view_ortho_dir; }
+  hlsl(code) {
+    float3 view_vec_to_rel_pos(float3 view_vec, float linear_depth)
+    {
+      return view_ortho_dir.w > 0 ? view_vec + view_ortho_dir.xyz * linear_depth : view_vec * linear_depth;
+    }
+    float3 ortho_view_dir_or(float3 perspective_view_dir)
+    {
+      return view_ortho_dir.w > 0 ? -view_ortho_dir.xyz : perspective_view_dir;
+    }
+  }
+endmacro
 
 macro INIT_VIEW_VEC_STAGE(code)
   (code) {

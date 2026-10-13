@@ -63,6 +63,9 @@ struct StreamOutputBufferSetup
   }
 };
 
+//! A camera projection with reverse depth (1 at zn, 0 at zf). Perspective: wk and hk are the cotangents of the half
+//! fovs; orthographic (ortho): they are 2 / the view's width and height in world units. ox, oy offset the image in
+//! normalized device coordinates (an off-center view, the temporal antialiasing jitter).
 struct Driver3dPerspective
 {
   Driver3dPerspective() : wk(0.f), hk(0.f), zn(0.f), zf(0.f), ox(0.f), oy(0.f) {}
@@ -74,7 +77,15 @@ struct Driver3dPerspective
   float wk, hk;
   float zn, zf;
   float ox, oy;
+  bool ortho = false;
 };
+
+//! The projection matrix of p: matrix_perspective_reverse, or matrix_ortho_reverse when p.ortho
+inline TMatrix4 matrix_projection_reverse(const Driver3dPerspective &p)
+{
+  return p.ortho ? matrix_ortho_reverse(p.wk, p.hk, p.zn, p.zf, p.ox, p.oy)
+                 : matrix_perspective_reverse(p.wk, p.hk, p.zn, p.zf, p.ox, p.oy);
+}
 
 struct Driver3dRenderTarget
 {

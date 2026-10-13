@@ -32,7 +32,7 @@ CameraSetup get_active_camera_setup(ecs::EntityManager &manager, bool allow_miss
                                                             ECS_REQUIRE(ecs::Tag camera_view) const ecs::EntityManager &manager,
       ecs::EntityId eid, const TMatrix &transform, const DPoint3 *camera__accuratePos = nullptr, float fov = 90.0f,
       float cockpit_fov = -1.0f, float fovSettings = 90.0f, float znear = 0.1f, float zfar = 5000.f, bool camera__fovHorPlus = true,
-      bool camera__fovHybrid = false) {
+      bool camera__fovHybrid = false, float camera__orthoHeight = 0.f) {
       G_UNUSED(manager);
 #if DAGOR_DBGLEVEL > 0
       if (active_camera_found)
@@ -52,6 +52,7 @@ CameraSetup get_active_camera_setup(ecs::EntityManager &manager, bool allow_miss
       camSetup.cockpitFov = cockpit_fov;
       camSetup.znear = znear;
       camSetup.zfar = zfar;
+      camSetup.orthoHeight = camera__orthoHeight;
       camSetup.fovMode = camera__fovHybrid ? EFM_HYBRID : camera__fovHorPlus ? EFM_HOR_PLUS : EFM_HOR_PLUS;
       camSetup.camEid = eid;
       if (!active_camera_found)
@@ -176,6 +177,16 @@ HorVerFov calc_hor_ver_fov(const float fov_degree, const FovMode mode, const int
 
 Driver3dPerspective calc_camera_perspective(const CameraSetup &camera_setup, int view_w, int view_h)
 {
+  if (camera_setup.orthoHeight > 0.f)
+  {
+    Driver3dPerspective persp;
+    persp.ortho = true;
+    persp.zn = camera_setup.znear;
+    persp.zf = camera_setup.zfar;
+    persp.hk = 2.f / camera_setup.orthoHeight;
+    persp.wk = persp.hk * view_h / max(view_w, 1);
+    return persp;
+  }
   return calc_camera_perspective(camera_setup.fov, camera_setup.fovMode, camera_setup.znear, camera_setup.zfar, view_w, view_h);
 }
 
@@ -192,6 +203,12 @@ Driver3dPerspective calc_camera_perspective(const float fov_degree, const FovMod
   persp.wk = horFov;
   persp.hk = verFov;
   return persp;
+}
+
+TMatrix4D calc_camera_proj_tm(const Driver3dPerspective &persp)
+{
+  return persp.ortho ? dmatrix_ortho_reverse(persp.wk, persp.hk, persp.zn, persp.zf, persp.ox, persp.oy)
+                     : dmatrix_perspective_reverse(persp.wk, persp.hk, persp.zn, persp.zf, persp.ox, persp.oy);
 }
 
 TMatrix4D calc_camera_view(const TMatrix4 &view_itm, const DPoint3 &view_pos)

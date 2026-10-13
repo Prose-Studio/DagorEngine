@@ -2,7 +2,7 @@
 tc = screen_pos_to_tc(screenpos.xy);
 w = linearize_z(readGbufferDepth(tc), zn_zfar.zw);//both faster and better quality
 float3 viewVect = lerp(lerp(view_vecLT, view_vecRT, tc.x), lerp(view_vecLB, view_vecRB, tc.x), tc.y);
-float3 pointToEye = -viewVect * w;
+float3 pointToEye = -view_vec_to_rel_pos(viewVect, w);
 float4 worldPos = float4(world_view_pos.xyz - pointToEye, 1);
 float4 pos_and_radius = input.pos_and_radius;
 #if OMNI_SHADOWS
@@ -27,7 +27,7 @@ ProcessedGbuffer gbuffer = readProcessedGbuffer(tc);
 
 float distSq = dot(pointToEye,pointToEye);
 float invRsqrt = rsqrt(distSq);
-view  = pointToEye*invRsqrt;
+view  = ortho_view_dir_or(pointToEye*invRsqrt);
 dist = rcp(invRsqrt);
 float NdotV = dot(gbuffer.normal, view);
 float3 reflectionVec = 2 * NdotV * gbuffer.normal - view;

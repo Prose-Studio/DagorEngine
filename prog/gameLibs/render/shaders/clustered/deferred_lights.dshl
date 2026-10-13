@@ -1,5 +1,6 @@
 include "lights_cb.dshl"
 include "use_prefiltered_gf.dshl"
+include "viewVecVS.dshl"
 
 int dynamic_lights_far_specular = 1;
 interval dynamic_lights_far_specular:off<1, on;
@@ -28,6 +29,7 @@ macro DEFERRED_LIGHTS_COMMON_SHADER()
   }
   INIT_POINT_LIGHTS_AO(ps)
   USE_PREINTEGRATED_GF()
+  INIT_VIEW_ORTHO(ps) // readDeferredGbuffer.hlsl
 endmacro
 
 macro DEFERRED_OMNI_LIGHTS_VS_SHADER()

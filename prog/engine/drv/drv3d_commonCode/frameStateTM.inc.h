@@ -82,6 +82,15 @@ public:
   // d3d:: functions
   __forceinline void calcproj(const Driver3dPerspective &p, mat44f &proj_tm)
   {
+    if (p.ortho)
+    {
+      TMatrix4 ortho = matrix_ortho_reverse(p.wk, p.hk, p.zn, p.zf, p.ox, p.oy);
+      proj_tm.col0 = v_ldu(ortho.m[0]);
+      proj_tm.col1 = v_ldu(ortho.m[1]);
+      proj_tm.col2 = v_ldu(ortho.m[2]);
+      proj_tm.col3 = v_ldu(ortho.m[3]);
+      return;
+    }
     v_mat44_make_persp(proj_tm, p.wk, p.hk, p.zn, p.zf);
     if (p.ox != 0.f || p.oy != 0.f)
       proj_tm.col2 = v_add(proj_tm.col2, v_make_vec4f(p.ox, p.oy, 0.f, 0.f));

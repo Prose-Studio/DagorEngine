@@ -79,7 +79,7 @@ shader deferred_shadow_to_buffer
       ##endif
       float w = linearize_z(rawDepth, zn_zfar.zw);
 
-      float3 pointToEye = -input.viewVect * w;
+      float3 pointToEye = -view_vec_to_rel_pos(input.viewVect, w);
       float4 worldPos = float4(world_view_pos.xyz - pointToEye, 1);
       UnpackedGbuffer gbuffer = unpackGbuffer(loadPackedGbuffer(screenpos.xy));
 

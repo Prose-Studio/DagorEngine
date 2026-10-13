@@ -39,6 +39,7 @@ class CameraViewShvars final
   static const Point4 &getViewVecRT(const CameraParams &params) { return params.viewVecs.viewVecRT; }
   static const Point4 &getViewVecLB(const CameraParams &params) { return params.viewVecs.viewVecLB; }
   static const Point4 &getViewVecRB(const CameraParams &params) { return params.viewVecs.viewVecRB; }
+  static const Point4 &getViewOrthoDir(const CameraParams &params) { return params.viewVecs.orthoDir; }
 
 public:
   CameraViewShvars(CameraBlobRequestType camera_view) : view(camera_view) {}
@@ -49,6 +50,7 @@ public:
     eastl::move(view).bindToShaderVar<getViewVecRT>("view_vecRT");
     eastl::move(view).bindToShaderVar<getViewVecLB>("view_vecLB");
     eastl::move(view).bindToShaderVar<getViewVecRB>("view_vecRB");
+    eastl::move(view).bindToShaderVar<getViewOrthoDir>("view_ortho_dir");
     return {view};
   }
 

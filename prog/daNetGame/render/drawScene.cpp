@@ -322,14 +322,16 @@ void before_draw_scene(int realtime_elapsed_usec, float gametime_elapsed_sec, fl
 
   if (auto wr = get_world_renderer(); wr && is_level_loaded_not_empty())
   {
-    TMatrix4D projTm = dmatrix_perspective_reverse(curPersp.wk, curPersp.hk, curPersp.zn, curPersp.zf, curPersp.ox, curPersp.oy);
+    TMatrix4D projTm = calc_camera_proj_tm(curPersp);
     const float gameTimeForRender = fixed_render_time.get() >= 0.f ? fixed_render_time.get() : get_sync_time();
     wr->beforeRender(scaledDt, rtDt, realtime_elapsed_usec * 1e-6, gameTimeForRender, camTransform, camPosition, curPersp, projTm);
   }
 
   user_ui::before_render();
 
-  const TMatrix4 &projTm = matrix_perspective(curPersp.wk, curPersp.hk, curPersp.zn, curPersp.zf);
+  Driver3dPerspective uiPersp = curPersp; // without the offset
+  uiPersp.ox = uiPersp.oy = 0.f;
+  const TMatrix4 &projTm = matrix_projection_reverse(uiPersp);
   uirender::before_render(realtime_elapsed_usec * 1e-6, camTransform, viewTransform, projTm);
 
   if (has_in_game_editor())

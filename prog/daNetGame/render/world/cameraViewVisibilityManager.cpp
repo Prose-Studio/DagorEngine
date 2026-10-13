@@ -101,6 +101,8 @@ void CameraViewVisibilityMgr::startOcclusionFrame(
   TIME_PROFILE_DEV(startOcclusionFrame);
 
   waitVisibilityReproject();
+  // occlusion culling (the software rasterizer, the reprojection) is for a perspective camera only
+  orthoFrame = v_extract_w(projTm.col2) == 0.f && v_extract_w(projTm.col3) == 1.f;
   const Point3_vec4 viewPos = itm.getcol(3);
   Occlusion *occl = getOcclusion();
   if (occl)
@@ -329,7 +331,7 @@ void CameraViewVisibilityMgr::waitOcclusionAsyncReadbackGpu()
   threadpool::wait(&occlusionReadbackGpuJob);
 }
 
-Occlusion *CameraViewVisibilityMgr::getOcclusion() { return occlusion && use_occlusion.get() ? &occlusion : nullptr; }
+Occlusion *CameraViewVisibilityMgr::getOcclusion() { return occlusion && use_occlusion.get() && !orthoFrame ? &occlusion : nullptr; }
 const Occlusion *CameraViewVisibilityMgr::getOcclusion() const { return const_cast<CameraViewVisibilityMgr *>(this)->getOcclusion(); }
 
 void CameraViewVisibilityMgr::prepareToStartAsyncRIGenExtraOpaqueRender(
