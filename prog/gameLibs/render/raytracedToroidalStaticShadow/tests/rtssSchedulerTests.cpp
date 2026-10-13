@@ -1353,7 +1353,7 @@ TEST_CASE("T27 a 180 deg step sweeps every level fast with u = (1, 0)")
 
 TEST_CASE("T28 texel0 below 0.001 or NaN is clamped to 0.001, above 1000 to 1000, and 0.001 stays")
 {
-  unittest::ExpectLogerr outOfRange("rtss: texel0", 2); // 0.0005 and FLT_MAX (NaN is clamped silently)
+  unittest::ExpectLogerr outOfRange("rtss: texel0", 3); // 0.0005, NaN and FLT_MAX
   RtssSchedulerSettings s;
   s.texel0 = 0.0005f;
   CHECK(RtssScheduler(s).getSettings().texel0 == 0.001f);

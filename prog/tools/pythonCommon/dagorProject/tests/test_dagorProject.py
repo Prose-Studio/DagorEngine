@@ -192,6 +192,12 @@ class CreateTest(unittest.TestCase):
     self.assertIn('"DAGOR_ENGINE_ROOT": "${{sourceDir}}/{}/.."'.format(prog), text)
     self.assertTrue(os.path.isfile(os.path.normpath(os.path.join(self.dest, 'prog', prog, 'cmake', 'presets', 'base.json'))))
 
+  def test_engine_on_another_drive_is_absolute(self):
+    prog = os.path.abspath(os.path.join(ENGINE, 'prog')).replace('\\', '/')
+    data = presets.project_presets(prog, multiplayer=False)
+    self.assertEqual(data['include'], [prog + '/cmake/presets/base.json'])
+    self.assertEqual(data['configurePresets'][0]['environment']['DAGOR_ENGINE_ROOT'], prog + '/..')
+
   def test_generated_and_build_files_are_not_copied(self):
     for rel in ('game/windows-x86_64', 'game/compiledShaders', 'tools', 'develop/.cache'):
       self.assertFalse(os.path.exists(self.path(rel)), rel)

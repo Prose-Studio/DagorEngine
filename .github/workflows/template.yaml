@@ -59,7 +59,7 @@ jobs:
             cmd //c subst X: "$(cygpath -w "$RUNNER_TEMP/xdrive")"
             echo "PROJECT_DIR=X:/CiGame" >> "$GITHUB_ENV"
           else
-            echo "PROJECT_DIR=$GITHUB_WORKSPACE/../CiGame" >> "$GITHUB_ENV"
+            echo "PROJECT_DIR=$(dirname "$GITHUB_WORKSPACE")/CiGame" >> "$GITHUB_ENV" # no .. (the artifact paths)
           fi
 
       - name: Create the project

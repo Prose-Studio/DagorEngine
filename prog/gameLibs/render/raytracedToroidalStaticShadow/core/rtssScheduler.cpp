@@ -7,6 +7,7 @@
 #include <EASTL/sort.h>
 #include <EASTL/tuple.h>
 #include <math/dag_adjpow2.h>
+#include <math/dag_check_nan.h>
 #include <float.h>
 
 static constexpr double RAD_PER_DEG = 3.14159265358979323846 / 180;
@@ -28,9 +29,10 @@ static int valid_setting(int v, int lo, int hi, bool pow2, const char *name)
 
 static float valid_setting(float v, float lo, float hi, const char *name)
 {
-  if (v >= lo && v <= hi)
+  const bool nan = check_nan(v); // a bit test: fast math folds the comparisons of a NaN
+  if (!nan && v >= lo && v <= hi)
     return v;
-  const float r = v > hi ? hi : lo;
+  const float r = !nan && v > hi ? hi : lo;
   logerr("rtss: %s %g is out of %g..%g, using %g", name, v, lo, hi, r);
   return r;
 }

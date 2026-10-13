@@ -11,12 +11,13 @@ HOSTS = ('windows', 'linux', 'macos')
 
 
 def project_presets(engine_prog: str, multiplayer: bool) -> dict:
-  """the presets of a project whose prog dir reaches the engine's prog dir at <engine_prog> (a relative path); a
-  multiplayer game has a dedicated server's tree besides the client's"""
+  """the presets of a project whose prog dir reaches the engine's prog dir at <engine_prog> (relative to it, or
+  absolute on another drive); a multiplayer game has a dedicated server's tree besides the client's"""
+  engine_root = (engine_prog if os.path.isabs(engine_prog) else '${sourceDir}/' + engine_prog) + '/..'
   configure = [{
     'name': 'project', 'hidden': True,
     '$comment': 'the engine this project is built with (DAGOR_ENGINE_ROOT; dng.py new writes the path)',
-    'environment': {'DAGOR_ENGINE_ROOT': '${sourceDir}/' + engine_prog + '/..'},
+    'environment': {'DAGOR_ENGINE_ROOT': engine_root},
     'cacheVariables': {'DAGOR_VARIANT': 'game', 'DAGOR_DAS_AOT': 'ON'},
   }, {
     'name': 'aot-compiler', 'hidden': True,

@@ -4,7 +4,7 @@ if(WIN32)
 endif()
 if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
   list(APPEND options -Wno-deprecated-declarations)
-  list(APPEND libs "$<LINK_LIBRARY:FRAMEWORK,SystemConfiguration>")
+  list(APPEND libs System::SystemConfiguration)
 endif()
 set(c_options
   -DCURL_STATICLIB

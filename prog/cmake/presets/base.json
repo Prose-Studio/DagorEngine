@@ -14,7 +14,6 @@
       "binaryDir": "${sourceDir}/../build/${presetName}",
       "cacheVariables": {
         "CMAKE_CONFIGURATION_TYPES": "Dev;Rel;IRel;Dbg",
-        "CMAKE_DEFAULT_BUILD_TYPE": "Dev",
         "Dagor_DIR": "$env{DAGOR_ENGINE_ROOT}/prog/cmake"
       }
     },
@@ -30,13 +29,6 @@
       "hidden": true,
       "inherits": "toolchain-windows",
       "toolchainFile": "$env{DAGOR_ENGINE_ROOT}/prog/cmake/toolchains/windows-msvc.cmake"
-    },
-    {
-      "name": "toolchain-windows-vc16",
-      "$comment": "MSVC 14.29 (VS 2019 16.11), the toolset of the 3ds Max 2023 and 2024 SDKs",
-      "hidden": true,
-      "inherits": "toolchain-windows-msvc",
-      "cacheVariables": { "DAGOR_MSVC_TOOLSET": "14.29" }
     },
     {
       "name": "toolchain-windows-arm64",

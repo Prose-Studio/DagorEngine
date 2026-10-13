@@ -6,7 +6,7 @@ dagor_add_target(NAME 3rdPartyLibs.phys.bullet-3 STATIC LAX
   BUILD_DEPENDENCIES PUBLIC Dagor::BulletSettings
 )
 if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-  target_link_libraries(3rdPartyLibs.phys.bullet-3 PUBLIC "$<LINK_LIBRARY:FRAMEWORK,OpenCL>")
+  target_link_libraries(3rdPartyLibs.phys.bullet-3 PUBLIC System::OpenCL)
 endif()
 if(WIN32)
   target_compile_definitions(3rdPartyLibs.phys.bullet-3 PRIVATE _CRT_SECURE_NO_WARNINGS _CRT_SECURE_NO_DEPRECATE

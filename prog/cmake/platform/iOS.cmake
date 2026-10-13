@@ -5,6 +5,6 @@ dagor_compile_definitions(1 _TARGET_APPLE=2 _TARGET_IOS __APPLE_IOS__ _TARGET_AR
   ARM_NEON_GCC_COMPATIBILITY)
 foreach(_framework Foundation UIKit QuartzCore CoreFoundation Security SystemConfiguration Metal GameController
                    AudioToolbox AVFoundation CoreMotion)
-  link_libraries("$<${_linked}:$<LINK_LIBRARY:FRAMEWORK,${_framework}>>")
+  link_libraries("$<${_linked}:System::${_framework}>")
 endforeach()
 unset(_framework)

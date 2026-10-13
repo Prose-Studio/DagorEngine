@@ -1,5 +1,6 @@
 # The libraries of the system and the toolchain as imported targets, System::<name> (CMAKE_LINK_LIBRARIES_ONLY_TARGETS
 # makes every link item that could name a target name one): target_link_libraries(<target> PRIVATE System::ws2_32).
+# dagor_system_framework(<name>...) declares System::<name> for the Apple framework <name>.
 #
 # dagor_system_library(<name>...) declares System::<name> for the import library or shared object <name> the linker finds
 # on its own (IMPORTED_LIBNAME). On Linux each is looked up once: a missing one is reported with the package that has
@@ -76,6 +77,25 @@ if(WIN32)
     clang_rt.builtins-x86_64 clang_rt.asan_dynamic-x86_64 clang_rt.profile-x86_64)
 else()
   dagor_system_library(m rt dl pthread stdc++)
+endif()
+
+function(dagor_system_framework)
+  foreach(name IN LISTS ARGN)
+    if(NOT TARGET System::${name})
+      add_library(System::${name} INTERFACE IMPORTED GLOBAL)
+      set_property(TARGET System::${name} PROPERTY INTERFACE_LINK_LIBRARIES "$<LINK_LIBRARY:FRAMEWORK,${name}>")
+    endif()
+  endforeach()
+endfunction()
+
+if(APPLE)
+  dagor_system_framework(Foundation CoreFoundation QuartzCore Security SystemConfiguration Metal MetalFX IOKit
+    AVFoundation AudioToolbox CoreAudio)
+  if(IOS)
+    dagor_system_framework(UIKit GameController CoreMotion)
+  else()
+    dagor_system_framework(Cocoa Carbon CoreLocation DiskArbitration AudioUnit OpenCL)
+  endif()
 endif()
 if(LINUX)
   dagor_system_library(X11 Xcursor Xrandr Xi xkbcommon xkbfile fltk udev pulse asound uuid curl ssl crypto dbus-1)
