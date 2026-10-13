@@ -101,17 +101,21 @@ set(DAGOR_DNG_OPTIONS "$<$<CXX_COMPILER_ID:Clang,AppleClang>:-Werror=unused-vari
 
 # --- generated sources ------------------------------------------------------------------------------------------------
 # _dagor_generate_source(<target> <file> <content>): adds the generated source to <target>; content with generator
-# expressions is written per configuration (<file> with -<config> before its extension)
+# expressions is written per configuration (<file> with -<config> before its extension), which <file> includes by a
+# definition of each configuration, so that the target has the same sources in all of them (as Xcode requires)
 function(_dagor_generate_source target file content)
   if(content MATCHES "\\$<")
     cmake_path(REMOVE_EXTENSION file LAST_ONLY OUTPUT_VARIABLE stem)
     cmake_path(GET file EXTENSION LAST_ONLY ext)
+    cmake_path(GET stem FILENAME name)
+    string(MAKE_C_IDENTIFIER "DAGOR_${name}_FILE" macro)
+    string(TOUPPER "${macro}" macro)
     file(GENERATE OUTPUT "${stem}-$<CONFIG>${ext}" CONTENT "${content}" TARGET ${target})
-    target_sources(${target} PRIVATE "${stem}-$<CONFIG>${ext}")
-  else()
-    file(CONFIGURE OUTPUT "${file}" CONTENT "${content}")
-    target_sources(${target} PRIVATE "${file}")
+    target_compile_definitions(${target} PRIVATE "${macro}=\"${stem}-$<CONFIG>${ext}\"")
+    set(content "#include ${macro}\n")
   endif()
+  file(CONFIGURE OUTPUT "${file}" CONTENT "${content}")
+  target_sources(${target} PRIVATE "${file}")
 endfunction()
 
 # _dagor_pull_file(<target> <file> ECS|EXTERN <variable> <pull>...): adds to <target> the source that defines size_t
