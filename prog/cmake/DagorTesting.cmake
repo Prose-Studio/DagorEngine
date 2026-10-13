@@ -12,7 +12,8 @@
 #                      <common>)
 #       daScript [test] functions run by dastest on the engine's das interpreter
 #   dagor_add_exec_test(<name> COMMAND <command>... [WORKING_DIRECTORY <dir>] <common>)
-#       any command (generator expressions allowed); its exit code is the result
+#       any command (generator expressions allowed; the programs of $<TARGET_FILE:...> are built with the tests); its
+#       exit code is the result
 #   dagor_add_game_test(<name> LAYER ecs|scenario PATHS <dir or file>... [SCENE <scene .blk>] [CASE_TIMEOUT <s>]
 #                       [ARGS ...] <common>)
 #       [ecs_test] functions run by the tree's game in its test mode (prog/daNetGame/main/testMode.h), from the game
@@ -204,6 +205,12 @@ function(dagor_add_exec_test name)
   if(NOT arg_COMMAND)
     message(FATAL_ERROR "dagor_add_exec_test(${name}) needs a COMMAND")
   endif()
+  # the programs of the tree it runs ($<TARGET_FILE:...>) are built with the tests
+  string(REGEX MATCHALL "\\$<TARGET_FILE:[^>]+>" programs "${arg_COMMAND};${arg_ARGS}")
+  foreach(program IN LISTS programs)
+    string(REGEX REPLACE "^\\$<TARGET_FILE:([^>]+)>$" "\\1" program "${program}")
+    _dagor_test_program(${program})
+  endforeach()
   set(dir "${CMAKE_CURRENT_SOURCE_DIR}")
   if(arg_WORKING_DIRECTORY)
     cmake_path(ABSOLUTE_PATH arg_WORKING_DIRECTORY NORMALIZE OUTPUT_VARIABLE dir)

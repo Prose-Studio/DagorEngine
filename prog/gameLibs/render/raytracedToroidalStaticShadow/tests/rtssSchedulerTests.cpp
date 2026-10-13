@@ -2,6 +2,7 @@
 
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/generators/catch_generators.hpp>
+#include <unittest/dag_unitTest.h>
 
 #include "rtssTestSim.h"
 #include <core/rtssRasterPlan.h>
@@ -1352,6 +1353,7 @@ TEST_CASE("T27 a 180 deg step sweeps every level fast with u = (1, 0)")
 
 TEST_CASE("T28 texel0 below 0.001 or NaN is clamped to 0.001, above 1000 to 1000, and 0.001 stays")
 {
+  unittest::ExpectLogerr outOfRange("rtss: texel0", 2); // 0.0005 and FLT_MAX (NaN is clamped silently)
   RtssSchedulerSettings s;
   s.texel0 = 0.0005f;
   CHECK(RtssScheduler(s).getSettings().texel0 == 0.001f);
@@ -1485,6 +1487,7 @@ TEST_CASE("T32 a border of 3 texels makes smaller pages and keeps the invariants
 
 TEST_CASE("T33 settings out of range are clamped, and windowPages and slotTexels round up to a power of two")
 {
+  unittest::ExpectLogerr outOfRange("is out of", 24); // each clamped setting of each scheduler made below
   RtssSchedulerSettings s;
   s.borderTexels = 0;
   s.maxAnisotropy = 0.5f;

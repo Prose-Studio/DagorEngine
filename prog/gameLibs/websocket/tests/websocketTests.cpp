@@ -10,6 +10,7 @@
 #include <osApiWrappers/dag_miscApi.h>
 #include <osApiWrappers/dag_threads.h>
 #include <perfMon/dag_cpuFreq.h>
+#include <unittest/dag_unitTest.h>
 
 #include <catch2/catch_test_macros.hpp>
 #include <unittest/catch2_eastl_tostring.h>
@@ -894,6 +895,7 @@ TEST_CASE("lost wakeups delay the commands but do not stall them", "[websocket]"
 TEST_CASE("shutdown() reports a client its owner keeps", "[websocket]")
 {
   {
+    unittest::ExpectLogerr notReleased("not released within", 1); // what shutdown() reports about the kept client
     TestClient client(Impl::Default);
     CHECK(websocket::shutdown(100) == 1);
   }
@@ -950,6 +952,7 @@ TEST_CASE("shutdown() on another thread closes but does not poll this thread's c
   TestClient client(Impl::Default, eastl::move(config));
   connect_and_wait(client, server);
   client.closeHook = [&] { client.client.reset(); };
+  unittest::ExpectLogerr notReleased("not released within", 1); // the other thread cannot poll this thread's client
 
   class ShutdownThread final : public DaThread
   {
