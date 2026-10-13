@@ -1,5 +1,6 @@
 # Tests, run by CTest (ctest --preset <preset>). Each test gets the CTest labels of its layer (cpp, das, exec, ecs,
-# scenario), its TAGS and its REQUIRES as requires-<what>: the ci test presets exclude requires-gpu|requires-display.
+# scenario), its TAGS and its REQUIRES as requires-<what>; a test that cannot run on the machine (a game test whose
+# client starts no video driver) exits with 77, which CTest reports as skipped.
 #
 #   dagor_add_catch2_test(NAME <name> <dagor_add_target arguments> [DATA_DIR <dir>] [CASE_TIMEOUT <s>] [ARGS ...]
 #                         <common>)

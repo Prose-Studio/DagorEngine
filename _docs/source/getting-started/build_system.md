@@ -32,7 +32,7 @@ its content and a multiplayer game's dedicated server.
 
 | variant | builds by default |
 |---|---|
-| `tests` | the engine's unit tests (CTest; the `-ci` test presets skip those that need a GPU or a display) |
+| `tests` | the engine's unit tests (CTest) |
 | `cdk` | the command-line tools of the content pipeline on the static kernel and the dag4blend add-on; the `cdk` install component puts them in `tools/dagor_cdk/<platform>-<arch>` (the add-on in `tools/dagor_cdk/universal`) |
 | `assets` | the asset build on daKernel (the shared kernel): daBuild with its exporter plugins, ddsxCvt2 |
 | `editor` | the GUI editors on daKernel: impostorBaker; daEditor3x with its plugins and AssetViewer on Windows and Linux; blkEditor and plodGen on Windows |

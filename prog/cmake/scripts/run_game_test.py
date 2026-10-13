@@ -4,7 +4,8 @@
 python run_game_test.py <out dir> <game> <argument>...
 
 The game writes its report (dastest.json) and events into <out dir>. The exit code is the game's: 0 passed, 1 failed,
-3 a test exceeded its time limit, 77 skipped (nothing ran); 2 when the game wrote no report. The results of the tests
+3 a test exceeded its time limit, 77 skipped (nothing ran, or the machine cannot run the tests: no video driver
+started); 2 when the game wrote no report. The results of the tests
 are printed after the game's output. DAGOR_TEST_UPDATE_REFERENCES=1 in the environment makes scenario tests replace
 their reference images.
 """
@@ -34,8 +35,11 @@ def main(argv):
   code = subprocess.call(cmd)
 
   if not os.path.isfile(report):
+    if code == EXIT_SKIPPED:
+      print("skipped: this machine cannot run the tests, see the game's output above")
+      return EXIT_SKIPPED
     print('the game wrote no test report (exit code {}), see its output above'.format(code))
-    return EXIT_INFRA_ERROR if code in (0, EXIT_SKIPPED) else code if code > 0 else EXIT_FAILED
+    return EXIT_INFRA_ERROR if code == 0 else code if code > 0 else EXIT_FAILED
   with open(report, encoding='utf-8') as f:
     tests = json.load(f).get('tests', [])
   failed = 0

@@ -168,6 +168,13 @@ void init()
     fixedDt = 1.f / 60.f;
 
   ::dgs_execute_quiet = true; // no message boxes in unattended runs
+  // a machine where no video driver starts (no GPU or no display, as on CI runners) cannot run the tests of a client
+  // that renders: they are skipped there, not failed
+  ::dgs_report_video_driver_init_failed = [] {
+    logwarn("test mode: no video driver started (%s): the tests are skipped on this machine", d3d::get_last_error());
+    flush_debug_file();
+    _Exit(unittest::EXIT_SKIPPED);
+  };
 
   unittest::Options opt;
   opt.artifactDir = outDir;

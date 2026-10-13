@@ -52,7 +52,7 @@ Each tree also has its own presets in `prog/CMakePresets.json`
 (`cmake --list-presets` lists them), in `build/<preset>`:
 
 ```text
-cmake --workflow --preset windows-tests-ci     the engine and its tests (those that need no GPU)
+cmake --workflow --preset windows-tests        the engine and its tests
 cmake --workflow --preset windows-cdk          the tools: shader compilers, packers, converters
 cmake --workflow --preset windows-assets       daBuild and its exporters
 cmake --workflow --preset windows-editor       the editors: daEditor, AssetViewer, impostorBaker

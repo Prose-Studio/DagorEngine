@@ -94,14 +94,6 @@
       "hidden": true,
       "configuration": "Dev",
       "output": { "outputOnFailure": true },
-      "execution": { "noTestsAction": "error" }
-    },
-    {
-      "name": "dagor-ci",
-      "$comment": "hosted CI runners have no GPU and no display",
-      "hidden": true,
-      "inherits": "dagor",
-      "filter": { "exclude": { "label": "requires-gpu|requires-display" } },
       "execution": { "jobs": 4, "noTestsAction": "error" }
     }
   ]

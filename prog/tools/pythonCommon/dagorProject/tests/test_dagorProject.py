@@ -239,7 +239,7 @@ class CreateSinglePlayer2dTest(CreateTest):
     self.assertFalse([n for n in self.configure_presets() if 'dedicated' in n])
     workflows = json.loads(self.read('prog/CMakePresets.json'))['workflowPresets']
     test = [s for w in workflows if w['name'] == 'linux-test' for s in w['steps'] if s['type'] == 'test']
-    self.assertEqual(test, [{'type': 'test', 'name': 'linux-client-ci'}])
+    self.assertEqual(test, [{'type': 'test', 'name': 'linux-client'}])
     build = [s for w in workflows if w['name'] == 'linux-test' for s in w['steps'] if s['type'] == 'build']
     self.assertEqual(build, [{'type': 'build', 'name': 'linux'}])  # the client's tests run on its content
     self.assertFalse(os.path.exists(self.path('game/server.cmd')))

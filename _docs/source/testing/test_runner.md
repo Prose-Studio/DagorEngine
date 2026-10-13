@@ -8,17 +8,16 @@ trees. The target `tests` builds the programs they run (in the engine's tests tr
 
 ```bash
 ctest --preset windows-tests                        # every test of the tree
-ctest --preset windows-tests-ci                     # without those that need a GPU or a display
 ctest --preset windows-tests -L ecs -L my_game      # by label: the layer, a tag, requires-<what>
 ctest --preset windows-tests -R "foo-tests:my case" -V
 ctest --preset windows-tests --output-junit junit.xml
-cmake --workflow --preset windows-tests-ci          # configure, build and test in one go (CI)
+cmake --workflow --preset windows-tests             # configure, build and test in one go
 ```
 
 Each test carries the CTest labels of its layer (`cpp`, `das`, `exec`, `ecs`, `scenario`), its `TAGS` and its
-`REQUIRES` as `requires-gpu`, `requires-display`, `requires-network`, `requires-http_server`. The `-ci` test presets
-exclude `requires-gpu|requires-display`, which hosted CI runners don't have. A program that can't run in the
-environment exits with 77 and is reported as skipped.
+`REQUIRES` as `requires-gpu`, `requires-display`, `requires-network`, `requires-http_server`. A program that can't run
+on the machine exits with 77 and is reported as skipped: a game test whose client starts no video driver (no GPU or
+no display, as on CI runners) does so.
 
 Outputs go to `build/<preset>/test-artifacts/<test>/`: native results (`junit.xml`, `dastest.json`, `events.jsonl`),
 logs, screenshots and image diffs.

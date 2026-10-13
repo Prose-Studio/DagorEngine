@@ -29,7 +29,7 @@ def project_presets(engine_prog: str, multiplayer: bool) -> dict:
     configure.insert(1, {'name': 'dedicated', 'hidden': True, 'cacheVariables': {'DAGOR_DEDICATED': 'ON'}})
     kinds.insert(1, 'dedicated')
   shipped = [k for k in kinds if k != 'aot-compiler']
-  tested = 'dedicated' if multiplayer else 'client'  # where the tests that need no GPU run
+  tested = 'dedicated' if multiplayer else 'client'  # the tree of the <host>-test workflow: the game's own server
   build, test, package, workflow = [], [], [], []
   for host in HOSTS:
     for kind in kinds:
@@ -49,8 +49,6 @@ def project_presets(engine_prog: str, multiplayer: bool) -> dict:
     for kind in shipped:
       name = '{}-{}'.format(host, kind)
       test.append({'name': name, 'configurePreset': name, 'inherits': 'dagor'})
-      if kind == tested:
-        test.append({'name': name + '-ci', 'configurePreset': name, 'inherits': 'dagor-ci'})
       build.append({'name': name + '-rel', 'configurePreset': name, 'configuration': 'Rel'})
       package.append({'name': name, 'configurePreset': name, 'configurations': ['Rel']})
       workflow.append({'name': name + '-package', 'steps': [
@@ -60,7 +58,7 @@ def project_presets(engine_prog: str, multiplayer: bool) -> dict:
     # a client runs its tests on its content: the build of everything; a dedicated server on its sources
     workflow.append({'name': host + '-test', 'steps': [
       {'type': 'configure', 'name': name}, {'type': 'build', 'name': host if tested == 'client' else name},
-      {'type': 'test', 'name': name + '-ci'}]})
+      {'type': 'test', 'name': name}]})
   trees = ('<host>-client and <host>-dedicated build the game and its dedicated server' if multiplayer else
            '<host>-client builds the game')
   return {
@@ -71,8 +69,8 @@ def project_presets(engine_prog: str, multiplayer: bool) -> dict:
         ', its dedicated server' if multiplayer else ''),
       "content and the engine tools it needs. The trees (cmake --list-presets): {} into ../game,".format(trees),
       "the client's tree its content too (cmake --build --preset <host>-client-content). Workflows: <host>-test (the",
-      "build and the tests that need no GPU), <host>-<tree>-package. Written by dng.py new and relink; local presets go",
-      "in CMakeUserPresets.json."
+      "build and the game's tests), <host>-<tree>-package. Written by dng.py new and relink; local presets go in",
+      "CMakeUserPresets.json."
     ],
     'include': [engine_prog + '/cmake/presets/base.json'],
     'configurePresets': configure, 'buildPresets': build, 'testPresets': test, 'packagePresets': package,

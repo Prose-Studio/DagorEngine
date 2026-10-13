@@ -17,7 +17,7 @@ of these layers, which is its CTest label:
 In the engine's `prog/`:
 
 ```bash
-cmake --workflow --preset windows-tests-ci      # configure, build and run the tests that need no GPU
+cmake --workflow --preset windows-tests         # configure, build and run the tests
 ctest --preset windows-tests                    # every test of the built tree
 ctest --preset windows-tests -L das             # one layer
 ctest --preset windows-tests -R "^datablock"    # tests whose name matches
