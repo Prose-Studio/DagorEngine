@@ -1,5 +1,6 @@
-# Games on daNetGame (DAGOR_VARIANT game: the trees of projects, e.g. templates/dng-empty): the game's switches, its
-# modules (daNetGameLibs, and gameLibs built like them) and the game program.
+# Games on daNetGame (DAGOR_VARIANT game: the trees of projects, e.g. templates/dng-empty; and the GUI editors of the
+# editor tree, daEditor3x and AssetViewer): the game's switches, its modules (daNetGameLibs, and gameLibs built like
+# them) and the game program.
 include_guard(GLOBAL)
 
 # --- the game's switches (prog/daNetGame/setup.jam) -------------------------------------------------------------------
@@ -14,7 +15,6 @@ endif()
 set(DAGOR_GAME_FX ${DAGOR_GAME_RENDERER})
 set(DAGOR_GAME_OVERLAY_UI ${DAGOR_GAME_RENDERER})
 set(DAGOR_GAME_DNG_INPUT ${DAGOR_GAME_RENDERER})
-set(DAGOR_GAME_CONTENT_UPDATER ${DAGOR_GAME_RENDERER})
 set(DAGOR_GAME_SOUND_NET ON)
 option(DAGOR_GAME_THREAD_SAFE_NET_TIME "Guard daNetGame's net time manager with a lock (sync time readable from any thread)"
   OFF)
@@ -32,7 +32,7 @@ if(DAGOR_GAME_RENDERER AND ((WIN32 AND DAGOR_ARCH STREQUAL "x86_64" AND DAGOR_SS
 endif()
 set(DAGOR_BVH_STUBS grass) # without the random grass (prog/gameLibs/bvh/CMakeLists.txt)
 # the render graph with its daScript bindings and its daECS nodes (prog/gameLibs/render/daFrameGraph)
-if(DAGOR_VARIANT STREQUAL "game")
+if(DAGOR_VARIANT MATCHES "^(game|editor)$")
   set(DAGOR_DAFG_FEATURES das ecs)
 endif()
 # the developer features outside Rel
@@ -57,6 +57,14 @@ if(DAGOR_GAME_RENDERER)
   set(DAGOR_GAME_IMGUI "${DAGOR_GAME_DEV}")
 endif()
 unset(_desktop)
+# the GUI editors are daNetGame without its game features (their jamfiles)
+if(DAGOR_VARIANT STREQUAL "editor")
+  foreach(_switch OVERLAY_UI DNG_INPUT SOUND SOUND_NET)
+    set(DAGOR_GAME_${_switch} OFF)
+  endforeach()
+  set(DAGOR_GAME_EDITOR 0)
+  set(DAGOR_GAME_CONSOLE 0)
+endif()
 
 # the include dirs of daNetGame and the game programs (prog/daNetGame/setup.jam), and their options: clang's unused
 # variables are errors there
@@ -319,10 +327,12 @@ endfunction()
 # dagor_add_dng_game(NAME <target> GAME <codename> [WINDOW_TITLE <title>] [USER_DIR <dir>] [MAIN_VROM <path>]
 #   [AUTH_KEY_<PLATFORM> <20 bytes>] (PLATFORM: WINDOWS LINUX MACOS ANDROID IOS) [DEDICATED_AUTH <prefix> <platform>...]
 #   [LOG_CRYPT_KEY <128 bytes>] [PULLS <pull>...] [DNG_LIBS <danetgamelibs.txt>] [GAME_LIBS <gamelibs.txt>]
-#   [AOT_FILES_CMAKE <file>...] <dagor_add_target arguments>)
+#   [AOT_FILES_CMAKE <file>...] [MAIN_CODE <code>] [VERSION_CODE <code>] <dagor_add_target arguments>)
 # The game program: daNetGame's main, the files of FILES_CMAKE, the code game.jam generated (gameproj:: names and paths,
 # auth keys, the pull of every module and library) and the libraries of the lists, whose _lib.cmake add what they need
-# to it (dagor_game_lib). The client is named <codename>, the dedicated server <codename>-ded. LOG_CRYPT_KEY encrypts
+# to it (dagor_game_lib). A program with a main of its own (the editors) gives the code of what daNetGame's main and
+# version would have defined in MAIN_CODE and VERSION_CODE (jam's gameMain and gameVersion). The client is named
+# <codename> (OUTPUT_NAME another name), the dedicated server <codename>-ded. LOG_CRYPT_KEY encrypts
 # the logs of Rel and IRel builds with DAGOR_FORCE_LOGS. In the tree of the game's daScript AOT compiler
 # (DAGOR_DAS_AOT_COMPILER) it makes <codename>-aot instead, of the files of AOT_FILES_CMAKE and what the libraries'
 # _aot.cmake add, and no <target>.
@@ -332,7 +342,7 @@ function(dagor_add_dng_game)
     list(APPEND key_args AUTH_KEY_${platform})
   endforeach()
   cmake_parse_arguments(PARSE_ARGV 0 arg "${_DAGOR_TARGET_OPTIONS}"
-    "${_DAGOR_TARGET_ONE_VALUE};GAME;WINDOW_TITLE;USER_DIR;MAIN_VROM;DNG_LIBS;GAME_LIBS"
+    "${_DAGOR_TARGET_ONE_VALUE};GAME;WINDOW_TITLE;USER_DIR;MAIN_VROM;DNG_LIBS;GAME_LIBS;MAIN_CODE;VERSION_CODE"
     "${_DAGOR_TARGET_MULTI_VALUE};PULLS;DEDICATED_AUTH;LOG_CRYPT_KEY;AOT_FILES_CMAKE;${key_args}")
   set(target ${arg_NAME})
   if(NOT arg_GAME OR arg_GAME MATCHES "[A-Z]")
@@ -350,6 +360,9 @@ function(dagor_add_dng_game)
     set(MAIN_VROM "${GAME}.vromfs.bin")
   endif()
   cmake_path(GET MAIN_VROM PARENT_PATH VROM_DIR)
+  if(MAIN_VROM STREQUAL "*") # no vromfs of its own (the editors)
+    set(VROM_DIR "*")
+  endif()
   foreach(var IN LISTS key_args)
     list(LENGTH arg_${var} n)
     if(arg_${var} AND NOT n EQUAL 20)
@@ -362,7 +375,11 @@ function(dagor_add_dng_game)
       cmake_path(ABSOLUTE_PATH arg_${list} NORMALIZE)
     endif()
   endforeach()
-  _dagor_game_project_files("${CMAKE_CURRENT_SOURCE_DIR}" ${GAME} "${arg_DNG_LIBS}" "${arg_GAME_LIBS}")
+  # a project's files from its lib lists (the engine's own games, the editors, have none)
+  cmake_path(IS_PREFIX DAGOR_PROG_DIR "${CMAKE_CURRENT_SOURCE_DIR}" NORMALIZE in_engine)
+  if(NOT in_engine)
+    _dagor_game_project_files("${CMAKE_CURRENT_SOURCE_DIR}" ${GAME} "${arg_DNG_LIBS}" "${arg_GAME_LIBS}")
+  endif()
 
   if(DAGOR_DAS_AOT_COMPILER)
     set_property(GLOBAL PROPERTY DAGOR_GAME_TARGET "${GAME}-aot")
@@ -382,7 +399,9 @@ function(dagor_add_dng_game)
 
   set(arg_EXECUTABLE ON)
   set(arg_APPLICATION ON)
-  set(arg_OUTPUT_NAME "${GAME}")
+  if(NOT arg_OUTPUT_NAME)
+    set(arg_OUTPUT_NAME "${GAME}")
+  endif()
   if(DAGOR_DEDICATED)
     set(arg_OUTPUT_NAME "${GAME}-ded")
   endif()
@@ -442,9 +461,18 @@ function(dagor_add_dng_game)
   endif()
   configure_file("${DAGOR_CMAKE_DIR}/templates/authKeys.cpp.in" "${gen}/authKeys.cpp" @ONLY)
 
-  # daNetGame's main and version, compiled with the game's include dirs; the GPU switching exports of Windows releases
-  file(CONFIGURE OUTPUT "${gen}/gameMain.cpp" CONTENT "#include \"main/main.cpp\"\n")
-  file(CONFIGURE OUTPUT "${gen}/gameVersion.cpp" CONTENT "#include \"main/version.cpp\"\n")
+  # daNetGame's main and version (or the program's stand-ins), compiled with the game's include dirs; the GPU switching
+  # exports of Windows releases
+  set(main_code "#include \"main/main.cpp\"")
+  set(version_code "#include \"main/version.cpp\"")
+  if(DEFINED arg_MAIN_CODE)
+    set(main_code "${arg_MAIN_CODE}")
+  endif()
+  if(DEFINED arg_VERSION_CODE)
+    set(version_code "${arg_VERSION_CODE}")
+  endif()
+  file(CONFIGURE OUTPUT "${gen}/gameMain.cpp" CONTENT "${main_code}\n")
+  file(CONFIGURE OUTPUT "${gen}/gameVersion.cpp" CONTENT "${version_code}\n")
   target_sources(${target} PRIVATE "${gen}/gameproj.cpp" "${gen}/authKeys.cpp" "${gen}/gameMain.cpp"
     "${gen}/gameVersion.cpp")
   if(WIN32 AND DAGOR_GAME_RENDERER)

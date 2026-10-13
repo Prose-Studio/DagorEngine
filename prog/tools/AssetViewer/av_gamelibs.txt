@@ -1,0 +1,10 @@
+# the gameLibs with parts for AssetViewer (dirs in prog/gameLibs)
+console_commands
+voxelizedMedia
+render/puddle_query
+assets_import
+daeditorPlotDebug
+imgui_daeditor
+anim/motionMatching
+animTreeEditor
+route_prober

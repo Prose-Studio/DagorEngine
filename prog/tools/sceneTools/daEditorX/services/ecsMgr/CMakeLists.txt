@@ -1,5 +1,3 @@
-# TODO(jam): DAFG_ENABLE_DAECS_INTEGRATION = yes ;
-
 dagor_add_target(NAME tools.sceneTools.daEditorX.services.ecsMgr STATIC LAX
   FILES_CMAKE ecsMgr_files.cmake
   INCLUDE_DIRECTORIES PRIVATE

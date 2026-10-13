@@ -1,0 +1,6 @@
+# the gameLibs with parts for daEditor3x (dirs in prog/gameLibs)
+render/puddle_query
+daeditorPlotDebug
+imgui_daeditor
+voxelizedMedia
+render/ambientOcclusion

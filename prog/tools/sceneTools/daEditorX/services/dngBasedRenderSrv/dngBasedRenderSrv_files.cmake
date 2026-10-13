@@ -1,6 +1,6 @@
 set(FILES dngBasedRender.cpp dngSkiesSrv.cpp)
-set(SourceES renderServicesES.cpp.inl)
-set(ES_FILES ${SourceES})
-# TODO(jam): if [ GLOB $(Root)/prog/daNetGameLibs/dm : damageEvents.h ] { opt on dngBasedRender.cpp =
-#   -DHAVE_DNGLIB_DM ; }
-set(SourceES )
+set(ES_FILES renderServicesES.cpp.inl)
+# the damage events of daNetGameLibs/dm, where it is there
+if(EXISTS "${DAGOR_PROG_DIR}/daNetGameLibs/dm/damageEvents.h")
+  set_property(SOURCE dngBasedRender.cpp APPEND PROPERTY COMPILE_DEFINITIONS HAVE_DNGLIB_DM)
+endif()

@@ -1,14 +1,4 @@
-# TODO(jam): KernelLinkage = dynamic ;
-# TODO(jam): BuildingTools = yes ;
-# TODO(jam): UseD3DMulti = yes ;
-# TODO(jam): UseD3DMultiList_windows = DX12 DX11 ;
-# TODO(jam): UseD3DMultiList_linux = vulkan ;
-# TODO(jam): UseD3DMultiList_macOS = Metal ;
-# TODO(jam): LinuxUseGUI = no ;
-if(WIN32)
-  # TODO(jam): include $(Root)/prog/engine/drv/drv3d_DX12/copy_bundles.jam ;
-  # TODO(jam): include $(Root)/prog/engine/drv/drv3d_commonCode/copy_bundles.jam ;
-endif()
+# impostorBaker: bakes the impostor textures of trees and other rendinsts (its drivers' runtime files next to it)
 set(deps
   engine.startup
   engine.coreUtil
@@ -47,15 +37,13 @@ set(deps
 if(CMAKE_SYSTEM_NAME MATCHES "^(Linux|Darwin)$")
   list(APPEND deps engine.osApiWrappers.messageBox.stub)
 endif()
-# TODO(jam): ImportProgLibs = tools/libTools/daKernel ;
-set(ImportsRelativeDir .)
 
-dagor_add_target(NAME impostorBaker EXECUTABLE WIN32 LAX
+dagor_add_target(NAME impostorBaker EXECUTABLE APPLICATION LAX
   FILES_CMAKE tool_files.cmake
   INCLUDE_DIRECTORIES PRIVATE
     ${DAGOR_PROG_DIR}/gameLibs/publicInclude
     ${DAGOR_PROG_DIR}/tools/sceneTools/daEditorX/include ${DAGOR_PROG_DIR}/gameLibs/rendInst
     ${DAGOR_PROG_DIR}/engine/sharedInclude ${DAGOR_PROG_DIR}/tools/sceneTools/daEditorX/include
-  BUILD_DEPENDENCIES PRIVATE ${deps}
+  BUILD_DEPENDENCIES PRIVATE ${deps} tools.libTools.daKernel
   CDK
 )

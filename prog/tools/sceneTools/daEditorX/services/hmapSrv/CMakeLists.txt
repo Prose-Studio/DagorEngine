@@ -1,4 +1,3 @@
-# TODO(jam): KernelLinkage ?= dynamic ;
 dagor_add_target(NAME tools.sceneTools.daEditorX.services.hmapSrv STATIC LAX
   FILES_CMAKE hmapSrv_files.cmake
   INCLUDE_DIRECTORIES PRIVATE

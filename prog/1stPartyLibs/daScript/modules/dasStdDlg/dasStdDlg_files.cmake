@@ -1,6 +1,8 @@
 set(FILES src/dasStdDlg.cpp src/dasStdDlgTray.cpp src/dasStdDlgTrayNotImplemented.cpp)
 if(WIN32)
   list(APPEND FILES src/dasStdDlgWin.cpp)
+elseif(LINUX AND DAGOR_VARIANT STREQUAL "editor")
+  # the editors provide theirs (jam's dasStdDlg_UserProvidedPlatform)
 elseif(LINUX)
   list(APPEND FILES src/dasStdDlgGtk.cpp)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")

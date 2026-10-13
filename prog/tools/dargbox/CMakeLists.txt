@@ -130,7 +130,7 @@ endif()
 #   UseProgLibs += gameLibs/matchingClient gameLibs/quirrel/matchingModule 1stPartyLibs/matching ;
 #   CPPopt += -DHAS_MATCHING_MODULE ; }
 
-dagor_add_target(NAME dargbox EXECUTABLE WIN32 LAX OUTPUT_DIRECTORY ${DAGOR_ENGINE_ROOT}/tools/dargbox
+dagor_add_target(NAME dargbox EXECUTABLE APPLICATION LAX OUTPUT_DIRECTORY ${DAGOR_ENGINE_ROOT}/tools/dargbox
   FILES_CMAKE dargbox_files.cmake
   INCLUDE_DIRECTORIES PRIVATE
     ${DAGOR_PROG_DIR}/gameLibs ${DAGOR_PROG_DIR}/gameLibs/publicInclude ${DAGOR_PROG_DIR}/gameLibs/publicInclude/quirrel

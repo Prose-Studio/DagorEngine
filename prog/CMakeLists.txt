@@ -12,7 +12,7 @@ add_subdirectory(commonFx)
 add_subdirectory(gameLibs)
 add_subdirectory(daNetGameLibs)
 add_subdirectory(tools)
-if(DAGOR_VARIANT STREQUAL "game")
+if(DAGOR_VARIANT MATCHES "^(game|editor)$")
   add_subdirectory(daNetGame)
 endif()
 if(DAGOR_DAS_AOT_COMPILER)
@@ -42,4 +42,8 @@ elseif(DAGOR_VARIANT STREQUAL "assets")
   dagor_build_by_default(tools.libTools.daKernel daBuild daBuild-job a2dExp animCharExp collisionExp fastPhysExp fxExp
     impostorExp landClsExp locShadersExp matExp modelExp phObjExp texExp compositRefProv efxRefProv splineRefProv
     vehicleExp ddsxCvt2)
+elseif(DAGOR_VARIANT STREQUAL "editor")
+  # the GUI editors on the shared kernel: daEditor3x with its plugins, AssetViewer, impostorBaker, blkEditor, plodGen
+  dagor_build_by_default(tools.libTools.daKernel daEditor3x staticGeom ivyGen occluders graphEditor csg heightmapLand
+    heightmapLand-aces assetViewer2 impostorBaker blkEditor plodGen)
 endif()

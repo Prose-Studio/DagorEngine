@@ -1,6 +1,3 @@
-# TODO(jam): KernelLinkage ?= dynamic ;
-# TODO(jam): UseD3DMulti = yes ;
-# TODO(jam): StrictCompileFrameLimit = 262144 ;
 dagor_add_target(NAME tools.sceneTools.pointCloudGen.generator STATIC
   FILES_CMAKE generator_files.cmake
   INCLUDE_DIRECTORIES PRIVATE
@@ -10,4 +7,5 @@ dagor_add_target(NAME tools.sceneTools.pointCloudGen.generator STATIC
     gameLibs.rendInst gameLibs.landMesh engine.daECS.core gameLibs.ecs.gameres gameLibs.render gameLibs.gamePhys.phys
     gameLibs.gamePhys.collision.customRendinstTrace gameLibs.gamePhys.collision.collision-common tools.libTools.assetMgr
     tools.libTools.dagFileRW
+  PROPERTIES DAGOR_FRAME_LIMIT 262144
 )
