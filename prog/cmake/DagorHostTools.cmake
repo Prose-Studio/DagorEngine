@@ -22,7 +22,8 @@ set(DAGOR_HOST_TOOLS_DIR "" CACHE PATH "A CDK (prebuilt engine tools) for the bu
 # the CDK tools of the assets tree (on the shared kernel; daBuild loads the exporter plugins built with it)
 set(_DAGOR_ASSETS_HOST_TOOLS daBuild ddsxCvt2)
 # the CDK tools that are always optimized and named without a config postfix (dagor_install_cdk checks this list)
-set(DAGOR_CDK_NO_POSTFIX binBlk ddsx2dds ddsxCvt dolphin whale duktape pcDdsxConv iosDdsxConv andDdsxConv)
+set(DAGOR_CDK_NO_POSTFIX binBlk blk2robin blkDiff utf8ranges ltout2img detClientMask bsdiffutil bsapplyutil ddsx2dds ddsxCvt
+  dolphin whale duktape flatc flathash pcDdsxConv iosDdsxConv andDdsxConv)
 
 function(dagor_host_tool tool out)
   set(file "${tool}-dev")
