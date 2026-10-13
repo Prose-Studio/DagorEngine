@@ -5,7 +5,7 @@
 include(DagorFetch)
 dagor_sdk_root(FidelityFX fidelityfx)
 set(_ffx "${FidelityFX_ROOT}/Kits/FidelityFX")
-find_path(FidelityFX_INCLUDE_DIR ffx_api.h PATHS "${_ffx}/api/include" NO_DEFAULT_PATH)
+find_path(FidelityFX_INCLUDE_DIR ffx_api.h PATHS "${_ffx}/api/include" NO_DEFAULT_PATH NO_CMAKE_FIND_ROOT_PATH)
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(FidelityFX REQUIRED_VARS FidelityFX_INCLUDE_DIR)
 if(FidelityFX_FOUND AND NOT TARGET FidelityFX::FidelityFX)

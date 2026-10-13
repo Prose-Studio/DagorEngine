@@ -7,8 +7,8 @@
 # CEF_ROOT: a binary distribution, the dir with Release/ and Resources/ (default: the target's pinned one, fetched).
 include(DagorFetch)
 dagor_sdk_root(CEF cef OPTIONAL HOST ${DAGOR_PLATFORM}-${DAGOR_ARCH})
-find_file(CEF_LIBRARY libcef.lib PATHS "${CEF_ROOT}/Release" NO_DEFAULT_PATH)
-find_path(CEF_RESOURCES_DIR icudtl.dat PATHS "${CEF_ROOT}/Resources" NO_DEFAULT_PATH)
+find_file(CEF_LIBRARY libcef.lib PATHS "${CEF_ROOT}/Release" NO_DEFAULT_PATH NO_CMAKE_FIND_ROOT_PATH)
+find_path(CEF_RESOURCES_DIR icudtl.dat PATHS "${CEF_ROOT}/Resources" NO_DEFAULT_PATH NO_CMAKE_FIND_ROOT_PATH)
 set(CEF_VERSION)
 if(CEF_ROOT AND EXISTS "${CEF_ROOT}/include/cef_version.h")
   file(STRINGS "${CEF_ROOT}/include/cef_version.h" _cef_version REGEX "^#define CEF_VERSION_(MAJOR|MINOR|PATCH) ")

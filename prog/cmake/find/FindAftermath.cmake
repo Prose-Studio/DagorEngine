@@ -3,7 +3,8 @@
 # Aftermath_ROOT: a local copy (default: the pinned one, fetched).
 include(DagorFetch)
 dagor_sdk_root(Aftermath aftermath)
-find_path(Aftermath_INCLUDE_DIR GFSDK_Aftermath.h PATHS "${Aftermath_ROOT}/include" NO_DEFAULT_PATH)
+find_path(Aftermath_INCLUDE_DIR GFSDK_Aftermath.h PATHS "${Aftermath_ROOT}/include"
+  NO_DEFAULT_PATH NO_CMAKE_FIND_ROOT_PATH)
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(Aftermath REQUIRED_VARS Aftermath_INCLUDE_DIR)
 if(Aftermath_FOUND AND NOT TARGET Aftermath::Aftermath)

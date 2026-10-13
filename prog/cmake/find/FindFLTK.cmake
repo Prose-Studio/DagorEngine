@@ -19,7 +19,7 @@ endif()
 
 include(DagorFetch)
 dagor_sdk_root(FLTK fltk)
-find_path(FLTK_INCLUDE_DIR FL/Fl.H PATHS "${FLTK_ROOT}" NO_DEFAULT_PATH) # the source's root
+find_path(FLTK_INCLUDE_DIR FL/Fl.H PATHS "${FLTK_ROOT}" NO_DEFAULT_PATH NO_CMAKE_FIND_ROOT_PATH) # the source's root
 if(FLTK_INCLUDE_DIR)
   file(STRINGS "${FLTK_INCLUDE_DIR}/FL/Enumerations.H" _fltk_version
     REGEX "^#define FL_(MAJOR|MINOR|PATCH)_VERSION[ \t]+[0-9]+")
