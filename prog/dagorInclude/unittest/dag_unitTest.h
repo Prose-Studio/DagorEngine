@@ -4,7 +4,7 @@
 //
 #pragma once
 
-// Catch2 helpers for Dagor unit tests. Test executables are built with prog/_jBuild/unitTest.jam and use
+// Catch2 helpers for Dagor unit tests. Test executables are declared with dagor_add_catch2_test() and use
 // <unittest/mainCatch2.inc.cpp> as their main.
 
 #include <unittest/catch2_eastl_tostring.h>

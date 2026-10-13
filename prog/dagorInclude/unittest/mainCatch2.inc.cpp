@@ -7,7 +7,7 @@
 
 // ===============================================================================
 //
-// main() for Catch2 unit test executables (build them with prog/_jBuild/unitTest.jam).
+// main() for Catch2 unit test executables (declare them with dagor_add_catch2_test()).
 //
 // Optional configuration, defined before including this file:
 //   UNITTEST_ENV               - engine subsystems to bring up around the test run, a combination of

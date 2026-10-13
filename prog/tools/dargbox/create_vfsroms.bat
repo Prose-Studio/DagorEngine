@@ -1,5 +1,5 @@
 @ECHO OFF
-call ..\..\..\prog\_jBuild\make_dagor_tools_path.cmd
+call ..\..\..\prog\tools\make_dagor_tools_path.cmd
 
 set /P a=...<nul
   %DAGOR_CDK_DIR%\vromfsPacker-dev.exe darg.vromfs.blk -platform:PC >log_vrom_darg

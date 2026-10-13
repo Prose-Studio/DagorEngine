@@ -162,52 +162,48 @@ public:
     ::dd_erase(tempBlkName);
     ::dd_erase(tempPdl);
     if (page_sys_hlp->getSgCppDestDir())
-      genJamFiles(a);
+      genBuildFiles(a);
 
     return true;
   }
 
-  void genJamFiles(DagorAsset &a_one)
+  void genBuildFiles(DagorAsset &a_one)
   {
     static Tab<DagorAsset *> assets(tmpmem);
 
     dd_mkdir(page_sys_hlp->getSgCppDestDir());
 
-    String jamfile(260, "%s/jamfile", page_sys_hlp->getSgCppDestDir());
-    if (!dd_file_exist(jamfile))
+    String cmakeLists(260, "%s/CMakeLists.txt", page_sys_hlp->getSgCppDestDir());
+    if (!dd_file_exist(cmakeLists))
     {
-      FILE *fpJamF = fopen(jamfile, "wt");
-      G_ASSERT(fpJamF);
-      G_ANALYSIS_ASSUME(fpJamF);
-      fputs("# this is template jamfile, generated only when it is absent\n"
-            "# replace Root/Location/Target with appropriate strings before use\n"
-            "Root    ?= . ; #requires changes\n"
-            "Location = . ; #requires changes\n\n"
-            "TargetType  = lib ;\n"
-            "Target      = ; #requires changes\n\n"
-            "include $(Root)/$(Location)/jam-list ;\n\n"
-            "Sources += factory.cpp ;\n\n"
-            "AddIncludes = $(Root)/prog/engine ;\n\n"
-            "include $(Root)/prog/_jBuild/build.jam ;\n",
-        fpJamF);
-      fclose(fpJamF);
+      FILE *fpCMake = fopen(cmakeLists, "wt");
+      G_ASSERT(fpCMake);
+      G_ANALYSIS_ASSUME(fpCMake);
+      fputs("# a template CMakeLists.txt, written only when it is absent: name the library and add this dir to the game's\n"
+            "# tree (add_subdirectory) before using it; stateGraphs_files.cmake lists the generated sources\n"
+            "dagor_add_target(NAME stateGraphs STATIC\n"
+            "  FILES_CMAKE stateGraphs_files.cmake\n"
+            "  INCLUDE_DIRECTORIES PRIVATE ${DAGOR_PROG_DIR}/engine\n"
+            ")\n",
+        fpCMake);
+      fclose(fpCMake);
     }
 
-    String tmp_jam_list(260, "%s/jam-list.1", page_sys_hlp->getSgCppDestDir());
-    String dst_jam_list(260, "%s/jam-list", page_sys_hlp->getSgCppDestDir());
+    String tmp_files_cmake(260, "%s/stateGraphs_files.cmake.1", page_sys_hlp->getSgCppDestDir());
+    String dst_files_cmake(260, "%s/stateGraphs_files.cmake", page_sys_hlp->getSgCppDestDir());
     String tmp_factory_cpp(260, "%s/factory.1.cpp", page_sys_hlp->getSgCppDestDir());
     String dst_factory_cpp(260, "%s/factory.cpp", page_sys_hlp->getSgCppDestDir());
 
-    FILE *fpJam = fopen(tmp_jam_list, "wt");
+    FILE *fpFiles = fopen(tmp_files_cmake, "wt");
     FILE *fpFac = fopen(tmp_factory_cpp, "wt");
 
-    G_ASSERT(fpJam);
-    G_ANALYSIS_ASSUME(fpJam);
+    G_ASSERT(fpFiles);
+    G_ANALYSIS_ASSUME(fpFiles);
 
     G_ASSERT(fpFac);
     G_ANALYSIS_ASSUME(fpFac);
 
-    fprintf(fpJam, "Sources =\n");
+    fprintf(fpFiles, "set(FILES\n  factory.cpp\n");
     fprintf(fpFac, "#include <osApiWrappers/dag_localConv.h>\n\n"
                    "namespace AnimV20 { class GenericAnimStatesGraph; }\n\n");
 
@@ -231,7 +227,7 @@ public:
     G_ASSERT(assets.size() > 0);
     for (int i = 0; i < assets.size(); i++)
     {
-      fprintf(fpJam, "  %s_statesGraph.cpp\n", assets[i]->getName());
+      fprintf(fpFiles, "  %s_statesGraph.cpp\n", assets[i]->getName());
       fprintf(fpFac,
         "namespace %s_statesGraph\n{\n"
         "  AnimV20::GenericAnimStatesGraph* make_graph();\n}\n",
@@ -246,23 +242,23 @@ public:
       fprintf(fpFac, "    return %s_statesGraph::make_graph();\n", assets[i]->getName());
     }
 
-    fprintf(fpJam, ";\n");
+    fprintf(fpFiles, ")\n");
     fprintf(fpFac, "\n  return NULL;\n}\n");
 
-    fclose(fpJam);
+    fclose(fpFiles);
     fclose(fpFac);
 
-    if (!dag_file_compare(dst_jam_list, tmp_jam_list))
+    if (!dag_file_compare(dst_files_cmake, tmp_files_cmake))
     {
-      unlink(dst_jam_list);
-      dag_copy_file(tmp_jam_list, dst_jam_list, true);
+      unlink(dst_files_cmake);
+      dag_copy_file(tmp_files_cmake, dst_files_cmake, true);
     }
     if (!dag_file_compare(dst_factory_cpp, tmp_factory_cpp))
     {
       unlink(dst_factory_cpp);
       dag_copy_file(tmp_factory_cpp, dst_factory_cpp, true);
     }
-    unlink(tmp_jam_list);
+    unlink(tmp_files_cmake);
     unlink(tmp_factory_cpp);
 
     assets.clear();

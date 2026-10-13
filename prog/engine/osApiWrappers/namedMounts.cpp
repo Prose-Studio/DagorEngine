@@ -127,7 +127,7 @@ static bool detect_engine_root(eastl::string &out_root, const char *&out_source)
       out_source = "engine.blk";
       return true;
     }
-    if (dd_file_exist(eastl::string(eastl::string::CtorSprintf(), "%s/prog/_jBuild/defaults.jam", dir).c_str()))
+    if (dd_file_exist(eastl::string(eastl::string::CtorSprintf(), "%s/prog/cmake/DagorConfig.cmake", dir).c_str()))
     {
       out_root = dir;
       out_source = "engine checkout";
