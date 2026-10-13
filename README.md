@@ -46,8 +46,8 @@ cmake --workflow --preset windows-maxplug      opt-in: the 3ds Max plugin of eac
 (`linux-` and `macos-` on those hosts; `windows-msvc-`, `linux-clang-`, `windows-arm64-`, `macos-universal-` and the
 sanitizer presets build the others.) The tools are installed into `tools/dagor_cdk/<host>-<arch>`. The data the tools
 load at runtime and that is not built (the editors' `commonData`, dargbox's fonts and UI, ...) is part of the
-repository, in `prog/tools/toolsData`: nothing has to be downloaded. See `prog/cmake/DESIGN.md` for how the build is
-organized.
+repository, in `prog/tools/toolsData`: nothing has to be downloaded. See
+[Build System](_docs/source/getting-started/build_system.md) for how the build is organized.
 
 Then create a game project from a template (single-player or multiplayer, 3D or 2D), see
 [Creating a Project](_docs/source/getting-started/new_project.md):

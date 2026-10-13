@@ -65,6 +65,6 @@ Use `linux-` and `macos-` on those hosts; `windows-msvc-`, `linux-clang-`,
 others. The tools are installed into `tools/dagor_cdk/<host>-<arch>`. The data
 the tools load at runtime and that is not built (the editors' `commonData`,
 dargbox's fonts and UI) is part of the repository, in `prog/tools/toolsData`.
-`prog/cmake/DESIGN.md` describes how the build is organized.
+[Build System](build_system.md) describes how the build is organized.
 
 To start a game of your own, see [Creating a Project](new_project.md).

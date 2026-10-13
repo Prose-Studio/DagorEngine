@@ -54,7 +54,7 @@ specific purpose:
 
 The CMake build: the helpers every CMakeLists uses (`dagor_add_target` and the functions on it), the platform data,
 toolchains, presets, Find modules and the pinned SDKs. `prog/CMakeLists.txt` is the engine's top level and
-`prog/CMakePresets.json` its presets; `cmake/DESIGN.md` describes the build.
+`prog/CMakePresets.json` its presets; [Build System](build_system.md) describes the build.
 
 ### `1stPartyLibs`
 
