@@ -1,8 +1,8 @@
 # The licenses of the libraries a program links, in the LICENSE-<program> file next to it (DagorTargets.cmake writes
 # it from the program's DAGOR_LICENSE_FILES, a custom transitive property: the union over its link closure).
 #
-# A library's licenses are the license files of its directory (License.*, LICENSE*, COPYING*, COPYRIGHT, ...) plus
-# those dagor_target_licenses() adds. A directory under 1stPartyLibs/ or 3rdPartyLibs/ that declares a target and has
+# A library's licenses are the license files of its directory (License.*, LICENSE*, COPYING*, COPYRIGHT, ...), or the
+# LICENSES of its dagor_add_target(), plus those dagor_target_licenses() adds. A directory under 1stPartyLibs/ or 3rdPartyLibs/ that declares a target and has
 # none fails the configure step, unless a NO_LICENSE file there says it needs none.
 #
 #   dagor_target_licenses(<target> <file or dir>...): more license files of <target> (a dir: its license files)

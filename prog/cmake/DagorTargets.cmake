@@ -37,7 +37,8 @@
 #   - programs and shared libraries are named <name>[-asan|-ubsan|...][-cov]-<config> as jam named them (no suffix in Rel,
 #     or with NO_CONFIG_POSTFIX), in OUTPUT_DIRECTORY (default <build>/bin) for every configuration; next to them, the
 #     runtime files of the libraries they link (dagor_target_runtime_files) and LICENSE-<file name> with the licenses of
-#     those libraries (DagorLicenses.cmake)
+#     those libraries (DagorLicenses.cmake): a library's are the license files of its directory, or LICENSES (files, or
+#     dirs of license files)
 #   - an IDE folder after the directory
 #   - CDK: a tool of the engine's CDK, installed with dagor_install_cdk() (DagorHostTools.cmake)
 include_guard(GLOBAL)
@@ -234,7 +235,8 @@ macro(_dagor_target_defaults target)
   set_property(TARGET ${target} APPEND PROPERTY TRANSITIVE_LINK_PROPERTIES DAGOR_LICENSE_FILES DAGOR_RUNTIME_FILES
     DAGOR_GAME_PULLS)
   get_property(_dagor_type TARGET ${target} PROPERTY TYPE)
-  if(NOT _dagor_type STREQUAL "EXECUTABLE") # a program's own licenses are not listed in its LICENSE file, as in jam
+  # a program's own licenses are not listed in its LICENSE file, as in jam; LICENSES replace those of the dir
+  if(NOT _dagor_type STREQUAL "EXECUTABLE" AND NOT arg_LICENSES)
     _dagor_dir_licenses(_dagor_licenses)
     set_property(TARGET ${target} APPEND PROPERTY INTERFACE_DAGOR_LICENSE_FILES ${_dagor_licenses})
   endif()
