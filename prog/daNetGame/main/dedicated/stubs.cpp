@@ -18,6 +18,7 @@ float get_terrain_elevation(const Point3 & /*pt*/, Point3 & /*out_normal*/) { re
 #if _TARGET_PC_MACOSX && !DAGOR_HOSTED_INTERNAL_SERVER // startup for dedicated server for macOS
 #define __DAGOR_OVERRIDE_DEFAULT_ROOT_RELATIVE_PATH ".."
 #include "main/setup_log_prefix.h"
+#undef __DEBUG_FILEPATH // the dedicated server's log path, not the one a Rel client gets from setup_log_prefix.h
 #define __DEBUG_FILEPATH dng_get_log_prefix(false)
 #include <startup/dag_mainCon.inc.cpp>
 extern void DagorWinMainInit(int, bool);
