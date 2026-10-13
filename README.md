@@ -7,8 +7,8 @@ builds for Android and iOS. Building the engine tools takes 16 GB of RAM and 200
 * Windows: Visual Studio 2022 (or its Build Tools) with the C++ workload and a Windows 10/11 SDK; the engine compiles
   with the pinned LLVM (clang-cl), which the configure fetches, or with MSVC (the `windows-msvc-*` presets)
 * Linux: GCC 11+ or Clang, and the development packages: `libx11-dev libxrandr-dev libxi-dev libxcursor-dev
-  libxkbcommon-dev libfltk1.3-dev libxkbfile-dev libudev-dev libpulse-dev libasound2-dev libcurl4-openssl-dev libssl-dev
-  libdbus-1-dev uuid-dev nasm` (Debian/Ubuntu names)
+  libxkbcommon-dev libfltk1.3-dev libxkbfile-dev libudev-dev libpulse-dev libasound2-dev libdbus-1-dev uuid-dev nasm`
+  (Debian/Ubuntu names)
 * macOS: Xcode 16 or newer
 
 The SDKs the build needs (DirectX Shader Compiler, ISPC, Vulkan headers, LLVM, ...) are downloaded once, checked against

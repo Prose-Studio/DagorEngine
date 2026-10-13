@@ -166,12 +166,15 @@ webui, ImGui, the console) are generator expressions, so one tree builds every
 configuration.
 
 The game's options are cache variables of its trees (the project presets set
-them): `DAGOR_GAME_SOUND` (FMOD), `DAGOR_GAME_ASSET_MANAGER` (daBuild in the Windows client: it builds the
-assets the game loads, with `assets_import` in `gamelibs.txt`; its templates
-derive from the game's `rendinst` and `animchar`), and the crash
-reports: `DAGOR_BREAKPAD` (on in Windows and Linux clients, for Rel builds),
-`DAGOR_BREAKPAD_SUBMISSION` (every configuration, with the bpreport sender next
-to the game) and `DAGOR_CRASHPAD` (Windows, instead of breakpad).
+them): `DAGOR_GAME_SOUND` (FMOD), `DAGOR_GAME_EMBEDDED_BROWSER` (CEF in the
+Windows client, its `cefprocess` and runtime next to the game),
+`DAGOR_GAME_ASSET_MANAGER` (daBuild in the Windows client: it builds the assets
+the game loads, with `assets_import` in `gamelibs.txt`; its templates derive
+from the game's `rendinst` and `animchar`), and the crash reports:
+`DAGOR_BREAKPAD` (on in Windows and Linux clients, for Rel builds),
+`DAGOR_BREAKPAD_SUBMISSION` (every configuration, with the bpreport sender,
+on FLTK, next to the game) and `DAGOR_CRASHPAD` (Windows, instead of
+breakpad).
 
 Projects start from `templates/` (`dng.py new`): sp-3d, mp-3d, sp-2d and mp-2d,
 layered from `_common`, `_singleplayer` or `_multiplayer`, and `_2d` or `_3d`,

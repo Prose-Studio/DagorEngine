@@ -18,7 +18,7 @@ the engine tools takes 16&nbsp;GB of RAM and 200&nbsp;GB of HDD/SSD space.
    - Linux: GCC 11+ or Clang, and the development packages
      `libx11-dev libxrandr-dev libxi-dev libxcursor-dev libxkbcommon-dev
      libfltk1.3-dev libxkbfile-dev libudev-dev libpulse-dev libasound2-dev
-     libcurl4-openssl-dev libssl-dev libdbus-1-dev uuid-dev nasm`
+     libdbus-1-dev uuid-dev nasm`
      (Debian/Ubuntu names).
    - macOS: Xcode 16 or newer.
 
