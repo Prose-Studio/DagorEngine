@@ -189,7 +189,8 @@ class CreateTest(unittest.TestCase):
     prog = presets.engine_prog_path(self.dest, ENGINE)
     text = self.read('prog/CMakePresets.json')
     self.assertIn('"{}/cmake/presets/base.json"'.format(prog), text)
-    self.assertIn('"DAGOR_ENGINE_ROOT": "${{sourceDir}}/{}/.."'.format(prog), text)
+    root = prog if os.path.isabs(prog) else '${sourceDir}/' + prog  # absolute when the project is on another drive
+    self.assertIn('"DAGOR_ENGINE_ROOT": "{}/.."'.format(root), text)
     self.assertTrue(os.path.isfile(os.path.normpath(os.path.join(self.dest, 'prog', prog, 'cmake', 'presets', 'base.json'))))
 
   def test_engine_on_another_drive_is_absolute(self):
