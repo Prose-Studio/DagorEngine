@@ -99,7 +99,12 @@ _dng_files(FILES "${no_webui}" main/webui/stub.cpp)
 list(APPEND FILES main/browser/webBrowserStub.cpp) # no embedded browser (DAGOR_GAME_EMBEDDED_BROWSER)
 
 # sound
-_dng_glob(FILES 1 *.cpp sound/stub)
+if(DAGOR_GAME_SOUND)
+  _dng_glob(FILES 1 *.cpp sound sound/common sound/server dasModules/sound)
+  _dng_glob(ES_FILES 1 *ES.cpp.inl sound sound/common sound/server dasModules/sound)
+else()
+  _dng_glob(FILES 1 *.cpp sound/stub)
+endif()
 if(DAGOR_GAME_SOUND_NET)
   _dng_glob(FILES 1 *.cpp sound_net sound/common sound/server dasModules/sound/common dasModules/sound_net)
   _dng_glob(ES_FILES 1 *ES.cpp.inl sound_net sound/common sound/server dasModules/sound/common)

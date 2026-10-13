@@ -240,9 +240,15 @@ endif()
 
 # sound: FMOD Studio's (DAGOR_GAME_SOUND), and the sound events of the network (DAGOR_GAME_SOUND_NET)
 if(DAGOR_GAME_SOUND)
-  message(FATAL_ERROR "daNetGame: DAGOR_GAME_SOUND (FMOD Studio) is not ported yet")
+  if(NOT TARGET gameLibs.soundSystem)
+    message(FATAL_ERROR "daNetGame: DAGOR_GAME_SOUND needs the FMOD Studio API (\"FMOD Engine\" at fmod.com): install "
+                        "it or set FMOD_ROOT (prog/cmake/find/FindFMOD.cmake)")
+  endif()
+  list(APPEND deps gameLibs.soundSystem gameLibs.soundSystem.quirrel gameLibs.ecs.sound gameLibs.daRg.soundSystem
+    gameLibs.dasModules.sound)
+else()
+  list(APPEND deps gameLibs.soundSystem.stub gameLibs.soundSystem.quirrel.stub gameLibs.ecs.sound.stub)
 endif()
-list(APPEND deps gameLibs.soundSystem.stub gameLibs.soundSystem.quirrel.stub gameLibs.ecs.sound.stub)
 if(DAGOR_GAME_SOUND_NET)
   list(APPEND deps gameLibs.dasModules.sound.common)
 endif()
