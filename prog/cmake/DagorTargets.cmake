@@ -434,11 +434,11 @@ function(dagor_glob_sources out)
   set(${out} "${result}" PARENT_SCOPE)
 endfunction()
 
-# dagor_add_link_choice(<name> PROPERTY <property> ON <target> OFF <target>): an interface library that links <ON>
-# into the programs whose <property> is true and <OFF> into the others. A program sets the property, or gets it from a
-# library it links that sets INTERFACE_<property> ON. This is how a choice a global setting would make is made per
-# program when libraries in between depend on the chosen one; both implementations are built only for the programs
-# that use them.
+# dagor_add_link_choice(<name> PROPERTY <property> [ON <target>] [OFF <target>]): an interface library that links <ON>
+# into the programs whose <property> is true and <OFF> into the others (nothing where one is left out). The program
+# sets the property itself: a library's INTERFACE_<property> does not reach the choice. This is how a choice a global
+# setting would make is made per program when libraries in between depend on the chosen one; both implementations are
+# built only for the programs that use them.
 function(dagor_add_link_choice name)
   cmake_parse_arguments(PARSE_ARGV 1 arg "" "PROPERTY;ON;OFF" "")
   add_library(${name} INTERFACE)

@@ -394,7 +394,8 @@ const char *main_vromfs_mount_dir() { return \"${VROM_DIR}\"; }")
     dagor_add_target(NAME ${GAME}-aot EXECUTABLE
       FILES_CMAKE ${arg_AOT_FILES_CMAKE}
       INCLUDE_DIRECTORIES PRIVATE ${DAGOR_DNG_INCLUDES} ${DAGOR_PROG_DIR}/daNetGameLibs ${DAGOR_PROG_DIR}/gameLibs
-      BUILD_DEPENDENCIES PRIVATE daNetGame-das-aot Dagor::Quirrel)
+      BUILD_DEPENDENCIES PRIVATE daNetGame-das-aot Dagor::Quirrel
+      PROPERTIES DAGOR_NO_GPU ON)
     _dagor_game_lib_files(libs _aot.cmake "${arg_DNG_LIBS}" "${arg_GAME_LIBS}")
     foreach(lib IN LISTS libs)
       include("${lib}")
@@ -416,6 +417,16 @@ const char *main_vromfs_mount_dir() { return \"${VROM_DIR}\"; }")
   _dagor_target_arguments(args)
   dagor_add_target(${args})
   set_property(GLOBAL PROPERTY DAGOR_GAME_TARGET "${target}")
+  # what the program chooses among the engine's libraries (dagor_add_link_choice): daNetGame's camera for mesh streaming;
+  # rendering, NVIDIA Reflex / AMD Anti-Lag on Windows and the GUI layer on Linux; headless, no GPU profiler
+  set_property(TARGET ${target} PROPERTY DAGOR_GAME_CAMERA ON)
+  if(NOT DAGOR_GAME_RENDERER)
+    set_property(TARGET ${target} PROPERTY DAGOR_NO_GPU ON)
+  elseif(WIN32)
+    set_property(TARGET ${target} PROPERTY DAGOR_LOW_LATENCY ON)
+  elseif(LINUX)
+    set_property(TARGET ${target} PROPERTY DAGOR_LINUX_GUI ON)
+  endif()
   # a multiplayer game's client tree also builds its dedicated server's tree (target dedicated; the <host> workflow)
   if(DAGOR_DEDICATED_PRESET AND NOT DAGOR_DEDICATED)
     add_custom_target(dedicated

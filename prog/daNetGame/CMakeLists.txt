@@ -252,10 +252,10 @@ endif()
 if(DAGOR_GAME_SOUND_NET)
   list(APPEND deps gameLibs.dasModules.sound.common)
 endif()
-if(DAGOR_BREAKPAD)
-  list(APPEND deps gameLibs.breakpad.binder)
+if(DAGOR_CRASHPAD)
+  list(APPEND deps gameLibs.breakpad.crashpad)
 else()
-  list(APPEND deps gameLibs.breakpad.stub)
+  list(APPEND deps "$<IF:${DAGOR_BREAKPAD_CONFIGS},gameLibs.breakpad.binder,gameLibs.breakpad.stub>")
 endif()
 
 # --- generated code --------------------------------------------------------------------------------------------------
@@ -307,6 +307,14 @@ dagor_add_target(NAME daNetGame STATIC
   PROPERTIES DAGOR_FRAME_LIMIT 262144
 )
 target_sources(daNetGame PRIVATE ${generated})
+# the crash report sender next to the game (DAGOR_BREAKPAD_SUBMISSION)
+if(DAGOR_BREAKPAD_SUBMISSION AND NOT DAGOR_CRASHPAD)
+  if(NOT TARGET bpreport)
+    message(FATAL_ERROR "DAGOR_BREAKPAD_SUBMISSION: bpreport (gameLibs/breakpad/sender) is not built for ${DAGOR_PLATFORM}")
+  endif()
+  add_dependencies(daNetGame bpreport)
+  set_property(TARGET daNetGame APPEND PROPERTY INTERFACE_DAGOR_RUNTIME_FILES ".|$<TARGET_FILE:bpreport>")
+endif()
 # the pull of the framework's entity systems
 _dagor_es_pulls(daNetGame es_pulls)
 _dagor_pull_file(daNetGame "${gen}/daNetGame_es_pull.cpp" ECS framework_es_pulls ${es_pulls} ecsDebug)

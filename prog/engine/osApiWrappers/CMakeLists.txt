@@ -2,8 +2,7 @@
 #
 # On Linux the window title and clipboard come from engine/osApiWrappers/linuxGUI in programs with a GUI and from
 # stubs otherwise. A program chooses with the DAGOR_LINUX_GUI target property (dagor_add_target(... PROPERTIES
-# DAGOR_LINUX_GUI ON)), or gets ON from a library that sets INTERFACE_DAGOR_LINUX_GUI (the Vulkan driver); see
-# dagor_add_link_choice().
+# DAGOR_LINUX_GUI ON); dagor_add_dng_game sets it for the games and editors that render); see dagor_add_link_choice().
 set(includes)
 set(deps)
 set(libs)

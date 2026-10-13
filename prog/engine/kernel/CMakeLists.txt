@@ -15,11 +15,9 @@ if(ANDROID)
   list(APPEND defines ANDROID_ENABLE_SIGNAL_LOG) # the log of a fatal signal's stack (dagorHwExcept.cpp)
   list(APPEND includes ${DAGOR_ANDROID_NDK}/sources/android/cpufeatures)
 endif()
-if(DAGOR_BREAKPAD)
-  list(APPEND defines __BREAKPAD_ENABLED)
-  list(APPEND includes ${DAGOR_PROG_DIR}/3rdPartyLibs/breakpad)
-  list(APPEND deps 3rdPartyLibs.breakpad)
-endif()
+list(APPEND defines "$<${DAGOR_BREAKPAD_CONFIGS}:__BREAKPAD_ENABLED>")
+list(APPEND includes "$<${DAGOR_BREAKPAD_CONFIGS}:${DAGOR_PROG_DIR}/3rdPartyLibs/breakpad>")
+list(APPEND deps "$<${DAGOR_BREAKPAD_CONFIGS}:3rdPartyLibs.breakpad>")
 
 dagor_add_target(NAME engine.kernel STATIC
   FILES_CMAKE kernel_files.cmake

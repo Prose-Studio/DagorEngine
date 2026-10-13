@@ -20,9 +20,6 @@ if(stcode MATCHES "^(enable|both|validate)$")
     list(APPEND defines CPP_STCODE_DYNAMIC_BRANCHING)
   endif()
 endif()
-if(DAGOR_SHADERS_CAM_STUB)
-  list(APPEND defines CAM_STUB)
-endif()
 if(DAGOR_PROFILE_STCODE)
   list(APPEND defines PROFILE_STCODE)
 endif()
@@ -36,9 +33,17 @@ endforeach()
 dagor_add_link_select(engine.shaders.variables PROPERTY DAGOR_SHADER_VARS DEFAULT engine.shaders.vars
   mock engine.shaders.varsMock stub engine.shaders.varsStub)
 
+# the camera of mesh streaming (get_cam_itm()): the program's own where it has one (DAGOR_GAME_CAMERA: daNetGame's),
+# the identity otherwise
+dagor_add_target(NAME engine.shaders.camStub STATIC LAX
+  FILES_CMAKE camStub_files.cmake
+)
+dagor_add_link_choice(engine.shaders.camera PROPERTY DAGOR_GAME_CAMERA OFF engine.shaders.camStub)
+
 dagor_add_target(NAME engine.shaders STATIC LAX
   FILES_CMAKE shaders_files.cmake
   COMPILE_DEFINITIONS PRIVATE ${defines}
   BUILD_DEPENDENCIES PRIVATE
-    engine.shaders.variables 3rdPartyLibs.eastl 3rdPartyLibs.meshoptimizer 3rdPartyLibs.hash.BLAKE3
+    engine.shaders.variables engine.shaders.camera 3rdPartyLibs.eastl 3rdPartyLibs.meshoptimizer
+    3rdPartyLibs.hash.BLAKE3
 )

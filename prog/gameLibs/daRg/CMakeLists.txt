@@ -1,6 +1,6 @@
-# the Quirrel debugger of the games' Dev and Dbg builds on the desktop
+# the Quirrel debugger of the Dev and Dbg builds of the games and the editors on the desktop
 set(defines)
-if(DAGOR_VARIANT STREQUAL "game" AND CMAKE_SYSTEM_NAME MATCHES "^(Darwin|Linux|Windows)$")
+if(DAGOR_VARIANT MATCHES "^(game|editor)$" AND CMAKE_SYSTEM_NAME MATCHES "^(Darwin|Linux|Windows)$")
   set(defines "$<$<CONFIG:Dev,Dbg>:DARG_WITH_SQDEBUGGER>")
 endif()
 

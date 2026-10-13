@@ -7,7 +7,7 @@ endif()
 foreach(build standard measurePerf)
   set(defines)
   if(build STREQUAL "measurePerf")
-    set(defines MEASURE_PERF=1)
+    set(defines MEASURE_PERF=1 MEASURE_PERF_FRAMES=1000) # the counters published over 1000 frames
   endif()
   dagor_add_target(NAME engine.anim.${build} STATIC
     FILES_CMAKE anim_files.cmake
