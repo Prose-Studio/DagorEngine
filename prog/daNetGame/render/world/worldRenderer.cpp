@@ -6762,7 +6762,7 @@ void WorldRenderer::setOrthoView(bool ortho)
   setGIQualityFromSettings();
   setAntialiasing();
   if (auto *skies = get_daskies())
-    skies->setSolidColorMode(ortho, E3DCOLOR(40, 44, 52));
+    skies->setSolidColorMode(ortho, E3DCOLOR(5, 7, 9)); // #282c34: the sky is scene radiance, so linear, not sRGB
 }
 
 void WorldRenderer::validateFeatures(FeatureRenderFlagMask &features, const FeatureRenderFlagMask &)
