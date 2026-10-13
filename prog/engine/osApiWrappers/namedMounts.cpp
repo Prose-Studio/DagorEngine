@@ -82,28 +82,65 @@ static const char *find_named_mount(const char *mount_name)
 
 static bool is_abs_path(const char *p) { return p[0] == '/' || p[0] == '\\' || (p[0] && p[1] == ':'); }
 
-// engine.blk of a game project: engineRoot:t="<engine root, absolute or relative to the dir of engine.blk>"
-static bool read_engine_blk(const char *dir, eastl::string &out_root)
+// application.blk of a game project: engineRoot:t="<engine root, absolute or relative to the dir of application.blk>".
+// Read as text (this is below the BLK parser): the engineRoot:t= line, its string with the BLK escapes (~~ ~" ~n ...).
+// false when there is no such file or it names no engine root (application.blk files of other kinds have none).
+static bool read_application_blk(const char *dir, eastl::string &out_root)
 {
-  const eastl::string fn(eastl::string::CtorSprintf(), "%s/engine.blk", dir);
+  const eastl::string fn(eastl::string::CtorSprintf(), "%s/application.blk", dir);
   file_ptr_t f = df_open(fn.c_str(), DF_READ | DF_IGNORE_MISSING | DF_REALFILE_ONLY);
   if (!f)
     return false;
-  char buf[4096];
-  const int len = df_read(f, buf, sizeof(buf) - 1);
+  eastl::string text;
+  text.resize(df_length(f));
+  const int len = df_read(f, text.data(), int(text.size()));
   df_close(f);
-  buf[len > 0 ? len : 0] = '\0';
-  const char *key = strstr(buf, "engineRoot");
-  const char *open = key ? strchr(key, '"') : nullptr;
-  const char *close = open ? strchr(open + 1, '"') : nullptr;
-  if (!close)
+  text.resize(len > 0 ? len : 0);
+
+  for (const char *line = text.c_str(); *line; line = strchr(line, '\n') ? strchr(line, '\n') + 1 : "")
   {
-    logerr("%s: expected engineRoot:t=\"<engine root>\"", fn.c_str());
-    return false;
+    const char *p = line;
+    while (*p == ' ' || *p == '\t')
+      p++;
+    if (strncmp(p, "engineRoot", 10) != 0)
+      continue;
+    p += 10;
+    while (*p == ' ' || *p == '\t')
+      p++;
+    if (*p++ != ':')
+      continue;
+    while (*p == ' ' || *p == '\t')
+      p++;
+    if (*p++ != 't')
+      continue;
+    while (*p == ' ' || *p == '\t')
+      p++;
+    if (*p++ != '=')
+      continue;
+    while (*p == ' ' || *p == '\t')
+      p++;
+    if (*p++ != '"')
+      continue;
+    eastl::string root;
+    for (; *p && *p != '"' && *p != '\n'; p++)
+    {
+      if (*p == '~' && p[1])
+      {
+        p++;
+        root.push_back(*p == 'n' ? '\n' : *p == 't' ? '\t' : *p == 'r' ? '\r' : *p);
+      }
+      else
+        root.push_back(*p);
+    }
+    if (*p != '"' || root.empty())
+    {
+      logerr("%s: expected engineRoot:t=\"<engine root>\"", fn.c_str());
+      return false;
+    }
+    out_root = is_abs_path(root.c_str()) ? root : eastl::string(eastl::string::CtorSprintf(), "%s/%s", dir, root.c_str());
+    return true;
   }
-  const eastl::string root(open + 1, close);
-  out_root = is_abs_path(root.c_str()) ? root : eastl::string(eastl::string::CtorSprintf(), "%s/%s", dir, root.c_str());
-  return true;
+  return false;
 }
 
 static bool detect_engine_root(eastl::string &out_root, const char *&out_source)
@@ -122,9 +159,9 @@ static bool detect_engine_root(eastl::string &out_root, const char *&out_source)
       *c = '/';
   for (;;)
   {
-    if (read_engine_blk(dir, out_root))
+    if (read_application_blk(dir, out_root))
     {
-      out_source = "engine.blk";
+      out_source = "application.blk";
       return true;
     }
     if (dd_file_exist(eastl::string(eastl::string::CtorSprintf(), "%s/prog/cmake/DagorConfig.cmake", dir).c_str()))
@@ -151,7 +188,7 @@ static const char *detect_engine_mount()
   const char *source = "";
   if (!detect_engine_root(root, source))
   {
-    logwarn("named mount %%%s is not set: no DAGOR_ENGINE_ROOT, no engine.blk or engine checkout above the current dir", ENGINE_MOUNT);
+    logwarn("named mount %%%s is not set: no DAGOR_ENGINE_ROOT, no project's application.blk or engine checkout above the current dir", ENGINE_MOUNT);
     return nullptr;
   }
   char simplified[DAGOR_MAX_PATH];

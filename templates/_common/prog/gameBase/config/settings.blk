@@ -43,7 +43,7 @@ daEditor{
 }
 
 // Script and data dirs. Sources are used with -config:debug/useAddonVromSrc:b=yes (game/run scripts and tests pass it),
-// the vromfs (cmake --build --preset <host>-client-content) otherwise; the engine is the %engine mount, found through ../../../engine.blk.
+// the vromfs (cmake --build --preset <host>-client-content) otherwise; the engine is the %engine mount, found through engineRoot of ../../../application.blk.
 mountPoints{
   "%darg"      { forSource:t="%engine/prog/scripts/sq/daRg"; forVromfs:t="sq/daRg"; }
   "%sqstd"     { forSource:t="%engine/prog/scripts/sq/std"; forVromfs:t="sq/std"; }

@@ -2,7 +2,7 @@
 """Dagor Engine commands: python dng.py <command> [arguments], python dng.py <command> -h for its arguments.
 
   new     creates a game project from a template in templates/
-  relink  points a game project at this engine (its engine.blk and prog/CMakePresets.json)
+  relink  points a game project at this engine (its application.blk and prog/CMakePresets.json)
 
 The engine and its projects are built with CMake presets: cmake --list-presets in prog/ (see README.md).
 """

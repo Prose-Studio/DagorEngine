@@ -5,7 +5,7 @@ A template is a dir with a template.blk: its description, whether the game is mu
 server) and the layers (dirs starting with _) the project is made of, in order; each layer's files replace those of the
 layers before it, the template dir's own files come last. The template.blk files of the layers give the name tokens
 (tokens{}) that are replaced in file names and text files. Only files git tracks (or would track) are copied. The new
-project's engine.blk and prog/CMakePresets.json name this engine.
+project's application.blk (engineRoot) and prog/CMakePresets.json name this engine.
 """
 import argparse
 import fnmatch
@@ -250,15 +250,15 @@ def create(template_id: str, name: str, dest: str, codename=None, title=None, co
 
 
 def relink(project_dir: str, absolute=False, multiplayer=None):
-  """points the project's engine.blk and prog/CMakePresets.json at this engine (multiplayer: whether the game has a
+  """points the project's application.blk (engineRoot) and prog/CMakePresets.json at this engine (multiplayer: whether the game has a
   dedicated server, by default as its presets say)"""
-  engine.write_engine_blk(project_dir, engine_root(), absolute=absolute)
+  engine.write_engine_root(project_dir, engine_root(), absolute=absolute)
   presets.write(project_dir, engine_root(), multiplayer)
 
 
 def make_parser():
   p = argparse.ArgumentParser(prog='dng.py new', description='Creates a game project from a template in templates/. '
-                              'The project can be anywhere: it finds this engine through its engine.blk and '
+                              'The project can be anywhere: it finds this engine through its application.blk and '
                               'CMakePresets.json.',
                               epilog=EPILOG, formatter_class=argparse.RawDescriptionHelpFormatter)
   p.add_argument('--template', default='mp-3d', help='template id (default: mp-3d; --list shows them)')
@@ -267,7 +267,7 @@ def make_parser():
   p.add_argument('--codename', help='lowercase name of executables and dirs (default: from --name, my_game)')
   p.add_argument('--title', help='human readable name (default: from --name, "My Game")')
   p.add_argument('--company', default='com.example', help='reverse domain name for bundle ids (default: com.example)')
-  p.add_argument('--absolute-engine-path', action='store_true', help='store the engine path in engine.blk as absolute '
+  p.add_argument('--absolute-engine-path', action='store_true', help='store the engine path in application.blk as absolute '
                  '(default: relative, absolute only across drives)')
   p.add_argument('--no-git', action='store_true', help='do not run git init in the new project')
   p.add_argument('--force', action='store_true', help='write into an existing non-empty dir')
@@ -296,19 +296,17 @@ def main(argv):
     host = {'win32': 'windows', 'darwin': 'macos'}.get(sys.platform, 'linux')
     print('''
 Next steps, in {0}/prog (cmake --list-presets lists the trees):
-  cmake --workflow --preset {2}-test             the game{3} and the tests that need no GPU
-  cmake --preset {2}-client
-  cmake --build --preset {2}-client              the client
-  cmake --build --preset {2}-client-content      its content: shaders, vromfs, editor snapshot, assets
-  ../game/client{1}                               run the game
-  ../develop/daEditor{1}                          open the editor
+  cmake --workflow --preset {2}         everything: the game{3}, its content, the engine tools it needs
+  cmake --workflow --preset {2}-test    the tests that need no GPU
+  ../game/client{1}                      run the game
+  ../develop/daEditor{1}                 open the editor
 See README.md there.'''.format(dest, '.cmd' if sys.platform.startswith('win') else '.sh', host,
-                                 "'s dedicated server" if read_template(args.template).multiplayer else ''))
+                                 ', its dedicated server' if read_template(args.template).multiplayer else ''))
   return 0
 
 
 def relink_main(argv):
-  p = argparse.ArgumentParser(prog='dng.py relink', description="Points a game project's engine.blk and "
+  p = argparse.ArgumentParser(prog='dng.py relink', description="Points a game project's application.blk and "
                               'prog/CMakePresets.json at this engine (after either moved).')
   p.add_argument('project', help='the project dir')
   p.add_argument('--absolute-engine-path', action='store_true', help='store the engine path as absolute')

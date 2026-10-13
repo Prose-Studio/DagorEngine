@@ -1,14 +1,14 @@
 # Creating a Project
 
 `dng.py new` in the engine root creates a game project from a template in `templates/`. The project can live
-anywhere: its `engine.blk` names the engine checkout it is built with, and its `prog/CMakePresets.json` includes the
+anywhere: `engineRoot` in its `application.blk` names the engine checkout it is built with, and its `prog/CMakePresets.json` includes the
 engine's presets, so the build, the game and the tools find the engine wherever both are.
 
 ```bash
 python dng.py new --template sp-3d --name MyGame --dest ../MyGame
 cd ../MyGame/prog
-cmake --workflow --preset windows-test       # the game and the tests that need no GPU
-cmake --build --preset windows-client-content
+cmake --workflow --preset windows            # everything: the game, its content, the engine tools it needs
+cmake --workflow --preset windows-test       # the tests that need no GPU
 ../game/client.cmd
 ```
 
@@ -53,7 +53,7 @@ are off until a game brings their assets (see `gameparams.blk` and `settings.blk
 | `--title` | human readable name: window title, executable info (default from `--name`: `My Game`) |
 | `--company` | reverse domain name for the bundle id `<company>.<name>` (default `com.example`) |
 | `--dest` | the project dir: new or empty, ASCII without spaces (default `../<name>` next to the engine) |
-| `--absolute-engine-path` | `engine.blk` and the presets store an absolute path (by default relative, absolute only across drives) |
+| `--absolute-engine-path` | `application.blk` and the presets store an absolute path (by default relative, absolute only across drives) |
 | `--no-git` | no `git init` in the new project |
 | `--dry-run` | print the files it would create |
 
@@ -63,10 +63,10 @@ project's client tree builds in the engine's own trees when they are missing or 
 ## Linking a project to an engine
 
 ```text
-engineRoot:t="../DagorEngine"   // engine.blk: relative to the project, or absolute
+engineRoot:t="../DagorEngine"   // application.blk: relative to the project, or absolute
 ```
 
-`python <engine>/dng.py relink <project dir>` points `engine.blk` and `prog/CMakePresets.json` at that engine (after
+`python <engine>/dng.py relink <project dir>` points `engineRoot` and `prog/CMakePresets.json` at that engine (after
 either moved). The CMake configure writes the files that depend on the engine and the lib lists; they are not
 committed:
 
@@ -76,6 +76,6 @@ committed:
 | `prog/_libs*` | the libs of `prog/danetgamelibs.txt` and `prog/gamelibs.txt`: vromfs, templates, das init, shaders |
 
 Inside the engine, data files name engine paths through the `%engine` named mount, which the engine resolves from
-`engine.blk` too (from the first `engine.blk` or engine checkout above the current dir, unless the `DAGOR_ENGINE_ROOT`
+`engineRoot` too (from the first project `application.blk` or engine checkout above the current dir, unless the `DAGOR_ENGINE_ROOT`
 environment variable names one): settings `mountPoints`, shader and vromfs configs and `application.blk` use
 `%engine/prog/...` and work wherever the project is.

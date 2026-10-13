@@ -40,14 +40,18 @@ TEST_CASE("named mounts resolve other mounts in their path", "[namedMounts]")
 }
 
 // %engine is detected once per process, so this is the only case that may trigger the detection
-TEST_CASE("the engine mount is found through a project's engine.blk", "[namedMounts]")
+TEST_CASE("the engine mount is found through a project's application.blk", "[namedMounts]")
 {
   if (getenv("DAGOR_ENGINE_ROOT"))
-    SKIP("DAGOR_ENGINE_ROOT is set: it takes precedence over engine.blk");
+    SKIP("DAGOR_ENGINE_ROOT is set: it takes precedence over application.blk");
 
   const String scratch = unittest::scratch_dir();
-  write_text(String(0, "%s/MyGame/engine.blk", scratch.c_str()), "engineRoot:t=\"../TheEngine\"\n");
+  // the project's application.blk names the engine (a BLK string: ~~ is ~); a comment naming engineRoot is not it
+  write_text(String(0, "%s/MyGame/application.blk", scratch.c_str()),
+    "// engineRoot is set below\ncollision:t=\"Unigine\"\nengineRoot:t=\"../The~~Engine\"\nshaders:t=\"tools/tools\"\n");
   REQUIRE(dd_mkdir(String(0, "%s/MyGame/game/content", scratch.c_str())));
+  // an application.blk that names no engine (of another kind) does not stop the search
+  write_text(String(0, "%s/MyGame/game/application.blk", scratch.c_str()), "shaders:t=\"x\"\n");
 
   char savedCwd[DAGOR_MAX_PATH];
   REQUIRE(getcwd(savedCwd, sizeof(savedCwd)));
@@ -57,7 +61,7 @@ TEST_CASE("the engine mount is found through a project's engine.blk", "[namedMou
   REQUIRE(chdir(savedCwd) == 0);
 
   REQUIRE(engine != nullptr);
-  String expected(0, "%s/TheEngine", scratch.c_str());
+  String expected(0, "%s/The~Engine", scratch.c_str());
   dd_simplify_fname_c(expected.data());
   expected.updateSz();
   CHECK(String(engine) == expected);

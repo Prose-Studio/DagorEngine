@@ -42,7 +42,7 @@ Below is a tree of the general directory structure:
 └── _docs
 ```
 
-A project can also live outside `<engine_root>`: its `engine.blk` names the engine checkout (see
+A project can also live outside `<engine_root>`: `engineRoot` in its `application.blk` names the engine checkout (see
 [Creating a Project](new_project.md)).
 
 ## Main Sources

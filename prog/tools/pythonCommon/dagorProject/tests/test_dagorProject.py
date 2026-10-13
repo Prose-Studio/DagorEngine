@@ -1,4 +1,4 @@
-"""Tests of dagorProject: engine.blk, the project presets and project creation from the templates in templates/."""
+"""Tests of dagorProject: the engine root in application.blk, the project presets and project creation from the templates in templates/."""
 import json
 import os
 import re
@@ -16,51 +16,67 @@ ENGINE = create.engine_root()
 TOKENS = {'bundleId': 'com.example.StarterGame', 'title': 'Starter Game', 'name': 'StarterGame', 'codename': 'starter_game'}
 
 
-class EngineBlkTest(unittest.TestCase):
+class EngineRootTest(unittest.TestCase):
+  """engineRoot in a project's application.blk"""
+
   def setUp(self):
     self.dir = tempfile.mkdtemp()
 
   def tearDown(self):
     shutil.rmtree(self.dir, ignore_errors=True)
 
+  def blk(self):
+    with open(os.path.join(self.dir, 'application.blk'), encoding='utf-8') as f:
+      return f.read()
+
+  def write_blk(self, text):
+    with open(os.path.join(self.dir, 'application.blk'), 'w', encoding='utf-8') as f:
+      f.write(text)
+
   def test_written_relative_and_read_back(self):
-    engine.write_engine_blk(self.dir, ENGINE)
-    with open(os.path.join(self.dir, 'engine.blk'), encoding='utf-8') as f:
-      text = f.read()
-    ref = re.search(r'engineRoot:t="([^"]*)"', text).group(1)
+    engine.write_engine_root(self.dir, ENGINE)
+    ref = re.search(r'engineRoot:t="([^"]*)"', self.blk()).group(1)
     if os.path.splitdrive(self.dir)[0].lower() == os.path.splitdrive(ENGINE)[0].lower():
       self.assertFalse(os.path.isabs(ref), ref)
     self.assertEqual(engine.read_engine_root(self.dir), ENGINE)
 
   def test_absolute_on_request(self):
-    engine.write_engine_blk(self.dir, ENGINE, absolute=True)
+    engine.write_engine_root(self.dir, ENGINE, absolute=True)
     self.assertEqual(engine.read_engine_root(self.dir), ENGINE)
-    with open(os.path.join(self.dir, 'engine.blk'), encoding='utf-8') as f:
-      self.assertIn('engineRoot:t="{}"'.format(ENGINE), f.read())
+    self.assertIn('engineRoot:t="{}"'.format(ENGINE), self.blk())
+
+  def test_the_rest_of_application_blk_is_kept(self):
+    tools = 'collision:t="Unigine"\nshaders:t="tools/tools"\n\ngame{\n  game_folder:t="game"\n}\n'
+    self.write_blk(tools)
+    engine.write_engine_root(self.dir, ENGINE)  # no engineRoot yet: the first line
+    self.assertTrue(self.blk().endswith(tools))
+    self.write_blk('// tools\ncollision:t="Unigine"\nengineRoot:t="old/path"  // a comment\nshaders:t="x"\n')
+    engine.write_engine_root(self.dir, ENGINE, absolute=True)  # in place
+    self.assertEqual(self.blk(), '// tools\ncollision:t="Unigine"\nengineRoot:t="{}"  // a comment\nshaders:t="x"\n'.format(ENGINE))
 
   def test_the_engine_reads_only_the_engine_root_line(self):
-    # prog/engine/osApiWrappers/namedMounts.cpp takes the first quoted string after "engineRoot": comments must not name it
-    engine.write_engine_blk(self.dir, ENGINE)
-    with open(os.path.join(self.dir, 'engine.blk'), encoding='utf-8') as f:
-      lines = [l for l in f if 'engineRoot' in l]
+    # prog/engine/osApiWrappers/namedMounts.cpp takes the engineRoot:t= line: comments may name it, but not as that line
+    engine.write_engine_root(self.dir, ENGINE)
+    lines = [l for l in self.blk().splitlines() if l.lstrip().startswith('engineRoot')]
     self.assertEqual(len(lines), 1)
     self.assertTrue(lines[0].startswith('engineRoot:t='))
 
   def test_blk_escapes(self):
-    # ~ escapes in BLK strings (the engine reads engine.blk as a DataBlock), Windows short names have one: RUNNER~1
-    with open(os.path.join(self.dir, 'engine.blk'), 'w') as f:
-      f.write('engineRoot:t="C:/Users/RUNNER~~1/engine"\n')
+    # ~ escapes in BLK strings, and Windows short names have a ~: RUNNER~1
+    self.write_blk('engineRoot:t="C:/Users/RUNNER~~1/engine"\n')
     self.assertEqual(engine.read_engine_ref(self.dir), 'C:/Users/RUNNER~1/engine')
 
   def test_missing_and_wrong_engine_fail_clearly(self):
     with self.assertRaisesRegex(ProjectError, 'cannot read'):
       engine.read_engine_root(self.dir)
-    with open(os.path.join(self.dir, 'engine.blk'), 'w') as f:
-      f.write('engineRoot:t="no/such/dir"\n')
+    self.write_blk('shaders:t="x"\n')
+    with self.assertRaisesRegex(ProjectError, 'expected engineRoot'):
+      engine.read_engine_root(self.dir)
+    self.write_blk('engineRoot:t="no/such/dir"\n')
     with self.assertRaisesRegex(ProjectError, 'not a Dagor Engine checkout'):
       engine.read_engine_root(self.dir)
     with self.assertRaisesRegex(ProjectError, 'not a Dagor Engine checkout'):
-      engine.write_engine_blk(self.dir, self.dir)
+      engine.write_engine_root(self.dir, self.dir)
 
   def test_relative_or_absolute(self):
     self.assertEqual(engine.relative_or_absolute('C:/a/b/c', 'C:/a/d'), '../b/c') if os.name == 'nt' else None
@@ -190,6 +206,13 @@ class CreateTest(unittest.TestCase):
 
   def test_the_game_kind(self):
     self.assertIn('windows-dedicated', self.configure_presets())
+    data = json.loads(self.read('prog/CMakePresets.json'))
+    client = [p for p in data['configurePresets'] if p['name'] == 'linux-client'][0]
+    self.assertEqual(client['inherits'], ['project', 'toolchain-linux'])
+    self.assertEqual(client['cacheVariables'], {'DAGOR_DEDICATED_PRESET': 'linux-dedicated'})
+    everything = [p for p in data['buildPresets'] if p['name'] == 'linux'][0]  # cmake --workflow --preset linux
+    self.assertEqual(everything['targets'], ['all', 'content', 'dedicated'])
+    self.assertIn('linux', [w['name'] for w in data['workflowPresets']])
     self.assertTrue(os.path.isfile(self.path('game/server.cmd')))
     self.assertIn('DEDICATED_AUTH', self.read('prog/CMakeLists.txt'))
     self.assertIn('static_cam', self.read('prog/gameBase/gamedata/scenes/main.blk'))
@@ -203,6 +226,9 @@ class CreateSinglePlayer2dTest(CreateTest):
 
   def test_the_game_kind(self):
     self.assertIn('windows-client', self.configure_presets())
+    data = json.loads(self.read('prog/CMakePresets.json'))
+    everything = [p for p in data['buildPresets'] if p['name'] == 'windows'][0]
+    self.assertEqual(everything['targets'], ['all', 'content'])
     self.assertFalse([n for n in self.configure_presets() if 'dedicated' in n])
     workflows = json.loads(self.read('prog/CMakePresets.json'))['workflowPresets']
     test = [s for w in workflows if w['name'] == 'linux-test' for s in w['steps'] if s['type'] == 'test']

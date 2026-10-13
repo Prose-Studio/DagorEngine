@@ -1,6 +1,6 @@
 // Included by every shaders_<api>.blk of the game.
 // The engine's shader lists name their include dirs relative to <engine>/<project>/prog/shaders; this mount point is a
-// dir at that depth, so they resolve wherever this project is (%engine is found through ../../engine.blk).
+// dir at that depth, so they resolve wherever this project is (%engine is found through engineRoot of ../../application.blk).
 mountPoint:t="%engine/prog/daNetGame/shaders"
 incDir:t="%engine/prog/daNetGameLibs"
 

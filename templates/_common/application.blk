@@ -1,5 +1,9 @@
-// Setup of the tools for this project: daEditor, daViewer (assetViewer), dabuild and impostorBaker (develop/*).
-// Paths are relative to this dir. See <engine>/_docs/source/assets/all-about-blk/application_blk.md
+// Setup of this project: the engine it is built with, and its tools (daEditor, daViewer (assetViewer), dabuild and
+// impostorBaker, develop/*). Paths are relative to this dir. See <engine>/_docs/source/assets/all-about-blk/application_blk.md
+
+// the Dagor Engine checkout this project is built with: relative to this dir or absolute ("python <engine>/dng.py
+// relink <project dir>" changes it, and prog/CMakePresets.json with it); the game and the tools find the engine by it
+engineRoot:t=""
 collision:t="Unigine"
 shaders:t="tools/tools"                              // tool shaders: cmake --build --preset <host>-client-content
 dngShaders:t="game/compiledShaders/game"             // the game's shaders, for rendering levels like the game does
@@ -203,7 +207,7 @@ ecs{
   ignoreAllBadComponents:b=yes
 }
 
-// relative to develop/ (the SDK dir); the engine is the %engine mount, found through engine.blk
+// relative to develop/ (the SDK dir); the engine is the %engine mount, found through engineRoot above
 mountPoints{
   "%gameBase"{ forSource:t="../prog/gameBase"; forVromfs:t=""; }
   "%danetlibs"{ forSource:t="%engine/prog/daNetGameLibs"; forVromfs:t="danetlibs"; }

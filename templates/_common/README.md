@@ -1,7 +1,7 @@
 # Starter Game
 
-A daNetGame game built with the Dagor Engine. `engine.blk` names the engine checkout (relative to this dir or
-absolute); the project can be anywhere. `python <engine>/dng.py relink <this dir>` points it at another checkout.
+A daNetGame game built with the Dagor Engine. `engineRoot` in `application.blk` names the engine checkout (relative
+to this dir or absolute); the project can be anywhere. `python <engine>/dng.py relink <this dir>` points it at another checkout.
 
 A single-player game is its own server: one program, `<host>-client`, runs every system. A multiplayer game is also
 built as a dedicated server, `<host>-dedicated`, which players' clients join.
@@ -11,15 +11,16 @@ built as a dedicated server, `<host>-dedicated`, which players' clients join.
 In `prog/` (`cmake --list-presets` lists the trees):
 
 ```bash
-cmake --workflow --preset windows-test             # the game (multiplayer: its dedicated server) and the tests that need no GPU
-cmake --preset windows-client
-cmake --build --preset windows-client              # the game
+cmake --workflow --preset windows                  # everything: the game, its content (and its dedicated server)
+cmake --workflow --preset windows-test             # the tests that need no GPU
+cmake --preset windows-client                      # one tree at a time: the game
+cmake --build --preset windows-client
 cmake --build --preset windows-client-content      # its content: shaders, vromfs, editor snapshot, assets
 cmake --preset windows-dedicated                   # multiplayer: the dedicated server
 cmake --build --preset windows-dedicated
 ```
 
-(`linux-` and `macos-` on those hosts.) The programs go to `game/<platform>-<arch>`, the content to `game/`; the trees
+(`linux` and `macos` on those hosts.) The programs go to `game/<platform>-<arch>`, the content to `game/`; the trees
 are in `build/`. The content is made with the engine's tools (shader compilers, vromfsPacker, daBuild), which the
 engine's own trees build when they are missing or out of date.
 
@@ -31,8 +32,7 @@ game/server.cmd                                    # multiplayer: the dedicated 
 ## Layout
 
 ```text
-engine.blk          the engine checkout this project is built with
-application.blk     the tools' setup (daEditor, daViewer, dabuild, impostorBaker)
+application.blk     the engine checkout (engineRoot) and the tools' setup (daEditor, daViewer, dabuild, impostorBaker)
 develop/            tool scripts (daEditor, daViewer, dabuild, daImpostor), assets/ and levels/
 game/               what ships: executables, compiledShaders, vromfs, content (all built), run scripts
 prog/
@@ -48,7 +48,7 @@ prog/
   tests/            cpp, das, ecs and scenario tests
 ```
 
-Files starting with `_` (`_engine.cmd`, `prog/_libs*`, ...) are written by the CMake configure from `engine.blk` and
+Files starting with `_` (`_engine.cmd`, `prog/_libs*`, ...) are written by the CMake configure from the engine path and
 the lib lists; they are not committed.
 
 ## Scripts

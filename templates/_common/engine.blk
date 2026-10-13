@@ -1,3 +1,0 @@
-// The Dagor Engine checkout this project is built with: relative to this file or absolute.
-// Change it with "python <engine>/dng.py relink <project dir>".
-engineRoot:t="../.."

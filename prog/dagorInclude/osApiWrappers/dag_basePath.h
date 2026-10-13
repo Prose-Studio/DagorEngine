@@ -38,7 +38,7 @@ extern "C"
 
   //! returns path assigned for named mount (when mount exists) or nullptr (when mount_name not known)
   //! %engine (the engine root) is resolved on first use when nobody set it: from the DAGOR_ENGINE_ROOT environment variable,
-  //! else walking up from the current dir to a game project's engine.blk (engineRoot:t="path relative to engine.blk")
+  //! else walking up from the current dir to a game project's application.blk (engineRoot:t="path relative to it")
   //! or to the engine root itself (the dir containing prog/cmake/DagorConfig.cmake)
   KRNLIMP const char *dd_get_named_mount_path(const char *mount_name, int mount_name_len = -1);
 
