@@ -18,6 +18,9 @@ if(DAGOR_SANITIZE STREQUAL "thread" AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 endif()
 
 dagor_link_options("${_linked}" -pipe -rdynamic LINKER:--gc-sections LINKER:-z,noexecstack LINKER:-z,separate-code)
+# programs load the shared libraries next to them (daKernel, an SDK's runtime files), built and installed
+set(CMAKE_BUILD_RPATH "$ORIGIN")
+set(CMAKE_INSTALL_RPATH "$ORIGIN")
 foreach(_lib Threads::Threads System::dl System::rt System::m)
   link_libraries("$<${_linked}:${_lib}>")
 endforeach()
