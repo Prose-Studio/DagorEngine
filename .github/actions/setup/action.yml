@@ -1,0 +1,48 @@
+name: Dagor build setup
+description: >-
+  Python, CMake, Ninja and the Linux system libraries; the SDK cache (keyed on the manifest) in DAGOR_DEPS_DIR and the
+  compiler cache (sccache, pinned by the manifest) in SCCACHE_DIR. The job sets DAGOR_DEPS_DIR,
+  DAGOR_COMPILER_LAUNCHER=sccache and SCCACHE_DIR.
+
+inputs:
+  cache-key:
+    description: what the compiler cache is kept per (a preset name, say)
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
+    - name: Install CMake and Ninja
+      shell: bash
+      run: python -m pip install "cmake>=4.0,<5" "ninja>=1.11"
+
+    - name: Install the system libraries (Linux)
+      if: runner.os == 'Linux'
+      shell: bash
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libx11-dev libxrandr-dev libxi-dev libxcursor-dev libxkbcommon-dev libfltk1.3-dev \
+          libxkbfile-dev libudev-dev libpulse-dev libasound2-dev libcurl4-openssl-dev libssl-dev libdbus-1-dev \
+          uuid-dev nasm
+
+    - name: Cache the SDKs
+      uses: actions/cache@v4
+      with:
+        path: ${{ env.DAGOR_DEPS_DIR }}/sdk
+        key: dagor-deps-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('prog/cmake/sdk/manifest.cmake') }}
+        restore-keys: dagor-deps-${{ runner.os }}-${{ runner.arch }}-
+
+    - name: Cache compiler objects
+      uses: actions/cache@v4
+      with:
+        path: ${{ env.SCCACHE_DIR }}
+        key: dagor-objects-${{ inputs.cache-key }}-${{ hashFiles('prog/cmake/sdk/manifest.cmake') }}-${{ github.sha }}
+        restore-keys: dagor-objects-${{ inputs.cache-key }}-${{ hashFiles('prog/cmake/sdk/manifest.cmake') }}-
+
+    - name: Prepare the compiler cache
+      shell: bash
+      run: cmake -P prog/cmake/scripts/compiler_cache.cmake

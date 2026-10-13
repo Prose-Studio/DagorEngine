@@ -1,0 +1,7 @@
+// A project template (python dng.py new --template mp-3d): the project is made of the layers, in order, each one's files
+// replacing those of the layers before it, then of this dir's own files. This file is not copied.
+description:t="Multiplayer 3D game: a client and a dedicated server; a 3D world with sky and light through a perspective camera"
+multiplayer:b=yes
+layer:t="_common"
+layer:t="_multiplayer"
+layer:t="_3d"

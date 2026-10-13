@@ -1,10 +1,11 @@
 """Creating a game project from a template in <engine>/templates (dng.py new in the engine root), and relinking one to
 this engine (dng.py relink).
 
-A template is a buildable project with its own engine.blk and prog/CMakePresets.json; its template.blk lists the name
-tokens (tokens{}) that are replaced in file names and text files. Only files git tracks (or would track) are copied:
-build outputs and generated files of the template stay behind. The new project's engine.blk and CMakePresets.json name
-this engine.
+A template is a dir with a template.blk: its description, whether the game is multiplayer (a client and a dedicated
+server) and the layers (dirs starting with _) the project is made of, in order; each layer's files replace those of the
+layers before it, the template dir's own files come last. The template.blk files of the layers give the name tokens
+(tokens{}) that are replaced in file names and text files. Only files git tracks (or would track) are copied. The new
+project's engine.blk and prog/CMakePresets.json name this engine.
 """
 import argparse
 import fnmatch
@@ -23,6 +24,7 @@ TOKEN_KEYS = ('bundleId', 'title', 'name', 'codename')
 
 EPILOG = '''examples:
   python dng.py new --name MyGame --dest ../MyGame
+  python dng.py new --template sp-2d --name MyGame --dest ../MyGame
   python dng.py new --name MyGame --title "My Game" --company com.example --dest D:/Games/MyGame
   python dng.py new --list'''
 
@@ -40,25 +42,52 @@ def list_templates() -> Dict[str, str]:
   out = {}
   if os.path.isdir(templates_dir()):
     for d in sorted(os.listdir(templates_dir())):
-      fn = os.path.join(templates_dir(), d, TEMPLATE_BLK)
-      if os.path.isfile(fn):
-        out[d] = read_template_blk(fn)[0]
+      if not d.startswith('_') and os.path.isfile(os.path.join(templates_dir(), d, TEMPLATE_BLK)):
+        out[d] = read_template(d).description
   return out
 
 
-def read_template_blk(fn: str) -> Tuple[str, Dict[str, str]]:
-  """(description, {token key: token value})"""
+class Template:
+  """A template: its description, multiplayer, its dirs (the layers, then its own) and the tokens they use"""
+
+  def __init__(self, description: str, multiplayer: bool, dirs: List[str], tokens: Dict[str, str]):
+    self.description, self.multiplayer, self.dirs, self.tokens = description, multiplayer, dirs, tokens
+
+
+def _blk_params(text: str, name: str, kind: str = 't') -> List[str]:
+  if kind == 't':
+    return re.findall(r'^\s*' + name + r'\s*:\s*t\s*=\s*"([^"]*)"', text, re.MULTILINE)
+  return re.findall(r'^\s*' + name + r'\s*:\s*b\s*=\s*(\w+)', text, re.MULTILINE)
+
+
+def read_template(template_id: str) -> Template:
+  own = os.path.join(templates_dir(), template_id)
+  fn = os.path.join(own, TEMPLATE_BLK)
+  if template_id.startswith('_') or not os.path.isfile(fn):
+    raise ProjectError('no template "{}" in {} (python dng.py new --list)'.format(template_id, templates_dir()))
   with open(fn, 'r', encoding='utf-8') as f:
     text = f.read()
-  def param(name, src):
-    m = re.search(r'^\s*' + name + r'\s*:\s*t\s*=\s*"([^"]*)"', src, re.MULTILINE)
-    return m.group(1) if m else None
-  m = re.search(r'tokens\s*\{([^}]*)\}', text)
-  tokens = {k: param(k, m.group(1)) for k in TOKEN_KEYS} if m else {}
+  dirs = []
+  for layer in _blk_params(text, 'layer'):
+    d = os.path.join(templates_dir(), layer)
+    if not layer.startswith('_') or not os.path.isdir(d):
+      raise ProjectError('{}: layer "{}" is not a layer dir (_<name>) in {}'.format(fn, layer, templates_dir()))
+    dirs.append(d)
+  dirs.append(own)
+  tokens = {}
+  for d in dirs:
+    blk = os.path.join(d, TEMPLATE_BLK)
+    if os.path.isfile(blk):
+      with open(blk, 'r', encoding='utf-8') as f:
+        m = re.search(r'tokens\s*\{([^}]*)\}', f.read())
+      if m:
+        tokens.update({k: v[0] for k in TOKEN_KEYS for v in [_blk_params(m.group(1), k)] if v})
   missing = [k for k in TOKEN_KEYS if not tokens.get(k)]
   if missing:
-    raise ProjectError('{}: tokens{{}} must have {}'.format(fn, ', '.join(k + ':t=' for k in missing)))
-  return param('description', text) or '', tokens
+    raise ProjectError('{}: the layers\' tokens{{}} must have {}'.format(fn, ', '.join(k + ':t=' for k in missing)))
+  multiplayer = _blk_params(text, 'multiplayer', 'b')
+  return Template((_blk_params(text, 'description') or [''])[0], bool(multiplayer) and multiplayer[0] in ('yes', 'true'),
+                  dirs, tokens)
 
 
 # ---- names
@@ -135,11 +164,19 @@ def _gitignore_files(template: str) -> List[str]:
   return files
 
 
-def template_files(template: str) -> List[str]:
-  files = _git_files(template)
+def dir_files(d: str) -> List[str]:
+  files = _git_files(d)
   if files is None:
-    files = _gitignore_files(template)
+    files = _gitignore_files(d)
   return sorted(f for f in files if f != TEMPLATE_BLK)
+
+
+def template_files(template: Template) -> Dict[str, str]:
+  """{project-relative path: source file}: the dirs' files, later dirs replacing earlier ones"""
+  out = {}
+  for d in template.dirs:
+    out.update({rel: os.path.join(d, rel) for rel in dir_files(d)})
+  return dict(sorted(out.items()))
 
 
 def is_text(data: bytes) -> bool:
@@ -164,26 +201,23 @@ def create(template_id: str, name: str, dest: str, codename=None, title=None, co
   codename = codename or default_codename(name)
   title = title or default_title(name)
   validate(name, codename, title, company, dest)
-  template = os.path.join(templates_dir(), template_id)
-  if not os.path.isfile(os.path.join(template, TEMPLATE_BLK)):
-    raise ProjectError('no template "{}" in {} (python dng.py new --list)'.format(template_id, templates_dir()))
-  _, tok = read_template_blk(os.path.join(template, TEMPLATE_BLK))
+  template = read_template(template_id)
   values = {'bundleId': company + '.' + name, 'title': title, 'name': name, 'codename': codename}
-  tokens = sorted(((tok[k], values[k]) for k in TOKEN_KEYS), key=lambda t: -len(t[0]))  # longest first
+  tokens = sorted(((template.tokens[k], values[k]) for k in TOKEN_KEYS), key=lambda t: -len(t[0]))  # longest first
 
   dest = engine.norm(dest)
-  if (dest + '/').startswith(engine.norm(template) + '/'):
-    raise ProjectError('the destination is inside the template')
+  if (dest + '/').startswith(engine.norm(templates_dir()) + '/'):
+    raise ProjectError('the destination is inside the templates dir')
   if os.path.exists(dest) and (not os.path.isdir(dest) or os.listdir(dest)) and not force:
     raise ProjectError('{} exists and is not empty (--force writes into it anyway)'.format(dest))
 
   files = template_files(template)
   if not files:
-    raise ProjectError('the template {} has no files'.format(template))
+    raise ProjectError('the template {} has no files'.format(template_id))
   log('{} "{}" ({}) from template {} into {}'.format('would create' if dry_run else 'creating', title, codename, template_id, dest))
-  for rel in files:
+  for rel, src in files.items():
     out_rel = substitute(rel, tokens)
-    with open(os.path.join(template, rel), 'rb') as f:
+    with open(src, 'rb') as f:
       data = f.read()
     if is_text(data):
       data = substitute(data.decode('utf-8'), tokens).encode('utf-8')
@@ -194,7 +228,7 @@ def create(template_id: str, name: str, dest: str, codename=None, title=None, co
     os.makedirs(os.path.dirname(out), exist_ok=True)
     with open(out, 'wb') as f:
       f.write(data)
-    shutil.copymode(os.path.join(template, rel), out)  # keeps scripts executable
+    shutil.copymode(src, out)  # keeps scripts executable
 
   if dry_run:
     return dest
@@ -208,17 +242,18 @@ def create(template_id: str, name: str, dest: str, codename=None, title=None, co
   if leftovers:
     raise ProjectError('template tokens are left in: {}'.format(', '.join(leftovers)))
 
-  relink(dest, absolute=absolute_engine_path)
+  relink(dest, absolute=absolute_engine_path, multiplayer=template.multiplayer)
   if git_init and shutil.which('git') and not os.path.isdir(os.path.join(dest, '.git')):
     subprocess.run(['git', 'init', '-q'], cwd=dest, check=True)
     log('initialized a git repository (nothing committed)')
   return dest
 
 
-def relink(project_dir: str, absolute=False):
-  """points the project's engine.blk and prog/CMakePresets.json at this engine"""
+def relink(project_dir: str, absolute=False, multiplayer=None):
+  """points the project's engine.blk and prog/CMakePresets.json at this engine (multiplayer: whether the game has a
+  dedicated server, by default as its presets say)"""
   engine.write_engine_blk(project_dir, engine_root(), absolute=absolute)
-  presets.write(project_dir, engine_root())
+  presets.write(project_dir, engine_root(), multiplayer)
 
 
 def make_parser():
@@ -226,7 +261,7 @@ def make_parser():
                               'The project can be anywhere: it finds this engine through its engine.blk and '
                               'CMakePresets.json.',
                               epilog=EPILOG, formatter_class=argparse.RawDescriptionHelpFormatter)
-  p.add_argument('--template', default='dng-empty', help='template id (default: dng-empty)')
+  p.add_argument('--template', default='mp-3d', help='template id (default: mp-3d; --list shows them)')
   p.add_argument('--name', help='PascalCase name, e.g. MyGame')
   p.add_argument('--dest', help='project dir to create (default: ../<name> next to the engine)')
   p.add_argument('--codename', help='lowercase name of executables and dirs (default: from --name, my_game)')
@@ -261,13 +296,14 @@ def main(argv):
     host = {'win32': 'windows', 'darwin': 'macos'}.get(sys.platform, 'linux')
     print('''
 Next steps, in {0}/prog (cmake --list-presets lists the trees):
-  cmake --workflow --preset {2}-dedicated-test   the dedicated server and its tests
+  cmake --workflow --preset {2}-test             the game{3} and the tests that need no GPU
   cmake --preset {2}-client
   cmake --build --preset {2}-client              the client
   cmake --build --preset {2}-client-content      its content: shaders, vromfs, editor snapshot, assets
   ../game/client{1}                               run the game
   ../develop/daEditor{1}                          open the editor
-See README.md there.'''.format(dest, '.cmd' if sys.platform.startswith('win') else '.sh', host))
+See README.md there.'''.format(dest, '.cmd' if sys.platform.startswith('win') else '.sh', host,
+                                 "'s dedicated server" if read_template(args.template).multiplayer else ''))
   return 0
 
 

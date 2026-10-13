@@ -1,6 +1,6 @@
-# Games on daNetGame (DAGOR_VARIANT game: the trees of projects, e.g. templates/dng-empty; and the GUI editors of the
+# Games on daNetGame (DAGOR_VARIANT game: the trees of projects made from templates/; and the GUI editors of the
 # editor tree, daEditor3x and AssetViewer): the game's switches, its modules (daNetGameLibs, and gameLibs built like
-# them) and the game program.
+# them), the game program and its content.
 include_guard(GLOBAL)
 
 # --- the game's switches (prog/daNetGame/setup.jam) -------------------------------------------------------------------
@@ -509,4 +509,63 @@ function(dagor_add_dng_game)
   foreach(lib IN LISTS libs)
     include("${lib}")
   endforeach()
+endfunction()
+
+# --- the game's content -----------------------------------------------------------------------------------------------
+# dagor_add_dng_content(GAME_DIR <dir> [DEPENDS <target>...])
+# The content of a project's game, made with the engine's tools in the client's tree (target content; and shaders,
+# vromfs, tools, assets each). In the project's prog dir, by convention:
+#   shaders/shaders_<profile>.blk   the game's shaders into <GAME_DIR>/compiledShaders (dx11 and dx12 on Windows, metal
+#                                   on Apple, spirv elsewhere), shaders_tools11.blk, shaders_impostorbaker.blk and
+#                                   shaders_tools_exp.blk those of the tools (daEditor, daViewer, impostorBaker, dabuild)
+#                                   into ../tools, the intermediate files into the build dir
+#   prog.vromfs.blk                 the game's scripts and data into <GAME_DIR>/<codename>.vromfs.bin
+#   tools/*.das                     with the shaders and vromfs, the snapshot daEditor renders levels with (../tools)
+#   ../application.blk              the assets of ../develop/assets exported by daBuild into <GAME_DIR>/content
+function(dagor_add_dng_content)
+  cmake_parse_arguments(PARSE_ARGV 0 arg "" "GAME_DIR" "DEPENDS")
+  if(arg_UNPARSED_ARGUMENTS OR NOT arg_GAME_DIR)
+    message(FATAL_ERROR "dagor_add_dng_content(GAME_DIR <dir> ...)")
+  endif()
+  cmake_path(ABSOLUTE_PATH arg_GAME_DIR NORMALIZE OUTPUT_VARIABLE game_dir)
+  cmake_path(GET CMAKE_CURRENT_SOURCE_DIR PARENT_PATH project_dir)
+  set(dsc "-q|-shaderOn|-nodisassembly|-commentPP|-codeDumpErr|-maxVSF|4096")
+  set(exp "-q|-shaderOn|-no_sha1_cache|-clearBlkHashInDump") # dabuild only needs the shader descriptions
+  # each step: <name>|<compiler>|<blk>|<arguments, | separated>; dx11 is what daEditor renders levels with on Windows
+  if(WIN32)
+    set(steps
+      "game-dx11|dsc2-hlsl11|shaders_dx11.blk|${dsc}"
+      "game-dx12|dsc2-dx12|shaders_dx12.blk|${dsc}|-wx"
+      "tools-dx11|dsc2-hlsl11|shaders_tools11.blk|${dsc}"
+      "impostorbaker-dx12|dsc2-dx12|shaders_impostorbaker.blk|${dsc}")
+  elseif(APPLE)
+    set(steps
+      "game-metal|dsc2-metal|shaders_metal.blk|${dsc}"
+      "tools-metal|dsc2-metal|shaders_tools11.blk|${dsc}|-out|../../tools/toolsMTL"
+      "impostorbaker-metal|dsc2-metal|shaders_impostorbaker.blk|${dsc}|-out|../../tools/tools.impostorbakerMTL")
+  else()
+    set(steps
+      "game-spirv|dsc2-spirv|shaders_spirv.blk|${dsc}"
+      "tools-spirv|dsc2-spirv|shaders_tools11.blk|${dsc}|-out|../../tools/toolsSpirV"
+      "impostorbaker-spirv|dsc2-spirv|shaders_impostorbaker.blk|${dsc}|-out|../../tools/tools.impostorbakerSpirV")
+  endif()
+  list(APPEND steps "tools-exp|dsc2-stub|shaders_tools_exp.blk|${exp}")
+  foreach(step IN LISTS steps)
+    string(REPLACE "|" ";" step "${step}")
+    list(POP_FRONT step name tool blk)
+    dagor_add_content_step(shaders-${name} TOOL ${tool} ARGS ${blk} ${step} -o ${CMAKE_BINARY_DIR}/shaders/${name}
+      WORKING_DIRECTORY shaders GROUP shaders COMMENT "Shaders ${name} (${tool})")
+  endforeach()
+  dagor_add_content_step(vromfs TOOL vromfsPacker ARGS prog.vromfs.blk -platform:PC -quiet -addpath:.
+    COMMENT "The game's vromfs")
+  dagor_add_content_step(tools DEPENDS shaders vromfs COMMENT "The daEditor snapshot"
+    COMMAND ${Python3_EXECUTABLE} -c "import glob, sys; sys.path.insert(0, sys.argv[1]); \
+from update_dng_snapshots import update_dng_snapshot; \
+update_dng_snapshot(sys.argv[2], 'game', glob.glob(sys.argv[3] + '/*.vromfs.bin'), skip_cvs_update=True)"
+      ${DAGOR_PROG_DIR}/tools ${project_dir} ${game_dir})
+  cmake_host_system_information(RESULT cores QUERY NUMBER_OF_LOGICAL_CORES)
+  dagor_add_content_step(assets TOOL daBuild ARGS -jobs:${cores} -q ../application.blk WORKING_DIRECTORY ../develop
+    COMMENT "The game's assets (daBuild)")
+  add_custom_target(content DEPENDS shaders vromfs tools assets ${arg_DEPENDS})
+  set_property(TARGET content PROPERTY FOLDER "content")
 endfunction()

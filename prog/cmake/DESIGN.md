@@ -113,9 +113,14 @@ A project's prog/CMakeLists.txt finds the engine (`find_package(Dagor)`, which a
 the game's settings) and declares the game with `dagor_add_dng_game()`: daNetGame's main, the code game.jam generated
 (gameproj::, auth keys, the pull of every module) and the libraries of danetgamelibs.txt/gamelibs.txt, whose
 `_lib.cmake` add what they need. The program goes to `<project>/game/<platform>-<arch>`, the content (target `content`
-of the client tree) into `<project>/game`, packages through CPack (`dagor_package_game`, app bundles on macOS).
-Switches jam turned off in Rel only (the editor, webui, ImGui, the console) are generator expressions, so one tree
-builds every configuration.
+of the client tree, `dagor_add_dng_content`) into `<project>/game`, packages through CPack (`dagor_package_game`, app
+bundles on macOS). Switches jam turned off in Rel only (the editor, webui, ImGui, the console) are generator
+expressions, so one tree builds every configuration.
+
+Projects start from templates/ (`dng.py new`): sp-3d, mp-3d, sp-2d and mp-2d, layered from `_common`,
+`_singleplayer`/`_multiplayer` and `_2d`/`_3d` so no file exists twice. A single-player game has no dedicated tree: its
+client is its own server and runs the ECS tests headless on the stub driver; the presets dng.py writes have the trees
+the template's `multiplayer` asks for. The templates are not built in place; CI creates a project from each.
 
 ## What differs from jam
 

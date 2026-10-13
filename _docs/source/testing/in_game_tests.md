@@ -69,7 +69,7 @@ test starts at the same game time however long loading took, and then advances b
 
 - fix the level's random seeds in the test scene: `level__timeSeed:i=1` and `level__weatherSeed:i=1`;
 - use a weather without volumetric clouds: they accumulate over wall-clock time and differ a little every run
-  (`templates/dng-empty` has `weather_clear_cloudless` for its screenshot test);
+  (the templates have `weather_clear_cloudless` for their screenshot tests);
 - scenario runs turn temporal antialiasing off (`video/antialiasing_mode:t=off`), its jitter follows the frame index.
 
 A scene for tests can be next to them: `scene:t=` is a path the game opens from its run dir, e.g.

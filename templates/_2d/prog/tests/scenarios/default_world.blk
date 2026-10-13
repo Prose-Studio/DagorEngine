@@ -1,0 +1,20 @@
+// The scene of the screenshot tests here: the default world with fixed seeds and a clear sky without clouds (see
+// weather.blk), seen through the orthographic camera of scenes/main.blk; nothing moves, so every run renders the same
+// picture
+entity{
+  _template:t="ortho_cam"
+  camera__active:b=yes
+  camera__orthoHeight:r=10
+  transform:m=[[1, 0, 0] [0, 1, 0] [0, 0, 1] [0, 0, -10]]
+}
+
+entity{
+  _template:t="level"
+  level__blk:t="__default__"
+  level__timeSeed:i=1
+  level__weatherSeed:i=1
+  level__weather:t="weather_clear_cloudless"
+  "level__weatherChoice:object"{
+    "weather_clear_cloudless":r=1
+  }
+}

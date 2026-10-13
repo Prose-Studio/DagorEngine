@@ -1,4 +1,5 @@
-"""Tests of dagorProject: engine.blk, the project presets and project creation from templates/dng-empty."""
+"""Tests of dagorProject: engine.blk, the project presets and project creation from the templates in templates/."""
+import json
 import os
 import re
 import shutil
@@ -12,6 +13,7 @@ from pythonCommon.dagorProject import create, engine, presets  # noqa: E402
 from pythonCommon.dagorProject.engine import ProjectError  # noqa: E402
 
 ENGINE = create.engine_root()
+TOKENS = {'bundleId': 'com.example.StarterGame', 'title': 'Starter Game', 'name': 'StarterGame', 'codename': 'starter_game'}
 
 
 class EngineBlkTest(unittest.TestCase):
@@ -74,10 +76,10 @@ class NamesTest(unittest.TestCase):
     self.assertEqual(create.default_title('E2eGame'), 'E2e Game')
 
   def test_substitution_is_one_pass(self):
-    tokens = [('Dng Empty', 'DngEmpty Ultra'), ('DngEmpty', 'MyGame')]  # longest first, as create() orders them
-    self.assertEqual(create.substitute('Dng Empty / DngEmpty', tokens), 'DngEmpty Ultra / MyGame')
-    self.assertFalse(create.tokens_left('DngEmpty Ultra', [('DngEmpty', 'DngEmpty Ultra')]))
-    self.assertTrue(create.tokens_left('a DngEmpty', [('DngEmpty', 'MyGame')]))
+    tokens = [('Starter Game', 'StarterGame Ultra'), ('StarterGame', 'MyGame')]  # longest first, as create() orders them
+    self.assertEqual(create.substitute('Starter Game / StarterGame', tokens), 'StarterGame Ultra / MyGame')
+    self.assertFalse(create.tokens_left('StarterGame Ultra', [('StarterGame', 'StarterGame Ultra')]))
+    self.assertTrue(create.tokens_left('a StarterGame', [('StarterGame', 'MyGame')]))
 
   def test_validation(self):
     ok = dict(name='MyGame', codename='my_game', title='My Game', company='com.example', dest='C:/x')
@@ -102,19 +104,38 @@ class TemplateFilesTest(unittest.TestCase):
     finally:
       shutil.rmtree(d, ignore_errors=True)
 
-  def test_dng_empty_tokens(self):
-    _, tokens = create.read_template_blk(os.path.join(create.templates_dir(), 'dng-empty', create.TEMPLATE_BLK))
-    self.assertEqual(tokens, {'bundleId': 'com.dagor.DngEmpty', 'title': 'Dng Empty', 'name': 'DngEmpty', 'codename': 'dng_empty'})
+  def test_templates(self):
+    self.assertEqual(sorted(create.list_templates()), ['mp-2d', 'mp-3d', 'sp-2d', 'sp-3d'])  # not the _layers
+    for tid in create.list_templates():
+      t = create.read_template(tid)
+      self.assertEqual(t.tokens, TOKENS, tid)
+      self.assertEqual(t.multiplayer, tid.startswith('mp-'), tid)
+      self.assertEqual([os.path.basename(d) for d in t.dirs],
+                       ['_common', '_multiplayer' if t.multiplayer else '_singleplayer', '_' + tid[3:], tid])
+
+  def test_later_layers_replace_earlier_files(self):
+    files = {rel: src.replace('\\', '/') for rel, src in create.template_files(create.read_template('sp-2d')).items()}
+    self.assertTrue(files['prog/CMakeLists.txt'].endswith('/_singleplayer/prog/CMakeLists.txt'))
+    self.assertIn('/_2d/', files['prog/gameBase/gamedata/scenes/main.blk'])
+    self.assertIn('/_common/', files['application.blk'])
+    self.assertNotIn('game/server.cmd', files)
+    self.assertNotIn('template.blk', files)
+
+  def test_unknown_template(self):
+    for tid in ('no-such', '_common'):
+      with self.subTest(tid), self.assertRaisesRegex(ProjectError, 'no template'):
+        create.read_template(tid)
 
 
 class CreateTest(unittest.TestCase):
-  """Creates a real project from templates/dng-empty (no build: CI builds and tests one, see template.yaml)."""
+  """Creates a real project from templates/mp-3d (no build: CI builds and tests them, see template.yaml)."""
+  TEMPLATE = 'mp-3d'
 
   @classmethod
   def setUpClass(cls):
     cls.parent = tempfile.mkdtemp()
     cls.dest = os.path.join(cls.parent, 'MyGame')
-    create.create('dng-empty', 'MyGame', cls.dest, company='org.test', git_init=False, log=lambda *a: None)
+    create.create(cls.TEMPLATE, 'MyGame', cls.dest, company='org.test', git_init=False, log=lambda *a: None)
 
   @classmethod
   def tearDownClass(cls):
@@ -141,11 +162,11 @@ class CreateTest(unittest.TestCase):
     for dirpath, _, filenames in os.walk(self.dest):
       for fn in filenames:
         full = os.path.join(dirpath, fn)
-        self.assertNotRegex(full, 'dng_empty|DngEmpty')
+        self.assertNotRegex(full, 'starter_game|StarterGame')
         with open(full, 'rb') as f:
           data = f.read()
         if b'\0' not in data:
-          self.assertNotRegex(data.decode('utf-8'), 'dng_empty|DngEmpty|Dng Empty|com\\.dagor\\.', full)
+          self.assertNotRegex(data.decode('utf-8'), 'starter_game|StarterGame|Starter Game', full)
 
   def test_engine_link_is_written(self):
     self.assertEqual(engine.read_engine_root(self.dest), ENGINE)
@@ -162,7 +183,35 @@ class CreateTest(unittest.TestCase):
 
   def test_refuses_a_non_empty_destination(self):
     with self.assertRaisesRegex(ProjectError, 'not empty'):
-      create.create('dng-empty', 'MyGame', self.dest, git_init=False, log=lambda *a: None)
+      create.create(self.TEMPLATE, 'MyGame', self.dest, git_init=False, log=lambda *a: None)
+
+  def configure_presets(self):
+    return [p['name'] for p in json.loads(self.read('prog/CMakePresets.json'))['configurePresets']]
+
+  def test_the_game_kind(self):
+    self.assertIn('windows-dedicated', self.configure_presets())
+    self.assertTrue(os.path.isfile(self.path('game/server.cmd')))
+    self.assertIn('DEDICATED_AUTH', self.read('prog/CMakeLists.txt'))
+    self.assertIn('static_cam', self.read('prog/gameBase/gamedata/scenes/main.blk'))
+    presets.write(self.dest, ENGINE)  # relink keeps the trees
+    self.assertIn('windows-dedicated', self.configure_presets())
+
+
+class CreateSinglePlayer2dTest(CreateTest):
+  """A project from templates/sp-2d: no dedicated server, the orthographic scene"""
+  TEMPLATE = 'sp-2d'
+
+  def test_the_game_kind(self):
+    self.assertIn('windows-client', self.configure_presets())
+    self.assertFalse([n for n in self.configure_presets() if 'dedicated' in n])
+    workflows = json.loads(self.read('prog/CMakePresets.json'))['workflowPresets']
+    test = [s for w in workflows if w['name'] == 'linux-test' for s in w['steps'] if s['type'] == 'test']
+    self.assertEqual(test, [{'type': 'test', 'name': 'linux-client-ci'}])
+    self.assertFalse(os.path.exists(self.path('game/server.cmd')))
+    self.assertNotIn('DEDICATED_AUTH', self.read('prog/CMakeLists.txt'))
+    self.assertIn('ortho_cam', self.read('prog/gameBase/gamedata/scenes/main.blk'))
+    presets.write(self.dest, ENGINE)  # relink keeps the trees
+    self.assertFalse([n for n in self.configure_presets() if 'dedicated' in n])
 
 
 if __name__ == '__main__':

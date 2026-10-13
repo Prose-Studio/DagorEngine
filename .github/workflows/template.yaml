@@ -1,8 +1,9 @@
 name: template
 
-# Creates a project from templates/dng-empty with dng.py new outside the engine checkout (on Windows on another
-# drive, which needs an absolute engine path and jam Location), builds its game and runs its tests that need no GPU.
-# See _docs/source/getting-started/new_project.md.
+# Creates a project from each template with dng.py new outside the engine checkout (on Windows on another drive, which
+# makes its engine path absolute), then runs its workflow presets: <host>-test (the game, a multiplayer game's
+# dedicated server, and the tests that need no GPU), and the packages with the game's content, which
+# verify_game_packages.py inspects and runs the ECS tests in. See _docs/source/getting-started/new_project.md.
 
 on:
   workflow_dispatch: # manual until the CMake migration is complete and validated
@@ -18,20 +19,21 @@ env:
   DAGOR_NONINTERACTIVE: '1'
 
 jobs:
-  new-project-cmake:
-    name: new project, CMake (${{ matrix.os }})
+  new-project:
+    name: ${{ matrix.template }} (${{ matrix.host }})
     strategy:
       fail-fast: false
       matrix:
+        template: [sp-3d, mp-3d, sp-2d, mp-2d]
+        host: [windows, linux, macos]
         include:
-          - os: windows-2022
-            deps: D:/dagor-deps
-          - os: ubuntu-22.04
-            deps: /home/runner/dagor-deps
-          - os: macos-15 # Xcode 16: the Metal driver needs the macOS 15 SDK (MTLResidencySet)
-            deps: /Users/runner/dagor-deps
+          - { host: windows, os: windows-2022, deps: 'D:/dagor-deps' }
+          - { host: linux, os: ubuntu-22.04, deps: /home/runner/dagor-deps }
+          - { host: macos, os: macos-15, deps: /Users/runner/dagor-deps } # Xcode 16: Metal needs the macOS 15 SDK
+          - { template: mp-3d, multiplayer: true }
+          - { template: mp-2d, multiplayer: true }
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 360 # client, dedicated, AOT compiler and the host tools/content for package verification
+    timeout-minutes: 360 # the game, its AOT compiler, the engine's tools and the content
     env:
       DAGOR_DEPS_DIR: ${{ matrix.deps }}
       DAGOR_COMPILER_LAUNCHER: sccache
@@ -40,43 +42,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
+      - uses: ./.github/actions/setup
         with:
-          python-version: '3.12'
-
-      - name: Install CMake and Ninja
-        run: python -m pip install "cmake>=4.0,<5" "ninja>=1.11"
-
-      - name: Install the system libraries (Linux)
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libx11-dev libxrandr-dev libxi-dev libxcursor-dev libxkbcommon-dev libfltk1.3-dev \
-            libxkbfile-dev libudev-dev libpulse-dev uuid-dev nasm
-
-      - name: Cache deps
-        uses: actions/cache@v4
-        with:
-          path: ${{ matrix.deps }}/sdk
-          key: dagor-deps-${{ matrix.os }}-${{ hashFiles('prog/cmake/sdk/manifest.cmake') }}
-          restore-keys: dagor-deps-${{ matrix.os }}-
-
-      - name: Cache compiler objects
-        uses: actions/cache@v4
-        with:
-          path: ${{ env.SCCACHE_DIR }}
-          key: dagor-objects-v1-template-${{ matrix.os }}-${{ hashFiles('prog/cmake/sdk/manifest.cmake') }}-${{ github.sha }}
-          restore-keys: dagor-objects-v1-template-${{ matrix.os }}-${{ hashFiles('prog/cmake/sdk/manifest.cmake') }}-
-
-      - name: Prepare compiler cache
-        id: compiler-cache
-        run: cmake -P prog/cmake/scripts/compiler_cache.cmake
+          cache-key: template-${{ matrix.host }}
 
       - name: Choose the project dir
         shell: bash
         run: |
           if [ "$RUNNER_OS" = Windows ]; then
-            # another drive than the engine: engine.blk becomes absolute
+            # another drive than the engine: engine.blk and the presets name it by an absolute path
             mkdir -p "$RUNNER_TEMP/xdrive"
             cmd //c subst X: "$(cygpath -w "$RUNNER_TEMP/xdrive")"
             echo "PROJECT_DIR=X:/CiGame" >> "$GITHUB_ENV"
@@ -86,92 +60,40 @@ jobs:
 
       - name: Create the project
         shell: bash
-        run: python dng.py new --name CiGame --dest "$PROJECT_DIR"
+        run: python dng.py new --template ${{ matrix.template }} --name CiGame --dest "$PROJECT_DIR"
 
-      - name: Build the game
+      - name: Build and test
         shell: bash
+        working-directory: ${{ env.PROJECT_DIR }}/prog
+        run: cmake --workflow --preset ${{ matrix.host }}-test
+
+      - name: Build the content
+        shell: bash
+        working-directory: ${{ env.PROJECT_DIR }}/prog
         run: |
-          # a build that hangs leaves the processes it was running after 150 minutes (shown by the last step)
-          ( sleep 9000
-            if [ "$RUNNER_OS" = Windows ]; then
-              powershell -NoProfile -Command "Get-CimInstance Win32_Process | Select-Object ProcessId, ParentProcessId, Name, CommandLine | Format-List | Out-String -Width 400"
-            else
-              ps auxww
-            fi ) > "$RUNNER_TEMP/processes.txt" 2>&1 &
-          watchdog=$!
-          python "$PROJECT_DIR/project.py" build code 2>&1 | tee "$RUNNER_TEMP/build.log" && status=0 || status=$?
-          kill $watchdog 2>/dev/null || true
-          exit $status
-
-      - name: Run the tests
-        shell: bash
-        run: python "$PROJECT_DIR/project.py" test --ci --output-junit "$GITHUB_WORKSPACE/test-results.xml"
-
-      - name: Compare engine ES codegen with committed output
-        shell: bash
-        run: |
-          host=$(printf '%s' "$RUNNER_OS" | tr '[:upper:]' '[:lower:]')
-          python prog/_jBuild/jam2cmake/codegen_parity.py "$PROJECT_DIR/build/$host-client" \
-            "$PROJECT_DIR/build/$host-dedicated"
-
-      - name: Build game content
-        shell: bash
-        run: python "$PROJECT_DIR/project.py" build shaders vromfs assets
+          cmake --preset ${{ matrix.host }}-client
+          cmake --build --preset ${{ matrix.host }}-client-content
 
       - name: Package and verify the game
         shell: bash
+        working-directory: ${{ env.PROJECT_DIR }}/prog
         run: |
-          python "$PROJECT_DIR/project.py" package --config Dev --no-build
-          python prog/cmake/scripts/verify_game_packages.py "$PROJECT_DIR"
-
-      - name: Processes of a hung build
-        if: always()
-        shell: bash
-        run: if [ -s "$RUNNER_TEMP/processes.txt" ]; then cat "$RUNNER_TEMP/processes.txt"; fi
+          cmake --workflow --preset ${{ matrix.host }}-client-package
+          if [ "${{ matrix.multiplayer }}" = true ]; then
+            cmake --workflow --preset ${{ matrix.host }}-dedicated-package
+          fi
+          python "$GITHUB_WORKSPACE/prog/cmake/scripts/verify_game_packages.py" "$PROJECT_DIR"
 
       - name: Compiler cache statistics
-        if: always() && steps.compiler-cache.outcome == 'success'
+        if: always()
         run: cmake -DSTATS=ON -P prog/cmake/scripts/compiler_cache.cmake
 
-      - name: Collect crash reports (macOS)
-        if: failure() && runner.os == 'macOS'
-        shell: bash
-        run: |
-          mkdir -p "$RUNNER_TEMP/crashes"
-          for dir in "$HOME/Library/Logs/DiagnosticReports" /Library/Logs/DiagnosticReports; do
-            find "$dir" -type f \( -name '*.ips' -o -name '*.crash' \) -mmin -360 -exec cp {} "$RUNNER_TEMP/crashes/" \; 2>/dev/null || true
-          done
-          ls -la "$RUNNER_TEMP/crashes"
-          for f in "$RUNNER_TEMP/crashes"/*; do [ -f "$f" ] && head -c 20000 "$f"; done || true
-
-      - name: Backtrace of a crashed build step (macOS)
-        if: failure() && runner.os == 'macOS'
-        shell: bash
-        run: |
-          # the command of the first step that died of a signal (ninja: FAILED: [code=13x], then "cd <dir> && <command>"),
-          # run again in lldb
-          cmd=$(awk '/^FAILED: \[code=1(3[0-9]|4[0-9])\]/ {getline; print; exit}' "$RUNNER_TEMP/build.log")
-          if [ -n "$cmd" ]; then
-            echo "$cmd"
-            dir=${cmd#cd }; dir=${dir%% && *}
-            run=${cmd#* && }
-            cd "$dir" && eval "lldb --batch -o run -k 'thread backtrace all' -k quit -- $run" || true
-          fi
-
-      - name: Upload crash reports (macOS)
-        if: failure() && runner.os == 'macOS'
-        uses: actions/upload-artifact@v4
-        with:
-          name: template-cmake-crashes-${{ matrix.os }}
-          path: ${{ runner.temp }}/crashes
-          if-no-files-found: ignore
-
-      - name: Upload report
+      - name: Upload the reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: template-cmake-report-${{ matrix.os }}
+          name: template-${{ matrix.template }}-${{ matrix.host }}
           path: |
-            test-results.xml
+            ${{ env.PROJECT_DIR }}/build/*/test-artifacts
             ${{ env.PROJECT_DIR }}/build/package-checks
           if-no-files-found: ignore

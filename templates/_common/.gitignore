@@ -1,0 +1,27 @@
+# written by the CMake configure from prog/*libs.txt
+/_engine.cmd
+/_engine.sh
+/prog/_libs.vromfs.blk
+/prog/gameBase/gamedata/templates/_libs.entities.blk
+/prog/scripts/_libs_init.das
+/prog/shaders/_libs_shaders.blk
+/prog/tools/_libs_init.das
+/stubs/
+
+# build outputs (cmake --build --preset ...)
+/_output/
+/tools/
+/game/*
+!/game/*.cmd
+!/game/*.sh
+/develop/.cache/
+/develop/dabuild-dbg*
+*.das.inl
+*.pyc
+
+# CMake build trees (cmake --preset ...) and local presets
+/build/
+/CMakeUserPresets.json
+
+# daScript's module cache and JIT output, written into the working dir of a das run
+.jitted_scripts/

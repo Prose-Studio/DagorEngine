@@ -1,6 +1,0 @@
-# daNetGameLibs this game uses (dirs in <engine>/prog/daNetGameLibs), one per line.
-# The CMake configure regenerates the _libs* files from it.
-native_dasevents
-frame_graph_renderer
-render_debug
-blurred_ui

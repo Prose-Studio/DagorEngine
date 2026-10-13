@@ -1,0 +1,7 @@
+// A project template (python dng.py new --template sp-3d): the project is made of the layers, in order, each one's files
+// replacing those of the layers before it, then of this dir's own files. This file is not copied.
+description:t="Single-player 3D game: the game is its own server; a 3D world with sky and light through a perspective camera"
+multiplayer:b=no
+layer:t="_common"
+layer:t="_singleplayer"
+layer:t="_3d"

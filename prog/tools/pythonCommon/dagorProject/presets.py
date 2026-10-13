@@ -5,57 +5,77 @@ import json
 import os
 import sys
 
+from .engine import ProjectError
+
 HOSTS = ('windows', 'linux', 'macos')
 
 
-def project_presets(engine_prog: str) -> dict:
-  """the presets of a project whose prog dir reaches the engine's prog dir at <engine_prog> (a relative path)"""
+def project_presets(engine_prog: str, multiplayer: bool) -> dict:
+  """the presets of a project whose prog dir reaches the engine's prog dir at <engine_prog> (a relative path); a
+  multiplayer game has a dedicated server's tree besides the client's"""
   configure = [{
     'name': 'project', 'hidden': True,
     '$comment': 'the engine this project is built with (DAGOR_ENGINE_ROOT; dng.py new writes the path)',
     'environment': {'DAGOR_ENGINE_ROOT': '${sourceDir}/' + engine_prog + '/..'},
     'cacheVariables': {'DAGOR_VARIANT': 'game', 'DAGOR_DAS_AOT': 'ON'},
   }, {
-    'name': 'dedicated', 'hidden': True, 'cacheVariables': {'DAGOR_DEDICATED': 'ON'},
-  }, {
     'name': 'aot-compiler', 'hidden': True,
     '$comment': "the game's daScript AOT compiler, a host program the other trees build and run",
     'cacheVariables': {'DAGOR_DAS_AOT': 'OFF', 'DAGOR_DAS_AOT_COMPILER': 'ON'},
   }]
+  kinds = ['client', 'aot-compiler']
+  if multiplayer:
+    configure.insert(1, {'name': 'dedicated', 'hidden': True, 'cacheVariables': {'DAGOR_DEDICATED': 'ON'}})
+    kinds.insert(1, 'dedicated')
+  shipped = [k for k in kinds if k != 'aot-compiler']
+  tested = 'dedicated' if multiplayer else 'client'  # where the tests that need no GPU run
   build, test, package, workflow = [], [], [], []
   for host in HOSTS:
-    for kind in ('client', 'dedicated', 'aot-compiler'):
+    for kind in kinds:
       name = '{}-{}'.format(host, kind)
       # the first preset inherited wins: the kind's settings over the project's
       configure.append({'name': name, 'inherits': ([kind] if kind != 'client' else []) + ['project', host]})
       build.append({'name': name, 'configurePreset': name, 'configuration': 'Dev'})
-    client, dedicated = host + '-client', host + '-dedicated'
+    client = host + '-client'
     build.append({'name': client + '-content', 'configurePreset': client, 'configuration': 'Dev', 'targets': ['content']})
-    test.append({'name': dedicated, 'configurePreset': dedicated, 'inherits': 'dagor'})
-    test.append({'name': dedicated + '-ci', 'configurePreset': dedicated, 'inherits': 'dagor-ci'})
-    test.append({'name': client, 'configurePreset': client, 'inherits': 'dagor'})
-    workflow.append({'name': dedicated + '-test', 'steps': [
-      {'type': 'configure', 'name': dedicated}, {'type': 'build', 'name': dedicated},
-      {'type': 'test', 'name': dedicated + '-ci'}]})
-    for name in (client, dedicated):
+    for kind in shipped:
+      name = '{}-{}'.format(host, kind)
+      test.append({'name': name, 'configurePreset': name, 'inherits': 'dagor'})
+      if kind == tested:
+        test.append({'name': name + '-ci', 'configurePreset': name, 'inherits': 'dagor-ci'})
       build.append({'name': name + '-rel', 'configurePreset': name, 'configuration': 'Rel'})
       package.append({'name': name, 'configurePreset': name, 'configurations': ['Rel']})
       workflow.append({'name': name + '-package', 'steps': [
         {'type': 'configure', 'name': name}, {'type': 'build', 'name': name + '-rel'},
         {'type': 'package', 'name': name}]})
+    name = '{}-{}'.format(host, tested)
+    workflow.append({'name': host + '-test', 'steps': [
+      {'type': 'configure', 'name': name}, {'type': 'build', 'name': name}, {'type': 'test', 'name': name + '-ci'}]})
+  trees = ('<host>-client and <host>-dedicated build the game and its dedicated server' if multiplayer else
+           '<host>-client builds the game')
   return {
     'version': 10,
     'cmakeMinimumRequired': {'major': 4, 'minor': 0, 'patch': 0},
     '$comment': [
-      "The game's trees (cmake --list-presets): <host>-client and <host>-dedicated build the game into ../game, the",
-      "client's tree its content too (cmake --build --preset <host>-client-content). Workflows: <host>-dedicated-test",
-      "(the tests that need no GPU), <host>-client-package and <host>-dedicated-package. Local presets go in",
+      "The game's trees (cmake --list-presets): {} into ../game, the client's tree".format(trees),
+      "its content too (cmake --build --preset <host>-client-content). Workflows: <host>-test (the build and the tests",
+      "that need no GPU), <host>-<tree>-package. Written by dng.py new and relink; local presets go in",
       "CMakeUserPresets.json."
     ],
     'include': [engine_prog + '/cmake/presets/base.json'],
     'configurePresets': configure, 'buildPresets': build, 'testPresets': test, 'packagePresets': package,
     'workflowPresets': workflow,
   }
+
+
+def is_multiplayer(project_dir: str) -> bool:
+  """whether the project's presets have a dedicated server's tree"""
+  fn = os.path.join(project_dir, 'prog', 'CMakePresets.json')
+  try:
+    with open(fn, 'r', encoding='utf-8') as f:
+      return any(p.get('name') == 'dedicated' for p in json.load(f).get('configurePresets', []))
+  except (OSError, ValueError) as e:
+    raise ProjectError('cannot read {}: {}'.format(fn, e))
 
 
 def engine_prog_path(project_dir: str, engine_root: str) -> str:
@@ -67,11 +87,14 @@ def engine_prog_path(project_dir: str, engine_root: str) -> str:
     return os.path.abspath(os.path.join(engine_root, 'prog')).replace('\\', '/')
 
 
-def write(project_dir: str, engine_root: str) -> str:
-  """writes <project_dir>/prog/CMakePresets.json; returns its path"""
+def write(project_dir: str, engine_root: str, multiplayer=None) -> str:
+  """writes <project_dir>/prog/CMakePresets.json (multiplayer: with a dedicated server's tree, by default as the
+  presets there have); returns its path"""
+  if multiplayer is None:
+    multiplayer = is_multiplayer(project_dir)
   fn = os.path.join(project_dir, 'prog', 'CMakePresets.json')
   with open(fn, 'w', encoding='utf-8', newline='\n') as f:
-    f.write(json.dumps(project_presets(engine_prog_path(project_dir, engine_root)), indent=2) + '\n')
+    f.write(json.dumps(project_presets(engine_prog_path(project_dir, engine_root), multiplayer), indent=2) + '\n')
   return fn
 
 

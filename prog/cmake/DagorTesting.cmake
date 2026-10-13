@@ -16,8 +16,9 @@
 #   dagor_add_game_test(<name> LAYER ecs|scenario PATHS <dir or file>... [SCENE <scene .blk>] [CASE_TIMEOUT <s>]
 #                       [ARGS ...] <common>)
 #       [ecs_test] functions run by the tree's game in its test mode (prog/daNetGame/main/testMode.h), from the game
-#       dir; ecs tests belong in the dedicated server's tree, scenario tests (which render and compare screenshots with
-#       references/ next to them) in the client's. Their results go to <build>/test-artifacts/<name>.
+#       dir; ecs tests belong in the dedicated server's tree (a game without one runs them in its client, headless on
+#       the stub driver where the tree has it, else they need a GPU), scenario tests (which render and compare
+#       screenshots with references/ next to them) in the client's. Their results go to <build>/test-artifacts/<name>.
 #
 # <common>: [TAGS <tag>...] [REQUIRES gpu|display|network|http_server ...] [TIMEOUT <seconds>, 600 by default]
 # [SERIAL] (never in parallel with other tests) [PLATFORMS <platform>...] (DAGOR_PLATFORM names; nothing is registered
@@ -281,6 +282,15 @@ function(dagor_add_game_test name)
   endif()
   if(arg_SCENE)
     list(APPEND args "-scene:${arg_SCENE}")
+  endif()
+  if(arg_LAYER STREQUAL "ecs" AND NOT DAGOR_DEDICATED)
+    # in a client (a game without a dedicated server): headless on the stub driver where the tree has it
+    if("stub" IN_LIST DAGOR_D3D_DRIVERS)
+      list(APPEND args -config:video/driver:t=stub -config:input/hidDriversInit:i=-7)
+    else()
+      list(APPEND arg_REQUIRES gpu display)
+      list(REMOVE_DUPLICATES arg_REQUIRES)
+    endif()
   endif()
   if(arg_LAYER STREQUAL "scenario")
     list(APPEND arg_REQUIRES gpu display)
