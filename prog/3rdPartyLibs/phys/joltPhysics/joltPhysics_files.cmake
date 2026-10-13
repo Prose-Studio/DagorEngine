@@ -19,17 +19,13 @@ set(dirs
   Jolt/Physics/Ragdoll
   Jolt/Physics/SoftBody
   Jolt/Physics/Vehicle
+  Jolt/Renderer # the debug renderer: empty where the settings do not enable it (JPH_DEBUG_RENDERER)
   Jolt/Shaders
   Jolt/Skeleton
   Jolt/TriangleSplitter
 )
 set(FILES Jolt/RegisterTypes.cpp)
 dagor_glob_sources(FILES DIRS ${dirs} GLOB *.cpp)
-# the debug renderer where the settings enable it
-dagor_glob_sources(renderer DIRS Jolt/Renderer GLOB *.cpp)
-foreach(file IN LISTS renderer)
-  list(APPEND FILES "$<${DAGOR_JOLT_DEBUG}:${file}>")
-endforeach()
 if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
   set_property(SOURCE Jolt/Physics/Vehicle/MotorcycleController.cpp APPEND PROPERTY COMPILE_OPTIONS -wd4756) # overflow in constant arithmetic
   if(DAGOR_ARCH STREQUAL "arm64")
