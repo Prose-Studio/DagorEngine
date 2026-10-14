@@ -15,6 +15,10 @@ set(CMAKE_CXX_STANDARD ${DAGOR_CPP_STD})
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_SCAN_FOR_MODULES OFF) # the engine has no C++20 modules
+# a static or object library does not wait for the libraries it links (only for those with generated sources or custom
+# commands): they build in parallel, and a library of a choice (dagor_add_link_choice) is built only for the programs
+# that link it
+set(CMAKE_OPTIMIZE_DEPENDENCIES ON)
 if(NOT MSVC)
   set(CMAKE_C_STANDARD 99)
   set(CMAKE_C_EXTENSIONS OFF)
