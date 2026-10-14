@@ -12,6 +12,7 @@ def find_files(directory, pattern):
 parser = argparse.ArgumentParser()
 parser.add_argument('JAVA_SRC_ZIP')#1
 parser.add_argument('JAVA_SRC_DIR')#1
+parser.add_argument('APP_PACKAGE')#1
 
 args = parser.parse_args()
 
@@ -30,7 +31,7 @@ def fix_imports(filename):
       if match:
         packagePath = match.group("package").replace('.', '/')
         if os.path.exists(os.path.join(args.JAVA_SRC_DIR, packagePath)):
-          line = 'package ' + ('second/' + packagePath).replace('/', '.') + ';\n\nimport com.gaijingames.wtm.R;\n\n'
+          line = 'package ' + ('second/' + packagePath).replace('/', '.') + ';\n\nimport ' + args.APP_PACKAGE + '.R;\n\n'
           # print(f'  Fixed: {line}')
 
       match = importRe.match(line)

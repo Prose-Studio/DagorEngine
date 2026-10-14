@@ -1,4 +1,4 @@
-package com.gaijinent.common;
+package com.prosestudio.common;
 
 import android.content.ComponentName;
 import android.content.pm.ActivityInfo;

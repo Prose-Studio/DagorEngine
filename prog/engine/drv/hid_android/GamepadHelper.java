@@ -1,4 +1,4 @@
-package com.gaijinent.helpers;
+package com.prosestudio.helpers;
 
 import android.app.Activity;
 import android.content.Context;
@@ -9,7 +9,7 @@ import android.util.Log;
 import android.view.Display;
 import android.view.InputDevice;
 import android.view.Surface;
-import com.gaijinent.common.DagorLogger;
+import com.prosestudio.common.DagorLogger;
 
 class GamepadListener implements InputManager.InputDeviceListener {
     private boolean mDeviceChanged = true;

@@ -1,4 +1,4 @@
--keep public class com.gaijinent.helpers.GamepadHelper {
+-keep public class com.prosestudio.helpers.GamepadHelper {
   public static <methods>;
 }
 

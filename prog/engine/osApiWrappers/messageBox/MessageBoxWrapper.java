@@ -1,4 +1,4 @@
-package com.gaijinent.MessageBox;
+package com.prosestudio.MessageBox;
 
 import android.app.Activity;
 import android.app.AlertDialog;

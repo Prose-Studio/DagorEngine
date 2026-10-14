@@ -1,4 +1,4 @@
-BundleID    ?= com.gaijinent.$(BundleName) ;
+BundleID    ?= com.prosestudio.$(BundleName) ;
 BundleTitle ?= $(BundleName) ;
 
 Make_Apple_OutDir ;

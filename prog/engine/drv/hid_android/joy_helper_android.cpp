@@ -64,7 +64,7 @@ bool HumanInput::JoyDeviceHelper::attach()
 #define JNI_RETURN(obj, ret) obj == NULL ? NULL : ret
 
   s_ActivityClazz = android::get_activity_class(activity);
-  jstring strClassName = s_Jni->NewStringUTF("com/gaijinent/helpers/GamepadHelper");
+  jstring strClassName = s_Jni->NewStringUTF("com/prosestudio/helpers/GamepadHelper");
   jclass activityClass = s_Jni->GetObjectClass(android::get_activity_class(activity));
 
   jmethodID getClassLoaderID =
@@ -217,7 +217,7 @@ extern "C"
 {
 #endif
 
-  JNIEXPORT void JNICALL Java_com_gaijinent_helpers_GamepadListener_nativeOnChangeCurrentInputDevice(JNIEnv *jni, jobject cls)
+  JNIEXPORT void JNICALL Java_com_prosestudio_helpers_GamepadListener_nativeOnChangeCurrentInputDevice(JNIEnv *jni, jobject cls)
   {
     is_input_device_changed = true;
   }

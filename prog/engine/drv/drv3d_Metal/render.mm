@@ -1669,7 +1669,7 @@ namespace drv3d_metal
     }
 
 #if DAGOR_DBGLEVEL > 0
-    signpost_queue = dispatch_queue_create("com.gaijin.signpost_queue", NULL);
+    signpost_queue = dispatch_queue_create("com.prosestudio.signpost_queue", NULL);
     signpost_listener = [[MTLSharedEventListener alloc] initWithDispatchQueue : signpost_queue];
 
     signpost_event = [device newSharedEvent];

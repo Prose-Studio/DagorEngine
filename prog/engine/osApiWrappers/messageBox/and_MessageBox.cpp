@@ -44,7 +44,7 @@ static int show_alert(const char *utf8_text, const char *utf8_caption, int flags
   if (!classLoader)
     return GUI_MB_FAIL;
   jmethodID findClass = jni->GetMethodID(jni->GetObjectClass(classLoader), "loadClass", "(Ljava/lang/String;)Ljava/lang/Class;");
-  jstring strClassName = jni->NewStringUTF("com/gaijinent/MessageBox/MessageBoxWrapper");
+  jstring strClassName = jni->NewStringUTF("com/prosestudio/MessageBox/MessageBoxWrapper");
   jobject cls = jni->CallObjectMethod(classLoader, findClass, strClassName);
   jni->ExceptionClear();
   jclass clazz_MessageBoxWrapper = cls ? (jclass)jni->NewGlobalRef(cls) : NULL;
@@ -59,7 +59,7 @@ static int show_alert(const char *utf8_text, const char *utf8_caption, int flags
 
   if (id_showAlert == nullptr)
   {
-    debug("%s JAVA method not found: com.gaijinent.MessageBox.MessageBoxWrapper.showAlert", __FUNCTION__);
+    debug("%s JAVA method not found: com.prosestudio.MessageBox.MessageBoxWrapper.showAlert", __FUNCTION__);
     return GUI_MB_FAIL;
   }
 

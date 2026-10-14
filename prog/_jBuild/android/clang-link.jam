@@ -97,7 +97,7 @@ rule ProcessLinkTarget
     $(Target)__LINK      = $(_LINK) ;
     $(Target)__LINK_OPT  = $(_LINK_OPT) $(LINKopt) ;
 
-    local app = $(AndroidAppID) ;  app ?= com.gaijinent.testApp ;
+    local app = $(AndroidAppID) ;  app ?= com.prosestudio.testApp ;
     local proj = $(Target:B) ;
     local orientation = $(AndroidScreenOrientation) ; orientation ?= sensorLandscape ;
     local sign_opt = ;
@@ -528,7 +528,7 @@ rule ProcessLinkTarget
       AndroidZipSources = no ;
 
       postlink +=
-        call $(PYTHON_EXE) $(jbuild_dir)/add_second_java_sources.py $(AndroidIncludeSecondSourcesZip) $(stage_dir)/src/second"
+        call $(PYTHON_EXE) $(jbuild_dir)/add_second_java_sources.py $(AndroidIncludeSecondSourcesZip) $(stage_dir)/src/second $(app)"
 "
       ;
     }

@@ -151,8 +151,8 @@ else if $(Platform) = android {
 
 
   local JavaActivitySrcName = Dargbox ;
-  AndroidJavaClass = com.gaijinent.dargbox.Dargbox ;
-  AndroidAppID = com.gaijinent.dargbox ;
+  AndroidJavaClass = com.prosestudio.dargbox.Dargbox ;
+  AndroidAppID = com.prosestudio.dargbox ;
   AndroidIcon = ../../samples/Android-testApp-res/icon.png ;
   AndroidAppIconName = Dargbox ;
   #AndroidStrings = android-strings.xml ; # use if you need customized strings.xml. For just app_name use AndroidAppIconName
@@ -165,9 +165,9 @@ else if $(Platform) = android {
     $(Root)/tools/dargbox/android.vromfs.bin     assets/android.vromfs.bin
     $(Root)/tools/dargbox/shaders/gameSpirV.ps50.shdump.bin assets/shaders/gameSpirV.ps50.shdump.bin
 
-    platform/android.bundle/src/$(JavaActivitySrcName).java      src/com/gaijinent/$(BundleName)/$(JavaActivitySrcName).java
-    platform/android.bundle/src/DagorCommonActivity.java      src/com/gaijinent/common/DagorCommonActivity.java
-    platform/android.bundle/src/DagorBaseActivity.java      src/com/gaijinent/common/DagorBaseActivity.java
+    platform/android.bundle/src/$(JavaActivitySrcName).java      src/com/prosestudio/$(BundleName)/$(JavaActivitySrcName).java
+    platform/android.bundle/src/DagorCommonActivity.java      src/com/prosestudio/common/DagorCommonActivity.java
+    platform/android.bundle/src/DagorBaseActivity.java      src/com/prosestudio/common/DagorBaseActivity.java
   ;
 
 }
@@ -180,7 +180,7 @@ else if $(Platform) = iOS {
 
   LINKopt += -framework AVFoundation ;
 
-  BundleID = com.gaijinent.dargbox ;
+  BundleID = com.prosestudio.dargbox ;
   BundleName = dargbox ;
 
   BundlePlist =
@@ -213,7 +213,7 @@ else if $(Platform) = macOS {
 
   LINKopt += -framework CoreAudio -framework AudioUnit ;
 
-  BundleID = com.gaijinent.dargbox ;
+  BundleID = com.prosestudio.dargbox ;
   BundleName = dargbox ;
 
   BundlePlist =

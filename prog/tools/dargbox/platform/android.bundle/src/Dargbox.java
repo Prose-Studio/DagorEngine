@@ -1,5 +1,5 @@
-package com.gaijinent.dargbox;
+package com.prosestudio.dargbox;
 
-import com.gaijinent.common.DagorCommonActivity;
+import com.prosestudio.common.DagorCommonActivity;
 
 public class Dargbox extends DagorCommonActivity {}

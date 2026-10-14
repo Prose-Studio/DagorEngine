@@ -1,4 +1,4 @@
-BundleID    ?= com.gaijinent.$(BundleName) ;
+BundleID    ?= com.prosestudio.$(BundleName) ;
 OutDir = $(OutDir)/$(BundleName).app/Contents/MacOS ;
 if $(UseD3DMulti) = yes {
   UseProgLibs += engine/drv/drv3d_pc_multi ;

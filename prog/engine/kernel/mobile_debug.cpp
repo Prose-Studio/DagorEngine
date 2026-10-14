@@ -207,7 +207,7 @@ static void nativeError(JNIEnv *jni, jclass, jstring msg)
   }
 }
 
-JNI_REG_NATIVES(DagorLoggerNatives, "com.gaijinent.common.DagorLogger",
+JNI_REG_NATIVES(DagorLoggerNatives, "com.prosestudio.common.DagorLogger",
   JNI_NATIVE_METHOD(nativeDebug, JNI_SIGNATURE(JNI_VOID, JNI_STRING)),
   JNI_NATIVE_METHOD(nativeWarning, JNI_SIGNATURE(JNI_VOID, JNI_STRING)),
   JNI_NATIVE_METHOD(nativeError, JNI_SIGNATURE(JNI_VOID, JNI_STRING)));
