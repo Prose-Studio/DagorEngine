@@ -16,8 +16,9 @@ cmake --workflow --preset windows-tests             # configure, build and test 
 
 Each test carries the CTest labels of its layer (`cpp`, `das`, `exec`, `ecs`, `scenario`), its `TAGS` and its
 `REQUIRES` as `requires-gpu`, `requires-display`, `requires-network`, `requires-http_server`. A program that can't run
-on the machine exits with 77 and is reported as skipped: a game test whose client starts no video driver (no GPU or
-no display, as on CI runners) does so.
+on the machine exits with 77 and is reported as skipped: a game test whose client starts no video driver (no GPU, as
+on CI runners) does so, and on Linux a game test that requires a display when neither `DISPLAY` nor
+`WAYLAND_DISPLAY` is set.
 
 Outputs go to `build/<preset>/test-artifacts/<test>/`: native results (`junit.xml`, `dastest.json`, `events.jsonl`),
 logs, screenshots and image diffs.

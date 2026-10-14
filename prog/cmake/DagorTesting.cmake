@@ -1,6 +1,7 @@
 # Tests, run by CTest (ctest --preset <preset>). Each test gets the CTest labels of its layer (cpp, das, exec, ecs,
 # scenario), its TAGS and its REQUIRES as requires-<what>; a test that cannot run on the machine (a game test whose
-# client starts no video driver) exits with 77, which CTest reports as skipped.
+# client starts no video driver, or that needs a display on Linux without one) exits with 77, which CTest reports as
+# skipped.
 #
 #   dagor_add_catch2_test(NAME <name> <dagor_add_target arguments> [DATA_DIR <dir>] [CASE_TIMEOUT <s>] [ARGS ...]
 #                         <common>)
@@ -312,6 +313,10 @@ function(dagor_add_game_test name)
       # screenshots would differ run to run at every edge
       -config:video/antialiasing_mode:t=off)
   endif()
+  set(runner "${DAGOR_CMAKE_DIR}/scripts/run_game_test.py")
+  if("display" IN_LIST arg_REQUIRES)
+    list(APPEND runner --display)
+  endif()
   _dagor_add_test(${name} ${arg_LAYER} "$<PATH:GET_PARENT_PATH,$<TARGET_FILE_DIR:${game}>>"
-    "${Python3_EXECUTABLE}" "${DAGOR_CMAKE_DIR}/scripts/run_game_test.py" "${out}" $<TARGET_FILE:${game}> ${args} ${arg_ARGS})
+    "${Python3_EXECUTABLE}" ${runner} "${out}" $<TARGET_FILE:${game}> ${args} ${arg_ARGS})
 endfunction()

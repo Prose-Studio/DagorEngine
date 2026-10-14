@@ -14,8 +14,8 @@ packages and restores the SDK and compiler caches.
   in the packaged game.
 
 CI runs the same test presets as a developer's machine. Hosted runners have no GPU and, on Linux, no display: a game
-test whose client cannot start a video driver there reports itself skipped (exit code 77), and the stub driver
-variants run the same cases on the stub 3d driver. Failed runs upload `build/<preset>/test-artifacts`.
+test whose client cannot start a video driver there, or that needs a display, reports itself skipped (exit code 77),
+and the stub driver variants run the same cases on the stub 3d driver. Failed runs upload `build/<preset>/test-artifacts`.
 
 ## Devices
 

@@ -97,7 +97,8 @@ dagor_add_game_test(my_game.scenarios LAYER scenario TAGS my_game PATHS . SCENE 
 ```
 
 Scenario tests require a GPU and a display (`requires-gpu`, `requires-display`); on a machine where the client
-starts no video driver they are skipped. `ARGS` adds game arguments, e.g.
+starts no video driver, or on Linux without a display (neither `DISPLAY` nor `WAYLAND_DISPLAY` set), they are
+skipped. `ARGS` adds game arguments, e.g.
 switches that make the game start the scene directly instead of its menu (`ARGS -config:disableMenu:b=yes`).
 
 Test functions run like entity systems: `query` and `find_query` work in them, and an `[es]` declared in a test file

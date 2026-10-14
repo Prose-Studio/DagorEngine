@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 """Runs a game in its test mode for CTest (dagor_add_game_test, DagorTesting.cmake).
 
-python run_game_test.py <out dir> <game> <argument>...
+python run_game_test.py [--display] <out dir> <game> <argument>...
 
 The game writes its report (dastest.json) and events into <out dir>. The exit code is the game's: 0 passed, 1 failed,
 3 a test exceeded its time limit, 77 skipped (nothing ran, or the machine cannot run the tests: no video driver
-started); 2 when the game wrote no report. The results of the tests
-are printed after the game's output. DAGOR_TEST_UPDATE_REFERENCES=1 in the environment makes scenario tests replace
-their reference images.
+started); 2 when the game wrote no report. The results of the tests are printed after the game's output.
+--display: the game opens a window, so on Linux without a display server (neither DISPLAY nor WAYLAND_DISPLAY set),
+where it cannot start, the test is skipped. DAGOR_TEST_UPDATE_REFERENCES=1 in the environment makes scenario tests
+replace their reference images.
 """
 import json
 import os
@@ -20,10 +21,16 @@ EXIT_SKIPPED = 77
 
 
 def main(argv):
+  display = argv[:1] == ['--display']
+  if display:
+    argv = argv[1:]
   if len(argv) < 2:
     print(__doc__, file=sys.stderr)
     return EXIT_INFRA_ERROR
   out, cmd = argv[0], argv[1:]
+  if display and sys.platform.startswith('linux') and not (os.environ.get('DISPLAY') or os.environ.get('WAYLAND_DISPLAY')):
+    print('skipped: the game opens a window, and this machine has no display (neither DISPLAY nor WAYLAND_DISPLAY set)')
+    return EXIT_SKIPPED
   os.makedirs(out, exist_ok=True)
   report = os.path.join(out, 'dastest.json')
   for stale in (report, os.path.join(out, 'events.jsonl')):
