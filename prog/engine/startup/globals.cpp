@@ -92,10 +92,13 @@ static char *ps_title = NULL;
 static size_t ps_title_len = 0;
 static size_t ps_title_size = 0;
 
-// Hopefully implementation of these containers will not change:
-// we rely on the fact that &SimpleString == &SimpleString.data to
-// provide backwards-compatible ::dgs_argv.
+// The copies of the arguments are owned apart from the table ::dgs_argv points to: programs remove their switches from
+// dgs_argv in place (as from argv on Windows), which must not leave a copy to be freed twice.
 static Tab<SimpleString> argv_storage(strmem);
+static Tab<char *> argv_table(strmem);
+// Hopefully implementation of this container will not change:
+// we rely on the fact that &SimpleString == &SimpleString.data to
+// provide environ.
 static Tab<SimpleString> env_storage(strmem);
 
 extern char **environ;
@@ -105,19 +108,22 @@ void dgs_init_argv(int argc, char **argv)
 {
   if (::dgs_argv)
     return;
-  argv_storage.resize(argc + 1); // argv[argc] should be NULL, hence +1
+  argv_storage.resize(argc);
+  argv_table.resize(argc + 1); // argv[argc] should be NULL, hence +1
   char *eob = NULL;
   for (int i = 0; i < argc; ++i)
   {
     argv_storage[i].setStrRaw(str_dup(argv[i], strmem)); // prevents "" getting optimized to nullptr
+    argv_table[i] = argv_storage[i].str();
 
     if (i == 0 || eob + 1 == argv[i])
       eob = argv[i] + strlen(argv[i]);
   }
+  argv_table[argc] = nullptr;
   G_ASSERT(eob);
 
   ::dgs_argc = argc;
-  ::dgs_argv = (char **)argv_storage.data();
+  ::dgs_argv = argv_table.data();
 
   size_t env_count = 0;
   for (int i = 0; environ && environ[i]; ++i, ++env_count)
