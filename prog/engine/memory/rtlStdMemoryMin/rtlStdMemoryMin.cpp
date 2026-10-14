@@ -45,6 +45,9 @@ IMemAlloc *strmem = &mem;
 IMemAlloc *globmem = &mem;
 
 void memfree_anywhere(void *p) { free(p); }
+#if _TARGET_APPLE | _TARGET_PC_LINUX | _TARGET_ANDROID | defined(__clang__)
+extern "C" void *memalloc(size_t sz) { return mem.alloc(sz); } // as dag_memBase.h declares it (gcc's inline operator new)
+#endif
 char *str_dup(const char *s, [[maybe_unused]] IMemAlloc *a)
 {
   if (!s)
