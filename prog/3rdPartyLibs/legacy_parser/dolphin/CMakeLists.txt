@@ -22,3 +22,13 @@ dagor_add_target(NAME dolphin EXECUTABLE LAX NO_CONFIG_POSTFIX
   PROPERTIES DAGOR_EXCEPTIONS SEH DAGOR_RTTI ON
   CDK
 )
+
+# the test (tests/generate.cmake): the shader compilers' lexer, dolphin's own and whale's generated. The generated
+# sources here (dolphout.*) are not compared with: the original dolphin made them, before its code generation was
+# changed for the shader compilers.
+if(DAGOR_CDK_TESTS)
+  dagor_add_exec_test(dolphin.lexers COMMAND ${CMAKE_COMMAND} -DTOOL=$<TARGET_FILE:dolphin>
+    -DOUT=${CMAKE_BINARY_DIR}/test-artifacts/dolphin.lexers -P ${CMAKE_CURRENT_SOURCE_DIR}/tests/generate.cmake
+    ${DAGOR_PROG_DIR}/tools/ShaderCompiler2/shlex.dlp ${CMAKE_CURRENT_SOURCE_DIR}/dolphout.dlp
+    ${DAGOR_PROG_DIR}/3rdPartyLibs/legacy_parser/whale/lexical.dlp TAGS cdk TIMEOUT 60)
+endif()

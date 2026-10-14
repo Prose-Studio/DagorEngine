@@ -124,3 +124,27 @@ if(CMAKE_SYSTEM_NAME MATCHES "^(Darwin|Windows)$")
       gameLibs.folders gameLibs.spirv ${metal_libs}
   )
 endif()
+
+# the tests (tests/): each compiler compiles the tools' GUI shaders into a dump shaderInfo reads, the same dump twice,
+# and rejects broken shaders with their errors (the stub, which makes no bytecode, their mini dump and the front end's
+# errors). Their dumps, in <build>/test-artifacts, are shaderInfo's test inputs (the fixtures <compiler>.gui_shaders).
+if(DAGOR_CDK_TESTS)
+  set(gui_blk ${DAGOR_PROG_DIR}/tools/sceneTools/guiShaders_commonData/shaders_guiMinimal.blk)
+  foreach(compiler dsc2-stub dsc2-hlsl11 dsc2-dx12 dsc2-spirv dsc2-metal)
+    if(NOT TARGET ${compiler})
+      continue()
+    endif()
+    set(stub OFF)
+    if(compiler STREQUAL "dsc2-stub")
+      set(stub ON)
+    endif()
+    set(out ${CMAKE_BINARY_DIR}/test-artifacts/${compiler})
+    dagor_add_exec_test(${compiler}.gui_shaders COMMAND ${CMAKE_COMMAND} -DCOMPILER=$<TARGET_FILE:${compiler}>
+      -DSHADER_INFO=$<TARGET_FILE:shaderInfo> -DBLK=${gui_blk} -DOUT=${out}.gui_shaders -DSTUB=${stub}
+      -P ${CMAKE_CURRENT_SOURCE_DIR}/tests/gui_shaders.cmake TAGS cdk TIMEOUT 120)
+    set_tests_properties(${compiler}.gui_shaders PROPERTIES FIXTURES_SETUP ${compiler}.gui_shaders)
+    dagor_add_exec_test(${compiler}.errors COMMAND ${CMAKE_COMMAND} -DCOMPILER=$<TARGET_FILE:${compiler}>
+      -DINCLUDE_DIR=${DAGOR_PROG_DIR}/gameLibs/render/shaders -DOUT=${out}.errors -DSTUB=${stub}
+      -P ${CMAKE_CURRENT_SOURCE_DIR}/tests/errors.cmake TAGS cdk TIMEOUT 120)
+  endforeach()
+endif()

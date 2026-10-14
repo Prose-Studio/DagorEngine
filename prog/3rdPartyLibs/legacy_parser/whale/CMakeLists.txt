@@ -22,3 +22,14 @@ dagor_add_target(NAME whale EXECUTABLE LAX NO_CONFIG_POSTFIX
   PROPERTIES DAGOR_EXCEPTIONS SEH DAGOR_RTTI ON
   CDK
 )
+
+# the test (dolphin's tests/generate.cmake): the shader compilers' parser, whale's own and dolphin's generated. The
+# generated sources here (parser.*) are not compared with: the original whale made them, before its code generation was
+# changed for the shader compilers.
+if(DAGOR_CDK_TESTS)
+  dagor_add_exec_test(whale.parsers COMMAND ${CMAKE_COMMAND} -DTOOL=$<TARGET_FILE:whale>
+    -DOUT=${CMAKE_BINARY_DIR}/test-artifacts/whale.parsers
+    -P ${DAGOR_PROG_DIR}/3rdPartyLibs/legacy_parser/dolphin/tests/generate.cmake
+    ${DAGOR_PROG_DIR}/tools/ShaderCompiler2/shsyn.whl ${DAGOR_PROG_DIR}/3rdPartyLibs/legacy_parser/dolphin/parser.whl
+    ${CMAKE_CURRENT_SOURCE_DIR}/parser.whl TAGS cdk TIMEOUT 60)
+endif()
