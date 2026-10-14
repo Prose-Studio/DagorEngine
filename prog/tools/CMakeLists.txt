@@ -137,6 +137,8 @@ if(DAGOR_VARIANT MATCHES "^(cdk|assets|editor|maxplug)$" OR (DAGOR_VARIANT STREQ
     add_subdirectory(sceneTools/dxpUtil)
     add_subdirectory(shaderInfo)
   endif()
+elseif(DAGOR_ENGINE_TESTS)
+  add_subdirectory(consoleSq) # csq runs the Quirrel tests
 endif()
 # daBuild built into a game's asset manager (DAGOR_GAME_ASSET_MANAGER): its library, the exporters and the reference
 # providers, all static
@@ -230,8 +232,6 @@ if(DAGOR_VARIANT STREQUAL "editor")
   if(WIN32) # plodGen's entry is Windows' (its driver DX11)
     add_subdirectory(sceneTools/pointCloudGen/standalone)
   endif()
-elseif(DAGOR_ENGINE_TESTS)
-  add_subdirectory(consoleSq) # csq runs the Quirrel tests
 endif()
 # dargbox, the daRg sandbox
 if(DAGOR_VARIANT STREQUAL "dargbox")
