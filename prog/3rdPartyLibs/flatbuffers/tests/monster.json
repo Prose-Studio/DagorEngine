@@ -1,0 +1,17 @@
+{
+  "pos": {"x": 1.0, "y": 2.0, "z": 3.0},
+  "hp": 300,
+  "name": "Orc \"the\" Grünwald ✓",
+  "inventory": [0, 1, 2, 255],
+  "color": "Green",
+  "weapons": [{"name": "Sword", "damage": 3}, {"name": "Axe"}],
+  "equipped_type": "Shield",
+  "equipped": {"armor": 7},
+  "path": [{"x": -1.5, "y": 0.25, "z": 1e10}, {"x": 0.0, "y": 0.0, "z": 0.0}],
+  "tags": ["a", "", "c"],
+  "big": -9223372036854775807,
+  "ratio": 0.1,
+  "flag": true,
+  "id32": "foobar",
+  "id64": "foobar"
+}

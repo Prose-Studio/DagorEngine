@@ -1,0 +1,44 @@
+// Every kind of field FlatBuffers has: scalars with defaults, an enum, structs, strings, vectors of scalars, structs,
+// strings and tables, a union, a required field and ids hashed from strings
+namespace dagor.test;
+
+enum Color : byte { Red = 0, Green, Blue = 5 }
+
+struct Vec3 {
+  x:float;
+  y:float;
+  z:float;
+}
+
+table Weapon {
+  name:string;
+  damage:short = 10;
+}
+
+table Shield {
+  armor:int;
+}
+
+union Equipment { Weapon, Shield }
+
+table Monster {
+  pos:Vec3;
+  mana:short = 150;
+  hp:short = 100;
+  name:string (required);
+  inventory:[ubyte];
+  color:Color = Blue;
+  weapons:[Weapon];
+  equipped:Equipment;
+  path:[Vec3];
+  tags:[string];
+  big:long;
+  ratio:double;
+  flag:bool;
+  id32:uint (hash:"fnv1a_32");
+  id64:ulong (hash:"fnv1a_64");
+}
+
+root_type Monster;
+file_identifier "DTST";
+file_extension "dtst";
