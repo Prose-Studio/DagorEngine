@@ -359,7 +359,7 @@ struct DAGOR_WARN_IF_UNUSED HashedKeyMap
   const_iterator end() const { return cend(); }
 
   HashedKeyMap(const allocator_type &allocator = allocator_type("key_map")) : keys(makeNoKey(), allocator) {}
-  ~HashedKeyMap() { deallocate(); }
+  ~HashedKeyMap() { freeStorage(); }
   HashedKeyMap(HashedKeyMap &&a) : keys(eastl::move(a.keys)), vals(a.vals), mask(a.mask), used(a.used)
   {
     if (a.keys.first() == a.noKey())
@@ -434,7 +434,9 @@ protected:
       eastl::fill_n(p, n, EmptyKey);
     return p;
   }
-  void deallocate(key_t *n = nullptr, val_t *v = nullptr)
+  // frees the keys and values; the destructor installs no empty sentinel after it (makeNoKey() allocates one when EmptyKey
+  // is not 0, which would leak)
+  void freeStorage()
   {
     if (used)
       iterate([](const auto &, val_t &v) { v.~val_t(); });
@@ -442,7 +444,10 @@ protected:
       EASTLFree(internalAllocator(), keys.first(), bucket_count() * sizeof(key_t));
     if (vals)
       EASTLFree(internalAllocator(), vals, bucket_count() * sizeof(val_t));
-
+  }
+  void deallocate(key_t *n = nullptr, val_t *v = nullptr)
+  {
+    freeStorage();
     keys.first() = n ? n : makeNoKey();
     vals = v;
   }
@@ -642,7 +647,7 @@ struct DAGOR_WARN_IF_UNUSED HashedKeySet
     else
       keys.first() = makeNoKey();
   }
-  ~HashedKeySet() { deallocate(); }
+  ~HashedKeySet() { freeStorage(); }
   HashedKeySet(HashedKeySet &&a) : keys(eastl::move(a.keys)), mask(a.mask), used(a.used)
   {
     if (a.keys.first() == a.noKey())
@@ -684,11 +689,15 @@ protected:
       eastl::fill_n(p, n, EmptyKey);
     return p;
   }
-  void deallocate(key_t *n = nullptr)
+  // frees the keys; the destructor installs no empty sentinel after it (as HashedKeyMap::freeStorage)
+  void freeStorage()
   {
     if (keys.first() != noKey())
       EASTLFree(internalAllocator(), keys.first(), bucket_count() * sizeof(key_t));
-
+  }
+  void deallocate(key_t *n = nullptr)
+  {
+    freeStorage();
     keys.first() = n ? n : makeNoKey();
   }
   uint32_t used = 0, mask = 0;
