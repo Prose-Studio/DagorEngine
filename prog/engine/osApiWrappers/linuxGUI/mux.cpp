@@ -155,13 +155,17 @@ bool is_window_maximized(void *w) { ROUTE(isWindowMaximized(w)); }
 // a windowless driver (stub) has no title to set, as on Windows
 void set_title(const char *title, const char *tooltip)
 {
-  if (inited)
+  if (inited) // (ROUTE is several statements)
+  {
     ROUTE(setTitle(title, tooltip));
+  }
 }
 void set_title_utf8(const char *title, const char *tooltip)
 {
-  if (inited)
+  if (inited) // (ROUTE is several statements)
+  {
     ROUTE(setTitleUTF8(title, tooltip));
+  }
 }
 int get_screen_refresh_rate() { ROUTE(getScreenRefreshRate()); }
 void set_fullscreen_mode(bool enable) { ROUTE(setFullscreenMode(enable)); }
