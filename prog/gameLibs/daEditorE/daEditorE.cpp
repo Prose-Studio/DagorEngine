@@ -890,7 +890,9 @@ static bool open_daeditor_console_handler(const char *argv[], int argc)
   int found = 0;
   CONSOLE_CHECK_NAME("daEd4", "open", 1, 2)
   {
-    if (argc == 1 || de4_active != bool(atoi(argv[1])))
+    if (!IDaEditor4Engine::inited()) // create_da_editor4() makes none without a mouse
+      console::warning("daEd4.open: there is no editor, it needs a mouse");
+    else if (argc == 1 || de4_active != bool(atoi(argv[1])))
       de4_activation_handler.gkehButtonUp(ecs::IGenHidEventHandler::Context{}, HumanInput::DKEY_F12);
   }
   return found;
