@@ -1,4 +1,3 @@
-from "math" import abs
 from "%darg/ui_imports.nut" import *
 let { mkInclineGradient, gradSize } = require("incline_gradient.nut")
 let textInput = require("samples_prog/_basic/components/textInput.nut")

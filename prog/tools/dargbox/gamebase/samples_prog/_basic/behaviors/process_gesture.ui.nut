@@ -1,5 +1,4 @@
 from "%darg/ui_imports.nut" import *
-from "math" import sqrt, floor
 
 let cursors = require("samples_prog/_cursors.nut")
 

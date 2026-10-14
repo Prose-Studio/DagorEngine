@@ -83,7 +83,7 @@ function switchImages(){
   let cur = opts.indexof(curImage.get())??0
   let next = cur+1 <= opts.len()-1 ? cur+1 : 0
   dlog(next)
-  curImage(opts[next])
+  curImage.set(opts[next])
 }
 return {
   halign = ALIGN_CENTER

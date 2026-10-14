@@ -1,7 +1,7 @@
 import "eventbus" as eventbus
 import "dagor.udp" as udp
 from "json" import object_to_json_string, parse_json
-from "dagor.time" import format_unixtime, get_local_unixtime, get_time_msec
+from "dagor.time" import get_time_msec
 from "%darg/ui_imports.nut" import *
 
 let textInput = require("samples_prog/_basic/components/textInput.nut")

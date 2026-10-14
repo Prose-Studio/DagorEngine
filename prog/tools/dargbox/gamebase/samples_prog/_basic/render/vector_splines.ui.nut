@@ -1,4 +1,4 @@
-from "dagor.math" import CatmullRomSplineBuilder2D, Point2
+from "dagor.math" import CatmullRomSplineBuilder2D
 from "%darg/ui_imports.nut" import *
 let cursors = require("samples_prog/_cursors.nut")
 

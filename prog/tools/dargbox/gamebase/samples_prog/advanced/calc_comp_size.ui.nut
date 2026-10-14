@@ -1,6 +1,5 @@
 from "%sqstd/string.nut" import tostring_r
 from "%darg/ui_imports.nut" import *
-from "math" import max
 let cursor = Cursor({ rendObj = ROBJ_IMAGE size = 32 image = Picture("!ui/atlas#cursor.svg:{0}:{0}:K".subst(hdpx(32))) })
 
 let bbb = {rendObj = ROBJ_TEXT text = "BBB"}

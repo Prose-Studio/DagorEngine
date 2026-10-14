@@ -44,10 +44,10 @@ let content = @() {
     button("Play file + octave", @() sound.play_sound(sndFile, {pitch=2.0}))
     button(sineHandle.get()==null ? "Loop sine" : "Stop sine", function() {
       if (sineHandle.get()==null)
-        sineHandle(sound.play_sound(sndSine, {loop=true}))
+        sineHandle.set(sound.play_sound(sndSine, {loop=true}))
       else {
         sound.stop_sound(sineHandle.get())
-        sineHandle(null)
+        sineHandle.set(null)
       }
     })
   ]
