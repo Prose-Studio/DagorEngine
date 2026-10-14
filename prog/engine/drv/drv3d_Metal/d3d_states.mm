@@ -978,6 +978,11 @@ static uint32_t get_placed_buffer_size(const ResourceDescription &desc)
   int w, h, row_bytes;
   return drv3d_metal::Buffer::getTexelViewLayout(size, desc.asBufferRes.viewFormat, w, h, row_bytes);
 }
+}
+
+// the driver's interface: the multi_metal one in a multi-driver build (d3d_config.h)
+namespace d3d _MULTI_INTERFACE
+{
 
 ResourceAllocationProperties get_resource_allocation_properties(const ResourceDescription &desc)
 {

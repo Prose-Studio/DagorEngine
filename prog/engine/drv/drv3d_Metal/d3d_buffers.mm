@@ -217,6 +217,11 @@ struct ResUpdateBuffer
   size_t pitch = 0;
   size_t slicePitch = 0;
 };
+}
+
+// the driver's interface: the multi_metal one in a multi-driver build (d3d_config.h)
+namespace d3d _MULTI_INTERFACE
+{
 
 ResUpdateBuffer *allocate_update_buffer_for_tex_region(BaseTexture *dest_base_texture, unsigned dest_mip, unsigned dest_slice,
                                                             unsigned offset_x, unsigned offset_y, unsigned offset_z, unsigned width, unsigned height, unsigned depth)

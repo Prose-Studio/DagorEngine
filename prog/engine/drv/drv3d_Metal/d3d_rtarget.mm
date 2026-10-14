@@ -747,6 +747,11 @@ static MTLStoreAction decodeStoreAction(RenderPass::Subpass &pass, uint32_t stor
   }
   return MTLStoreActionDontCare;
 }
+}
+
+// the driver's interface: the multi_metal one in a multi-driver build (d3d_config.h)
+namespace d3d _MULTI_INTERFACE
+{
 
 RenderPass *create_render_pass(const RenderPassDesc &rp_desc)
 {
