@@ -35,6 +35,7 @@
 #include <drv/3d/dag_matricesAndPerspective.h>
 #include <drv/3d/dag_texture.h>
 #include <drv/3d/dag_driver.h>
+#include <drv/3d/dag_info.h>
 #include <drv/3d/dag_lock.h>
 #include <3d/dag_texPackMgr2.h>
 #include <3d/dag_render.h>
@@ -295,7 +296,8 @@ public:
 
 
 #if _TARGET_PC || _TARGET_ANDROID || _TARGET_C3
-    if (global_cls_drv_pnt)
+    // headless (the stub driver) there is no window: the desktop's cursor and keys are not the scene's input
+    if (global_cls_drv_pnt && !d3d::is_stub_driver())
     {
       int scrW = StdGuiRender::real_screen_width();
       int scrH = StdGuiRender::real_screen_height();
