@@ -44,10 +44,11 @@ if(DAGOR_VARIANT STREQUAL "cdk")
   endforeach()
   install(DIRECTORY tools/toolsData/ DESTINATION tools COMPONENT cdk PATTERN README.md EXCLUDE)
 elseif(DAGOR_VARIANT STREQUAL "assets")
-  # the tools on the shared kernel (daKernel): daBuild with its exporter plugins, ddsxCvt2
-  dagor_build_by_default(tools.libTools.daKernel daBuild daBuild-job a2dExp animCharExp collisionExp fastPhysExp fxExp
-    impostorExp landClsExp locShadersExp matExp modelExp phObjExp texExp compositRefProv efxRefProv splineRefProv
-    vehicleExp ddsxCvt2)
+  # the tools on the shared kernel (daKernel): daBuild with its exporter plugins and the library the editors build
+  # assets with (daBuildLib), ddsxCvt2, findUnusedTex
+  dagor_build_by_default(tools.libTools.daKernel daBuild daBuild-job daBuildLib a2dExp animCharExp collisionExp
+    fastPhysExp fxExp impostorExp landClsExp locShadersExp matExp modelExp phObjExp texExp compositRefProv efxRefProv
+    splineRefProv vehicleExp ddsxCvt2 findUnusedTex)
 elseif(DAGOR_VARIANT STREQUAL "editor")
   # the GUI editors on the shared kernel: impostorBaker; daEditor3x with its plugins and AssetViewer on Windows and Linux
   # (EditorCore's windows); blkEditor and plodGen on Windows
