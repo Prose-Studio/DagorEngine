@@ -114,6 +114,9 @@ if(NOT (ANDROID OR IOS))
     dagor_add_exec_test(dargbox:${sample} COMMAND $<TARGET_FILE:dargbox> -quiet -config:script:t=${sample} ${args}
       -config:debug/profiler:t=off -config:debug/useAddonVromSrc:b=yes -logerr_to_stderr -fatals_to_stderr
       WORKING_DIRECTORY ${DAGOR_ENGINE_ROOT}/tools/dargbox ${requires} TAGS dargbox)
+    if(requires) # a machine without a GPU (CI) starts no driver: skipped
+      set_tests_properties(dargbox:${sample} PROPERTIES SKIP_REGULAR_EXPRESSION "Error initializing video")
+    endif()
   endforeach()
 endif()
 
