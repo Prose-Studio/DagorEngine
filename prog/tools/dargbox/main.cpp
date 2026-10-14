@@ -165,7 +165,7 @@ static void post_shutdown_handler()
   DEBUG_CTX("shutdown!");
   shutdown_game(RESTART_INPUT);
   shutdown_game(RESTART_ALL);
-  cpujobs::term(false, 0);
+  cpujobs::term(false); // waits for the jobs still running (a texture's async load)
 
 #if DAGOR_DBGLEVEL > 0
   const DataBlock *debugBlk = dgs_get_settings()->getBlockByNameEx("debug");
