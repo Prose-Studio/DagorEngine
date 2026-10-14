@@ -107,7 +107,13 @@ static bool dump_ast_nodes_location = false;
 static bool check_stack_mode = false;
 static bool closure_hoisting_optimization = false;
 static bool hide_compilation_error = false;
-static String sqconfig_dir;
+// constructed on first use: a global String takes the string allocator when it is constructed, which on macOS (no
+// constructor order across files) can be before the memory manager is set up
+static String &sqconfig_dir()
+{
+  static String dir;
+  return dir;
+}
 static unsigned iter_seed = ~0u;
 
 static HSQUIRRELVM sqvm = nullptr;
@@ -739,7 +745,7 @@ static bool process_file(const char *filename, const char *code, const KeyValueF
         else
         {
           out_module_name.printf(0, "execute_file \"%s\"", s);
-          String nutName = String(0, "%s%s", sqconfig_dir.str(), s);
+          String nutName = String(0, "%s%s", sqconfig_dir().str(), s);
           Sqrat::Object exports;
           Sqrat::string errMsg;
           if (!module_manager->requireModule(nutName, true, SqModules::__fn__, exports, errMsg))
@@ -1142,10 +1148,10 @@ int DagorWinMain(bool debugmode)
     if (!buf[0])
       dd_append_slash_c(buf);
 
-    sqconfig_dir.setStr(buf);
+    sqconfig_dir().setStr(buf);
   }
 
-  String sqconfigPath = find_sqconfig_path(sqconfig_dir);
+  String sqconfigPath = find_sqconfig_path(sqconfig_dir());
 
   if (const char *conf = ::dgs_get_argv("set-sqconfig"))
   {
@@ -1162,11 +1168,11 @@ int DagorWinMain(bool debugmode)
     dd_simplify_fname_c(buf);
     if (!buf[0])
       dd_append_slash_c(buf);
-    sqconfig_dir.setStr(buf);
+    sqconfig_dir().setStr(buf);
   }
 
 
-  append_final_slash(sqconfig_dir);
+  append_final_slash(sqconfig_dir());
 
   int it = 1;
   for (const char *ap; (ap = ::dgs_get_argv("add-basepath", it)) != NULL;)
@@ -1329,7 +1335,7 @@ int DagorWinMain(bool debugmode)
       {
         String path(configBlk.keyValue(i).value.c_str());
         if (!is_path_absolute(path))
-          path = sqconfig_dir + path;
+          path = sqconfig_dir() + path;
 
         append_final_slash(path);
         dd_add_base_path(path);
@@ -1350,7 +1356,7 @@ int DagorWinMain(bool debugmode)
           return 1;
         }
         *eq = 0;
-        String fullPath(0, "%s%s", sqconfig_dir.str(), eq + 1);
+        String fullPath(0, "%s%s", sqconfig_dir().str(), eq + 1);
         dd_set_named_mount_path(s.str(), fullPath.str());
         if (::dgs_get_argv("show-mounts"))
           printf("mount: '%s' = '%s'\n", s.str(), fullPath.str());
