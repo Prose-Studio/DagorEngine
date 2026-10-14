@@ -54,7 +54,7 @@ int DagorWinMain(bool debugmode)
   if (dgs_argc < 4 || (dgs_argc & 1))
   {
     print_header();
-    printf("usage: resUpdate-dev.exe [switches] <game_root> [<new_vrom_file> <vromdest>]...\n\n"
+    printf("usage: resUpd-dev.exe [switches] <game_root> [<new_vrom_file> <vromdest>]...\n\n"
            "switches are:\n"
            "  -dryRun\n"
            "  -verbose\n"

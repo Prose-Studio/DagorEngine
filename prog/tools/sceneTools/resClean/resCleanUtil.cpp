@@ -134,9 +134,10 @@ int DagorWinMain(bool debugmode)
   if (__argc < 2)
   {
     print_header();
-    printf("usage: resDiffUtil-dev.exe [switches] <vrom_mount_dir_root>\n\n"
+    printf("usage: resCleanUtil-dev.exe [switches] <vrom_mount_dir_root>\n\n"
            "switches are:\n"
            "  -clean\n"
+           "  -validate\n"
            "  -vfs:<grp_hdr.vromfs.bin>\n"
            "  -resBlk:<resPacks.blk>\n"
            "\n\n");

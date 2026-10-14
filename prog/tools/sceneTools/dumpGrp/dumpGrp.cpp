@@ -123,7 +123,9 @@ static gamerespackbin::GrpData *load_grp(BinDumpReader &crd, int file_size)
   gamerespackbin::GrpHeader ghdr;
   gamerespackbin::GrpData *gdata = NULL;
 
-  crd.read32ex(&ghdr, sizeof(ghdr));
+  if (crd.getRawReader().tryRead(&ghdr, sizeof(ghdr)) != sizeof(ghdr)) // too short to be a pack, not a read error
+    return NULL;
+  crd.convert32(&ghdr, sizeof(ghdr));
   crd.convert32(&ghdr.label, 4);
 
   if (ghdr.label != _MAKE4C('GRP2') && ghdr.label != _MAKE4C('GRP3'))
@@ -165,11 +167,13 @@ static LevelBinData *load_level_bin(BinDumpReader &crd)
 {
   int tag;
 
-  if (crd.readFourCC() != _MAKE4C('DBLD'))
+  int hdr[3]; // label, version, total tex number; too short for them is no level binary, not a read error
+  if (crd.getRawReader().tryRead(hdr, sizeof(hdr)) != sizeof(hdr))
     return NULL;
-  if (crd.readFourCC() != DBLD_Version)
+  if (hdr[0] != _MAKE4C('DBLD'))
     return NULL;
-  crd.readInt32e(); // total tex number
+  if (hdr[1] != DBLD_Version)
+    return NULL;
 
   LevelBinData *lbd = new LevelBinData;
   for (;;)
@@ -216,7 +220,9 @@ static LevelBinData *load_level_bin(BinDumpReader &crd)
 static DxpBinData *load_tex_pack(BinDumpReader &crd)
 {
   unsigned hdr[4];
-  crd.read32ex(hdr, sizeof(hdr));
+  if (crd.getRawReader().tryRead(hdr, sizeof(hdr)) != sizeof(hdr)) // too short to be a pack, not a read error
+    return NULL;
+  crd.convert32(hdr, sizeof(hdr));
 
   if (hdr[0] != _MAKE4C('DxP2') || (hdr[1] != 2 && hdr[1] != 3))
     return NULL;

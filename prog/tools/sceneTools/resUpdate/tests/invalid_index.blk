@@ -1,0 +1,3 @@
+// a vromfs index that does not parse: resUpd must reject it
+"pack.vromfs.bin"{
+  "file.blk":i=
