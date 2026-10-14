@@ -761,6 +761,8 @@ private:
 
 static DummyTexture backBufTex, backBufDepthTex;
 static ViewData viewData;
+// as in the real drivers: setting render targets makes the viewport the whole target, until setview()
+static bool viewIsWholeTarget = true;
 static float screen_aspect_ratio = 1.0;
 
 
@@ -809,6 +811,7 @@ bool d3d::init_driver()
 
   viewData.minz = 0.0;
   viewData.maxz = 1.0;
+  viewIsWholeTarget = true;
 
   dgs_set_window_mode(WindowMode::WINDOWED);
 
@@ -1283,6 +1286,7 @@ void d3d::insert_wait_on_fence(GPUFENCEHANDLE & /*fence*/, GpuPipeline /*gpu_pip
 
 bool d3d::set_render_target()
 {
+  viewIsWholeTarget = true;
   currentRtState.setBackbufColor();
   currentRtState.removeDepth();
   return true;
@@ -1309,6 +1313,7 @@ bool d3d::set_depth(BaseTexture *tex, int face, DepthAccess access)
 
 bool d3d::set_render_target(const Driver3dRenderTarget &rt)
 {
+  viewIsWholeTarget = true;
   currentRtState = rt;
   return true;
 }
@@ -1316,6 +1321,7 @@ bool d3d::set_render_target(const Driver3dRenderTarget &rt)
 // Bulk setter: sets all color targets, clears unused slots, and sets depth in one call.
 void d3d::set_render_target(RenderTarget depth, DepthAccess depth_access, dag::ConstSpan<RenderTarget> colors)
 {
+  viewIsWholeTarget = true;
   int i = 0;
   for (; i < colors.size() && i < Driver3dRenderTarget::MAX_SIMRT; ++i)
   {
@@ -1366,6 +1372,7 @@ bool d3d::get_render_target_size(int &w, int &h, BaseTexture *rt_tex, uint8_t le
 
 bool d3d::setview(int x, int y, int w, int h, float minz, float maxz)
 {
+  viewIsWholeTarget = false;
   viewData.x = x;
   viewData.y = y;
 
@@ -1394,6 +1401,13 @@ bool d3d::setscissors(dag::ConstSpan<ScissorRect> scissorRects)
 
 bool d3d::getview(int &x, int &y, int &w, int &h, float &minz, float &maxz)
 {
+  if (viewIsWholeTarget)
+  {
+    x = y = 0;
+    minz = 0.f;
+    maxz = 1.f;
+    return get_target_size(w, h);
+  }
   x = viewData.x;
   y = viewData.y;
   w = viewData.w;
