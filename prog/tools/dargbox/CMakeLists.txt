@@ -87,23 +87,26 @@ if(NOT (ANDROID OR IOS))
   set_property(TARGET dargbox-data PROPERTY FOLDER "content")
   dagor_build_by_default(dargbox-data)
 
-  # its tests: every sample runs 30 updates headless on the stub driver and fails on the errors it logs; on Windows the
-  # runtime HLSL sample (and the screen of all samples) needs DX11 or DX12. errors_handling makes errors on purpose.
+  # its tests: every sample runs from its sources headless on the stub driver for 30 updates and fails on the errors it
+  # logs; the tests of samples_prog/benchmarks (test_*) drive their own act frames and exit with their result. On Windows
+  # the runtime HLSL sample (and the screen of all samples) needs DX11 or DX12. errors_handling makes errors on purpose.
   file(GLOB_RECURSE samples CONFIGURE_DEPENDS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/gamebase
     ${CMAKE_CURRENT_SOURCE_DIR}/gamebase/samples_prog/*.ui.nut)
   list(REMOVE_ITEM samples samples_prog/zbugs/errors_handling.ui.nut)
   file(GLOB_RECURSE heavy CONFIGURE_DEPENDS RELATIVE ${DAGOR_PROG_DIR}/tools/toolsData/dargbox
     ${DAGOR_PROG_DIR}/tools/toolsData/dargbox/samples_heavy/*.ui.nut)
   foreach(sample IN LISTS samples heavy)
-    set(driver -config:video/driver:t=stub)
+    set(args -config:debug/limit_updates:i=30 -config:video/driver:t=stub)
     set(requires)
-    if(WIN32 AND sample MATCHES "/(robj_shader|all_ui)\\.ui\\.nut$")
-      set(driver)
+    if(sample MATCHES "^samples_prog/benchmarks/test_")
+      set(args -config:debug/limit_updates:i=200000 -config:workcycle/act_rate:i=1000 -config:video/driver:t=stub)
+    elseif(WIN32 AND sample MATCHES "/(robj_shader|all_ui)\\.ui\\.nut$")
+      set(args -config:debug/limit_updates:i=30)
       set(requires REQUIRES gpu display)
     endif()
-    dagor_add_exec_test(dargbox:${sample} COMMAND $<TARGET_FILE:dargbox> -config:script:t=${sample}
-      -config:debug/limit_updates:i=30 ${driver} -quiet WORKING_DIRECTORY ${DAGOR_ENGINE_ROOT}/tools/dargbox
-      ${requires} TAGS dargbox)
+    dagor_add_exec_test(dargbox:${sample} COMMAND $<TARGET_FILE:dargbox> -quiet -config:script:t=${sample} ${args}
+      -config:debug/profiler:t=off -config:debug/useAddonVromSrc:b=yes
+      WORKING_DIRECTORY ${DAGOR_ENGINE_ROOT}/tools/dargbox ${requires} TAGS dargbox)
   endforeach()
 endif()
 
