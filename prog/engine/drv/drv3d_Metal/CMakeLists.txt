@@ -1,10 +1,10 @@
 # The Metal driver (macOS, iOS, tvOS); DAGOR_METALFX: MetalFX upscaling (the MetalFX framework)
 option(DAGOR_METALFX "Metal: MetalFX upscaling" OFF)
 set(defines INSIDE_DRIVER)
-set(system_libs)
+set(system_libs System::CoreGraphics) # the color spaces of HDR output
 if(DAGOR_METALFX)
   list(APPEND defines USE_METALFX_UPSCALE)
-  set(system_libs System::MetalFX)
+  list(APPEND system_libs System::MetalFX)
 endif()
 
 dagor_add_target(NAME engine.drv.drv3d_Metal STATIC LAX

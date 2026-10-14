@@ -36,7 +36,9 @@ elseif(LINUX)
 elseif(ANDROID)
   list(APPEND deps engine.drv.hid_android engine.drv.hid_nulldrv)
 elseif(IOS)
-  list(APPEND deps engine.drv.hid_iOS engine.drv.hid_nulldrv System::AVFoundation)
+  # the iOS main needs the system info (memory warnings) and the haptics; daFx needs ImGui (its stub)
+  list(APPEND deps engine.drv.hid_iOS engine.drv.hid_nulldrv engine.imgui.stub gameLibs.userSystemInfo
+    System::AVFoundation System::CoreHaptics)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
   list(APPEND deps engine.imgui.stub engine.drv.hid_mouse engine.drv.hid_keyboard engine.drv.hid_joystick_osx
     engine.drv.hid_nulldrv engine.osApiWrappers.messageBox)

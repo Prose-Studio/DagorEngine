@@ -480,7 +480,7 @@ int DagorWinMain(int nCmdShow, bool /*debugmode*/)
   dagor_main(nCmdShow);
   ::dagor_reset_spent_work_time();
 
-#if _TARGET_APPLE
+#if _TARGET_PC_MACOSX
   // Dagor hides cursor, we should show it back
   mouse_api_hide_cursor(false);
 #endif

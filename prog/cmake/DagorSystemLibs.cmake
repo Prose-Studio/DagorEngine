@@ -83,10 +83,10 @@ function(dagor_system_framework)
 endfunction()
 
 if(APPLE)
-  dagor_system_framework(Foundation CoreFoundation QuartzCore Security SystemConfiguration Metal MetalFX IOKit
-    AVFoundation AudioToolbox CoreAudio)
+  dagor_system_framework(Foundation CoreFoundation CoreGraphics QuartzCore Security SystemConfiguration Metal MetalFX
+    IOKit AVFoundation AudioToolbox CoreAudio)
   if(IOS)
-    dagor_system_framework(UIKit GameController CoreMotion)
+    dagor_system_framework(UIKit GameController CoreMotion CoreHaptics)
   else()
     dagor_system_framework(Cocoa Carbon CoreLocation DiskArbitration AudioUnit OpenCL)
   endif()
