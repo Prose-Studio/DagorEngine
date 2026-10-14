@@ -30,7 +30,7 @@ dagor_add_target(NAME csq EXECUTABLE
 )
 
 # the tests it runs (in the tests tree): its script API (tests/), the engine's script tests, and the static analysis of
-# the shared scripts and of dargbox's samples (against the native modules' stubs of their .sqconfig)
+# the shared scripts, daNetGame's and dargbox's samples (against the native modules' stubs of their .sqconfig)
 if(DAGOR_ENGINE_TESTS)
   file(GLOB tests CONFIGURE_DEPENDS tests/test_*.nut)
   foreach(test IN LISTS tests)
@@ -46,7 +46,7 @@ if(DAGOR_ENGINE_TESTS)
   endforeach()
   file(GLOB_RECURSE scripts CONFIGURE_DEPENDS RELATIVE ${DAGOR_PROG_DIR} ${DAGOR_PROG_DIR}/scripts/sq/daRg/*.nut
     ${DAGOR_PROG_DIR}/scripts/sq/std/*.nut ${DAGOR_PROG_DIR}/scripts/sq/daeditor/*.nut
-    ${DAGOR_PROG_DIR}/tools/dargbox/gamebase/*.nut)
+    ${DAGOR_PROG_DIR}/daNetGame/scripts/globals/*.nut ${DAGOR_PROG_DIR}/tools/dargbox/gamebase/*.nut)
   foreach(script IN LISTS scripts)
     cmake_path(GET script PARENT_PATH dir)
     dagor_add_exec_test(csq.analysis:${script} COMMAND $<TARGET_FILE:csq> --static-analysis ${DAGOR_PROG_DIR}/${script}
