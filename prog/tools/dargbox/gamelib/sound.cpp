@@ -32,6 +32,7 @@ using namespace eastl;
 #define ONE_DIV_512         (1.f / 512)
 
 #define PRINT_ERROR logerr
+#define PRINT_WARN  logwarn
 #define PRINT_NOTE  debug
 
 
@@ -458,13 +459,18 @@ static ma_device miniaudio_device;
 static volatile bool device_initialized = false;
 static ma_log ma_log_struct = {0};
 static ma_context context = {0};
+// a machine without a playback device (a server, CI, a remote session) runs with the sound off: what miniaudio reports
+// while the device opens is a warning
+static bool device_opening = false;
 
 
 static void on_error_log(void *user_data, ma_uint32 level, const char *message)
 {
   G_UNUSED(user_data);
-  if (level <= 1)
+  if (level <= 1 && !device_opening)
     PRINT_ERROR("%s", message);
+  else if (level <= 1)
+    PRINT_WARN("%s", message);
   else
     PRINT_NOTE("%s", message);
 }
@@ -490,6 +496,7 @@ void init_sound_lib_internal()
   ma_log_init(nullptr, &ma_log_struct);
   ma_log_register_callback(&ma_log_struct, {on_error_log, nullptr});
 
+  device_opening = true;
   ma_context_init(NULL, 0, NULL, &context);
   context.pLog = &ma_log_struct;
 
@@ -502,9 +509,11 @@ void init_sound_lib_internal()
   deviceConfig.dataCallback = miniaudio_data_callback;
   deviceConfig.pUserData = nullptr;
 
-  if (ma_device_init(&context, &deviceConfig, &miniaudio_device) != MA_SUCCESS)
+  const bool opened = ma_device_init(&context, &deviceConfig, &miniaudio_device) == MA_SUCCESS;
+  device_opening = false;
+  if (!opened)
   {
-    PRINT_ERROR("SOUND: Failed to open playback device");
+    PRINT_WARN("SOUND: no playback device, the sound is off");
     return;
   }
 
