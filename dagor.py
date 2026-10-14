@@ -5,7 +5,9 @@
 #       prog/platform.jam
 #   dagor.py build [project:<name>...] [code] [shaders] [assets] [vromfs] [gui] [arch:<arch>] [--dry-run]
 #       builds the engine tools and projects (dagorTools, dargbox, physTest: all when none is named), the components
-#       named (all when none is)
+#       named (all when none is), after check-hosts
+#   dagor.py check-hosts
+#       fails on Gaijin hosts, app IDs or release downloads in the engine (see check_hosts)
 # A project's build.py imports it for the build helpers: run, run_per_platform, the tools' paths and the components and
 # arch of the project's own command line.
 import sys
@@ -30,7 +32,7 @@ import glob
 import filecmp
 from urllib import request
 
-COMMANDS = ['devtools', 'build']
+COMMANDS = ['devtools', 'build', 'check-hosts']
 
 # the build's command line: that of the project's build.py, or that of dagor.py after the command
 ARGS = sys.argv[1:]
@@ -1228,6 +1230,41 @@ def devtools_macOS(dest_dir):
     run('sudo jam -sRoot=. -f prog/engine/kernel/jamfile mkdevtools');
 
 
+# --- check-hosts -----------------------------------------------------------------------------------------------------
+
+# The engine contacts and downloads nothing of Gaijin's: no Gaijin hosts or app IDs, no downloads from the releases of
+# Gaijin's GitHub repositories (upstream syncs bring them back). Comments, the docs and the vendored daScript and Quirrel
+# (projects with their own repositories) are not checked.
+GAIJIN_REFS_GIT_PATTERN = (r'(gaijin|gaijinent|gaijingames|warthunder|enlisted|crossout)\.(net|com|ru|team|lan|ops|io)'
+                           r'|com[./_]gaijin|github\.com/GaijinEntertainment/[^/ ]+/releases')
+GAIJIN_REFS_RE = re.compile(r'\b(?:gaijin|gaijinent|gaijingames|warthunder|enlisted|crossout)\.(?:net|com|ru|team|lan|ops|io)\b'
+                            r'|\bcom[./_]gaijin|github\.com/GaijinEntertainment/[^/ ]+/releases')
+GAIJIN_REFS_EXCLUDE = ['_docs', '*.md', 'prog/1stPartyLibs/daScript', 'prog/1stPartyLibs/quirrel']
+COMMENT_START_RE = re.compile(r'(?<!:)//|/\*|#|<!--|^\s*(?:\*|;|--|rem\s)', re.IGNORECASE)
+
+def check_hosts():
+  try:
+    grep = subprocess.run(['git', 'grep', '-n', '-I', '-E', GAIJIN_REFS_GIT_PATTERN, '--', '.'] +
+                          [':(exclude){0}'.format(p) for p in GAIJIN_REFS_EXCLUDE],
+                          cwd=DAGOR_ROOT_FOLDER, capture_output=True, encoding='utf-8', errors='replace')
+  except OSError:
+    print('--- check-hosts skipped: git not found')
+    return True
+  if grep.returncode > 1:
+    print('--- check-hosts skipped: {0}'.format(grep.stderr.strip()))
+    return True
+  found = []
+  for line in grep.stdout.splitlines():
+    path, num, text = line.split(':', 2)
+    m = GAIJIN_REFS_RE.search(text)
+    if m and not COMMENT_START_RE.search(text[:m.start()]):
+      found.append('{0}:{1}: {2}'.format(path, num, text.strip()))
+  if found:
+    print('\nERROR: Gaijin hosts, app IDs or release downloads (use the fork\'s own, see check_hosts in dagor.py):\n  ' +
+          '\n  '.join(found) + '\n')
+  return not found
+
+
 # --- build -----------------------------------------------------------------------------------------------------------
 
 # copies prog/tools/toolsData (the tools' data that is not built: editor commonData, Scintilla, dargbox's fonts and UI)
@@ -1260,6 +1297,9 @@ def build():
   # when no projects specified we build all of them
   if len(BUILD_PROJECTS) == 0:
     BUILD_PROJECTS = ['dagorTools', 'dargbox', 'physTest']
+
+  if not check_hosts():
+    exit(1)
 
   # the tools' data (no download)
   if 'dagorTools' in BUILD_PROJECTS or 'dargbox' in BUILD_PROJECTS:
@@ -1305,8 +1345,11 @@ if __name__ == '__main__':
     devtools(sys.argv[2])
   elif command == 'build':
     build()
+  elif command == 'check-hosts':
+    exit(0 if check_hosts() else 1)
   else:
     print('\nUsage: dagor.py devtools DEVTOOLS_DEST_DIR\n' +
           '       dagor.py build [project:<name>...] [code] [shaders] [assets] [vromfs] [gui] [arch:<arch>] [--dry-run]\n' +
+          '       dagor.py check-hosts\n' +
           'example: python3 dagor.py devtools {0}\n'.format('d:\\devtools' if DAGOR_HOST == 'windows' else '~/devtools'))
     exit(1)

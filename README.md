@@ -57,6 +57,7 @@ Run `python3 dagor.py build` in DagorEngine root.
 This builds the entire project toolkit from the source code. This process may take a considerable amount of time.
 After tools are built and ready to be used script builds game and UI resources using daBuild and other utilities.
 The data the tools need that is not built (editor icons, fonts, themes, dargbox UI) is copied from prog/tools/toolsData into tools/, so nothing has to be downloaded.
+Before building, it runs `dagor.py check-hosts`, which fails when Gaijin's hosts, app IDs or release downloads are found outside comments and docs (they come back with upstream syncs).
 
 `dagor.py build` and the projects' `build.py` scripts accept optional parameters to limit components to be built:
 `code`, `shaders`, `assets`, `vromfs`, `gui`.
