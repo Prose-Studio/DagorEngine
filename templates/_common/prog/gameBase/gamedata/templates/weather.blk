@@ -158,11 +158,13 @@ weather_clear{
   }
 }
 
-// a clear day without clouds: volumetric clouds accumulate over wall-clock time, so pictures with them differ a little
-// every run; screenshot tests use this one (prog/tests/scenarios)
+// a clear day without clouds, for the screenshot tests (prog/tests/scenarios): volumetric clouds take GPU readbacks (the
+// hole above the sun, the layers' altitudes) a frame or two late depending on the GPU, so pictures with them differ a
+// little every run. Epic clouds make the low layer whatever its coverage, so they are off too
 weather_clear_cloudless{
   _use:t="weather_clear"
   strata_clouds__amount:p2=0, 0
+  clouds_weather_gen__epicness:r=0
   "clouds_weather_gen__layers:array"{
     "clouds_weather_gen__layers:object"{
       coverage:p2=0, 0
