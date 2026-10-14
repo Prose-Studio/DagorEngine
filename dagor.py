@@ -27,6 +27,7 @@ import zipfile
 import tarfile
 import shutil
 import glob
+import filecmp
 from urllib import request
 
 COMMANDS = ['devtools', 'build']
@@ -1229,6 +1230,27 @@ def devtools_macOS(dest_dir):
 
 # --- build -----------------------------------------------------------------------------------------------------------
 
+# copies prog/tools/toolsData (the tools' data that is not built: editor commonData, Scintilla, dargbox's fonts and UI)
+# into tools/, the files that differ
+def copy_tools_data():
+  src_root = os.path.join(DAGOR_ROOT_FOLDER, 'prog', 'tools', 'toolsData')
+  dest_root = os.path.join(DAGOR_ROOT_FOLDER, 'tools')
+  if DRY_RUN:
+    print('DRY_RUN: copy {0} > {1}'.format(src_root, dest_root))
+    return
+  copied = 0
+  for src_dir, _, files in os.walk(src_root):
+    dest_dir = os.path.join(dest_root, os.path.relpath(src_dir, src_root))
+    for name in files:
+      if src_dir == src_root and name == 'README.md':
+        continue
+      src, dest = os.path.join(src_dir, name), os.path.join(dest_dir, name)
+      if not os.path.isfile(dest) or not filecmp.cmp(src, dest, shallow=False):
+        os.makedirs(dest_dir, exist_ok=True)
+        shutil.copyfile(src, dest)
+        copied += 1
+  print('--- tools data: {0} files copied into {1}'.format(copied, dest_root))
+
 def build():
   # gather build projects from commandline (to allow partial builds)
   BUILD_PROJECTS = []
@@ -1238,6 +1260,10 @@ def build():
   # when no projects specified we build all of them
   if len(BUILD_PROJECTS) == 0:
     BUILD_PROJECTS = ['dagorTools', 'dargbox', 'physTest']
+
+  # the tools' data (no download)
+  if 'dagorTools' in BUILD_PROJECTS or 'dargbox' in BUILD_PROJECTS:
+    copy_tools_data()
 
   # build command line to run other build scripts
   PY_ADD_CMDLINE = BUILD_COMPONENTS

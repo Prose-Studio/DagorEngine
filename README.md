@@ -50,31 +50,13 @@ After the script completes its work, the X:\develop\devtools folder will be conf
 
 Restart the command line console to make the new environment variables available.
 
-## How to Build: Prebuilt Binaries
-
-You will need to download and extract additional binary files (as of 2026/08/16) from the CDN into the X:\develop\DagorEngine folder:
-* [tools-base.7z](https://dagorenginedata.cdn.gaijin.net/head-2026.10.11/tools-base.7z) - contains initial data for tools
-
-More downloads in the repository [https://github.com/GaijinEntertainment/DagorEngine/releases](https://github.com/GaijinEntertainment/DagorEngine/releases) with prebuilt binaries (may be a bit outdate):
-
-* [tools-prebuilt-windows-x86_64.7z](https://dagorenginedata.cdn.gaijin.net/rel-0ebc89d5d795f3f96324843abf72c5ca7b8555cf/tools-prebuilt-windows-x86_64.7z),
-  [tools-prebuilt-windows-arm64.7z](https://dagorenginedata.cdn.gaijin.net/rel-0ebc89d5d795f3f96324843abf72c5ca7b8555cf/tools-prebuilt-windows-arm64.7z),
-  [tools-prebuilt-linux-x86_64.tar.gz](https://dagorenginedata.cdn.gaijin.net/rel-0ebc89d5d795f3f96324843abf72c5ca7b8555cf/tools-prebuilt-linux-x86_64.tar.gz),
-  [tools-prebuilt-macOS.tar.gz](https://dagorenginedata.cdn.gaijin.net/rel-0ebc89d5d795f3f96324843abf72c5ca7b8555cf/tools-prebuilt-macOS.tar.gz) - contains the prebuilt engine toolkit
-
-The directory structure should look like this:
-```
-X:\develop\DagorEngine\tools\...
-```
-
 ## How to Build: Build from Source Code
 
-First unpack [tools-base.7z](https://dagorenginedata.cdn.gaijin.net/head-2026.10.11/tools-base.7z) to DagorEngine root to get mandatory binary files in their place.
-
-Then run `python3 dagor.py build` in DagorEngine root.
+Run `python3 dagor.py build` in DagorEngine root.
 
 This builds the entire project toolkit from the source code. This process may take a considerable amount of time.
 After tools are built and ready to be used script builds game and UI resources using daBuild and other utilities.
+The data the tools need that is not built (editor icons, fonts, themes, dargbox UI) is copied from prog/tools/toolsData into tools/, so nothing has to be downloaded.
 
 `dagor.py build` and the projects' `build.py` scripts accept optional parameters to limit components to be built:
 `code`, `shaders`, `assets`, `vromfs`, `gui`.

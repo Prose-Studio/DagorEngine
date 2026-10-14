@@ -76,13 +76,14 @@ Requirements for building and using the Dagor Engine toolkit:
 8. Restart the command line console to make the new environment variables
    available.
 
-## How to Build: Prebuilt Binaries
+## How to Build: Build from Source Code
 
-Download and extract additional binary files from the repository
-<https://github.com/GaijinEntertainment/DagorEngine/releases> into the
-`X:\develop\DagorEngine` directory:
+Run `python3 dagor.py build` in `DagorEngine` to build the entire engine toolkit
+from the source code. This process may take a considerable amount of time.
 
-- `tools-prebuilt.7z`: contains the prebuilt engine toolkit.
+It also copies the data the tools need that is not built (editor icons, fonts,
+themes, dargbox UI) from `prog/tools/toolsData` into `tools`, so nothing has to
+be downloaded.
 
 The directory structure should look like this:
 
@@ -98,10 +99,5 @@ develop
 For more information, see
 [Directory Structure Overview](directory_structure.md).
 ```
-
-## How to Build: Build from Source Code
-
-Run `python3 dagor.py build` in `DagorEngine` to build the entire engine toolkit
-from the source code. This process may take a considerable amount of time.
 
 
