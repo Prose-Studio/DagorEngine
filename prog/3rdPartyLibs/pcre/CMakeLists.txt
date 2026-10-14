@@ -20,3 +20,17 @@ dagor_add_target(NAME 3rdPartyLibs.pcre STATIC LAX
   COMPILE_DEFINITIONS PRIVATE HAVE_CONFIG_H
   COMPILE_OPTIONS PRIVATE ${options} "$<$<COMPILE_LANGUAGE:C>:${c_options}>"
 )
+
+# PCRE's own tests of its C++ wrapper (pcrecpp, its scanner and StringPiece), on the engine's build of it
+if(DAGOR_ENGINE_TESTS)
+  foreach(test pcrecpp_unittest pcre_scanner_unittest pcre_stringpiece_unittest)
+    dagor_add_target(NAME pcre-${test} EXECUTABLE LAX
+      FILES_CMAKE unittest_files.cmake
+      INCLUDE_DIRECTORIES PRIVATE ${includes}
+      COMPILE_DEFINITIONS PRIVATE HAVE_CONFIG_H
+      COMPILE_OPTIONS PRIVATE ${options}
+      BUILD_DEPENDENCIES PRIVATE 3rdPartyLibs.pcre
+    )
+    dagor_add_exec_test(3rdPartyLibs.pcre.${test} COMMAND $<TARGET_FILE:pcre-${test}> TAGS 3rdPartyLibs)
+  endforeach()
+endif()
