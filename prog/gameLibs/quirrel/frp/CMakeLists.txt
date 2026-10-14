@@ -13,3 +13,9 @@ dagor_add_target(NAME gameLibs.quirrel.frp STATIC
   COMPILE_OPTIONS PRIVATE ${options}
   BUILD_DEPENDENCIES PRIVATE Dagor::Quirrel
 )
+
+# its tests: the scripts of tests/ run by csq, their output compared with the .expected files
+if(DAGOR_ENGINE_TESTS)
+  dagor_add_exec_test(gameLibs.quirrel.frp COMMAND ${Python3_EXECUTABLE} tests/run_tests.py --ci --csq $<TARGET_FILE:csq>
+    TAGS quirrel)
+endif()

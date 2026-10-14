@@ -230,6 +230,8 @@ if(DAGOR_VARIANT STREQUAL "editor")
   if(WIN32) # plodGen's entry is Windows' (its driver DX11)
     add_subdirectory(sceneTools/pointCloudGen/standalone)
   endif()
+elseif(DAGOR_ENGINE_TESTS)
+  add_subdirectory(consoleSq) # csq runs the Quirrel tests
 endif()
 # dargbox, the daRg sandbox
 if(DAGOR_VARIANT STREQUAL "dargbox")

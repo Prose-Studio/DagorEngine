@@ -5,7 +5,7 @@ endif()
 # Rel builds run on mimalloc (and keep their logs: DAGOR_FORCE_LOGS of the cdk tree)
 set(memory "$<IF:$<CONFIG:Rel>,engine.memory.mimalloc,engine.memory>")
 set(deps engine.osApiWrappers engine.kernel ${memory} engine.ioSys engine.startup engine.baseUtil engine.coreUtil
-  engine.math engine.consoleProc engine.perfMon.daProfilerStub engine.workCycle engine.lib3d engine.drv.drv3d_stub
+  engine.math engine.consoleProc engine.perfMon.daProfilerStub engine.workCycle engine.lib3d engine.drv.drv3d_pc_multi
   3rdPartyLibs.eastl 3rdPartyLibs.libb64 gameLibs.quirrel.bindQuirrelEx gameLibs.quirrel.quirrel_json
   gameLibs.quirrel.http gameLibs.quirrel.frp gameLibs.quirrel.sqJwt gameLibs.quirrel.base64
   gameLibs.quirrel.asyncRuntime gameLibs.asyncHTTPClient)
@@ -28,3 +28,28 @@ dagor_add_target(NAME csq EXECUTABLE
     PRIVATE Dagor::Quirrel ${deps}
   CDK
 )
+
+# the tests it runs (in the tests tree): its script API (tests/), the engine's script tests, and the static analysis of
+# the shared scripts and of dargbox's samples (against the native modules' stubs of their .sqconfig)
+if(DAGOR_ENGINE_TESTS)
+  file(GLOB tests CONFIGURE_DEPENDS tests/test_*.nut)
+  foreach(test IN LISTS tests)
+    cmake_path(GET test STEM name)
+    dagor_add_exec_test(csq.${name} COMMAND $<TARGET_FILE:csq> ${test} WORKING_DIRECTORY tests TAGS quirrel)
+  endforeach()
+  foreach(test scripts/tests/rand_test.nut scripts/tests/srt_test.nut scripts/tests/string_test.nut
+               scripts/sq/tests/test_memo.nut)
+    cmake_path(GET test PARENT_PATH dir)
+    cmake_path(GET test STEM name)
+    dagor_add_exec_test(scripts.${name} COMMAND $<TARGET_FILE:csq> ${DAGOR_PROG_DIR}/${test}
+      WORKING_DIRECTORY ${DAGOR_PROG_DIR}/${dir} TAGS quirrel)
+  endforeach()
+  file(GLOB_RECURSE scripts CONFIGURE_DEPENDS RELATIVE ${DAGOR_PROG_DIR} ${DAGOR_PROG_DIR}/scripts/sq/daRg/*.nut
+    ${DAGOR_PROG_DIR}/scripts/sq/std/*.nut ${DAGOR_PROG_DIR}/scripts/sq/daeditor/*.nut
+    ${DAGOR_PROG_DIR}/tools/dargbox/gamebase/*.nut)
+  foreach(script IN LISTS scripts)
+    cmake_path(GET script PARENT_PATH dir)
+    dagor_add_exec_test(csq.analysis:${script} COMMAND $<TARGET_FILE:csq> --static-analysis ${DAGOR_PROG_DIR}/${script}
+      WORKING_DIRECTORY ${DAGOR_PROG_DIR}/${dir} TAGS quirrel)
+  endforeach()
+endif()
