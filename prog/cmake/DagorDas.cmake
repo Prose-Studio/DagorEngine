@@ -55,13 +55,15 @@ size_t ${arg_PULL} = 0;
   endif()
   get_target_property(type ${target} TYPE)
   set(compiler "$<TARGET_PROPERTY:dagor.dasAotCompiler,DAGOR_EXECUTABLE>")
+  # <condition>|<file>: a file of some configurations only ($<cond:file>) is compiled with its batch, which includes it
+  # in those configurations
   set(files)
   foreach(file IN LISTS arg_UNPARSED_ARGUMENTS)
-    if(file MATCHES "^\\$<") # a file of some configurations only (a generator expression): it runs interpreted
-      continue()
+    _dagor_config_source("${file}" cond path)
+    if(NOT path)
+      cmake_path(ABSOLUTE_PATH file NORMALIZE OUTPUT_VARIABLE path)
     endif()
-    cmake_path(ABSOLUTE_PATH file NORMALIZE)
-    list(APPEND files "${file}")
+    list(APPEND files "${cond}|${path}")
   endforeach()
 
   set(batch_index 0)
@@ -82,14 +84,22 @@ size_t ${arg_PULL} = 0;
 
     set(args)
     set(outputs)
+    set(sources)
     set(text "#include <stddef.h>\n")
-    foreach(src IN LISTS batch)
+    foreach(entry IN LISTS batch)
+      string(REGEX MATCH "^[^|]*" cond "${entry}")
+      string(REGEX REPLACE "^[^|]*\\|" "" src "${entry}")
+      list(APPEND sources "${src}")
       cmake_path(RELATIVE_PATH src BASE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}" OUTPUT_VARIABLE rel)
       string(REGEX REPLACE "\\.das$" "_das_AOT.cpp" rel "${rel}")
       string(REPLACE "../" "__/" rel "${rel}")
       list(APPEND args -aot "${src}" "${gen}/$<CONFIG>/${rel}")
       list(APPEND outputs "${gen}/$<CONFIG>/${rel}")
-      string(APPEND text "#include \"${gen}/$<CONFIG>/${rel}\"\n")
+      set(include "#include \"${gen}/$<CONFIG>/${rel}\"\n")
+      if(cond)
+        set(include "$<${cond}:${include}>")
+      endif()
+      string(APPEND text "${include}")
     endforeach()
     string(MAKE_C_IDENTIFIER "das_batch_${target}_${batch_index}" anchor)
     string(APPEND text "size_t aot_${anchor}_pull = (size_t)&aot_${anchor}_pull;\n")
@@ -98,7 +108,7 @@ size_t ${arg_PULL} = 0;
       COMMAND "${compiler}" "${DAGOR_PROG_DIR}/1stPartyLibs/daScript/utils/aot/main.das"
         -- --config aot_config.blk -sConfig "$<LOWER_CASE:$<CONFIG>>"
         -force-overwrite -gen1 true -gen2-make true ${args}
-      DEPENDS ${batch} dagor.dasAotCompiler "${compiler}"
+      DEPENDS ${sources} dagor.dasAotCompiler "${compiler}"
       WORKING_DIRECTORY "$<TARGET_PROPERTY:dagor.dasAotCompiler,DAGOR_WORKING_DIRECTORY>"
       COMMENT "daScript AOT: ${anchor}"
       VERBATIM)
