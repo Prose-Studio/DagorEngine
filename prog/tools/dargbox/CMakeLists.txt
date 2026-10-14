@@ -112,7 +112,7 @@ if(NOT (ANDROID OR IOS))
       set(requires REQUIRES gpu display)
     endif()
     dagor_add_exec_test(dargbox:${sample} COMMAND $<TARGET_FILE:dargbox> -quiet -config:script:t=${sample} ${args}
-      -config:debug/profiler:t=off -config:debug/useAddonVromSrc:b=yes
+      -config:debug/profiler:t=off -config:debug/useAddonVromSrc:b=yes -logerr_to_stderr -fatals_to_stderr
       WORKING_DIRECTORY ${DAGOR_ENGINE_ROOT}/tools/dargbox ${requires} TAGS dargbox)
   endforeach()
 endif()
