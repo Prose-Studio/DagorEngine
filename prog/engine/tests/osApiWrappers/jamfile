@@ -1,0 +1,31 @@
+Root            ?= ../../../.. ;
+Location        = prog/engine/tests/osApiWrappers ;
+ConsoleExe      = yes ;
+TargetType      = exe ;
+Target          = osApiWrappers-tests ;
+AddIncludes     =
+  $(Root)/prog/3rdPartyLibs/catch2/src
+;
+OutDir          = $(Root)/_output/dagorUnitTests ;
+
+include $(Root)/prog/_jBuild/defaults.jam ;
+
+Sources =
+  main.cpp
+  test_namedMounts.cpp
+;
+
+UseProgLibs +=
+  engine/memory
+  engine/kernel
+  engine/osApiWrappers
+  engine/baseUtil
+  engine/ioSys
+  engine/math
+  engine/perfMon/daProfilerStub
+
+  3rdPartyLibs/eastl
+  3rdPartyLibs/catch2
+;
+
+include $(Root)/prog/_jBuild/build.jam ;
