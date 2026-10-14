@@ -26,6 +26,9 @@
 #include "sqobject.h"
 #include "sqstate.h"
 
+#if __has_include(<version>)
+#include <version> // the library's feature macros: <new> has them only with some standard libraries
+#endif
 #if defined(__cpp_lib_to_chars) && __cpp_lib_to_chars >= 201611L
 #include <charconv>
 #include <float.h>
