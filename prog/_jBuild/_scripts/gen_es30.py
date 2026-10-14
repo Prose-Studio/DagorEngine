@@ -19,6 +19,21 @@ def strip_start_all(text, prefix):
     return strip_start_all(text[len(prefix):], prefix)
 
 
+engine_root = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', '..'))
+
+# a source's name in the generated code: its path without the leading ../ (prog/...). The dir they lead to is the engine
+# root when the build runs inside the engine; from a game project outside it the rest starts with the way from there to
+# the engine root (DagorEngine/prog/...), which is dropped too, so both builds generate the same code
+def source_name(path):
+    path = path.replace('\\', '/')
+    rest = strip_start_all(path, "../")
+    try:
+        to_engine = os.path.relpath(engine_root, os.path.abspath(path[:len(path) - len(rest)] or '.')).replace('\\', '/')
+    except ValueError: # on another drive
+        return rest
+    return rest[len(to_engine) + 1:] if to_engine != '.' and rest.startswith(to_engine + '/') else rest
+
+
 dot_suffix = "__"
 #dot_suffix = "."
 event_handler_suffix = "_event_handler"
@@ -1004,7 +1019,7 @@ def gen_es(allParsedFunctions, event_suffix, input_file_name):
 
     resultCode += gen_es_simd(allESFunctions[i])
     resultCode += gen_es_event_handler(allESFunctions[i])
-    resultCode += gen_es_desc(allESFunctions[i], strip_start_all(input_file_name, "../"), stagesCode, ro_rw_desc['rw_params_str'], ro_rw_desc['ro_params_str'], ro_rw_desc['rq_params_str'], ro_rw_desc['no_params_str'])
+    resultCode += gen_es_desc(allESFunctions[i], source_name(input_file_name), stagesCode, ro_rw_desc['rw_params_str'], ro_rw_desc['ro_params_str'], ro_rw_desc['rq_params_str'], ro_rw_desc['no_params_str'])
 
   for i in range(0, len(allQueryFunctions)):
     ro_rw_desc = {}

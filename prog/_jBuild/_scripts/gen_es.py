@@ -5,7 +5,7 @@ import difflib
 import platform
 
 from clang_ecs_parser import parse_ecs_functions
-from gen_es30 import gen_es, remove_const_from_type, dot_suffix
+from gen_es30 import gen_es, remove_const_from_type, dot_suffix, source_name
 
 version = "1.0"
 es_suffix = "_es"
@@ -102,11 +102,9 @@ for some_get, some_get_type in all_gets:
   some_get_name = some_get.replace("_dot_", dot_suffix)
   if some_get_name != some_get:
     print("Using _dot_ is deprecated, check {name} in {file} Line {line}".format(name = some_get, file = some_get_type['file'], line = some_get_type['line']))
-  file = some_get_type['file']
+  file = source_name(some_get_type['file'])
   line = some_get_type['line'] if veboselineinfo else 0
   fun = some_get_type['fun']
-  while file.startswith("../"):
-    file = file[len("../"):]
   get_component_type_fun = '''static constexpr ecs::component_t {some_get}_get_type()'''.format(**locals())
   gets_code += get_component_type_fun + ";\n"
   gets_type_code += get_component_type_fun + '''{{return ecs::ComponentTypeInfo<{get_type}>::type; }}\n'''.format(**locals())
