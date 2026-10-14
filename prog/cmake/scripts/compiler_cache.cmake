@@ -1,10 +1,14 @@
-# CI: prepare the pinned compiler cache, or report its statistics with -DSTATS=ON.
+# CI: prepare the pinned compiler cache, or report its statistics with -DSTATS=ON. Without it (it could not be
+# downloaded) the trees build without it too: nothing to do.
 cmake_minimum_required(VERSION 4.0)
 include("${CMAKE_CURRENT_LIST_DIR}/../DagorFetch.cmake")
 if(NOT DAGOR_DEPS_DIR)
   set(DAGOR_DEPS_DIR "$ENV{DAGOR_DEPS_DIR}")
 endif()
-dagor_fetch_sdk(sccache cache)
+dagor_fetch_sdk(sccache cache TRY)
+if(NOT cache)
+  return()
+endif()
 set(program "${cache}/sccache")
 if(CMAKE_HOST_WIN32)
   string(APPEND program ".exe")

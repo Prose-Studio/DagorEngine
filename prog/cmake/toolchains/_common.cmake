@@ -56,7 +56,7 @@ if((NOT CMAKE_CXX_COMPILER_LAUNCHER AND NOT DEFINED ENV{CMAKE_CXX_COMPILER_LAUNC
     set(_dagor_launcher "${DAGOR_COMPILER_LAUNCHER}")
   endif()
   if(_dagor_launcher STREQUAL "sccache")
-    dagor_fetch_sdk(sccache _dagor_launcher OPTIONAL) # none for a host without a build of it
+    dagor_fetch_sdk(sccache _dagor_launcher OPTIONAL TRY) # none for a host without a build of it, or offline
     if(_dagor_launcher)
       string(APPEND _dagor_launcher "/sccache")
       if(CMAKE_HOST_WIN32)
