@@ -287,7 +287,8 @@ BsdiffStatus create_vromfs_bsdiff(dag::ConstSpan<char> old_dump, dag::ConstSpan<
 #ifdef BSDIFFWRAP_DIFF_EXECUTABLE
     debug("Format: ZSTD BLK 1.0");
 
-    for (unsigned i = 0; i < fs_new->files.map.size(); i++)
+    // the files' report needs both dumps read as vromfs: anything else (plain data, a packed dump) is diffed whole
+    for (unsigned i = 0; fs_old && fs_new && i < fs_new->files.map.size(); i++)
     {
       const char *name = fs_new->files.map[i];
       const int oldId = fs_old->files.getNameId(name);
@@ -296,7 +297,7 @@ BsdiffStatus create_vromfs_bsdiff(dag::ConstSpan<char> old_dump, dag::ConstSpan<
         if (fs_old->data[oldId].size() != fs_new->data[i].size() ||
             ::memcmp(fs_old->data[oldId].data(), fs_new->data[i].data(), fs_new->data[i].size()) != 0)
         {
-          debug("(diff): %s: size=%d->%d", name, fs_old->data[i].size(), fs_new->data[i].size());
+          debug("(diff): %s: size=%d->%d", name, fs_old->data[oldId].size(), fs_new->data[i].size());
         }
       }
       else
@@ -313,7 +314,7 @@ static BsdiffStatus create_bsdiff_deprecated(const char *oldData, int oldSize, c
   const char *comprName)
 {
   const Compression &compr = Compression::getInstanceByName(comprName);
-  if (strcmp(compr.getName(), comprName) != 0)
+  if (!compr.isValid() || strcmp(compr.getName(), comprName) != 0) // the invalid one is named "" and compresses nothing
     return BSDIFF_INVALID_COMPRESSION;
   const char *header = BSDIFF_HEADER;
   const int headerLen = (int)strlen(header);

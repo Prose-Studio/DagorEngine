@@ -40,3 +40,14 @@ foreach(tool kind IN ZIP_LISTS tools kinds)
     CDK
   )
 endforeach()
+
+# the tests of the bsdiff tools (tests/bsdiff_tools.py, writing into their DAGOR_TEST_OUT): patches of binary data and
+# of vromfs packs (built by vromfsPacker) apply to the new file byte for byte, in the deprecated compressions and in
+# zstd; broken patches and unknown or invalid compressions are rejected
+if(DAGOR_CDK_TESTS)
+  foreach(scenario plain vromfs zstd)
+    dagor_add_exec_test(bsdiffutil.${scenario} COMMAND ${Python3_EXECUTABLE} -B
+      ${CMAKE_CURRENT_SOURCE_DIR}/tests/bsdiff_tools.py ${scenario} $<TARGET_FILE:bsdiffutil> $<TARGET_FILE:bsapplyutil>
+      $<TARGET_FILE:vromfsPacker> WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} TAGS cdk TIMEOUT 60)
+  endforeach()
+endif()

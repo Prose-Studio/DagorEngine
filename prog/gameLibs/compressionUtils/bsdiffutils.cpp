@@ -104,9 +104,8 @@ int DagorWinMain(bool)
     const Compression::CompressionEntry *comprTypes = Compression::getCompressionTypes();
     int comprCount = Compression::getCompressionTypesCount();
     for (int i = 0; i < comprCount; i++)
-    {
-      fprintf(stderr, "  %s\n", comprTypes[i].name);
-    }
+      if (comprTypes[i].inst->isValid()) // not the invalid placeholder, named ""
+        fprintf(stderr, "  %s\n", comprTypes[i].name);
     return 1;
   }
 
