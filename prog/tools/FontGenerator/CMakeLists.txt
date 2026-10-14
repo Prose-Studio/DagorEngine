@@ -13,3 +13,13 @@ dagor_add_target(NAME fontgen2 EXECUTABLE LAX
   BUILD_DEPENDENCIES PRIVATE ${deps}
   CDK
 )
+
+# its tests (tests/fontgen2_tests.py): dargbox's fully dynamic fonts built again as committed, a baked atlas read back
+# as the engine loads it, broken rules
+if(DAGOR_CDK_TESTS)
+  foreach(scenario dynamic baked errors)
+    dagor_add_exec_test(fontgen2.${scenario} COMMAND ${Python3_EXECUTABLE} -B
+      ${CMAKE_CURRENT_SOURCE_DIR}/tests/fontgen2_tests.py ${scenario} $<TARGET_FILE:fontgen2>
+      WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} TAGS cdk TIMEOUT 60)
+  endforeach()
+endif()

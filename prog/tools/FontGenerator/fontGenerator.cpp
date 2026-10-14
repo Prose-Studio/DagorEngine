@@ -2006,13 +2006,26 @@ static void stdout_report_fatal_error(const char *title, const char *msg, const 
   fflush(stdout);
 }
 
-static void build_config_for_fully_dynamic_fonts(const char *dest_fn, dag::Span<FontInfo> fontPack, const char *copyto_dir,
+static bool build_config_for_fully_dynamic_fonts(const char *dest_fn, dag::Span<FontInfo> fontPack, const char *copyto_dir,
   bool make_Ranges_txt, bool verbose = false)
 {
   DataBlock dynFontBlk;
 
   for (auto &f : fontPack)
   {
+    // the game loads these files at runtime: a missing one that is not optional fails here, as it does in a baked atlas
+    if (!f.optional && f.file && !dd_file_exist(f.file))
+    {
+      printf("[FATAL ERROR] font file \"%s\" of '%s' not found\n", f.file, f.name.str());
+      return false;
+    }
+    for (auto &af : f.additional)
+      if (!af.optional && af.file && !dd_file_exist(af.file))
+      {
+        printf("[FATAL ERROR] font file \"%s\" of '%s' not found\n", af.file, f.name.str());
+        return false;
+      }
+
     if (f.fallBackFonts.size())
     {
       FreeTypeFont generalFont;
@@ -2020,7 +2033,7 @@ static void build_config_for_fully_dynamic_fonts(const char *dest_fn, dag::Span<
       if (!loadFreeTypeFont(f, 10, generalFont))
       {
         logerr("failed to open font: %s", f.file);
-        return;
+        return false;
       }
       if (count_bits(f.include))
       {
@@ -2042,7 +2055,7 @@ static void build_config_for_fully_dynamic_fonts(const char *dest_fn, dag::Span<
         if (!loadFreeTypeFont(af, 10, generalFont))
         {
           logerr("failed to open font: %s", af.file);
-          return;
+          return false;
         }
         for (int i = 1, inc = 1; i < missingSym.FULL_SZ; i += inc)
           if (af.include.getIter(i, inc))
@@ -2336,8 +2349,13 @@ static void build_config_for_fully_dynamic_fonts(const char *dest_fn, dag::Span<
     }
 
   dd_mkpath(dest_fn);
-  dynFontBlk.saveToTextFile(dest_fn);
+  if (!dynFontBlk.saveToTextFile(dest_fn))
+  {
+    printf("[FATAL ERROR] cannot write %s\n", dest_fn);
+    return false;
+  }
   printf("\nFully dynamic: %d font(s) -> %s\n", fontPack.size(), dest_fn);
+  return true;
 }
 
 int DagorWinMain(bool debugmode)
@@ -2483,11 +2501,11 @@ int DagorWinMain(bool debugmode)
 
   if (fullDynamic)
   {
-    build_config_for_fully_dynamic_fonts(
+    bool ok = build_config_for_fully_dynamic_fonts(
       String(0, "%s/%s.dynFont.blk", blk.getStr("copyto", prefix), masterAtlas ? masterAtlas : "all"), make_span(fontPack),
       blk.getStr("copyto", prefix), blk.getBool("makeRangesTxt", false), verbose);
     fontPack.clear();
-    return 0;
+    return ok ? 0 : 1;
   }
 
   printf("\nTarget platform: %c%c%c%c\n", _DUMP4C(target));
