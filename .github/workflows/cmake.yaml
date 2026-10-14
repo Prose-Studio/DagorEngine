@@ -64,6 +64,13 @@ jobs:
           path: build/*/test-artifacts
           if-no-files-found: ignore
 
+      # a crashed program on macOS leaves its stack only in a crash report
+      - name: Crash reports
+        if: failure() && matrix.host == 'macos'
+        run: |
+          shopt -s nullglob
+          for report in ~/Library/Logs/DiagnosticReports/*.ips; do echo "== $report"; head -c 40000 "$report"; echo; done
+
   mobile:
     name: ${{ matrix.preset }}
     strategy:
