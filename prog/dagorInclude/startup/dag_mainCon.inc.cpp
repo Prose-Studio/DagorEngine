@@ -41,7 +41,12 @@ int pull_rtl_mem_override_to_dll = pull_rtlOverride_stubRtl;
 extern void default_crt_init_kernel_lib();
 extern void default_crt_init_core_lib();
 
-extern void messagebox_report_fatal_error(const char *title, const char *msg, const char *call_stk);
+// a console program reports to its console: a message box would hold unattended runs (builds, tests) until closed
+static void console_report_fatal_error(const char *title, const char *msg, const char *call_stk)
+{
+  fprintf(stderr, "%s: %s\n%s\n", title, msg, call_stk ? call_stk : "");
+  fflush(stderr);
+}
 static int dagor_program_exec(int argc, char **argv, int debugmode);
 
 #if !_TARGET_PC_WIN
@@ -72,7 +77,7 @@ int __cdecl main(int argc, char **argv)
 #endif
 
   dgs_init_argv(argc, argv);
-  dgs_report_fatal_error = messagebox_report_fatal_error;
+  dgs_report_fatal_error = console_report_fatal_error;
   ::dgs_execute_quiet = ::dgs_get_argv("quiet");
 
   static DagorSettingsBlkHolder stgBlkHolder;
