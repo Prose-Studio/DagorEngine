@@ -249,12 +249,20 @@ else() # gcc, clang and lcc
   elseif(APPLE)
     dagor_compile_options("$<COMPILE_LANGUAGE:OBJC,OBJCXX>" -fno-objc-exceptions)
     dagor_compile_options("$<COMPILE_LANGUAGE:OBJCXX>" -Wno-c99-designator -Wno-deprecated-enum-enum-conversion)
-    # Apple clang: the Apple builds have always been warning-free
-    set(CMAKE_COMPILE_WARNING_AS_ERROR ON)
-    dagor_compile_options("${_c_cxx}" -Wno-unused-value -Wno-uninitialized -Wno-inline-new-delete
-      -Wno-unknown-warning-option -Wno-deprecated-register -Wno-nonportable-include-path -Wno-null-dereference
-      -Wno-undefined-var-template -Wno-constant-conversion -Wno-inconsistent-missing-override -Wno-deprecated-builtins
-      -Wno-unused-command-line-argument -Wno-nontrivial-memcall)
+    if(IOS)
+      # warnings are not errors on iOS, whose code still logs through the deprecated asl(3)
+      dagor_compile_options("${_c_cxx}" -Wno-dangling-else -Wno-dynamic-class-memaccess -Wno-switch
+        -Wno-constant-logical-operand -Wno-string-plus-int -Wno-unknown-warning-option -Wno-deprecated-register
+        -Wno-deprecated-declarations -Wno-inconsistent-missing-override -Wno-null-dereference -Wno-constant-conversion
+        -Wno-unused-value -Wno-deprecated-builtins -Wno-unused-command-line-argument -Wno-nontrivial-memcall)
+    else()
+      # the macOS builds have always been warning-free
+      set(CMAKE_COMPILE_WARNING_AS_ERROR ON)
+      dagor_compile_options("${_c_cxx}" -Wno-unused-value -Wno-uninitialized -Wno-inline-new-delete
+        -Wno-unknown-warning-option -Wno-deprecated-register -Wno-nonportable-include-path -Wno-null-dereference
+        -Wno-undefined-var-template -Wno-constant-conversion -Wno-inconsistent-missing-override
+        -Wno-deprecated-builtins -Wno-unused-command-line-argument -Wno-nontrivial-memcall)
+    endif()
   else() # clang on Linux and Android
     dagor_compile_options("${_c_cxx}" -Wno-unused-value -Wabsolute-value -Wno-inline-new-delete
       -Wno-unknown-warning-option -Wno-deprecated-register -Wno-address-of-packed-member -Wno-expansion-to-defined
