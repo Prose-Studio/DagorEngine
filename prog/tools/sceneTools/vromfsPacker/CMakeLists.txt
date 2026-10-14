@@ -19,3 +19,12 @@ dagor_add_target(NAME vromfsPacker EXECUTABLE LAX
   PROPERTIES DAGOR_EXCEPTIONS ON
   CDK
 )
+
+# the test (tests/, writing into its DAGOR_TEST_OUT): a directory packed by a build BLK as the games' are, twice the
+# same, listed and unpacked to the files the BLK selects and processes for each target (its BLKs read back by binBlk),
+# long paths packed, a path past the engine's limit failing the pack
+if(DAGOR_CDK_TESTS)
+  dagor_add_exec_test(vromfsPacker.pack COMMAND ${Python3_EXECUTABLE} -B ${CMAKE_CURRENT_SOURCE_DIR}/tests/vromfs_pack.py
+    $<TARGET_FILE:vromfsPacker> $<TARGET_FILE:binBlk> WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} TAGS cdk
+    TIMEOUT 60)
+endif()
