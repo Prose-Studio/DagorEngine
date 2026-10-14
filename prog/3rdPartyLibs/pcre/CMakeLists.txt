@@ -22,7 +22,7 @@ dagor_add_target(NAME 3rdPartyLibs.pcre STATIC LAX
 )
 
 # PCRE's own tests of its C++ wrapper (pcrecpp, its scanner and StringPiece), on the engine's build of it (with the
-# engine's runtime, which the forced dag_memBase.h needs; they format with sprintf, which the macOS SDK deprecates)
+# minimal memory the forced dag_memBase.h needs; they format with sprintf, which the macOS SDK deprecates)
 if(DAGOR_ENGINE_TESTS)
   set(test_options ${options})
   if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
@@ -34,9 +34,7 @@ if(DAGOR_ENGINE_TESTS)
       INCLUDE_DIRECTORIES PRIVATE ${includes}
       COMPILE_DEFINITIONS PRIVATE HAVE_CONFIG_H
       COMPILE_OPTIONS PRIVATE ${test_options}
-      BUILD_DEPENDENCIES PRIVATE
-        3rdPartyLibs.pcre engine.memory engine.kernel engine.osApiWrappers engine.baseUtil engine.perfMon.daProfilerStub
-        3rdPartyLibs.eastl
+      BUILD_DEPENDENCIES PRIVATE 3rdPartyLibs.pcre engine.memory.minrtl
     )
     dagor_add_exec_test(3rdPartyLibs.pcre.${test} COMMAND $<TARGET_FILE:pcre-${test}> TAGS 3rdPartyLibs)
   endforeach()

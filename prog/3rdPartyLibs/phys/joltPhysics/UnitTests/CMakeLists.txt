@@ -1,6 +1,8 @@
 # Jolt's own unit tests (doctest), on the engine's build of Jolt: its settings (Dagor::JoltSettings: cross-platform
-# deterministic, the engine's alignment), floating point math (that of Jolt itself) and memory manager, so what they
-# check is the Jolt the games run
+# deterministic, the engine's alignment) and floating point math (that of Jolt itself), so what they check is the Jolt
+# the games run. Its runner is Jolt's own program, with the minimal memory the forced dag_memBase.h needs and no engine
+# runtime, whose kernel would put it in the engine's floating point environment (denormals flushed), which its suite
+# does not run in
 set(options)
 dagor_deterministic_fp(options KEEP_NANS)
 dagor_add_target(NAME joltPhysics-UnitTests EXECUTABLE LAX
@@ -8,7 +10,6 @@ dagor_add_target(NAME joltPhysics-UnitTests EXECUTABLE LAX
   INCLUDE_DIRECTORIES PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/.. ${CMAKE_CURRENT_SOURCE_DIR}
   COMPILE_OPTIONS PRIVATE ${options}
   BUILD_DEPENDENCIES PRIVATE
-    3rdPartyLibs.phys.joltPhysics Dagor::JoltSettings
-    engine.memory engine.kernel engine.osApiWrappers engine.baseUtil engine.perfMon.daProfilerStub 3rdPartyLibs.eastl
+    3rdPartyLibs.phys.joltPhysics Dagor::JoltSettings engine.memory.minrtl
 )
 dagor_add_exec_test(3rdPartyLibs.joltPhysics.UnitTests COMMAND $<TARGET_FILE:joltPhysics-UnitTests> TAGS 3rdPartyLibs)
