@@ -1429,7 +1429,7 @@ static void print_usage(bool verbose)
          "    combine {\n"
          "      dest:t=\"./combined/final.csv\";\n"
          "      //defLocLang:t=\"English\";\n"
-         "      _en { addKeys:b=yes  find { path:t=\"./split\"; wildcard:t=\"_en_src.csv\" } } // name of block is langpack name\n"
+         "      _en { addKeys:b=yes; find { path:t=\"./split\"; wildcard:t=\"_en_src.csv\" } } // name of block is langpack name\n"
          "      _ru { find { path:t=\"./split\"; wildcard:t=\"_ru_src.csv\" } }\n"
          "      _zh { find { path:t=\"./split\"; wildcard:t=\"_zh_src.csv\" } defLocLang:t=Russian }\n"
          "    }\n"
@@ -1455,17 +1455,17 @@ static int err_to_stderr(int lev_tag, const char *fmt, const void *arg, int anum
 
 int DagorWinMain(bool debugmode)
 {
+  if (dgs_argc > 1 && (strcmp(dgs_argv[1], "-quiet") == 0 || strcmp(dgs_argv[1], "-q") == 0))
+  {
+    ::dgs_execute_quiet = true;
+    memmove(&dgs_argv[1], &dgs_argv[2], (dgs_argc - 1) * sizeof(*dgs_argv)); // with the NULL that ends dgs_argv
+    dgs_argc--;
+  }
   if (dgs_argc < 2)
   {
     print_title();
     print_usage(false);
     return -1;
-  }
-  if (strcmp(dgs_argv[1], "-quiet") == 0 || strcmp(dgs_argv[1], "-q") == 0)
-  {
-    ::dgs_execute_quiet = true;
-    memmove(&dgs_argv[1], &dgs_argv[2], (dgs_argc - 2) * sizeof(*dgs_argv));
-    dgs_argc--;
   }
   if (!::dgs_execute_quiet)
     print_title();
@@ -1477,7 +1477,7 @@ int DagorWinMain(bool debugmode)
   signal(SIGINT, ctrl_break_handler);
   debug_set_log_callback(&err_to_stderr);
 
-  if (strnicmp(dgs_argv[2], "-word_breaks:", 13) == 0)
+  if (dgs_argc > 2 && strnicmp(dgs_argv[2], "-word_breaks:", 13) == 0) // with no task names there is no dgs_argv[2]
   {
     if (stricmp(dgs_argv[2] + 13, "zh") != 0 && stricmp(dgs_argv[2] + 13, "jp") != 0)
     {
@@ -1553,7 +1553,7 @@ int DagorWinMain(bool debugmode)
   for (int i = 0; i < keypacks.size(); i ++)
     keypacks[i].dumpKeys();
   */
-  if (stricmp(dgs_argv[2], "-task") == 0)
+  if (dgs_argc > 2 && stricmp(dgs_argv[2], "-task") == 0)
   {
     const char *tname = "__cmdLineTask";
     DataBlock cmdBlk;
@@ -1570,7 +1570,7 @@ int DagorWinMain(bool debugmode)
     inp.addNewBlock("task")->setFrom(&cmdBlk);
     return processTasks(inp, dag::ConstSpan<char *>((char *const *)&tname, 1)) ? 0 : -1;
   }
-  if (stricmp(dgs_argv[2], "-check_fmt") == 0)
+  if (dgs_argc > 2 && stricmp(dgs_argv[2], "-check_fmt") == 0)
   {
     should_detect_format_errors = true;
     if (!processTasks(inp, dag::ConstSpan<char *>(dgs_argv + 3, dgs_argc - 3)))
