@@ -787,6 +787,11 @@
       "inherits": "dagor"
     },
     {
+      "name": "windows-cdk",
+      "configurePreset": "windows-cdk",
+      "inherits": "dagor"
+    },
+    {
       "name": "windows-dargbox",
       "configurePreset": "windows-dargbox",
       "inherits": "dagor"
@@ -807,6 +812,11 @@
       "inherits": "dagor"
     },
     {
+      "name": "linux-cdk",
+      "configurePreset": "linux-cdk",
+      "inherits": "dagor"
+    },
+    {
       "name": "linux-dargbox",
       "configurePreset": "linux-dargbox",
       "inherits": "dagor"
@@ -824,6 +834,11 @@
     {
       "name": "macos-tests",
       "configurePreset": "macos-tests",
+      "inherits": "dagor"
+    },
+    {
+      "name": "macos-cdk",
+      "configurePreset": "macos-cdk",
       "inherits": "dagor"
     },
     {
@@ -989,6 +1004,10 @@
         {
           "type": "build",
           "name": "windows-cdk-install"
+        },
+        {
+          "type": "test",
+          "name": "windows-cdk"
         }
       ]
     },
@@ -1135,6 +1154,10 @@
         {
           "type": "build",
           "name": "linux-cdk-install"
+        },
+        {
+          "type": "test",
+          "name": "linux-cdk"
         }
       ]
     },
@@ -1268,6 +1291,10 @@
         {
           "type": "build",
           "name": "macos-cdk-install"
+        },
+        {
+          "type": "test",
+          "name": "macos-cdk"
         }
       ]
     },

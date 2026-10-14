@@ -1,9 +1,9 @@
 name: cmake
 
 # The engine's trees, each one a workflow preset of prog/CMakePresets.json (cmake --workflow --preset <name>):
-# configure, build and, for the tests trees, the tests (those a runner cannot run, without a GPU or a display, report
-# themselves skipped). The Visual Studio and Xcode generators also configure the tests tree and build one test program; dargbox is also cross-built
-# for Android (its APK) and iOS (its app bundle).
+# configure, build and, for the trees with tests (tests, cdk, dargbox), the tests (those a runner cannot run, without a
+# GPU or a display, report themselves skipped). The Visual Studio and Xcode generators also configure the tests tree and
+# build one test program; dargbox is also cross-built for Android (its APK) and iOS (its app bundle).
 
 on:
   push:

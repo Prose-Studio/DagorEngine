@@ -29,13 +29,13 @@
 # replace their reference images.
 #
 # Tests are registered with DAGOR_BUILD_TESTS; the engine's own only in the engine's trees (not in a project's, which
-# have the project's tests): its unit tests in the tests variant, dargbox's (its samples) in the dargbox variant. None
-# run programs of a cross-compiled tree without an emulator. The target tests builds the programs they run; in the tests
-# variant and in a game's trees they are part of the default build.
+# have the project's tests): its unit tests in the tests variant, the CDK's tools' in the cdk variant, dargbox's (its
+# samples) in the dargbox variant. None run programs of a cross-compiled tree without an emulator. The target tests
+# builds the programs they run; in the tests variant and in a game's trees they are part of the default build.
 include_guard(GLOBAL)
 
 set(_dagor_tests_default OFF)
-if(DAGOR_VARIANT MATCHES "^(tests|dargbox)$" OR (DAGOR_VARIANT STREQUAL "game" AND NOT DAGOR_DAS_AOT_COMPILER))
+if(DAGOR_VARIANT MATCHES "^(tests|cdk|dargbox)$" OR (DAGOR_VARIANT STREQUAL "game" AND NOT DAGOR_DAS_AOT_COMPILER))
   set(_dagor_tests_default ON)
 endif()
 option(DAGOR_BUILD_TESTS "Register the tests" ${_dagor_tests_default})
@@ -44,6 +44,12 @@ unset(_dagor_tests_default)
 set(DAGOR_ENGINE_TESTS OFF)
 if(DAGOR_BUILD_TESTS AND CMAKE_SOURCE_DIR STREQUAL DAGOR_PROG_DIR AND DAGOR_VARIANT STREQUAL "tests")
   set(DAGOR_ENGINE_TESTS ON)
+endif()
+# the tests of the CDK's tools: in its cdk variant (the other tool trees build some of them too), where it runs them
+set(DAGOR_CDK_TESTS OFF)
+if(DAGOR_BUILD_TESTS AND CMAKE_SOURCE_DIR STREQUAL DAGOR_PROG_DIR AND DAGOR_VARIANT STREQUAL "cdk"
+   AND (NOT CMAKE_CROSSCOMPILING OR CMAKE_CROSSCOMPILING_EMULATOR))
+  set(DAGOR_CDK_TESTS ON)
 endif()
 
 set(DAGOR_TEST_REQUIREMENTS gpu display network http_server)
@@ -75,11 +81,11 @@ function(_dagor_test_enabled out)
   set(${out}_RUNS ${runs} PARENT_SCOPE)
 endfunction()
 
-# a program the tests run: built by the target tests, and by default in the trees of the tests variant and of games (once
-# the tree is complete: the das interpreter's dir comes after the dirs of the tests it runs)
+# a program the tests run: built by the target tests, and by default in the trees of the tests and cdk variants and of
+# games (once the tree is complete: the das interpreter's dir comes after the dirs of the tests it runs)
 function(_dagor_test_program target)
   add_dependencies(tests ${target})
-  if(DAGOR_VARIANT MATCHES "^(tests|game)$")
+  if(DAGOR_VARIANT MATCHES "^(tests|cdk|game)$")
     # (a deferred call evaluates its arguments when it runs: the target's name goes in now)
     cmake_language(EVAL CODE
       "cmake_language(DEFER DIRECTORY [[${CMAKE_SOURCE_DIR}]] CALL dagor_build_by_default [[${target}]])")
@@ -208,8 +214,11 @@ function(dagor_add_exec_test name)
   if(NOT arg_COMMAND)
     message(FATAL_ERROR "dagor_add_exec_test(${name}) needs a COMMAND")
   endif()
-  # the programs of the tree it runs ($<TARGET_FILE:...>) are built with the tests
+  # the programs of the tree it runs ($<TARGET_FILE:...>) are built with the tests; a tree that cannot run them has none
   string(REGEX MATCHALL "\\$<TARGET_FILE:[^>]+>" programs "${arg_COMMAND};${arg_ARGS}")
+  if(programs AND NOT ok_RUNS)
+    return()
+  endif()
   foreach(program IN LISTS programs)
     string(REGEX REPLACE "^\\$<TARGET_FILE:([^>]+)>$" "\\1" program "${program}")
     _dagor_test_program(${program})
