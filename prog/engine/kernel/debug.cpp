@@ -604,7 +604,8 @@ void start_classic_debug_system(const char *debug_fname, bool en_time, bool hhmm
     }
     debug_enabled_bits = 1 << LOGLEVEL_DEBUG;
 
-    strncpy(dbgCrashDumpPath, debug_fname, sizeof(dbgCrashDumpPath) - 1);
+    // (a log to stdout has no file name to put the dumps next to: they go to the current dir)
+    strncpy(dbgCrashDumpPath, *debug_fname == '*' ? "crashDump" : debug_fname, sizeof(dbgCrashDumpPath) - 1);
   }
 
   if (dbgFilepath[0])
