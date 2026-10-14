@@ -409,7 +409,7 @@ bool ddstexture::Converter::convertImage(IGenSave &cb, TexPixel32 *pix, int w, i
         pf.dwFlags = DDPF_RGB | DDPF_ALPHAPIXELS;
         pf.dwRGBBitCount = 16;
         pf.dwRGBAlphaBitMask = 0xFF00;
-        pf.dwBBitMask = 0x00FF;
+        pf.dwRBitMask = 0x00FF;
         break;
       default: break;
     }

@@ -33,7 +33,6 @@ public:
     srcName = argv[1];
     String loc;
     ::split_path(srcName, loc, dstName);
-    srcName.toLower();
     if (dstName.find('@') && dstName.suffix(".dds"))
     {
       dstName = "";
@@ -219,7 +218,7 @@ public:
 
     printf("Convert to file [%s]\n", (char *)dstName);
 
-    if (srcName.suffix(".dds") || srcName.suffix(".dtx"))
+    if (trail_stricmp(srcName, ".dds") || trail_stricmp(srcName, ".dtx"))
     {
       FILE *src = ::fopen(srcName, "rb");
       if (!src)
@@ -272,7 +271,7 @@ public:
   //=========================================================================================
   bool sourceWithAlpha()
   {
-    if (!srcName.suffix(".tga"))
+    if (!trail_stricmp(srcName, ".tga"))
       return false;
 
     FullFileLoadCB crd(srcName);

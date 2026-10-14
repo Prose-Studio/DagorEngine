@@ -11,3 +11,15 @@ dagor_add_target(NAME ddsConverter EXECUTABLE LAX
   BUILD_DEPENDENCIES PRIVATE ${deps}
   CDK
 )
+# its ASTC formats are encoded by ARM's astcenc, which it runs from its own dir
+find_package(Astcenc REQUIRED)
+dagor_target_runtime_files(ddsConverter ${Astcenc_PROGRAMS})
+
+# its tests (tests/ddsConverter_tests.py): images converted in each format, their pixels read back and compared
+if(DAGOR_CDK_TESTS)
+  foreach(scenario argb dxt astc formats errors)
+    dagor_add_exec_test(ddsConverter.${scenario} COMMAND ${Python3_EXECUTABLE} -B
+      ${CMAKE_CURRENT_SOURCE_DIR}/tests/ddsConverter_tests.py ${scenario} $<TARGET_FILE:ddsConverter>
+      WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} TAGS cdk TIMEOUT 60)
+  endforeach()
+endif()
