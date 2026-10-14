@@ -22,6 +22,9 @@ if(DAGOR_DAS_AOT_COMPILER)
   return()
 endif()
 
+# the UI fonts' license (gameBase/ui), in the game's LICENSE-starter_game
+dagor_target_licenses(starter_game ${CMAKE_CURRENT_SOURCE_DIR}/gameBase/ui/OFL-1.1.txt)
+
 if(APPLE)
   # the app bundle in ../game, where it finds the game's data (<bundle>/Contents/MacOS/../../..)
   dagor_apple_bundle(starter_game NAME StarterGame ID com.example.StarterGame ICON platform/macOS/starter_game.icns)

@@ -41,8 +41,8 @@ prog/
   danetgamelibs.txt engine libs the game uses (prog/daNetGameLibs), gamelibs.txt likewise for prog/gameLibs
   prog.vromfs.blk   what goes into game/starter_game.vromfs.bin
   main/             the game's C++ (das modules it adds)
-  gameBase/         settings, scenes, entity templates
-  scripts/          das scripts: starter_game/starter_game.das loads everything else
+  gameBase/         settings, scenes, entity templates; ui/ the UI fonts
+  scripts/          das scripts: starter_game/starter_game.das loads everything else; ui/ the overlay UI (daRg)
   shaders/          shader setup; source/ holds the game's hooks into the renderer
   tools/            what daEditor runs of the game
   tests/            cpp, das, ecs and scenario tests
@@ -50,6 +50,15 @@ prog/
 
 Files starting with `_` (`_engine.cmd`, `prog/_libs*`, ...) are written by the CMake configure from the engine path and
 the lib lists; they are not committed.
+
+## Editor and UI
+
+Outside Rel builds the game carries daNetGame's embedded editor: F12 opens and closes it (the scene's entities in an
+outliner, select and move them, edit their components, create them from templates); Space in it toggles its camera.
+F10 toggles the game's free camera. The editor is the engine's daRg UI (`prog/scripts/sq/daeditor`) in the game's
+overlay UI, `prog/scripts/ui/ui.nut` (`ui/overlay_ui_script` of settings.blk), where the game's own UI goes too. Its
+fonts are in `prog/gameBase/ui`: `fontgen.blk` names the `.ttf` files there (SIL Open Font License 1.1,
+`OFL-1.1.txt`), and the content build makes `fonts.dynFont.blk` from it.
 
 ## Scripts
 
@@ -80,6 +89,7 @@ ctest --preset windows-client -R starter_game.ecs -V
 | `prog/tests/das` | das | dastest tests of pure das logic, no game needed |
 | `prog/tests/ecs` | ecs | `[ecs_test]` functions in the game (the dedicated server, or the single-player game headless): entities, systems, frames |
 | `prog/tests/scenarios` | scenario | `[ecs_test]` functions in the client: input, rendering, screenshots |
+| `prog/tests/editor` | scenario | the embedded editor opens and closes in the client (it has the machine's mouse) |
 
 `prog/tests/CMakeLists.txt` says which tree runs which. Results and screenshots go to
 `build/<preset>/test-artifacts/`. See `<engine>/_docs/source/testing`.

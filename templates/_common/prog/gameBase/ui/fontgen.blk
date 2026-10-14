@@ -1,0 +1,28 @@
+// The UI fonts: the content build (fontgen2 fontgen.blk -fullDynamic) writes fonts.dynFont.blk from it, which fonts.blk
+// names; the glyphs are rasterized at runtime from the .ttf files next to it (SIL Open Font License 1.1, OFL-1.1.txt).
+// The first font is daRg's default.
+prefix:t="."
+atlas:t="fonts"
+
+font{
+  name:t=lato-regular
+  file:t=lato-regular.ttf
+  size_percents:r=2.083
+  fallback_fonts{ // the scripts Lato has no glyphs for (Cyrillic, Greek, ...)
+    font{ file:t="NotoSans-Regular.ttf"; optional:b=yes; }
+  }
+}
+
+font{ // the icons of the embedded editor's toolbars
+  name:t=fontawesome
+  file:t="fontawesome-webfont.ttf"
+  size_percents:r=3
+  forceAutoHinting:b=no
+  optional:b=yes
+
+  include_ex{
+    includeCp:b=no
+    size_percents:r=3
+    forceAutoHinting:b=no
+  }
+}

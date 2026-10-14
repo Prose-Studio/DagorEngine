@@ -20,6 +20,7 @@ folder {
   scan_subfolders:b=true
   wildcard:t="*.json"
   wildcard:t="*.blk"
+  wildcard:t="*.ttf" // the UI fonts (ui/)
   wildcard:t="*.nut"
   wildcard:t="*.das"
   wildcard:t="*.patch"

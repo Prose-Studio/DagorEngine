@@ -7,6 +7,8 @@
 /prog/shaders/_libs_shaders.blk
 /prog/tools/_libs_init.das
 /stubs/
+# written by the content build from prog/gameBase/ui/fontgen.blk
+/prog/gameBase/ui/fonts.dynFont.blk
 
 # build outputs (cmake --build --preset ...)
 /tools/

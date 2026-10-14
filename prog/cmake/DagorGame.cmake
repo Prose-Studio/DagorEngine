@@ -571,6 +571,8 @@ endfunction()
 #                                   shaders_tools_exp.blk those of the tools (daEditor, daViewer, impostorBaker, dabuild)
 #                                   into ../tools, the intermediate files into the build dir
 #   prog.vromfs.blk                 the game's scripts and data into <GAME_DIR>/<codename>.vromfs.bin
+#   gameBase/ui/fontgen.blk         the UI fonts: fontgen2 writes fonts.dynFont.blk next to it (fully dynamic fonts
+#                                   of the .ttf files there), which the vromfs packs
 #   tools/*.das                     with the shaders and vromfs, the snapshot daEditor renders levels with (../tools)
 #   ../application.blk              the assets of ../develop/assets exported by daBuild into <GAME_DIR>/content
 function(dagor_add_dng_content)
@@ -607,7 +609,13 @@ function(dagor_add_dng_content)
     dagor_add_content_step(shaders-${name} TOOL ${tool} ARGS ${blk} ${step} -o ${CMAKE_BINARY_DIR}/shaders/${name}
       WORKING_DIRECTORY shaders GROUP shaders COMMENT "Shaders ${name} (${tool})")
   endforeach()
-  dagor_add_content_step(vromfs TOOL vromfsPacker ARGS prog.vromfs.blk -platform:PC -quiet -addpath:.
+  set(vromfs_depends)
+  if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/gameBase/ui/fontgen.blk)
+    dagor_add_content_step(fonts TOOL fontgen2 WORKING_DIRECTORY gameBase/ui COMMENT "The game's UI fonts"
+      ARGS fontgen.blk -fullDynamic -dbgfile:${CMAKE_BINARY_DIR}/content/fonts.log)
+    set(vromfs_depends DEPENDS fonts)
+  endif()
+  dagor_add_content_step(vromfs TOOL vromfsPacker ARGS prog.vromfs.blk -platform:PC -quiet -addpath:. ${vromfs_depends}
     COMMENT "The game's vromfs")
   dagor_add_content_step(tools DEPENDS shaders vromfs COMMENT "The daEditor snapshot"
     COMMAND ${Python3_EXECUTABLE} -c "import glob, sys; sys.path.insert(0, sys.argv[1]); \
