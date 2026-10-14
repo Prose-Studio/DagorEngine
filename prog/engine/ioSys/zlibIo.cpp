@@ -56,7 +56,8 @@ unsigned ZlibLoadCB::fetchInput(void *handle, void *strm)
   if (sz <= 0)
     return 0;
   sz = zcrd.loadCb->tryRead(zcrd.buffer, sz);
-  G_ASSERT(!zcrd.fatalErrors || sz > 0);
+  if (sz <= 0) // the source ended before the packed size (truncated data): inflate reports the broken stream
+    return 0;
   z_stream *zs = reinterpret_cast<z_stream *>(strm);
   zs->next_in = zcrd.buffer;
   zs->avail_in = sz;

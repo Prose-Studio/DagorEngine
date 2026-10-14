@@ -91,6 +91,10 @@ inline int LzmaLoadCB::tryReadImpl(void *ptr, int _size)
 
     if (!inBufLeft && rdBufPos >= rdBufAvail)
       break;
+    // with input left a valid stream consumes some or yields output; doing neither means the source ended before the
+    // packed size (truncated data) or the stream ended before the size asked for: a short read instead of a loop forever
+    if (!inProcessed && !outProcessed)
+      break;
   }
 
   return out_p - (Byte *)ptr;
