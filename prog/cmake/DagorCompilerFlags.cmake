@@ -288,6 +288,20 @@ if(CMAKE_SYSTEM_NAME MATCHES "^(Linux|Android)$")
   endforeach()
   unset(_lang)
   unset(_rule)
+elseif(APPLE)
+  # ld64 runs the static initializers in the order of its inputs on the command line (Mach-O has no initialization
+  # priorities across object files): the libraries come before a program's own objects, as jam linked them, so the
+  # engine's are set up (the memory manager's first) before the program's globals, which take their allocators. The
+  # Xcode generator links in an order of its own
+  foreach(_lang C CXX OBJC OBJCXX)
+    foreach(_rule LINK_EXECUTABLE CREATE_SHARED_LIBRARY CREATE_SHARED_MODULE)
+      string(REPLACE " <LINK_LIBRARIES>" "" _cmd "${CMAKE_${_lang}_${_rule}}")
+      string(REPLACE "<OBJECTS>" "<LINK_LIBRARIES> <OBJECTS>" CMAKE_${_lang}_${_rule} "${_cmd}")
+    endforeach()
+  endforeach()
+  unset(_lang)
+  unset(_rule)
+  unset(_cmd)
 endif()
 if(MSVC AND DAGOR_VARIANT STREQUAL "maxplug")
   # the DLL CRT and never the static one (3ds Max loads the plugins)
