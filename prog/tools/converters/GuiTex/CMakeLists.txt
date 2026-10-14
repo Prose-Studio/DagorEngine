@@ -12,3 +12,13 @@ dagor_add_target(NAME guiTex EXECUTABLE LAX
   BUILD_DEPENDENCIES PRIVATE ${deps}
   CDK
 )
+
+# its tests (tests/guiTex_tests.py): an atlas of icons, as DDS, DDSx (with the PC plugin) and bundle, read back and
+# compared with the icons, and unpacked again
+if(DAGOR_CDK_TESTS)
+  foreach(scenario atlas ddsx unpack)
+    dagor_add_exec_test(guiTex.${scenario} COMMAND ${Python3_EXECUTABLE} -B
+      ${CMAKE_CURRENT_SOURCE_DIR}/tests/guiTex_tests.py ${scenario} $<TARGET_FILE:guiTex> $<TARGET_FILE:pcDdsxConv>
+      WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} TAGS cdk TIMEOUT 60)
+  endforeach()
+endif()

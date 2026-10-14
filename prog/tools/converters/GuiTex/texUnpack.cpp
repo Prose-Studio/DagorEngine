@@ -8,6 +8,11 @@
 #include <generic/dag_tab.h>
 #include <generic/dag_tabUtils.h>
 #include <image/dag_tga.h>
+#include <ioSys/dag_fileIo.h>
+#include <libTools/dtx/dtxSampler.h>
+#include <libTools/util/strUtil.h>
+#include <osApiWrappers/dag_direct.h>
+#include <osApiWrappers/dag_files.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -15,7 +20,29 @@
 static void error(const char *er)
 {
   printf("%s\n", er);
-  exit(0);
+  exit(13);
+}
+
+// the atlas image: the DDS guiTex writes (any of its formats), or a TGA
+static TexImage32 *load_atlas(const char *fn)
+{
+  if (!trail_stricmp(fn, ".dds"))
+    return load_tga32((char *)fn, tmpmem);
+
+  FullFileLoadCB crd(fn);
+  if (!crd.fileHandle)
+    return NULL;
+  Tab<unsigned char> dds;
+  dds.resize(df_length(crd.fileHandle));
+  crd.read(dds.data(), dds.size());
+  DTXTextureSampler sampler;
+  if (!sampler.construct(dds.data(), dds.size()))
+    return NULL;
+  TexImage32 *img = TexImage32::create(sampler.width(), sampler.height(), tmpmem);
+  for (int y = 0; y < img->h; y++)
+    for (int x = 0; x < img->w; x++)
+      img->getPixels()[y * img->w + x].u = sampler.e3dcolorValueAt(x, y).u;
+  return img;
 }
 
 struct Coords
@@ -131,6 +158,7 @@ int unpackTex(const char *coordblk, const char *dest_dir, bool no_stripes)
   {
     destDir = destDir + "/";
   }
+  dd_mkpath(destDir);
 
   // enum all textures
   for (int i = 0; i < blk.blockCount(); i++)
@@ -139,7 +167,7 @@ int unpackTex(const char *coordblk, const char *dest_dir, bool no_stripes)
     if (stricmp(texBlock.getBlockName(), "tex") != 0)
       continue;
 
-    TexImage32 *img = load_tga32((char *)texBlock.getStr("name", NULL), tmpmem);
+    TexImage32 *img = load_atlas(texBlock.getStr("name", ""));
     if (!img)
     {
       error(String(512, "cannot open source image file '%s'", texBlock.getStr("name", NULL)));

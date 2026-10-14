@@ -1004,11 +1004,11 @@ int makeAtlas(dag::ConstSpan<String> texNames, Tab<String> &outNames, short widt
       path.printf(260, "%s/%s", (__cmd_outblk && !__mkbundle) ? __cmd_outblk : outdir.str(), coordblk);
 
     dd_mkpath(path);
-    dd_strlwr(path);
 
     if (!__mkbundle)
     {
-      d.saveToTextFile(path);
+      if (!d.saveToTextFile(path))
+        error("failed to write coordinates file");
 
       path = outdir + "/" + saveTextureName;
       dd_mkpath(path);
