@@ -195,7 +195,6 @@ private:
     double reqZ[2][2] = {}, boxZ[2][2] = {};
     dag::Vector<EdgePage> edges;
     int edgeNext = 0, head = 0, requiredPending = 0;
-    double frontAfter = 0;
     bool headBlocked = false, pretraceBlockedNow = false;
   };
   struct PlannedJob

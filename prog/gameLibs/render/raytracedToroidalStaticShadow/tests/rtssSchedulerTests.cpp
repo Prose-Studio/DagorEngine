@@ -1032,8 +1032,12 @@ TEST_CASE("T19 a clamped tolerance at W = 32 keeps a normal animated sun out of 
 TEST_CASE("T18 random moves, teleports, sun steps, invalidations and resets keep the invariants")
 {
   int allMisses = 0;
-  for (int run = 0; run < 24; ++run)
+  // and runs of further seeds that found bugs: 141 and 375 released a page a cube needed when the window moved, in 45, 46
+  // and 70 the sweep of a moving camera built a past-edge page only once its head moved on
+  static const int extraRuns[] = {45, 46, 70, 141, 375};
+  for (int i = 0; i < 24 + (int)eastl::size(extraRuns); ++i)
   {
+    const int run = i < 24 ? i : extraRuns[i - 24];
     RtssSchedulerSettings s;
     static const int windows[] = {4, 8, 16, 32};
     s.windowPages = windows[run % 4];

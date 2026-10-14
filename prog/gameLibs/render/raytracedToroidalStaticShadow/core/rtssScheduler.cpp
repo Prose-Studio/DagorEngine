@@ -367,7 +367,7 @@ void RtssScheduler::updateWindow(int level)
   {
     Slot &s = l.slots[i];
     const IPoint2 d = s.page - windowPage(l, i);
-    if (s.state != EMPTY && eastl::max(abs(d.x), abs(d.y)) > W)
+    if (s.state != EMPTY && eastl::max(abs(d.x), abs(d.y)) > W && !inUse(l, s))
     {
       s.state = EMPTY;
       slotTab[level * W * W + i] = {};
@@ -381,7 +381,6 @@ void RtssScheduler::updateWindow(int level)
   l.edgeNext = 0;
   l.head = 0;
   l.headBlocked = false;
-  l.frontAfter = l.front;
   l.sweepList.clear();
   if (!l.sweeping())
     return;
@@ -566,7 +565,6 @@ bool RtssScheduler::takeSweepHead(int level, double &budget, uint8_t cls)
     l.headBlocked = true;
     return false;
   }
-  l.frontAfter = e.key;
   ++l.head;
   const int next = sweepHead(l);
   if (next >= 0 && l.slots[l.sweepList[next].slot].jobFrame == frame)
@@ -621,7 +619,7 @@ void RtssScheduler::planRequired()
   size_t i = 0;
   for (; i < required.size() && required[i].level == last; ++i)
     require(required[i]);
-  requireEdges(last, lvl[last].front);
+  requireEdges(last, headKey(lvl[last]));
   updateLeft = eastl::min(updateLeft, burstLeft);
   burstLeft -= updateLeft;
   while (lvl[last].sweeping() && lvl[last].fast && takeSweepHead(last, burstLeft, RTSS_REQUIRED)) {}
@@ -629,7 +627,7 @@ void RtssScheduler::planRequired()
   {
     for (; i < required.size() && required[i].level == k && !required[i].inner; ++i)
       require(required[i]);
-    requireEdges(k, lvl[k].front);
+    requireEdges(k, headKey(lvl[k]));
   }
   for (int k = 0; k < last; ++k)
     while (lvl[k].sweeping() && lvl[k].fast && takeSweepHead(k, updateLeft, RTSS_REQUIRED)) {}
@@ -836,7 +834,7 @@ RtssFramePlan &RtssScheduler::plan(const DPoint3 &camera_pos, const Point3 &came
   planQueue();
   updateBalance += updateLeft;
   for (int k = 0; k < set.levels; ++k)
-    lvl[k].requiredPending = lvl[k].sweeping() ? edgesNeeded(k, lvl[k].frontAfter) : 0;
+    lvl[k].requiredPending = lvl[k].sweeping() ? edgesNeeded(k, headKey(lvl[k])) : 0;
   for (const QueueItem &q : required) // the queue phase can build a REQUIRED page
     lvl[q.level].requiredPending += lvl[q.level].slots[q.slot].jobFrame != frame;
   idle = planned.empty() && queue.empty();

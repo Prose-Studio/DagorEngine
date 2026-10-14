@@ -1304,8 +1304,12 @@ z range of that image widens the depth range of the target jobs (6.4).
   sweep job are not built: with a diagonal
   u such a page comes inside the window after a window move, and then a
   receiver whose old page it is finds the wrong bit while its new page is
-  not swept yet. Keys above the front are enough, because the shift never
-  makes a key smaller. The pages past the +u.y edge are a row with keys
+  not swept yet. Each frame builds those above the key of the next sweep
+  job, not only those above the front: when the camera moves during a
+  sweep, the target cube reaches past the edge that the sweep goes
+  toward, and such a page has a key below the front (its row is swept)
+  but above the next sweep job's; its receivers' old-transform pages are
+  swept already. The pages past the +u.y edge are a row with keys
   above every key of the window, so the first sweep job of a level
   builds them all first, in as many frames as their calls need: the
   sweep job waits until each edge page above its key is built. A page
@@ -1453,8 +1457,8 @@ in the same row grows the x term. So the new-transform page of a
 receiver is never swept later than its old-transform page, whatever the
 direction of u.
 In the window, the slots that the sweep built from its ordered list are
-the slots with the largest keys (8.4), and the pages past the +u edge
-with a key above the front have the target bit (8.2). So when
+the slots with the largest keys (8.4), and the pages past the edge with
+a key above the head of the sweep have the target bit (8.2). So when
 the old-transform page of a receiver has the target bit, the
 new-transform page has it too. The bit check in the lookup (9.3) makes
 sure that no lookup reads data with the wrong transform. The
@@ -1505,9 +1509,11 @@ them becomes a fast sweep (8.8).
   REQUIRED.
 - A move of W pages or more rebuilds the level whole (REQUIRED).
 - A move empties each slot whose page lies more than W pages from its
-  window page: an edge page lies W pages out at most, and an older page
-  could alias a window page in the 16-bit page key while its jobs are
-  skipped.
+  window page and that no cube uses: such an older page could alias a
+  window page in the 16-bit page key while its jobs are skipped. A page
+  that a cube uses keeps its slot (8.2) further out too: after a teleport
+  during a sweep the target cube can lie more than a window from the
+  window, and a cube's page is never far enough to alias.
 - **Along the sun axis: no scroll.** A texel keeps light space z
   normalized over the depth range of its slot (5.2), which only a
   whole-slot job sets, and a job traces a range with a margin of at
