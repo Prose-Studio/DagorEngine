@@ -26,3 +26,7 @@ prog/tools/toolsData/** -text
 # daScript tool tests that compare their fixtures' text with the tools' output: LF on every checkout
 prog/1stPartyLibs/daScript/utils/gen1-to-gen2/** text eol=lf
 prog/1stPartyLibs/daScript/utils/requirefix/** text eol=lf
+
+# Quirrel's test suite, whose expected diagnostics were made from CRLF checkouts (a token's width counts the CR): CRLF
+# on every checkout
+prog/1stPartyLibs/quirrel/quirrel/testData/** text eol=crlf
