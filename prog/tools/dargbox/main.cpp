@@ -17,6 +17,7 @@
 #include <gameRes/dag_gameResSystem.h>
 #include <gameRes/dag_stdGameRes.h>
 #include <3d/dag_picMgr.h>
+#include <drv/3d/dag_info.h>
 #include <drv/3d/dag_resetDevice.h>
 #include <3d/dag_texPackMgr2.h>
 #include <fx/dag_commonFx.h>
@@ -405,8 +406,11 @@ static void dagor_main(int nCmdShow)
   ::dagor_init_video("DagorWClass", nCmdShow, NULL, "Loading...", "dargbox");
 
 #if _TARGET_PC
-  ::dagor_init_keyboard_win();
-  ::dagor_init_mouse_win();
+  if (!d3d::is_stub_driver()) // headless (the stub driver) there is no window to take them from (Linux: no display)
+  {
+    ::dagor_init_keyboard_win();
+    ::dagor_init_mouse_win();
+  }
 #elif _TARGET_IOS | _TARGET_TVOS | _TARGET_ANDROID | _TARGET_C3
   ::dagor_init_keyboard_win();
   ::dagor_init_mouse_win();
