@@ -44,6 +44,12 @@ The configurations are Dev (optimized, with logs and asserts), Rel, IRel (Rel
 without any logs) and Dbg (unoptimized), all in one Ninja Multi-Config tree.
 Workflow presets chain configure, build and test (or package).
 
+`DAGOR_COMPILER_LAUNCHER=sccache` in the environment (or the cache) of a new
+tree compiles through sccache, the pinned one fetched into `DAGOR_DEPS_DIR`; it
+keeps the objects of every tree and project in one cache (`SCCACHE_DIR`), so a
+rebuild, another worktree or another project compiles only what changed. CI
+builds that way. A path there names another launcher (ccache).
+
 Variants are separate trees for what one tree cannot hold: the kernel linkage
 (static in cdk and tests, daKernel in assets and editor) and the 3D driver
 interface, whose `_TARGET_D3D_MULTI` applies to all the code of a tree. The
@@ -168,9 +174,11 @@ configuration.
 The game's options are cache variables of its trees (the project presets set
 them): `DAGOR_GAME_SOUND` (FMOD), `DAGOR_GAME_EMBEDDED_BROWSER` (CEF in the
 Windows client, its `cefprocess` and runtime next to the game),
-`DAGOR_GAME_ASSET_MANAGER` (daBuild in the Windows client: it builds the assets
-the game loads, with `assets_import` in `gamelibs.txt`; its templates derive
-from the game's `rendinst` and `animchar`), and the crash reports:
+`DAGOR_GAME_ASSET_MANAGER` (on in Windows clients: daBuild built into them,
+outside Rel, builds the assets the game loads from the project's sources and
+rebuilds and reloads those that change, with `assets_import` in `gamelibs.txt`
+and a `base_asset_manager` entity; its templates derive from the game's
+`rendinst` and `animchar`), and the crash reports:
 `DAGOR_BREAKPAD` (on in Windows and Linux clients, for Rel builds),
 `DAGOR_BREAKPAD_SUBMISSION` (every configuration, with the bpreport sender,
 on FLTK, next to the game) and `DAGOR_CRASHPAD` (Windows, instead of
