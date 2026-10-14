@@ -25,11 +25,12 @@ static inline const char *resolve_named_mount_in_path(const char *fpath, const c
   mnt_path = "";
   return fpath;
 }
-static inline void resolve_named_mount_s(char *dest_buf, size_t dest_sz, const char *fpath)
+// returns false when the resolved path did not fit (and was cut)
+static inline bool resolve_named_mount_s(char *dest_buf, size_t dest_sz, const char *fpath)
 {
   const char *mnt_path = "";
   fpath = resolve_named_mount_in_path(fpath, mnt_path);
-  snprintf(dest_buf, dest_sz, "%s%s", mnt_path, fpath);
+  return (size_t)snprintf(dest_buf, dest_sz, "%s%s", mnt_path, fpath) < dest_sz;
 }
 
 static inline bool is_path_abs(const char *fn);

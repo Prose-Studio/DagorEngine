@@ -59,7 +59,7 @@ extern "C"
   {
     int grp, fattr;
     void *data;
-    char fmask[DAGOR_MAX_PATH - sizeof(int) * 4 - sizeof(void *) - sizeof(int64_t) * 3];
+    char fmask[DAGOR_MAX_PATH]; //< the search mask: room for a whole path (a cut one would search elsewhere)
     char name[DAGOR_MAX_PATH]; //< filename
     // times are set to -1 if underlying implementation or fs is not supports them
     int64_t atime; //< time of most recent access (disabled by default on Windows since Vista)

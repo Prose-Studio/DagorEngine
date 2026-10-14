@@ -5,6 +5,7 @@
 #include <osApiWrappers/dag_direct.h>
 #include <osApiWrappers/dag_critSec.h>
 #include <osApiWrappers/basePath.h>
+#include <debug/dag_log.h>
 #include "fs_hlp.h"
 #include <dirent.h>
 #include <sys/stat.h>
@@ -176,6 +177,11 @@ static bool bp_find_first(bool dir, alefind_t *fs, const char *basepath)
   // printf("find first basepath=%s\n", basepath);
   if (fs == NULL)
     return false;
+  if (strlen(basepath) + strlen(fs->fmask) >= sizeof(msk)) // a cut mask would search elsewhere silently
+  {
+    logerr("path too long to search: %s%s", basepath, fs->fmask);
+    return false;
+  }
 
   strncpy(msk, basepath, sizeof(msk));
   msk[sizeof(msk) - 1] = '\0';
@@ -275,7 +281,11 @@ extern "C" int dd_find_first(const char *mask, char attr, alefind_t *fs)
   fs->fattr = attr;
   fs->data = NULL;
 
-  resolve_named_mount_s(fs->fmask, sizeof(fs->fmask), mask);
+  if (!resolve_named_mount_s(fs->fmask, sizeof(fs->fmask), mask))
+  {
+    logerr("path too long to search: %s", mask); // a cut mask would find nothing (or other files) silently
+    return 0;
+  }
   mask = fs->fmask;
 
   if (is_path_abs(mask))

@@ -103,6 +103,12 @@ static int bp_find_first(const char *mask, char attr, alefind_t *fs, const char 
     return 0;
   }
   msk[MASK_SZ - 2] = 0;
+  if (wcslen(msk) + wcslen(mask_w) > MASK_SZ - 2) // more than wcsncat() keeps: a cut mask would search elsewhere silently
+  {
+    logerr("path too long to search: %s%s", basepath, mask);
+    RealFind::close(rf);
+    return 0;
+  }
   wcsncat(msk, mask_w, MASK_SZ - 1 - wcslen(msk) - 1); //-V645
   intptr_t h = _wfindfirst(msk, &rf->fd);
   if (h < 0)
@@ -181,7 +187,11 @@ extern "C" int dd_find_first(const char *mask, char attr, alefind_t *fs)
   fs->grp = -1;
   fs->fattr = attr;
 
-  resolve_named_mount_s(fs->fmask, sizeof(fs->fmask), mask);
+  if (!resolve_named_mount_s(fs->fmask, sizeof(fs->fmask), mask))
+  {
+    logerr("path too long to search: %s", mask); // a cut mask would find nothing (or other files) silently
+    return 0;
+  }
   mask = fs->fmask;
 
   if (is_path_abs(mask))
