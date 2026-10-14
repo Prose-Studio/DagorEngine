@@ -772,8 +772,8 @@ public:
 
     StdGuiRender::update_internals_per_act();
 
-    // Quit Game
-    if (requestExit || requested_exit_code_by_script >= 0)
+    // Quit Game (debug/limit_updates: in the act after that many renders, not in the render, holding the GPU lock)
+    if (requestExit || requested_exit_code_by_script >= 0 || (limit_updates > 0 && cur_update >= limit_updates))
       quit_game(dargbox_get_exit_code());
     // !!! Alt+F4 or closing with X button will still exit with 0 code
   }
@@ -781,8 +781,6 @@ public:
   void drawScene() override
   {
     cur_update++;
-    if (limit_updates > 0 && cur_update == limit_updates)
-      quit_game(dargbox_get_exit_code());
 
     if (do_render)
     {
