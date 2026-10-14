@@ -607,7 +607,8 @@ function(dagor_add_dng_content)
     string(REPLACE "|" ";" step "${step}")
     list(POP_FRONT step name tool blk)
     dagor_add_content_step(shaders-${name} TOOL ${tool} ARGS ${blk} ${step} -o ${CMAKE_BINARY_DIR}/shaders/${name}
-      WORKING_DIRECTORY shaders GROUP shaders COMMENT "Shaders ${name} (${tool})")
+      -logdir ${CMAKE_BINARY_DIR}/shaders/${name}/log WORKING_DIRECTORY shaders GROUP shaders
+      COMMENT "Shaders ${name} (${tool})")
   endforeach()
   set(vromfs_depends)
   if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/gameBase/ui/fontgen.blk)

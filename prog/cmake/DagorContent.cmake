@@ -5,9 +5,9 @@
 #                   [INSTALL <dir> COMPONENT <component>])
 # A target that compiles the shaders of <shaders.blk> with a shader compiler (dsc2-dx12, ...: dagor_host_tool) into the
 # dumps <dir>/<base>.<profile>.shdump.bin, when the compiler or a shader source changes (the .dshl/.hlsl files of the
-# blk's dir and of its incDir dirs). It runs in the blk's dir (the base of its relative paths); the intermediate files go to
-# the build dir. INSTALL also installs the dumps into <dir> of the install prefix (when the tree made them). Not in the
-# default build: the tree that ships the shaders adds it (dagor_build_by_default).
+# blk's dir and of its incDir dirs). It runs in the blk's dir (the base of its relative paths); the intermediate files
+# and the logs go to the build dir. INSTALL also installs the dumps into <dir> of the install prefix (when the tree made
+# them). Not in the default build: the tree that ships the shaders adds it (dagor_build_by_default).
 include_guard(GLOBAL)
 
 # The content tools already parallelize internally (shader compilers fork one
@@ -59,9 +59,9 @@ function(dagor_add_shaders name)
   set(work "${CMAKE_CURRENT_BINARY_DIR}/shaders/${name}")
   set(stamp "${work}/${name}.stamp")
   add_custom_command(OUTPUT "${stamp}"
-    COMMAND "${CMAKE_COMMAND}" -E make_directory "${out_dir}"
+    COMMAND "${CMAKE_COMMAND}" -E make_directory "${out_dir}" "${work}/log"
     COMMAND "${compiler}" "${blk}" -out "${arg_OUTPUT}" -q -shaderOn -nodisassembly -commentPP
-      -codeDumpErr ${arg_ARGS} -o "${work}/obj"
+      -codeDumpErr ${arg_ARGS} -o "${work}/obj" -logdir "${work}/log"
     COMMAND "${CMAKE_COMMAND}" -E touch "${stamp}"
     WORKING_DIRECTORY "${blk_dir}"
     DEPENDS "${blk}" ${shader_sources} ${compiler_DEPENDS}
