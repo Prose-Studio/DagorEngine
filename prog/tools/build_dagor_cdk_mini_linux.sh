@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 # dabuild
 jam -s Root=../.. -f libTools/daKernel/jamfile
 jam -s Root=../.. -f sceneTools/assetExp/jamfile

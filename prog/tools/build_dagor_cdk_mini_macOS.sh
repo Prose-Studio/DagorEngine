@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 if [ "$1" = "x86_64" ] || [ "$1" = "arm64" ]; then
   export PlatformArch=$1
 fi
