@@ -17,6 +17,7 @@ foreach(variant "" .wso)
       ${DAGOR_PROG_DIR}/3rdPartyLibs/arc/zstd-1.4.5 ${DAGOR_PROG_DIR}/3rdPartyLibs/openssl-3.x/include
     COMPILE_DEFINITIONS PRIVATE ${defines}
     BUILD_DEPENDENCIES PRIVATE 3rdPartyLibs.arc.zlib-ng 3rdPartyLibs.arc.zstd-1.4.5 3rdPartyLibs.bsdiff
+      3rdPartyLibs.openssl-3.x.crypto.md5 # the vromfs checks
   )
 endforeach()
 set(tool_deps engine.osApiWrappers engine.kernel engine.memory engine.coreUtil engine.baseUtil engine.ioSys engine.math

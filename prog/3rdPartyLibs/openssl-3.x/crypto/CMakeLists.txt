@@ -1,4 +1,4 @@
-# OpenSSL 3 libcrypto (without SHA, which is crypto/sha)
+# OpenSSL 3 libcrypto (without SHA and MD5, which are crypto/sha and crypto/md5)
 include(../openssl.cmake)
 set(c_options ${OPENSSL_C_OPTIONS})
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
@@ -22,6 +22,6 @@ dagor_add_target(NAME 3rdPartyLibs.openssl-3.x.crypto STATIC LAX
   INCLUDE_DIRECTORIES PRIVATE ${OPENSSL_INCLUDES}
   COMPILE_DEFINITIONS PRIVATE ${OPENSSL_C_DEFINES}
   COMPILE_OPTIONS PRIVATE "$<$<COMPILE_LANGUAGE:C>:${c_options}>"
-  BUILD_DEPENDENCIES PRIVATE 3rdPartyLibs.openssl-3.x.crypto.sha
+  BUILD_DEPENDENCIES PRIVATE 3rdPartyLibs.openssl-3.x.crypto.sha 3rdPartyLibs.openssl-3.x.crypto.md5
   LICENSES ${OPENSSL_DIR}/LICENSE.txt
 )

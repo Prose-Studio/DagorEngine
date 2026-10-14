@@ -1,0 +1,6 @@
+# MD5 (openssl_collect_c and _asm: openssl.cmake)
+set(FILES)
+openssl_collect_c(FILES crypto/md5)
+if(OPENSSL_ASM)
+  openssl_collect_asm(FILES crypto/md5)
+endif()

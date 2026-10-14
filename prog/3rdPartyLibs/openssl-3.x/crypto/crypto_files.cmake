@@ -9,7 +9,7 @@ endforeach()
 set(ec_int128 ecp_nistp224.c ecp_nistp256.c ecp_nistp521.c)
 openssl_collect_c(FILES crypto/aes aes_core.c aes_cbc.c)
 foreach(dir aria asn1 async bf bio blake2 buffer cast cmac cmp cms comp conf crmf ct dh dsa ec/curve448
-            ec/curve448/arch_32 ec/curve448/arch_64 encode_decode err ess evp ffc hmac http idea kdf lhash md4 md5 mdc2
+            ec/curve448/arch_32 ec/curve448/arch_64 encode_decode err ess evp ffc hmac http idea kdf lhash md4 mdc2
             modes objects ocsp pem pkcs12 pkcs7 property rand rc2 rc5 ripemd rsa seed siphash sm2 sm3 sm4 srp stack
             store ts txt_db ui x509 x509v3)
   openssl_collect_c(FILES crypto/${dir})
@@ -22,7 +22,7 @@ openssl_collect_c(FILES crypto/rc4 rc4_enc.c rc4_skey.c)
 openssl_collect_c(FILES crypto/whrlpool wp_block.c)
 
 if(OPENSSL_ASM)
-  foreach(dir aes bn camellia chacha ec md5 modes poly1305 rc4 whrlpool)
+  foreach(dir aes bn camellia chacha ec modes poly1305 rc4 whrlpool)
     openssl_collect_asm(FILES crypto/${dir})
   endforeach()
 else()
