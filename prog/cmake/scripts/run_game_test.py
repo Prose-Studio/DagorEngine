@@ -39,7 +39,13 @@ def main(argv):
   if os.environ.get('DAGOR_TEST_UPDATE_REFERENCES') == '1':
     cmd.append('-test_update_references')
   sys.stdout.flush()
-  code = subprocess.call(cmd)
+  # the game's output comes through a pipe, relayed as it comes: a Windows program of the GUI subsystem only has a
+  # stdout when it is given one
+  game = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+  for line in iter(game.stdout.readline, b''):
+    sys.stdout.buffer.write(line)
+    sys.stdout.flush()
+  code = game.wait()
 
   if not os.path.isfile(report):
     if code == EXIT_SKIPPED:
