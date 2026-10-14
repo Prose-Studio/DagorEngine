@@ -7,7 +7,8 @@ set(options)
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   list(APPEND options -Wno-uninitialized) # on `index` in UnorderedMap.h
 endif()
-dagor_deterministic_fp(options)
+# Jolt checks for NaNs and the sign of zero (IsNaN, Sign), which the engine's fast math assumes away
+dagor_deterministic_fp(options KEEP_NANS)
 
 dagor_add_target(NAME 3rdPartyLibs.phys.joltPhysics STATIC LAX
   FILES_CMAKE joltPhysics_files.cmake

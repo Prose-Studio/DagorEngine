@@ -425,13 +425,14 @@ else() # clang
 endif()
 unset(_w)
 
-# dagor_deterministic_fp(<options-var> [KEEP_TRAPPING_MATH]): appends to <options-var> the options that give floating
-# point the same results with every compiler and platform, for the code the network or the content depend on
+# dagor_deterministic_fp(<options-var> [KEEP_TRAPPING_MATH] [KEEP_NANS]): appends to <options-var> the options that give
+# floating point the same results with every compiler and platform, for the code the network or the content depend on
 # (physics, collision, land and rendinst positions): no unsafe math, no contraction, no fused multiply-adds, and
-# -fno-trapping-math unless KEEP_TRAPPING_MATH. MSVC needs none of them. The code's v_madd must be VECMATH_NO_FMA too
-# (NEON's vfmaq ignores contraction).
+# -fno-trapping-math unless KEEP_TRAPPING_MATH. KEEP_NANS is for code that checks for NaNs and the sign of zero, which
+# the fast math of the rest assumes away. MSVC needs none of them. The code's v_madd must be VECMATH_NO_FMA too (NEON's
+# vfmaq ignores contraction).
 function(dagor_deterministic_fp var)
-  cmake_parse_arguments(PARSE_ARGV 1 arg "KEEP_TRAPPING_MATH" "" "")
+  cmake_parse_arguments(PARSE_ARGV 1 arg "KEEP_TRAPPING_MATH;KEEP_NANS" "" "")
   if(NOT CMAKE_CXX_COMPILER_ID MATCHES "^(Clang|AppleClang|GNU)$")
     return()
   endif()
@@ -451,6 +452,9 @@ function(dagor_deterministic_fp var)
     list(APPEND options ${x}fno-trapping-math)
   endif()
   list(APPEND options ${x}ffp-contract=off)
+  if(arg_KEEP_NANS)
+    list(APPEND options ${x}fno-finite-math-only ${x}fsigned-zeros)
+  endif()
   if(DAGOR_ARCH STREQUAL "x86_64")
     list(APPEND options ${x}mno-fma)
   endif()
