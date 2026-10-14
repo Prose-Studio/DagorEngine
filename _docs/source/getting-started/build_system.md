@@ -123,8 +123,11 @@ Each program chooses through the libraries it links:
   (`gameLibs.vehiclePhys.jolt` and `.bullet`).
 - Link choices (`dagor_add_link_choice` and `dagor_add_link_select`): a property
   of the program (`DAGOR_MEASURE_PERF`, `DAGOR_LINUX_GUI`, `DAGOR_NO_GPU`,
-  `DAGOR_SHADER_VARS`, `DAGOR_DAS_CONSOLE`, `DAGOR_LOW_LATENCY`, `DAGOR_VR`)
-  picks the implementation, also for the libraries in between.
+  `DAGOR_NO_CRYPTO`, `DAGOR_SHADER_VARS`, `DAGOR_DAS_CONSOLE`,
+  `DAGOR_LOW_LATENCY`, `DAGOR_VR`) picks the implementation, also for the
+  libraries in between. A static library does not wait for the libraries it
+  links (`OPTIMIZE_DEPENDENCIES`), so the implementation a program does not
+  choose is not built.
 - Custom transitive properties carry what a program collects from its whole link
   closure: `DAGOR_LICENSE_FILES` (its `LICENSE-<program>` file),
   `DAGOR_RUNTIME_FILES` (SDK DLLs copied next to it), `DAGOR_GAME_PULLS`.
