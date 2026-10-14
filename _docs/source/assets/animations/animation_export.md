@@ -78,11 +78,6 @@ to ensure proper generation of virtual assets. For example:
 
 - **CRSED:** Such requirements do not apply.
 
-  ```{tip}
-  If you have questions regarding this section, reach out to the author directly
-  at {octicon}`mail;1.4em;sd-text-info` <a.vlasov@gaijin.team>.
-  ```
-
 ## Animation Description in `animtree.blk`
 
 Animations must be described in the `animtree.blk` of the corresponding block.
@@ -146,4 +141,3 @@ virtual_res_blk{
   }
 }
 ```
-

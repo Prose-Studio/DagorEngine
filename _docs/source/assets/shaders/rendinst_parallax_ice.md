@@ -57,7 +57,7 @@ All masks in `.folder.blk` must have `gamma=1` for correct operation.
   ```
 
   ```{only} latex
-  [Download animation (GIF)](https://github.com/GaijinEntertainment/DagorEngine/blob/main/_docs/source/assets/shaders/_images/rendinst_parallax_ice_02.gif)
+  [Download animation (GIF)](https://github.com/Prose-Studio/DagorEngine/blob/main/_docs/source/assets/shaders/_images/rendinst_parallax_ice_02.gif)
   ```
 
 - `inner_layer_mul`: Multiplier for the internal layer's diffuse color,
@@ -68,7 +68,7 @@ All masks in `.folder.blk` must have `gamma=1` for correct operation.
   ```
 
   ```{only} latex
-  [Download animation (GIF)](https://github.com/GaijinEntertainment/DagorEngine/blob/main/_docs/source/assets/shaders/_images/rendinst_parallax_ice_03.gif)
+  [Download animation (GIF)](https://github.com/Prose-Studio/DagorEngine/blob/main/_docs/source/assets/shaders/_images/rendinst_parallax_ice_03.gif)
   ```
 
 - `inner_layer_power`: Exponent that applied to the internal layer's color after
@@ -79,7 +79,7 @@ All masks in `.folder.blk` must have `gamma=1` for correct operation.
   ```
 
   ```{only} latex
-  [Download animation (GIF)](https://github.com/GaijinEntertainment/DagorEngine/blob/main/_docs/source/assets/shaders/_images/rendinst_parallax_ice_04.gif)
+  [Download animation (GIF)](https://github.com/Prose-Studio/DagorEngine/blob/main/_docs/source/assets/shaders/_images/rendinst_parallax_ice_04.gif)
   ```
 
   Increasing both `power` and `mul` values can produce non-realistic but
@@ -142,7 +142,7 @@ All masks in `.folder.blk` must have `gamma=1` for correct operation.
 
       .. only:: latex
 
-         `Download animation (GIF) <https://github.com/GaijinEntertainment/DagorEngine/blob/main/_docs/source/assets/shaders/_images/rendinst_parallax_ice_07.gif>`_
+         `Download animation (GIF) <https://github.com/Prose-Studio/DagorEngine/blob/main/_docs/source/assets/shaders/_images/rendinst_parallax_ice_07.gif>`_
 
    .. grid-item::
       :class: center-cell
@@ -155,7 +155,7 @@ All masks in `.folder.blk` must have `gamma=1` for correct operation.
 
       .. only:: latex
 
-         `Download animation (GIF) <https://github.com/GaijinEntertainment/DagorEngine/blob/main/_docs/source/assets/shaders/_images/rendinst_parallax_ice_08.gif>`_
+         `Download animation (GIF) <https://github.com/Prose-Studio/DagorEngine/blob/main/_docs/source/assets/shaders/_images/rendinst_parallax_ice_08.gif>`_
 
 ```
 

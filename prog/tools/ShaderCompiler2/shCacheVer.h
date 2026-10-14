@@ -3,7 +3,7 @@
 
 #include <util/dag_globDef.h>
 
-// See https://gaijinentertainment.github.io/DagorEngine/dagor-tools/shader-compiler/contributing_to_compiler.html#versioning
+// See https://prose-studio.github.io/DagorEngine/dagor-tools/shader-compiler/contributing_to_compiler.html#versioning
 
 #if _CROSS_TARGET_METAL
 #include "ver_obj_metal.h"

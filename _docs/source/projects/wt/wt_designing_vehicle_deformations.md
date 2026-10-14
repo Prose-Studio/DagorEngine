@@ -406,11 +406,6 @@ Ready-to-export scene:
      If errors occur (commonly shader-related), check the console logs
      <img src="_images/wt_designing_vehicle_deformations_27.jpg" alt="The Console icon" width="1.8em">
 
-     ```{tip}
-     If the issues remain unresolved, please contact the author of this document
-     at {octicon}`mail;1.4em;sd-text-info` <a.vlasov@gaijin.team>.
-     ```
-
 2. Export resources to Dagor binary formats using the **Export All (PC)** option
    in the context menu:
 
@@ -491,12 +486,6 @@ Ready-to-export scene:
    [Building Resources](../../dagor-tools/building-resources/building_resources.md).
    ```
 
-   ```{tip}
-   If you encounter any errors or have questions regarding this document, please
-   reach out to the author directly at
-   {octicon}`mail;1.4em;sd-text-info` <a.vlasov@gaijin.team>.
-   ```
-
 **Placing and Testing the Vehicle in a Level:**
 
 1. Open the level in the
@@ -534,11 +523,6 @@ In case of **assert errors**, initially try ignoring them by pressing the
 
 If everything is set up correctly, you should see a tank in the environment,
 which can be used to collide with the test truck.
-
-```{tip}
-If the issues remain unresolved, please contact the author of this document at
-{octicon}`mail;1.4em;sd-text-info` <a.vlasov@gaijin.team>.
-```
 
 ## Fine-Tuning Deformation Parameters for a Vehicle Body
 
@@ -1052,5 +1036,3 @@ Final scene:
 By following these steps, you'll achieve a destructible vehicle model with
 realistic behavior for both rigid and flexible components, including proper
 handling of wooden and fabric elements.
-
-

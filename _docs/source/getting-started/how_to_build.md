@@ -32,7 +32,7 @@ Requirements for building and using the Dagor Engine toolkit:
 6. Clone the Dagor Engine source code and samples:
 
    ```text
-   git clone https://github.com/GaijinEntertainment/DagorEngine.git
+   git clone https://github.com/Prose-Studio/DagorEngine.git
    cd DagorEngine
    ```
 

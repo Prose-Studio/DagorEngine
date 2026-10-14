@@ -6,7 +6,7 @@ steps outlined below:
 1. **Fork the Repository**
 
    Fork the [Dagor Engine
-   repository](https://github.com/GaijinEntertainment/DagorEngine) on GitHub and
+   repository](https://github.com/Prose-Studio/DagorEngine) on GitHub and
    create a new branch specifically for your documentation updates.
 
 2. **Make Your Changes**

@@ -97,8 +97,3 @@ The original mesh still has visible errors.
 The result has bad geometry near {cnum}`1`.
 It also has missing geometry at {cnum}`2`.
 Use STL Check to check the mesh before you run the tool.
-
-```{tip}
-If you have questions, contact the author directly at
-{octicon}`mail;1.4em;sd-text-info` <a.vlasov@gaijin.team>.
-```

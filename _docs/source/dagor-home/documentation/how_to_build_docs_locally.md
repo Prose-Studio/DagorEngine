@@ -5,7 +5,7 @@
 1. **Clone the Repository**
 
    ```text
-   git clone https://github.com/GaijinEntertainment/DagorEngine.git
+   git clone https://github.com/Prose-Studio/DagorEngine.git
    cd DagorEngine
    ```
 

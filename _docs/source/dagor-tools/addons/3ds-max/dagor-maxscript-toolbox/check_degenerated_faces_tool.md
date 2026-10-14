@@ -27,7 +27,7 @@ Example of the tool's output:
 
 .. only:: latex
 
-   `Download video (WEBM) <https://github.com/GaijinEntertainment/DagorEngine/blob/main/_docs/source/dagor-tools/addons/3ds-max/dagor-maxscript-toolbox/_images/check_deg_faces_00.webm>`_
+   `Download video (WEBM) <https://github.com/Prose-Studio/DagorEngine/blob/main/_docs/source/dagor-tools/addons/3ds-max/dagor-maxscript-toolbox/_images/check_deg_faces_00.webm>`_
 
 ```
 

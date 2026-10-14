@@ -27,7 +27,7 @@ from "types" import String, Table, Array
       "* point2"]
     }
     {t="sep" v="----"}
-    {t="url" url = "http://gaijin.net", v = "(visit site)"}
+    {t="url" url = "https://example.com", v = "(visit site)"}
     {t="sep"}
     {t="preformat" v =
     @"  � Feature1

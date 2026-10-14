@@ -149,8 +149,3 @@ For this example, use a decal texture with an alpha channel.
 
 - **Open Local Documentation** button opens this page.
 - **Contact with Developer** button opens the developer page.
-
-```{tip}
-If you have questions, contact the author directly at
-{octicon}`mail;1.4em;sd-text-info` <a.vlasov@gaijin.team>.
-```

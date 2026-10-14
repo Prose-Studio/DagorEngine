@@ -1,7 +1,7 @@
 // Copyright (C) Gaijin Games KFT.  All rights reserved.
 #pragma once
 
-// See https://gaijinentertainment.github.io/DagorEngine/dagor-tools/shader-compiler/contributing_to_compiler.html#versioning
+// See https://prose-studio.github.io/DagorEngine/dagor-tools/shader-compiler/contributing_to_compiler.html#versioning
 // this is basically version of _COMPILER_ itself (usually dll),
 // increase it if hlsl may produce a bytecode different from the previous version
 #if _CROSS_TARGET_C1

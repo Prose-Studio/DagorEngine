@@ -104,7 +104,7 @@ white.
 
       .. only:: latex
 
-         `Download animation (GIF) <https://github.com/GaijinEntertainment/DagorEngine/blob/main/_docs/source/assets/shaders/dng-shaders/_images/rendinst_simple_emissive_anim_02.gif>`_
+         `Download animation (GIF) <https://github.com/Prose-Studio/DagorEngine/blob/main/_docs/source/assets/shaders/dng-shaders/_images/rendinst_simple_emissive_anim_02.gif>`_
 
    .. grid-item::
       :class: center-cell
@@ -117,7 +117,7 @@ white.
 
       .. only:: latex
 
-         `Download animation (GIF) <https://github.com/GaijinEntertainment/DagorEngine/blob/main/_docs/source/assets/shaders/dng-shaders/_images/rendinst_simple_emissive_anim_03.gif>`_
+         `Download animation (GIF) <https://github.com/Prose-Studio/DagorEngine/blob/main/_docs/source/assets/shaders/dng-shaders/_images/rendinst_simple_emissive_anim_03.gif>`_
 
 ```
 
@@ -153,7 +153,7 @@ paint the area as with the red/blue lamps.
 
 .. only:: latex
 
-   `Download video (WEBM) <https://github.com/GaijinEntertainment/DagorEngine/blob/main/_docs/source/assets/shaders/dng-shaders/_images/rendinst_simple_emissive_anim_04.webm>`_
+   `Download video (WEBM) <https://github.com/Prose-Studio/DagorEngine/blob/main/_docs/source/assets/shaders/dng-shaders/_images/rendinst_simple_emissive_anim_04.webm>`_
 
 ```
 
@@ -169,7 +169,7 @@ three textures.
 
 .. only:: latex
 
-   `Download video (WEBM) <https://github.com/GaijinEntertainment/DagorEngine/blob/main/_docs/source/assets/shaders/dng-shaders/_images/rendinst_simple_emissive_anim_05.webm>`_
+   `Download video (WEBM) <https://github.com/Prose-Studio/DagorEngine/blob/main/_docs/source/assets/shaders/dng-shaders/_images/rendinst_simple_emissive_anim_05.webm>`_
 
 ```
 
@@ -236,7 +236,7 @@ results:
 
 .. only:: latex
 
-   `Download video (WEBM) <https://github.com/GaijinEntertainment/DagorEngine/blob/main/_docs/source/assets/shaders/dng-shaders/_images/rendinst_simple_emissive_anim_10.webm>`_
+   `Download video (WEBM) <https://github.com/Prose-Studio/DagorEngine/blob/main/_docs/source/assets/shaders/dng-shaders/_images/rendinst_simple_emissive_anim_10.webm>`_
 
 ```
 

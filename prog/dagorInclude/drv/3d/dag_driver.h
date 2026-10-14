@@ -194,7 +194,7 @@ bool get_vsync_enabled();
 bool enable_vsync(bool enable);
 
 // See ResourceBarrierDesc and
-// https://dagor.rtd.gaijin.lan/en/latest/api-references/dagor-render/index/resource_and_execution_barriers.html
+// https://prose-studio.github.io/DagorEngine/api-references/dagor-render/index/resource_and_execution_barriers.html
 void resource_barrier(const ResourceBarrierDesc &desc, GpuPipeline gpu_pipeline = GpuPipeline::GRAPHICS);
 void enhanced_texture_barrier(const TextureBarrier &barrier, BaseTexture *texture);
 void enhanced_buffer_barrier(const BufferBarrier &barrier, Sbuffer *buffer);

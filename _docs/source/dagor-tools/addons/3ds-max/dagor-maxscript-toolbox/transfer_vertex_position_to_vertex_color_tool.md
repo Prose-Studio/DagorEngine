@@ -32,7 +32,7 @@ Below is an example of the tool's output:
 
 .. only:: latex
 
-   `Download video (GIF) <https://github.com/GaijinEntertainment/DagorEngine/blob/main/_docs/source/dagor-tools/addons/3ds-max/dagor-maxscript-toolbox/_images/transfer_vertex_01.gif>`_
+   `Download video (GIF) <https://github.com/Prose-Studio/DagorEngine/blob/main/_docs/source/dagor-tools/addons/3ds-max/dagor-maxscript-toolbox/_images/transfer_vertex_01.gif>`_
 
 ```
 
@@ -219,7 +219,7 @@ car damage in Unreal Engine:
 
 .. only:: latex
 
-   `Download video (WEBM) <https://github.com/GaijinEntertainment/DagorEngine/blob/main/_docs/source/dagor-tools/addons/3ds-max/dagor-maxscript-toolbox/_images/transfer_vertex_05.webm>`_
+   `Download video (WEBM) <https://github.com/Prose-Studio/DagorEngine/blob/main/_docs/source/dagor-tools/addons/3ds-max/dagor-maxscript-toolbox/_images/transfer_vertex_05.webm>`_
 
 ```
 

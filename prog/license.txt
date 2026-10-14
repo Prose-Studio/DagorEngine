@@ -1,1 +1,1 @@
-refer to LICENSE: https://github.com/GaijinEntertainment/DagorEngine/blob/main/LICENSE
+refer to LICENSE: https://github.com/Prose-Studio/DagorEngine/blob/main/LICENSE

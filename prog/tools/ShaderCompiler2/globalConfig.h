@@ -27,7 +27,7 @@ namespace shc
 {
 struct CompilerConfig
 {
-  // See https://gaijinentertainment.github.io/DagorEngine/dagor-tools/shader-compiler/contributing_to_compiler.html#versioning
+  // See https://prose-studio.github.io/DagorEngine/dagor-tools/shader-compiler/contributing_to_compiler.html#versioning
   const char *version = "2.86"; // logging only
 
   const char *singleCompilationShName = nullptr;

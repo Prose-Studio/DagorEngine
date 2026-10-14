@@ -179,7 +179,7 @@ properties of the collision object remain untouched, example:
 
 .. only:: latex
 
-   `Download video (WEBM) <https://github.com/GaijinEntertainment/DagorEngine/blob/main/_docs/source/dagor-tools/addons/3ds-max/dagor-maxscript-toolbox/_images/simple_cmp_preserving_unsup_prop.webm>`_
+   `Download video (WEBM) <https://github.com/Prose-Studio/DagorEngine/blob/main/_docs/source/dagor-tools/addons/3ds-max/dagor-maxscript-toolbox/_images/simple_cmp_preserving_unsup_prop.webm>`_
 
 ```
 
@@ -323,7 +323,7 @@ Next are parameters to export from 3ds Max to Dagor:
 
   .. only:: latex
 
-     `Download video (WEBM) <https://github.com/GaijinEntertainment/DagorEngine/blob/main/_docs/source/dagor-tools/addons/3ds-max/dagor-maxscript-toolbox/_images/simple_cmp_ed_prop_edit_rot_02.webm>`_
+     `Download video (WEBM) <https://github.com/Prose-Studio/DagorEngine/blob/main/_docs/source/dagor-tools/addons/3ds-max/dagor-maxscript-toolbox/_images/simple_cmp_ed_prop_edit_rot_02.webm>`_
 
   ```
 

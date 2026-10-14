@@ -11,7 +11,7 @@
 // Mark hyperlinks like HTML <A> tag.
 //
 // utf8_text = "<A HREF="url">title</A>"
-// utf8_text = "Visit <A HREF=\"http://gaijin.ru\">Gaijin</A> for more information"
+// utf8_text = "Visit <A HREF=\"https://example.com\">example.com</A> for more information"
 //
 KRNLIMP int os_message_box(const char *utf8_text, const char *utf8_caption, int flags = 0);
 

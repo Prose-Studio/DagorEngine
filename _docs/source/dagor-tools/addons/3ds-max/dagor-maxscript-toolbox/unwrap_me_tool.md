@@ -118,11 +118,6 @@ The tool also saves the current settings when you close its window and loads the
 
 - **Contact with Developer** button opens the developer page.
 
-```{tip}
-If you have questions, contact the author directly at
-{octicon}`mail;1.4em;sd-text-info` <a.vlasov@gaijin.team>.
-```
-
 ## Quick Workflow
 
 1. Select one mesh.

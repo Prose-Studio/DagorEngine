@@ -74,7 +74,7 @@ color. G and B channels are not used.
 
       .. only:: latex
 
-         `Download animation (GIF) <https://github.com/GaijinEntertainment/DagorEngine/blob/main/_docs/source/assets/shaders/dng-shaders/_images/rendinst_flag_colored_02.gif>`_
+         `Download animation (GIF) <https://github.com/Prose-Studio/DagorEngine/blob/main/_docs/source/assets/shaders/dng-shaders/_images/rendinst_flag_colored_02.gif>`_
 
    .. grid-item::
       :class: center-cell
@@ -94,7 +94,7 @@ color. G and B channels are not used.
 
       .. only:: latex
 
-         `Download animation (GIF) <https://github.com/GaijinEntertainment/DagorEngine/blob/main/_docs/source/assets/shaders/dng-shaders/_images/rendinst_flag_colored_04.gif>`_
+         `Download animation (GIF) <https://github.com/Prose-Studio/DagorEngine/blob/main/_docs/source/assets/shaders/dng-shaders/_images/rendinst_flag_colored_04.gif>`_
 ```
 
 ```{note}
@@ -142,7 +142,7 @@ animate with varying values.
 
       .. only:: latex
 
-         `Download animation (GIF) <https://github.com/GaijinEntertainment/DagorEngine/blob/main/_docs/source/assets/shaders/dng-shaders/_images/rendinst_flag_colored_05.gif>`_
+         `Download animation (GIF) <https://github.com/Prose-Studio/DagorEngine/blob/main/_docs/source/assets/shaders/dng-shaders/_images/rendinst_flag_colored_05.gif>`_
 
    .. grid-item::
       :class: center-cell
@@ -155,7 +155,7 @@ animate with varying values.
 
       .. only:: latex
 
-         `Download animation (GIF) <https://github.com/GaijinEntertainment/DagorEngine/blob/main/_docs/source/assets/shaders/dng-shaders/_images/rendinst_flag_colored_06.gif>`_
+         `Download animation (GIF) <https://github.com/Prose-Studio/DagorEngine/blob/main/_docs/source/assets/shaders/dng-shaders/_images/rendinst_flag_colored_06.gif>`_
 
    .. grid-item::
       :child-direction: row
@@ -180,7 +180,7 @@ animate with varying values.
 
       .. only:: latex
 
-         `Download animation (GIF) <https://github.com/GaijinEntertainment/DagorEngine/blob/main/_docs/source/assets/shaders/dng-shaders/_images/rendinst_flag_colored_07.gif>`_
+         `Download animation (GIF) <https://github.com/Prose-Studio/DagorEngine/blob/main/_docs/source/assets/shaders/dng-shaders/_images/rendinst_flag_colored_07.gif>`_
 
    .. grid-item::
       :class: center-cell
@@ -193,7 +193,7 @@ animate with varying values.
 
       .. only:: latex
 
-         `Download animation (GIF) <https://github.com/GaijinEntertainment/DagorEngine/blob/main/_docs/source/assets/shaders/dng-shaders/_images/rendinst_flag_colored_08.gif>`_
+         `Download animation (GIF) <https://github.com/Prose-Studio/DagorEngine/blob/main/_docs/source/assets/shaders/dng-shaders/_images/rendinst_flag_colored_08.gif>`_
 ```
 
 Random values are not visible in the *Asset Viewer*, so first verify the maximum
@@ -240,7 +240,7 @@ and the model only captures a small portion of it.
 
       .. only:: latex
 
-         `Download animation (GIF) <https://github.com/GaijinEntertainment/DagorEngine/blob/main/_docs/source/assets/shaders/dng-shaders/_images/rendinst_flag_colored_07.gif>`_
+         `Download animation (GIF) <https://github.com/Prose-Studio/DagorEngine/blob/main/_docs/source/assets/shaders/dng-shaders/_images/rendinst_flag_colored_07.gif>`_
 
    .. grid-item::
       :class: center-cell
@@ -253,7 +253,7 @@ and the model only captures a small portion of it.
 
       .. only:: latex
 
-         `Download animation (GIF) <https://github.com/GaijinEntertainment/DagorEngine/blob/main/_docs/source/assets/shaders/dng-shaders/_images/rendinst_flag_colored_08.gif>`_
+         `Download animation (GIF) <https://github.com/Prose-Studio/DagorEngine/blob/main/_docs/source/assets/shaders/dng-shaders/_images/rendinst_flag_colored_08.gif>`_
 
    .. grid-item::
       :class: center-cell
@@ -266,7 +266,7 @@ and the model only captures a small portion of it.
 
       .. only:: latex
 
-         `Download animation (GIF) <https://github.com/GaijinEntertainment/DagorEngine/blob/main/_docs/source/assets/shaders/dng-shaders/_images/rendinst_flag_colored_09.gif>`_
+         `Download animation (GIF) <https://github.com/Prose-Studio/DagorEngine/blob/main/_docs/source/assets/shaders/dng-shaders/_images/rendinst_flag_colored_09.gif>`_
 
 ```
 
@@ -306,7 +306,7 @@ and the model only captures a small portion of it.
 
       .. only:: latex
 
-         `Download animation (GIF) <https://github.com/GaijinEntertainment/DagorEngine/blob/main/_docs/source/assets/shaders/dng-shaders/_images/rendinst_flag_colored_10.gif>`_
+         `Download animation (GIF) <https://github.com/Prose-Studio/DagorEngine/blob/main/_docs/source/assets/shaders/dng-shaders/_images/rendinst_flag_colored_10.gif>`_
 
    .. grid-item::
       :class: center-cell
@@ -319,7 +319,7 @@ and the model only captures a small portion of it.
 
       .. only:: latex
 
-         `Download animation (GIF) <https://github.com/GaijinEntertainment/DagorEngine/blob/main/_docs/source/assets/shaders/dng-shaders/_images/rendinst_flag_colored_11.gif>`_
+         `Download animation (GIF) <https://github.com/Prose-Studio/DagorEngine/blob/main/_docs/source/assets/shaders/dng-shaders/_images/rendinst_flag_colored_11.gif>`_
 
 ```
 

@@ -426,7 +426,7 @@ enum class VariableRateShadingCombiner
 // Resource barriers
 // Usually RW targets are implicitly transitioned to and need no explicit barrier.
 // Details can be found here:
-// https://dagor.rtd.gaijin.lan/en/latest/api-references/dagor-render/index/resource_and_execution_barriers.html
+// https://prose-studio.github.io/DagorEngine/api-references/dagor-render/index/resource_and_execution_barriers.html
 enum ResourceBarrier : uint64_t
 {
   // For resources with color formats the target is render target and for resources with depth

@@ -72,7 +72,6 @@ Di8JoystickDevice::~Di8JoystickDevice()
   if (device)
   {
     // Workaround again faulty joystick driver for Speed-Link Vibration Joystick
-    // http://crash-stats.so.gaijinent.com/report/index/5a503e4d-5442-4b4a-b439-ab5482120411
     safe_release_device(device);
   }
   device = NULL;

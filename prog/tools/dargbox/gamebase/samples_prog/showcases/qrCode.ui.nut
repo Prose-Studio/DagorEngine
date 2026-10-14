@@ -19,7 +19,7 @@ let qrCanvas = {
 
 function basicsRoot() {
 
-  let qr = generateQrArray("https://gaijin.team/ABCD&=456345635635")
+  let qr = generateQrArray("https://example.com/ABCD&=456345635635")
   qrCanvas.commands = []
   let qrSize = qr.len();
   let cellSize = 100.0 / qrSize;

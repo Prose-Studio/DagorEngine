@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    This file is used by `charServer` repo
-    for generating MS Visual Studio solution
+    This file is used for generating MS Visual Studio solution
     including unit tests for this library.
-    See the following files:
-    https://cvs1.gaijin.lan/plugins/gitiles/charServer/+/refs/heads/master/ci/generate_vs_solution_config.py
-    https://cvs1.gaijin.lan/plugins/gitiles/charServer/+/refs/heads/master/ci/generate_vs_solution.py
 -->
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ImportGroup Label="PropertySheets" />

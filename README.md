@@ -13,7 +13,7 @@ md X:\develop && cd X:\develop
 
 Clone the Dagor Engine source code:
 ```
-git clone https://github.com/GaijinEntertainment/DagorEngine.git
+git clone https://github.com/Prose-Studio/DagorEngine.git
 cd DagorEngine
 ```
 
@@ -72,7 +72,7 @@ If none is passed, all projects are built.
 Example: `dagor.py build project:dargbox code shaders` will build only code and shaders for **dargbox**.
 
 ### Documentation
-  Automatically generated [Dagor Documentation](https://gaijinentertainment.github.io/DagorEngine/) contains general architecture description, API reference, tutorials and manuals.<br>
+  Automatically generated [Dagor Documentation](https://prose-studio.github.io/DagorEngine/) contains general architecture description, API reference, tutorials and manuals.<br>
   It is not complete yet and will be extended.
 
 ## Open-source roadmap

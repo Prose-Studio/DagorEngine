@@ -20,7 +20,7 @@ struct RaytraceBottomAccelerationStructure;
  * Inputs can be simple single values, arrays of values, pointers to values, and initializer lists of values.
  * To interpret the stored values, use the provided enumerate functions to get the buffer and texture barriers.
  * For more details on resource barriers, see
- * https://dagor.rtd.gaijin.lan/en/latest/api-references/dagor-render/index/resource_and_execution_barriers.html
+ * https://prose-studio.github.io/DagorEngine/api-references/dagor-render/index/resource_and_execution_barriers.html
  */
 class ResourceBarrierDesc
 {

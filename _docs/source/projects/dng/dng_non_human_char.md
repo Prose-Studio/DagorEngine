@@ -912,10 +912,3 @@ DataBlockParser: invalid value 'sdfsd' at line 209 of file '.../crow_detailed_a_
 
 By following these steps and debugging techniques, you can ensure your character
 is fully functional and ready for game integration.
-
-```{tip}
-If you encounter any errors or have questions regarding this document, please
-reach out to the author directly at {octicon}`mail;1.4em;sd-text-info`
-<a.vlasov@gaijin.team>.
-```
-

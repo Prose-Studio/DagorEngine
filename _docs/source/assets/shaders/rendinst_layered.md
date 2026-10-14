@@ -413,7 +413,7 @@ Here's how it looks in practice:
 
 .. only:: latex
 
-   `Download video (WEBM) <https://github.com/GaijinEntertainment/DagorEngine/blob/main/_docs/source/assets/shaders/_images/rendinst_layered_31.webm>`_
+   `Download video (WEBM) <https://github.com/Prose-Studio/DagorEngine/blob/main/_docs/source/assets/shaders/_images/rendinst_layered_31.webm>`_
 
 ```
 
@@ -532,7 +532,7 @@ continue to evolve:
 
 .. only:: latex
 
-   `Download video (WEBM) <https://github.com/GaijinEntertainment/DagorEngine/blob/main/_docs/source/assets/shaders/_images/rendinst_layered_38.webm>`_
+   `Download video (WEBM) <https://github.com/Prose-Studio/DagorEngine/blob/main/_docs/source/assets/shaders/_images/rendinst_layered_38.webm>`_
 
 ```
 
@@ -670,7 +670,7 @@ The shader will automatically shift the mapping to **cell 9**:
 
 .. only:: latex
 
-   `Download video (WEBM) <https://github.com/GaijinEntertainment/DagorEngine/blob/main/_docs/source/assets/shaders/_images/rendinst_layered_43.webm>`_
+   `Download video (WEBM) <https://github.com/Prose-Studio/DagorEngine/blob/main/_docs/source/assets/shaders/_images/rendinst_layered_43.webm>`_
 
 ```
 
@@ -718,7 +718,7 @@ If these parameters are not set, the overlay will not shift correctly:
 
 .. only:: latex
 
-   `Download video (WEBM) <https://github.com/GaijinEntertainment/DagorEngine/blob/main/_docs/source/assets/shaders/_images/rendinst_layered_45.webm>`_
+   `Download video (WEBM) <https://github.com/Prose-Studio/DagorEngine/blob/main/_docs/source/assets/shaders/_images/rendinst_layered_45.webm>`_
 
 ```
 
@@ -741,7 +741,7 @@ which are more neutral:
 
 .. only:: latex
 
-   `Download video (WEBM) <https://github.com/GaijinEntertainment/DagorEngine/blob/main/_docs/source/assets/shaders/_images/rendinst_layered_47.webm>`_
+   `Download video (WEBM) <https://github.com/Prose-Studio/DagorEngine/blob/main/_docs/source/assets/shaders/_images/rendinst_layered_47.webm>`_
 
 ```
 
@@ -1013,7 +1013,7 @@ with the overlay removed:
 
 .. only:: latex
 
-   `Download video (WEBM) <https://github.com/GaijinEntertainment/DagorEngine/blob/main/_docs/source/assets/shaders/_images/rendinst_layered_73.webm>`_
+   `Download video (WEBM) <https://github.com/Prose-Studio/DagorEngine/blob/main/_docs/source/assets/shaders/_images/rendinst_layered_73.webm>`_
 
 ```
 
@@ -1029,7 +1029,7 @@ detail layers. Let's set these values to `0.5`.
 
 .. only:: latex
 
-   `Download video (WEBM) <https://github.com/GaijinEntertainment/DagorEngine/blob/main/_docs/source/assets/shaders/_images/rendinst_layered_74.webm>`_
+   `Download video (WEBM) <https://github.com/Prose-Studio/DagorEngine/blob/main/_docs/source/assets/shaders/_images/rendinst_layered_74.webm>`_
 
 ```
 
@@ -1115,7 +1115,7 @@ layer will cover it according to the specified rules, from the appropriate side.
 
 .. only:: latex
 
-   `Download video (WEBM) <https://github.com/GaijinEntertainment/DagorEngine/blob/main/_docs/source/assets/shaders/_images/rendinst_layered_75.webm>`_
+   `Download video (WEBM) <https://github.com/Prose-Studio/DagorEngine/blob/main/_docs/source/assets/shaders/_images/rendinst_layered_75.webm>`_
 
 ```
 
@@ -1330,7 +1330,7 @@ If multiple colors are specified, the object will be procedurally recolored.
 
 .. only:: latex
 
-   `Download video (WEBM) <https://github.com/GaijinEntertainment/DagorEngine/blob/main/_docs/source/assets/shaders/_images/rendinst_layered_87.webm>`_
+   `Download video (WEBM) <https://github.com/Prose-Studio/DagorEngine/blob/main/_docs/source/assets/shaders/_images/rendinst_layered_87.webm>`_
 
 ```
 
@@ -1466,7 +1466,7 @@ roof. Now, let's see how the overlay appears on the roof.
 
 .. only:: latex
 
-   `Download video (WEBM) <https://github.com/GaijinEntertainment/DagorEngine/blob/main/_docs/source/assets/shaders/_images/rendinst_layered_97.webm>`_
+   `Download video (WEBM) <https://github.com/Prose-Studio/DagorEngine/blob/main/_docs/source/assets/shaders/_images/rendinst_layered_97.webm>`_
 
 ```
 

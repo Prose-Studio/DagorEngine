@@ -4,12 +4,8 @@
 //
 #pragma once
 
-// Visit "Dear ImGui and ImPlot" wiki page for information and examples on how to use ImGui in our tech:
-// https://dagor.rtd.gaijin.lan/en/latest/dagor-tools/dear-imgui/dear_imgui.html
-//
-// Feel free to extend the documentation I linked above, or add additional features to our ImGui integration. Add me as
-// reviewer if you do so (g.szaloki@gaijin.team). Write me on Pararam (@gabor_szaloki1) in case you have any ImGui-
-// related questions or suggestions.
+// See the "Dear ImGui and ImPlot" page of the docs for information and examples on how to use ImGui in the engine:
+// https://prose-studio.github.io/DagorEngine/dagor-tools/dear-imgui/dear_imgui.html
 
 #include <EASTL/functional.h>
 #include <EASTL/optional.h>

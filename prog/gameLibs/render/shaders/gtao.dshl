@@ -220,7 +220,7 @@ macro GTAO_MAIN_CORE(code)
       half noiseOffset = GTAO_Offsets(tc_original) + gtao_temporal_offset;
       half2 tc_base = tc_original + aoDir * (0.125 * noiseOffset - 0.375);
 
-      // Mipmapping is disabled as it is causing severe visual errors. See https://youtrack.gaijin.ru/issue/38-7328
+      // Mipmapping is disabled as it is causing severe visual errors.
       const float targetMip = 0.0;
 
       // Find horizons of the slice
