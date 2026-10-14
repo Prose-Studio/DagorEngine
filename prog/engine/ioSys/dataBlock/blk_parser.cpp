@@ -624,7 +624,10 @@ static void makeFullPathFromRelative(String &path, const char *base_filename)
   int baseLen = i + 1;
 
   if (baseLen > 0)
+  {
     path.insert(0, base_filename, baseLen);
+    simplify_fname(path); // base/../x.blk can be past the OS's path length limit where its simple form is not
+  }
 }
 
 #define ADD_PARAM_CHECKED(NAME, TYPE, VALUE)                                                              \
