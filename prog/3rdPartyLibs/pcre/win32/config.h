@@ -31,7 +31,8 @@
 /* #undef SUPPORT_LIBZ */
 /* #undef SUPPORT_LIBREADLINE */
 
-#define NEWLINE			3338
+/* newlines are CR, LF and CRLF on every platform (ANYCRLF): the scripts' regexes match the same */
+#define NEWLINE			-2
 #define POSIX_MALLOC_THRESHOLD	10
 #define LINK_SIZE		2
 #define MATCH_LIMIT		10000000

@@ -46,7 +46,8 @@
 
 #define MAX_NAME_COUNT 10000
 #define MAX_NAME_SIZE 32
-#define NEWLINE 10
+/* newlines are CR, LF and CRLF on every platform (ANYCRLF): the scripts' regexes match the same */
+#define NEWLINE -2
 
 /* #undef PCRE_EXP_DEFN */
 /* #undef PCRE_STATIC */
