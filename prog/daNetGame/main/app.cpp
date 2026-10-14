@@ -401,6 +401,11 @@ static
 
 void before_draw_scene(int realtime_elapsed_usec, float gametime_elapsed_sec)
 {
+  if (test_mode::fixed_dt() > 0.f) // the frame took the tests' fixed time, as updateTime acts it, not the machine's
+  {
+    realtime_elapsed_usec = int(test_mode::frame_dt() * 1e6f);
+    gametime_elapsed_sec = test_mode::frame_dt();
+  }
   ::before_draw_scene(realtime_elapsed_usec, gametime_elapsed_sec, timeSpeed, get_cur_cam_entity());
   if (is_level_loaded())
   {
