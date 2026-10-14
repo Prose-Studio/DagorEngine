@@ -15,6 +15,8 @@ function(bullet_test)
       list(APPEND options -ffast-math -fno-unsafe-math-optimizations)
     endif()
   endif()
+  # its checks compare Bullet's SIMD code with plain code: no contraction, which on arm64 fuses the multiply-adds of one
+  dagor_deterministic_fp(options)
   dagor_add_target(${ARGN} EXECUTABLE LAX
     FILES_CMAKE ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/bullet_test_files.cmake
     COMPILE_OPTIONS PRIVATE ${options}
