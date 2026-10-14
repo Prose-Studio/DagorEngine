@@ -97,9 +97,12 @@ public:
       else
         debug("Starting dump client on port %d is impossible %s", port, os_socket_error_str(os_socket_last_error(), buf, sizeof(buf)));
     }
-    if (port == end_port)
-      logerr("Can't bind profiler net client on ports %d..%d %s", start_port, end_port,
+    if (port == end_port) // other instances hold them: this one is not reachable by the profiler, nothing is broken
+    {
+      logwarn("Can't bind profiler net client on ports %d..%d %s", start_port, end_port,
         os_socket_error_str(os_socket_last_error(), buf, sizeof(buf)));
+      return false;
+    }
     if (os_socket_listen(sock.get(), 4) != 0)
     {
       logerr("Can't start listen profiler net client on port %d %s", port,
