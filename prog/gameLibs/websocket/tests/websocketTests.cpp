@@ -454,9 +454,11 @@ TEST_CASE("the close reply waits behind a frame that curl has begun", "[websocke
   connect_and_wait(client, server);
 
   server.readClient = false;
-  const int messageCount = 64;
+  // frames larger than the socket buffers can grow to (Windows grows the send buffer of a socket that stays full), so the
+  // frame curl has begun cannot finish while the peer does not read
+  const int messageCount = 4;
   for (int i = 0; i < messageCount; ++i)
-    client.send(make_payload(512 << 10, uint8_t(i)));
+    client.send(make_payload(16 << 20, uint8_t(i)));
   run_for(client, server, 200);
   const int closeMs = get_time_msec();
   server.sendClose(4001, "bye");
