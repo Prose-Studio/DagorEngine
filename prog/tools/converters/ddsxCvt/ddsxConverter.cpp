@@ -5,6 +5,7 @@
 #include <generic/dag_tab.h>
 #include <libTools/dtx/dtxHeader.h>
 #include <libTools/util/fileUtils.h>
+#include <ioSys/dag_oodleIo.h>
 #include <osApiWrappers/dag_direct.h>
 #include <osApiWrappers/dag_files.h>
 #include <startup/dag_globalSettings.h>
@@ -73,9 +74,17 @@ int DagorWinMain(bool debugmode)
     else if (stricmp(&dgs_argv[i][1], "pack:zstd") == 0)
       ddsx::ConvertParams::preferZstdPacking = true;
     else if (stricmp(&dgs_argv[i][1], "pack:oodle") == 0)
+    {
+      if (!oodle_available())
+      {
+        print_title();
+        printf("ERR: -pack:oodle needs the Oodle codecs, which this build is made without\n");
+        return 1;
+      }
       ddsx::ConvertParams::preferZstdPacking = ddsx::ConvertParams::allowOodlePacking = true;
+    }
     else if (strnicmp(&dgs_argv[i][1], "packThres:", 10) == 0)
-      cp.packSzThres = atoi(&dgs_argv[i][10]);
+      cp.packSzThres = atoi(&dgs_argv[i][11]);
     else if (strnicmp(&dgs_argv[i][1], "addru:", 6) == 0)
       cp.addrU = parseAddrMode(&dgs_argv[i][7]);
     else if (strnicmp(&dgs_argv[i][1], "addrv:", 6) == 0)
@@ -113,7 +122,7 @@ int DagorWinMain(bool debugmode)
            "  -pack:zlib   use zlib for texture data packing (new alias for -no7z)\n"
            "  -pack:zstd   use zstd for texture data packing\n"
            "  -pack:7zip   use 7zip for texture data packing\n"
-           "  -pack:oodle  use OODLE for texture data packing\n"
+           "%s"
            "  -packThres:{sz}  size threshold for using texture data packing\n"
            "  -gamma1          image is not gamma correct\n"
            "  -ddsSuffix       use settings decoded from DDS fname suffix\n"
@@ -122,7 +131,8 @@ int DagorWinMain(bool debugmode)
            "  -mq:{n}  medium quality top mipmap\n"
            "  -lq:{n}  low quality top mipmap\n"
            "  -addr{u|v}:{wrap|mirror|clamp|border|mirror_once}"
-           "  set default texture addressing mode\n");
+           "  set default texture addressing mode\n",
+      oodle_available() ? "  -pack:oodle  use OODLE for texture data packing\n" : "");
     return -1;
   }
   if (!quiet)
