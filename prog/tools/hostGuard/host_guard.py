@@ -1,5 +1,5 @@
-"""Keeps Gaijin hosts out of the fork: finds gaijin.net, gaijinent.com and gaijin.lan outside comments in the shipping code,
-the tools and the build scripts, and upstream GitHub release URLs in the build scripts. It also checks that the CMake
+"""Keeps Gaijin hosts out of the fork: finds them (GAIJIN_HOSTS: gaijin.net, its games' sites, ...) outside comments in
+the shipping code, the tools and the build scripts, and upstream GitHub release URLs in the build scripts. It also checks that the CMake
 build downloads only through prog/cmake/DagorFetch.cmake, which takes every archive from the SHA256-pinned manifest.
 
 python host_guard.py [engine_root]  -- prints path:line: host for each finding, exit code 1 when any
@@ -17,9 +17,10 @@ ROOTS = ('prog/engine', 'prog/gameLibs', 'prog/daNetGame', 'prog/tools/dargbox',
 ROOT_FILES = ('dng.py', 'prog/CMakeLists.txt', 'prog/CMakePresets.json')
 BUILD_SCRIPTS = ('.github/', 'dng.py', 'prog/cmake/', 'prog/CMakeLists.txt', 'prog/CMakePresets.json')  # what downloads
 PRUNED_DIRS = {'.git', '_output', '__pycache__', '3rdPartyLibs', 'node_modules', '.test_results', 'build'}
-ANY_GAIJIN = re.compile(rb'gaijin', re.IGNORECASE)  # cheap check before decoding and scanning a file
+ANY_GAIJIN = re.compile(rb'gaijin|enlisted|warthunder', re.IGNORECASE)  # cheap check before decoding and scanning a file
 
-GAIJIN_HOSTS = re.compile(r'\b(?:gaijin\.net|gaijinent\.com|gaijin\.lan)\b', re.IGNORECASE)
+GAIJIN_HOSTS = re.compile(r'\b(?:gaijin\.(?:net|lan|ops|ru)|gaijinent\.com|enlisted\.net|warthunder\.(?:com|ru))\b',
+                          re.IGNORECASE)
 UPSTREAM_RELEASES = re.compile(r'\bgithub\.com/GaijinEntertainment\b', re.IGNORECASE)  # build scripts download from the fork
 # CMake commands that download: only the fetcher may use them, so every archive is pinned in prog/cmake/sdk/manifest.cmake
 CMAKE_DOWNLOADS = re.compile(r'\b(?:file\s*\(\s*DOWNLOAD|FetchContent_Declare|ExternalProject_Add)\b', re.IGNORECASE)

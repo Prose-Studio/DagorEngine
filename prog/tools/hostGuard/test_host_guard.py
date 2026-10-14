@@ -15,6 +15,11 @@ class ScannerTest(unittest.TestCase):
   def test_url_in_a_string_is_found(self):
     self.assertEqual(hosts('const char *u = "https://support.gaijin.net/x";'), [(1, 'gaijin.net')])
 
+  def test_the_games_sites_and_internal_hosts_are_found(self):
+    self.assertEqual(hosts('a = "match-moon-01.gaijin.ops:7853"\nb = Picture("https://enlisted.net/x.jpg")', 'prog/a.nut'),
+                     [(1, 'gaijin.ops'), (2, 'enlisted.net')])
+    self.assertEqual(hosts('const BASE_URL = "https://warthunder.com/captcha"', 'prog/a.nut'), [(1, 'warthunder.com')])
+
   def test_slashes_inside_a_string_do_not_start_a_comment(self):
     self.assertEqual(hosts('a = "http://x"; b = "https://gaijinent.com"; // gaijin.lan'), [(1, 'gaijinent.com')])
 
