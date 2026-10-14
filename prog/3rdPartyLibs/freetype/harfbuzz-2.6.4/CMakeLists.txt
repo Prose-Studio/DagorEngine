@@ -15,14 +15,16 @@ dagor_add_target(NAME 3rdPartyLibs.freetype.harfbuzz-2.6.4 STATIC LAX
   COMPILE_OPTIONS PRIVATE ${options}
 )
 
-# harfbuzz's own test programs: the self-checks run as tests, hb_info, hb_test and the others take a font
+# harfbuzz's own test programs: the self-checks, and those that take a font, on the fonts of prog/tools/toolsData
+# (test-ot-meta, test-gpos-size-params and test-gsub-would-substitute need a font with a 'meta' table, a 'size' feature
+# or a known GSUB lookup, which none of those has; test-buffer-serialize reads stdin)
 if(DAGOR_ENGINE_TESTS)
   set(self_checks array bimap number unicode-ranges)
   if(NOT CMAKE_CXX_COMPILER_ID STREQUAL "MSVC") # these do not compile with MSVC (test-meta not as C++20 at all)
     list(APPEND self_checks algs iter)
   endif()
   set(programs "hb_info|main.cc" "hb_test|test.cc")
-  foreach(name buffer-serialize gpos-size-params gsub-would-substitute ot-glyphname ot-meta ot-name ${self_checks})
+  foreach(name ot-glyphname ot-name ${self_checks})
     list(APPEND programs "hb_test-${name}|test-${name}.cc")
   endforeach()
   foreach(program IN LISTS programs)
@@ -38,5 +40,14 @@ if(DAGOR_ENGINE_TESTS)
   endforeach()
   foreach(name IN LISTS self_checks)
     dagor_add_exec_test(3rdPartyLibs.harfbuzz.${name} COMMAND $<TARGET_FILE:hb_test-${name}> TAGS 3rdPartyLibs)
+  endforeach()
+  set(fonts ${DAGOR_PROG_DIR}/tools/toolsData/dargbox/fonts)
+  foreach(test "hb_info|NotoSans-Regular.ttf" "hb_test|NotoSans-Regular.ttf" "hb_test-ot-name|NotoSans-Regular.ttf"
+               "hb_test-ot-glyphname|lato-regular.ttf") # (Noto Sans has no glyph names)
+    string(REPLACE "|" ";" test "${test}")
+    list(GET test 0 program)
+    list(GET test 1 font)
+    dagor_add_exec_test(3rdPartyLibs.harfbuzz.${program} COMMAND $<TARGET_FILE:${program}> ${fonts}/${font}
+      TAGS 3rdPartyLibs)
   endforeach()
 endif()
