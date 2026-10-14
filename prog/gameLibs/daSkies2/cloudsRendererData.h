@@ -69,7 +69,7 @@ struct CloudsRendererData
 
   bool frameValid = false;
 
-  unsigned lastPrepareMs = 0;             // real frame dt source for the checker weight scale
+  bool hadMainViewPrepare = false;        // the frame deltas below need a previous frame
   DPoint3 prevCamPosForClamp{0., 0., 0.}; // camera speed source for the clamp collapse
   float prevLayerDist = 1e9f;             // layer distance last frame (ghosts look back one frame)
   float clampCollapseSmooth = 0;          // rises instantly, decays slowly

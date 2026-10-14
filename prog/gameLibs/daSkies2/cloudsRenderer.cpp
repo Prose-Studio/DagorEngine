@@ -22,8 +22,6 @@
 #include <EASTL/optional.h>
 #include <util/dag_convar.h>
 
-#include <osApiWrappers/dag_miscApi.h>
-
 CONSOLE_BOOL_VAL("clouds", use_compute, true);
 // parallax rate (rad/s) at which the checker history clamp is fully collapsed to
 // the classic neighborhood box
@@ -167,7 +165,7 @@ void CloudsRenderer::setCloudsOffsetVars(float current_clouds_offset, float worl
 }
 
 void CloudsRenderer::renderCloudsPrepare(CloudsRendererData &data, BaseTexture *depth, BaseTexture *prev_depth,
-  const Point2 &wind_change_ofs, float world_size, const TMatrix &view_tm, const TMatrix4 &proj_tm,
+  const Point2 &wind_change_ofs, float dt, float world_size, const TMatrix &view_tm, const TMatrix4 &proj_tm,
   const DPoint3 *world_pos /*= nullptr*/, const CloudsRenderFlags flags)
 {
   if (!data.cloudsColorPoolRT)
@@ -214,11 +212,11 @@ void CloudsRenderer::renderCloudsPrepare(CloudsRendererData &data, BaseTexture *
   {
     // the checker accumulation weight is calibrated at 60Hz: dt-true (w ~ dt) above
     // 60fps keeps the wall-clock time constant; below 60 each rippled state persists
-    // longer on screen, so the tolerable weight falls instead (w ~ dt^-1/3)
-    unsigned nowMs = get_time_msec();
-    float dtSec = data.lastPrepareMs ? (nowMs - data.lastPrepareMs) * 0.001f : 0.f;
-    float dtScale = data.lastPrepareMs ? clamp(dtSec * 60.f, 0.25f, 4.f) : 1.f;
-    data.lastPrepareMs = nowMs;
+    // longer on screen, so the tolerable weight falls instead (w ~ dt^-1/3). The frame
+    // time is the update's, the one the wind change below was made with
+    float dtSec = data.hadMainViewPrepare ? dt : 0.f;
+    float dtScale = data.hadMainViewPrepare ? clamp(dtSec * 60.f, 0.25f, 4.f) : 1.f;
+    data.hadMainViewPrepare = true;
     ShaderGlobal::set_float(clouds_checker_dt_scaleVarId, dtScale <= 1.f ? dtScale : powf(dtScale, -1.f / 3.f));
 
     // ghosting exists only where parallax does: the clamp collapse follows the

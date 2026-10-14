@@ -270,6 +270,7 @@ void Clouds2::init(bool use_hole)
 
 void Clouds2::update(float dt, const Point2 &wind_dir)
 {
+  updateDt = dt;
   updateErosionNoiseWind(dt, wind_dir);
 
   ShaderGlobal::set_float4(clouds_erosion_noise_wind_ofsVarId, clouds_erosion_noise_wind_ofs.x, 0, clouds_erosion_noise_wind_ofs.y, 0);
@@ -286,7 +287,7 @@ void Clouds2::renderCloudsPrepare(CloudsRendererData &data, BaseTexture *depth, 
     return;
   }
   noises.setVars();
-  clouds.renderCloudsPrepare(data, depth, prev_depth, erosionWindChange, weatherParams.worldSize, view_tm, proj_tm, nullptr, flags);
+  clouds.renderCloudsPrepare(data, depth, prev_depth, erosionWindChange, updateDt, weatherParams.worldSize, view_tm, proj_tm, nullptr, flags);
 }
 
 void Clouds2::renderCloudsApply(CloudsRendererData &data, BaseTexture *downsampled_depth, BaseTexture *target_depth,

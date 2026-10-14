@@ -154,6 +154,7 @@ protected:
 
   Point2 clouds_erosion_noise_wind_ofs = {0, 0};
   Point2 erosionWindChange = {0, 0};
+  float updateDt = 0; // the frame time of the last update, which the renderer's temporal deltas go by
   Point3 holeTarget = {0, 0, 0};
   float holeDensity = 0;
   enum class HoleFindStatus
