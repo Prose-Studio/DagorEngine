@@ -170,9 +170,16 @@ function(dagor_target_es_sources target)
     string(REGEX REPLACE "^[^|]*\\|" "" src "${entry}")
     cmake_path(GET src FILENAME name)
     string(REGEX REPLACE "\\.[^.]+$" ".gen.es.cpp" out_name "${name}") # <name>ES.cpp.inl, or a .cpp it includes
-    set(out "${gen_dir}/${out_name}")
+    # in the subdir the source has in the target's dir: two files of one name (a library's and its stub's) are two outputs
+    cmake_path(GET src PARENT_PATH src_dir)
+    cmake_path(RELATIVE_PATH src_dir BASE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}" OUTPUT_VARIABLE sub)
+    set(out_dir "${gen_dir}")
+    if(NOT (sub STREQUAL "" OR sub STREQUAL "." OR sub MATCHES "^\\.\\." OR IS_ABSOLUTE "${sub}"))
+      string(APPEND out_dir "/${sub}")
+    endif()
+    set(out "${out_dir}/${out_name}")
     # the generated file includes the source by its name: through a file next to it
-    file(CONFIGURE OUTPUT "${gen_dir}/${name}" CONTENT "#include \"${src}\"\n")
+    file(CONFIGURE OUTPUT "${out_dir}/${name}" CONTENT "#include \"${src}\"\n")
     # the descriptors record the source relative to the engine root (absolute on another drive)
     cmake_path(RELATIVE_PATH src BASE_DIRECTORY "${DAGOR_ENGINE_ROOT}" OUTPUT_VARIABLE input)
     if(IS_ABSOLUTE "${input}")
