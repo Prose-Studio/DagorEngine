@@ -2,6 +2,7 @@
 #pragma once
 
 #include <util/dag_stdint.h>
+#include <debug/dag_assert.h>
 
 namespace shaderopcode
 {
