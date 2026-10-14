@@ -21,8 +21,7 @@ int DagorWinMain(bool debugmode)
   if (__argc > 2)
   {
     DataBlockInhDiffMaker diffMaker;
-    diffMaker.makeDiff(__argv[1], __argv[2], (__argc > 3) ? __argv[3] : NULL);
-    return 0;
+    return diffMaker.makeDiff(__argv[1], __argv[2], (__argc > 3) ? __argv[3] : NULL) ? 0 : 1;
   }
 
   printf("\n"

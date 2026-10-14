@@ -49,7 +49,7 @@ bool convert_ltoutput(const char *lto_fname, const char *img_fname)
 
   if (!crd.fileHandle)
   {
-    printf("ERROR: cannot read %s", lto_fname);
+    printf("ERROR: cannot read %s\n", lto_fname);
     return false;
   }
 
@@ -122,7 +122,8 @@ bool convert_ltoutput(const char *lto_fname, const char *img_fname)
     {
       String hdr(128, "PF\n%d %d\n-1.0\n", w, eff_h);
       cwr.write((char *)hdr, hdr.length());
-      cwr.write(cpix, (w * eff_h) * sizeof(Color3));
+      for (int y = eff_h - 1; y >= 0; y--) // PFM rows go bottom to top
+        cwr.write(cpix + y * w, w * sizeof(Color3));
       success = true;
     }
   }
@@ -167,6 +168,5 @@ int DagorWinMain(bool debugmode)
     return 0;
   }
 
-  convert_ltoutput(__argv[1], __argc > 2 ? __argv[2] : NULL);
-  return 0;
+  return convert_ltoutput(__argv[1], __argc > 2 ? __argv[2] : NULL) ? 0 : 1;
 }

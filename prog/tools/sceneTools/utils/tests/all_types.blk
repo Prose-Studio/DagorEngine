@@ -1,0 +1,40 @@
+// Every BLK value type with its extremes, the string escapes and quotings, repeated and nested names, empty blocks:
+// what the binary forms (binBlk, blk2robin) and the JSON export must keep
+str:t="plain"
+str_quoted:t="with ~"quotes~", a ~~tilde and a~ttab"
+str_ticks:t='single "quoted"'
+str_unicode:t="ünïcödé ✓ 日本語"
+str_empty:t=""
+str_multiline:t='''line one
+line two'''
+int:i=42
+int_min:i=-2147483648
+int_max:i=2147483647
+int64_min:i64=-9223372036854775807
+int64_max:i64=9223372036854775807
+real:r=3.14159
+real_small:r=-1.5e-20
+real_big:r=3.4e38
+bool_yes:b=yes
+bool_no:b=no
+color:c=255, 128, 0, 64
+point2:p2=1.5, -2.25
+point3:p3=0.1, 0.2, 0.3
+point4:p4=1, 2, 3, 4
+ipoint2:ip2=-7, 8
+ipoint3:ip3=1, -2, 3
+ipoint4:ip4=10, 20, 30, -40
+matrix:m=[[1, 0, 0] [0, 0.5, 0] [0, 0, 2] [10, -20, 30.5]]
+repeated:i=1
+repeated:i=2
+nested{
+  repeated:t="a"
+  repeated:t="b"
+  deeper{
+    "name with spaces":t="x"
+    empty{}
+  }
+}
+nested{
+  second:b=yes
+}

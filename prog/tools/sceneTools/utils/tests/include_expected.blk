@@ -1,0 +1,4 @@
+// include_main.blk with its includes resolved
+base:b=yes
+part:i=2
+main:t="main"

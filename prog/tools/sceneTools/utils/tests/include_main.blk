@@ -1,0 +1,4 @@
+// binBlk -final resolves the includes, each relative to the file that includes it, wherever it runs: this file reads
+// as include_expected.blk
+include "include/part.blk"
+main:t="main"

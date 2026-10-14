@@ -1,0 +1,29 @@
+// inherit_parent.blk with values changed, params and blocks added (last, where an inheritance appends them) and
+// removed, at the top level and in blocks
+name:t="derived"
+untouched:t="the same in both"
+count:i=4
+tag:t="a"
+tag:t="B"
+tag:t="c"
+tag:t="d"
+extra:ip2=7, 8
+weapon{
+  untouched:t="the same in both"
+  damage:i=12
+  range:r=100
+  sound{
+    file:t="shot2.wav"
+    volume:r=0.8
+  }
+  rate:r=0.25
+}
+slot{
+  id:i=1
+}
+slot{
+  id:i=20
+}
+shield{
+  value:i=7
+}

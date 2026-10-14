@@ -1,0 +1,26 @@
+// The base of an inheritance: blkDiff writes inherit_child.blk as an include of this file and the differences
+name:t="base"
+untouched:t="the same in both"
+count:i=3
+removed:b=yes
+tag:t="a"
+tag:t="b"
+tag:t="c"
+weapon{
+  untouched:t="the same in both"
+  damage:i=10
+  range:r=100
+  sound{
+    file:t="shot.wav"
+    volume:r=0.8
+  }
+}
+armor{
+  value:i=5
+}
+slot{
+  id:i=1
+}
+slot{
+  id:i=2
+}

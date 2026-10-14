@@ -1,0 +1,3 @@
+// a value that does not parse as its type: binBlk -v must reject the file
+name:t="ok"
+count:i=many

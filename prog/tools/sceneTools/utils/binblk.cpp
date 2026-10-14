@@ -250,7 +250,9 @@ int __cdecl main(int argc, char **argv)
   } rep;
   DataBlock::InstallReporterRAII repRaii(&rep);
 
-  if (!blk.loadFromStream(crd))
+  // the file's name gives its includes the base they are relative to
+  const char *src_name = fp != (file_ptr_t)stdin ? argv[1] : nullptr;
+  if (!blk.loadFromStream(crd, src_name))
   {
     printf("FATAL: Failed to load BLK from \"%s\"\n", argv[1]);
     if (validate_only && fp != stdin)

@@ -51,19 +51,27 @@ bool DataBlockInhDiffMaker::makeDiff(const char *_parent_fn, const char *_source
   // making diff
   resBlk.reset();
   DataBlock parent(_parent_fn), source(_source_fn);
-  if (!diff_datablocks(parent, source, resBlk))
+  bool blocks_differ = diff_datablocks(parent, source, resBlk);
+  bool params_differ = diff_params(parent, source, resBlk); // the top level's params, as diff_datablocks() does a block's
+  if (!blocks_differ && !params_differ)
     printf("Files is equal \n");
 
   // append include block and save
 
-  char res_loc[260];
-  ::dd_get_fname_location(res_loc, resultFn.str());
-  String inc_fn = ::make_path_relative(_parent_fn, res_loc);
+  // relative to the result's dir; both absolute first: relative paths have no common base to compare
+  String res_loc = make_path_absolute(resultFn);
+  location_from_path(res_loc);
+  String inc_fn = ::make_path_relative(make_path_absolute(_parent_fn), res_loc);
   String line(512, "include \"%s\"\n\n", inc_fn.str());
   DynamicMemGeneralSaveCB cwr(tmpmem, 0, 32 << 10);
   cwr.write(line.str(), line.size() - 1);
   resBlk.saveToTextStream(cwr);
   FullFileSaveCB fcwr(resultFn);
+  if (!fcwr.fileHandle)
+  {
+    printf("Cannot write result file \"%s\"\n", resultFn.str());
+    return false;
+  }
   fcwr.write(cwr.data(), cwr.size());
   fcwr.close();
 

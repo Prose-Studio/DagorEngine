@@ -189,7 +189,7 @@ bool write_tga_mask(const char *fn, int idx, dag::ConstSpan<signed char> lmap, i
   TexPixel8a *pix = new TexPixel8a[w * h];
   for (int i = 0; i < w * h; i++)
   {
-    pix[i].l = lmap[i] < 0 ? 255 - lmap[i] : lmap[i] * m;
+    pix[i].l = lmap[i] < 0 ? 255 + lmap[i] : lmap[i] * m; // no client (-1) 254, no sample (-2) 253: above the clients' 0..240
     pix[i].a = lmap[i] == idx ? 255 : 0;
   }
 
@@ -233,7 +233,7 @@ int DagorWinMain(bool debugmode)
   if (!samples_to_lmap(__argv[2], clientIdx, lmap, w, h))
     return 13;
 
-  m = 240 / clients.nameCount();
+  m = 240 / max(clients.nameCount(), 1); // a log of no clients still has the masks of no client and no sample
   printf("using scale=%d\n", m);
   for (int i = -2; i < clients.nameCount(); i++)
   {
