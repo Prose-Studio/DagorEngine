@@ -790,4 +790,24 @@ void destroy_cached_window_data(void *) {}
 GpuVendor d3d::guess_gpu_vendor(String *, uint32_t *, DagorDateTime *, uint32_t *) { return {}; }
 unsigned d3d::get_dedicated_gpu_memory_size_kb() { return 0; }
 #endif
+#elif _TARGET_PC_MACOSX && !DAGOR_HOSTED_INTERNAL_SERVER
+// the GPU and its memory are Metal's to tell, whichever driver runs; Metal defines them in d3d::multi_metal here, so
+// the plain functions are defined before declaring those (after, the plain names would be ambiguous)
+static GpuVendor metal_guess_gpu_vendor(String *out_gpu_desc, uint32_t *out_drv_ver, DagorDateTime *out_drv_date, uint32_t *device_id);
+static unsigned metal_get_dedicated_gpu_memory_size_kb();
+GpuVendor d3d::guess_gpu_vendor(String *out_gpu_desc, uint32_t *out_drv_ver, DagorDateTime *out_drv_date, uint32_t *device_id)
+{
+  return metal_guess_gpu_vendor(out_gpu_desc, out_drv_ver, out_drv_date, device_id);
+}
+unsigned d3d::get_dedicated_gpu_memory_size_kb() { return metal_get_dedicated_gpu_memory_size_kb(); }
+namespace d3d::inline multi_metal
+{
+GpuVendor guess_gpu_vendor(String *out_gpu_desc, uint32_t *out_drv_ver, DagorDateTime *out_drv_date, uint32_t *device_id);
+unsigned get_dedicated_gpu_memory_size_kb();
+} // namespace d3d::inline multi_metal
+static GpuVendor metal_guess_gpu_vendor(String *out_gpu_desc, uint32_t *out_drv_ver, DagorDateTime *out_drv_date, uint32_t *device_id)
+{
+  return d3d::multi_metal::guess_gpu_vendor(out_gpu_desc, out_drv_ver, out_drv_date, device_id);
+}
+static unsigned metal_get_dedicated_gpu_memory_size_kb() { return d3d::multi_metal::get_dedicated_gpu_memory_size_kb(); }
 #endif
