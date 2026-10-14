@@ -133,8 +133,14 @@ static void dblk::save(const ExposedDataBlock &blk, IGenSave &cb, dblk::StringVa
       case DataBlock::TYPE_IPOINT2:
       case DataBlock::TYPE_POINT4:
       case DataBlock::TYPE_MATRIX:
-      case DataBlock::TYPE_E3DCOLOR:
       case DataBlock::TYPE_INT64: cb.write(blk.getParamData(p), get_type_size(p.type)); break;
+      case DataBlock::TYPE_E3DCOLOR:
+      {
+        // BBF\3 keeps a color as 0xRRGGBBAA (as blk_readBBF3.cpp, so the games, read it), not as E3DCOLOR's 0xAARRGGBB
+        E3DCOLOR c = blk.getE3dcolor(i);
+        cb.writeInt((unsigned(c.r) << 24) | (unsigned(c.g) << 16) | (unsigned(c.b) << 8) | c.a);
+        break;
+      }
 
       default: G_ASSERT(0);
     }
