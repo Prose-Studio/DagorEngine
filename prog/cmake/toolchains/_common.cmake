@@ -36,6 +36,30 @@ if(NOT DAGOR_DEPS_DIR)
 endif()
 dagor_toolchain_forward(DAGOR_ARCH DAGOR_DEPS_DIR)
 
+# the compiler cache: DAGOR_COMPILER_LAUNCHER (of the preset or of the environment) is sccache, the pinned one fetched
+# into DAGOR_DEPS_DIR, or the path of another launcher (ccache); it is CMAKE_<LANG>_COMPILER_LAUNCHER unless that is set
+if(NOT DEFINED DAGOR_COMPILER_LAUNCHER AND DEFINED ENV{DAGOR_COMPILER_LAUNCHER})
+  set(DAGOR_COMPILER_LAUNCHER "$ENV{DAGOR_COMPILER_LAUNCHER}")
+endif()
+set(DAGOR_COMPILER_LAUNCHER "${DAGOR_COMPILER_LAUNCHER}" CACHE STRING
+  "Compiler cache: sccache (the pinned one) or the path of a compiler launcher")
+if(DAGOR_COMPILER_LAUNCHER AND NOT CMAKE_CXX_COMPILER_LAUNCHER)
+  set(_dagor_launcher "${DAGOR_COMPILER_LAUNCHER}")
+  if(_dagor_launcher STREQUAL "sccache")
+    dagor_fetch_sdk(sccache _dagor_launcher)
+    string(APPEND _dagor_launcher "/sccache")
+    if(CMAKE_HOST_WIN32)
+      string(APPEND _dagor_launcher ".exe")
+    endif()
+  endif()
+  foreach(_dagor_lang C CXX OBJC OBJCXX)
+    set(CMAKE_${_dagor_lang}_COMPILER_LAUNCHER "${_dagor_launcher}" CACHE STRING "The compiler cache (DAGOR_COMPILER_LAUNCHER)")
+  endforeach()
+  unset(_dagor_lang)
+  unset(_dagor_launcher)
+endif()
+dagor_toolchain_forward(CMAKE_C_COMPILER_LAUNCHER CMAKE_CXX_COMPILER_LAUNCHER)
+
 # dev (DAGOR_DBGLEVEL 1, optimized, logs and asserts), rel (0), irel (-1, no logs at all), dbg (2, unoptimized); the
 # presets set them too (not in the try_compile projects, which have their own)
 get_property(_dagor_try_compile GLOBAL PROPERTY IN_TRY_COMPILE)
