@@ -98,6 +98,12 @@ its DLLs in `<platform>-<arch>/`, the shaders, vromfs and content, and a launche
 rules. `develop/assets/base` has placeholders for the textures the renderer looks up by name (stars, moon, strata
 clouds, the paint palette): replace them with real art under the same names.
 
+Hot reloading: the Windows game outside Rel builds in the asset manager (`assets_import` in `prog/gamelibs.txt`, the
+`base_asset_manager` entity of `gamedata/scenes/_common_render_scene.blk`), which builds the assets the game loads from
+`develop/assets` and rebuilds and reloads those that change while it runs: save a texture there and the game shows it;
+rendInsts and animated characters (with the ecs anim library) reload too. Its debug window (ImGui) creates and inspects
+assets. A packaged (Rel) game reads the exported packs only.
+
 ## Tools
 
 `develop/daEditor` opens the editor on this project; levels go to `develop/levels`. `develop/daViewer` browses the

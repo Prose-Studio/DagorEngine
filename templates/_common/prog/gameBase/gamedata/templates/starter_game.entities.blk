@@ -106,6 +106,21 @@ game_object{
   "gameObject:tag"{}
 }
 
+// ---- what libs derive from (assets_import, light_flicker, anim_replay, ...)
+
+rendinst{ // a render instance (riExtra) of the rendInst asset ri_extra__name
+  _use:t=replicating;
+  transform:m=[[1, 0, 0] [0, 1, 0] [0, 0, 1] [0, 0, 0]]
+  ri_extra__name:t=""
+  "ri_extra:RiExtraComponent"{}
+}
+
+animchar{ // an animated character of the animChar asset animchar__res: a game that animates and renders them links the
+          // ecs anim library (gameLibs/ecs/anim) and adds its components here (animchar:AnimcharBaseComponent, animchar_render, ...)
+  transform:m=[[1, 0, 0] [0, 1, 0] [0, 0, 1] [0, 0, 0]]
+  animchar__res:t=""
+}
+
 // ---- cameras
 
 static_cam{

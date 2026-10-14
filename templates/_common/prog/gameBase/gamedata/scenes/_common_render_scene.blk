@@ -14,3 +14,10 @@ entity{
 entity{
   _template:t="ui_nodes"
 }
+
+// the asset manager (gamelibs.txt assets_import): the game builds what it loads from develop/assets and reloads what
+// changes there (Windows clients outside Rel; elsewhere the entity does nothing)
+entity{
+  _template:t="base_asset_manager"
+  asset__baseFolder:t="develop/assets" // relative to the project dir
+}
