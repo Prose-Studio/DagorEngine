@@ -80,6 +80,32 @@ if(NOT IOS)
     COMMENT "dargbox's vromfs")
   dagor_build_by_default(dargbox-vromfs)
 endif()
+if(NOT (ANDROID OR IOS))
+  # the data it runs with (settings, fonts, images, the heavy samples), as the CDK installs it
+  add_custom_target(dargbox-data COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
+    ${DAGOR_PROG_DIR}/tools/toolsData/dargbox ${DAGOR_ENGINE_ROOT}/tools/dargbox COMMENT "dargbox's data")
+  set_property(TARGET dargbox-data PROPERTY FOLDER "content")
+  dagor_build_by_default(dargbox-data)
+
+  # its tests: every sample runs 30 updates headless on the stub driver and fails on the errors it logs; on Windows the
+  # runtime HLSL sample (and the screen of all samples) needs DX11 or DX12. errors_handling makes errors on purpose.
+  file(GLOB_RECURSE samples CONFIGURE_DEPENDS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/gamebase
+    ${CMAKE_CURRENT_SOURCE_DIR}/gamebase/samples_prog/*.ui.nut)
+  list(REMOVE_ITEM samples samples_prog/zbugs/errors_handling.ui.nut)
+  file(GLOB_RECURSE heavy CONFIGURE_DEPENDS RELATIVE ${DAGOR_PROG_DIR}/tools/toolsData/dargbox
+    ${DAGOR_PROG_DIR}/tools/toolsData/dargbox/samples_heavy/*.ui.nut)
+  foreach(sample IN LISTS samples heavy)
+    set(driver -config:video/driver:t=stub)
+    set(requires)
+    if(WIN32 AND sample MATCHES "/(robj_shader|all_ui)\\.ui\\.nut$")
+      set(driver)
+      set(requires REQUIRES gpu display)
+    endif()
+    dagor_add_exec_test(dargbox:${sample} COMMAND $<TARGET_FILE:dargbox> -config:script:t=${sample}
+      -config:debug/limit_updates:i=30 ${driver} -quiet WORKING_DIRECTORY ${DAGOR_ENGINE_ROOT}/tools/dargbox
+      ${requires} TAGS dargbox)
+  endforeach()
+endif()
 
 if(APPLE)
   dagor_apple_bundle(dargbox NAME dargbox ID com.gaijinent.dargbox)

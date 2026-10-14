@@ -59,4 +59,6 @@ dagor_add_link_choice(1stPartyLibs.daScript PROPERTY DAGOR_DAS_CONSOLE
 
 # the daScript language and daslib test suite, run by the engine's das interpreter (dastest/tests is not included: it
 # spawns '<exe> dastest.das' the way the standalone daslang host is invoked)
-dagor_add_das_test(daScript.suite PATHS tests TAGS daScript TIMEOUT 1800)
+if(DAGOR_ENGINE_TESTS)
+  dagor_add_das_test(daScript.suite PATHS tests TAGS daScript TIMEOUT 1800)
+endif()

@@ -787,6 +787,11 @@
       "inherits": "dagor"
     },
     {
+      "name": "windows-dargbox",
+      "configurePreset": "windows-dargbox",
+      "inherits": "dagor"
+    },
+    {
       "name": "windows-msvc-tests",
       "configurePreset": "windows-msvc-tests",
       "inherits": "dagor"
@@ -802,6 +807,11 @@
       "inherits": "dagor"
     },
     {
+      "name": "linux-dargbox",
+      "configurePreset": "linux-dargbox",
+      "inherits": "dagor"
+    },
+    {
       "name": "linux-clang-tests",
       "configurePreset": "linux-clang-tests",
       "inherits": "dagor"
@@ -814,6 +824,11 @@
     {
       "name": "macos-tests",
       "configurePreset": "macos-tests",
+      "inherits": "dagor"
+    },
+    {
+      "name": "macos-dargbox",
+      "configurePreset": "macos-dargbox",
       "inherits": "dagor"
     },
     {
@@ -1013,6 +1028,10 @@
         {
           "type": "build",
           "name": "windows-dargbox"
+        },
+        {
+          "type": "test",
+          "name": "windows-dargbox"
         }
       ]
     },
@@ -1155,6 +1174,10 @@
         {
           "type": "build",
           "name": "linux-dargbox"
+        },
+        {
+          "type": "test",
+          "name": "linux-dargbox"
         }
       ]
     },
@@ -1283,6 +1306,10 @@
         },
         {
           "type": "build",
+          "name": "macos-dargbox"
+        },
+        {
+          "type": "test",
           "name": "macos-dargbox"
         }
       ]

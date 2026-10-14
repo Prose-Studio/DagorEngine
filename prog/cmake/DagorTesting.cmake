@@ -29,19 +29,20 @@
 # replace their reference images.
 #
 # Tests are registered with DAGOR_BUILD_TESTS; the engine's own only in the engine's trees (not in a project's, which
-# have the project's tests), and none that run programs of a cross-compiled tree without an emulator. The target tests
-# builds the programs they run; in the tests variant and in a game's trees they are part of the default build.
+# have the project's tests): its unit tests in the tests variant, dargbox's (its samples) in the dargbox variant. None
+# run programs of a cross-compiled tree without an emulator. The target tests builds the programs they run; in the tests
+# variant and in a game's trees they are part of the default build.
 include_guard(GLOBAL)
 
 set(_dagor_tests_default OFF)
-if(DAGOR_VARIANT STREQUAL "tests" OR (DAGOR_VARIANT STREQUAL "game" AND NOT DAGOR_DAS_AOT_COMPILER))
+if(DAGOR_VARIANT MATCHES "^(tests|dargbox)$" OR (DAGOR_VARIANT STREQUAL "game" AND NOT DAGOR_DAS_AOT_COMPILER))
   set(_dagor_tests_default ON)
 endif()
 option(DAGOR_BUILD_TESTS "Register the tests" ${_dagor_tests_default})
 unset(_dagor_tests_default)
-# the engine's own tests: in the engine's trees with tests (their dirs are added only then), not in a project's
+# the engine's unit tests: in its tests variant (their dirs are added only then)
 set(DAGOR_ENGINE_TESTS OFF)
-if(DAGOR_BUILD_TESTS AND CMAKE_SOURCE_DIR STREQUAL DAGOR_PROG_DIR)
+if(DAGOR_BUILD_TESTS AND CMAKE_SOURCE_DIR STREQUAL DAGOR_PROG_DIR AND DAGOR_VARIANT STREQUAL "tests")
   set(DAGOR_ENGINE_TESTS ON)
 endif()
 
@@ -60,8 +61,8 @@ set_property(TARGET tests PROPERTY FOLDER "dagor")
 function(_dagor_test_enabled out)
   cmake_path(IS_PREFIX DAGOR_PROG_DIR "${CMAKE_CURRENT_SOURCE_DIR}" NORMALIZE in_engine)
   set(ok ${DAGOR_BUILD_TESTS})
-  if(in_engine)
-    set(ok ${DAGOR_ENGINE_TESTS})
+  if(in_engine AND NOT CMAKE_SOURCE_DIR STREQUAL DAGOR_PROG_DIR)
+    set(ok OFF)
   endif()
   if(ARGN AND NOT DAGOR_PLATFORM IN_LIST ARGN)
     set(ok OFF)
