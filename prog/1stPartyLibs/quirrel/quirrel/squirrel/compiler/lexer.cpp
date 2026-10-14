@@ -661,7 +661,7 @@ SQInteger SQLexer::ReadNumber()
     case TFLOAT:
 #if SQ_USE_STD_FROM_CHARS
         {
-            auto ret = std::from_chars(&_longstr[0], &_longstr[0] + _longstr.size(), _fvalue);
+            auto ret = sq_float_from_chars(&_longstr[0], &_longstr[0] + _longstr.size(), _fvalue);
             if (ret.ec == std::errc::result_out_of_range)
                 _ctx.throwError(_tokenline, _tokencolumn, _currentcolumn - _tokencolumn,
                     _fvalue == 0 ? "float constant underflow" : "float constant overflow");

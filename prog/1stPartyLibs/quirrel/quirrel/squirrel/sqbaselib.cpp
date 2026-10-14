@@ -39,8 +39,8 @@ SQInteger sq_deduplicate_object(HSQUIRRELVM vm, int index);
 static bool sq_parse_float(const char* str_begin, const char * str_end, SQObjectPtr& res, SQInteger base)
 {
 #if SQ_USE_STD_FROM_CHARS
-    SQFloat r;
-    auto ret = std::from_chars(str_begin, str_end, r);
+    SQFloat r = 0;
+    auto ret = sq_float_from_chars(str_begin, str_end, r);
     for (const char* ptr = ret.ptr; ptr != str_end; ++ptr)
         if (*ptr != '0')
             return false;
