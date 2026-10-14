@@ -47,9 +47,14 @@ static void writeJsonStrQuoted(IGenSave &cb, const char *nm)
     if (*p == '\"')
       cb.write("\\\"", 2);
     else if (*p == '\n')
-      cb.write("\\\n", 2);
+      cb.write("\\n", 2);
     else if (*p == '\\')
       cb.write("\\\\", 2);
+    else if ((unsigned char)*p < 0x20) // JSON strings cannot hold control characters as they are
+    {
+      char esc[8];
+      cb.write(esc, snprintf(esc, sizeof(esc), "\\u%04x", (unsigned char)*p));
+    }
     else
       cb.write(p, 1);
   cb.write("\"", 1);
