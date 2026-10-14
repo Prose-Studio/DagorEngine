@@ -36,14 +36,14 @@ Requirements for building and using the Dagor Engine toolkit:
    cd DagorEngine
    ```
 
-7. Run the `make_devtools.py` script.
+7. Run `dagor.py devtools`.
 
-   This script will download, install, and configure the build toolkit. You
+   This will download, install, and configure the build toolkit. You
    should provide the path to the build toolkit directory as an argument, and
    the script will create this directory if it doesn't exist.
 
    ```text
-   python3 make_devtools.py X:\develop\devtools
+   python3 dagor.py devtools X:\develop\devtools
    ```
 
    ```{important}
@@ -101,7 +101,7 @@ For more information, see
 
 ## How to Build: Build from Source Code
 
-Run `DagorEngine/build_all.py` to build the entire engine toolkit from the source
-code. This process may take a considerable amount of time.
+Run `python3 dagor.py build` in `DagorEngine` to build the entire engine toolkit
+from the source code. This process may take a considerable amount of time.
 
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import sys
 sys.path.append('../../..')
-from build_all import run, run_per_platform, VROMFS_PACKER_EXE, BUILD_COMPONENTS, DAGOR_HOST, JAM_BUILD_TARGET_ARCH_OPTIONS
+from dagor import run, run_per_platform, VROMFS_PACKER_EXE, BUILD_COMPONENTS, DAGOR_HOST, JAM_BUILD_TARGET_ARCH_OPTIONS
 sys.path.pop()
 
 

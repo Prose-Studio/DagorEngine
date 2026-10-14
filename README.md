@@ -17,10 +17,10 @@ git clone https://github.com/GaijinEntertainment/DagorEngine.git
 cd DagorEngine
 ```
 
-Run the `make_devtools.py` script. This script will download, install, and configure the build toolkit. You should provide the path to the build toolkit folder as an argument, and the script will create this folder if it doesn't exist.
+Run `dagor.py devtools`. This will download, install, and configure the build toolkit. You should provide the path to the build toolkit folder as an argument, and the script will create this folder if it doesn't exist.
 
 ```
-python3 make_devtools.py X:\develop\devtools
+python3 dagor.py devtools X:\develop\devtools
 ```
 
 If the script is not run as an administrator, installers of certain programs may request permission for installation, which you should grant. If you plan to use plugins for 3ds Max, press 'Y' when the script asks if you want to install the 3ds Max SDK. The script will also ask to add the path X:\develop\devtools to the PATH environment variable and set the GDEVTOOL variable to point to this folder.
@@ -71,23 +71,23 @@ X:\develop\DagorEngine\tools\...
 
 First unpack [tools-base.7z](https://dagorenginedata.cdn.gaijin.net/head-2026.10.11/tools-base.7z) to DagorEngine root to get mandatory binary files in their place.
 
-Then run `build_all.py` in DagorEngine root.
+Then run `python3 dagor.py build` in DagorEngine root.
 
 This builds the entire project toolkit from the source code. This process may take a considerable amount of time.
 After tools are built and ready to be used script builds game and UI resources using daBuild and other utilities.
 
-`build*.py` script may accept optional parameters to limit components to be built:
+`dagor.py build` and the projects' `build.py` scripts accept optional parameters to limit components to be built:
 `code`, `shaders`, `assets`, `vromfs`, `gui`.
-If no parameters passed script builds all components.
+If no parameters are passed, all components are built.
 
-`build*.py` script may accept optional parameters to force target architecture to be built, e.g. `arch:x86_64`, `arch:arm64`, `arch:x86`.
+They also accept optional parameters to force target architecture to be built, e.g. `arch:x86_64`, `arch:arm64`, `arch:x86`.
 If none is specified code is built to default architecture (depends on host OS and jamfile settings).
 
-`build_all.py` script in addition to components accepts optional list of projects to be built:
+`dagor.py build` in addition to components accepts optional list of projects to be built:
 `project:dagorTools`, `project:dargbox`, `project:physTest`.
-If none is passed script builds all projects.
+If none is passed, all projects are built.
 
-Example: `build_all.py project:dargbox code shaders` will build only code and shaders for **dargbox**.
+Example: `dagor.py build project:dargbox code shaders` will build only code and shaders for **dargbox**.
 
 ### Documentation
   Automatically generated [Dagor Documentation](https://gaijinentertainment.github.io/DagorEngine/) contains general architecture description, API reference, tutorials and manuals.<br>
