@@ -269,10 +269,15 @@ enum
 };
 
 
+// the editor's errors are sent to the event log server of the settings (eventLog{ host:t="..." }), with no host to none
 static void enable_event_log()
 {
+  const char *host = dgs_get_settings()->getBlockByNameEx("eventLog")->getStr("host", "");
+  if (!*host)
+    return;
+
   event_log::EventLogInitParams eventInitParams;
-  eventInitParams.host = "client-logs.warthunder.com";
+  eventInitParams.host = host;
   eventInitParams.use_https = true;
   eventInitParams.http_port = 0;
   eventInitParams.udp_port = 20020;
