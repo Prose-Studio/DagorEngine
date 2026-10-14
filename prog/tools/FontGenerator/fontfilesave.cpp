@@ -105,7 +105,7 @@ void BinFormat::shrinkUnicodeTable(int font_index)
     }
 }
 
-static Tab<uint8_t> tmp_data(tmpmem);
+static dag::Vector<uint8_t, TmpmemAlloc, false, uint32_t> tmp_data; // (as glimg in fontGenerator.cpp: not a global Tab)
 
 bool BinFormat::saveBinary(const char *fn, int targetCode, bool rgba32, bool valve_type, bool half_pixel_expand,
   const FastNameMap &dynTTFUsed)

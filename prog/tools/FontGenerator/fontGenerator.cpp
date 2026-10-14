@@ -163,7 +163,9 @@ public:
   Tabint() : Tab<int>(tmpmem) {}
 };
 
-static Tab<Tab<GlyphImage>> glimg(tmpmem_ptr());
+// (an allocator read when it allocates: a global Tab takes tmpmem when it is constructed, which on macOS, with no
+// constructor order across files, can be before the memory manager is set up)
+static dag::Vector<Tab<GlyphImage>, TmpmemAlloc, false, uint32_t> glimg;
 
 // static int glimg_index = 0;
 
