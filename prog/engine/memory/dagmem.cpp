@@ -699,54 +699,19 @@ protected:
   }
 };
 
-#if !USE_IMPORTED_ALLOC
-// The allocators before the memory manager is set up: a global constructed before it takes one where nothing orders the
-// constructors of different files (Mach-O has no init_priority across them). Its first use sets the manager up and
-// goes on to the allocator that gives.
-static void real_init_memory();
-class FirstUseAllocator final : public IMemAlloc
-{
-public:
-  constexpr FirstUseAllocator() = default;
-  void *alloc(size_t sz) override { return mem()->alloc(sz); }
-  void *tryAlloc(size_t sz) override { return mem()->tryAlloc(sz); }
-  void *allocAligned(size_t sz, size_t alignment) override { return mem()->allocAligned(sz, alignment); }
-  void free(void *p) override { mem()->free(p); }
-  void freeAligned(void *p) override { mem()->freeAligned(p); }
-  size_t getSize(void *p) override { return p ? mem()->getSize(p) : 0; }
-  bool resizeInplace(void *p, size_t sz) override { return mem()->resizeInplace(p, sz); }
-  void *realloc(void *p, size_t sz) override { return mem()->realloc(p, sz); }
-  void destroy() override {}
-  bool isEmpty() override { return false; }
-
-private:
-  static IMemAlloc *mem();
-};
-static constinit FirstUseAllocator first_use_mem;
-#define DECL_MEM(NM) IMemAlloc *NM = &first_use_mem //-V1003
-#else
 #define DECL_MEM(NM) IMemAlloc *NM = nullptr //-V1003
-#endif
 
 DECL_MEM(stdmem);
 DECL_MEM(tmpmem);
 DECL_MEM(inimem);
 DECL_MEM(midmem);
 DECL_MEM(strmem);
+DECL_MEM(defaultmem);
 DECL_MEM(uimem);
 DECL_MEM(scriptmem);
 DECL_MEM(globmem);
-IMemAlloc *defaultmem = nullptr; // (operator new takes the manager's storage until it is set up: FINAL_ALLOC)
 
 #undef DECL_MEM
-
-#if !USE_IMPORTED_ALLOC
-IMemAlloc *FirstUseAllocator::mem()
-{
-  real_init_memory();
-  return stdmem;
-}
-#endif
 
 char *str_dup(const char *s, IMemAlloc *a)
 {
