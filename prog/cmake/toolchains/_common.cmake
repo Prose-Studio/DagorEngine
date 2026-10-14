@@ -77,6 +77,11 @@ if((NOT CMAKE_CXX_COMPILER_LAUNCHER AND NOT DEFINED ENV{CMAKE_CXX_COMPILER_LAUNC
 endif()
 unset(_dagor_help)
 unset(_dagor_owner)
+# with a compiler cache, MSVC's debug information goes into each object (/Z7, which a cache can store), not into a PDB
+# the compiles share; here also for CMake's checks of the compiler, which a cache cannot run with /Zi
+if(CMAKE_CXX_COMPILER_LAUNCHER)
+  set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT Embedded)
+endif()
 dagor_toolchain_forward(DAGOR_COMPILER_LAUNCHER CMAKE_C_COMPILER_LAUNCHER CMAKE_CXX_COMPILER_LAUNCHER)
 
 # dev (DAGOR_DBGLEVEL 1, optimized, logs and asserts), rel (0), irel (-1, no logs at all), dbg (2, unoptimized); the
