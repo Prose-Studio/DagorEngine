@@ -101,7 +101,9 @@ function(dagor_android_apk target)
   # the tools: the SDK's newest build tools, the platform of the target API, a JDK (11 or later)
   file(GLOB build_tools LIST_DIRECTORIES true "${DAGOR_ANDROID_SDK}/build-tools/*")
   list(SORT build_tools COMPARE NATURAL ORDER DESCENDING)
-  list(POP_FRONT build_tools build_tools)
+  if(build_tools)
+    list(GET build_tools 0 build_tools) # the newest
+  endif()
   set(android_jar "${DAGOR_ANDROID_SDK}/platforms/android-${DAGOR_ANDROID_TARGET_API}/android.jar")
   if(NOT build_tools OR NOT EXISTS "${android_jar}")
     message(FATAL_ERROR "dagor_android_apk(${target}): the Android SDK (DAGOR_ANDROID_SDK='${DAGOR_ANDROID_SDK}') needs "
