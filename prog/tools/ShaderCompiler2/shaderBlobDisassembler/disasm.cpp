@@ -244,10 +244,12 @@ static eastl::string disassembleDX12(dag::ConstSpan<uint8_t> bytecode, dag::Cons
 
 #endif // _TARGET_PC_WIN
 
+// (a blob it cannot disassemble, a Metal one or another platform's, is a valid one: the text says so)
 eastl::string disassembleShaderBlob(dag::ConstSpan<uint8_t> bytecode, dag::ConstSpan<uint8_t> metadata)
 {
   auto detectedApi = detect_api(metadata);
-  G_ASSERTF_RETURN(detectedApi, {}, "Api detection for blob disasm failed: %s", detectedApi.error().c_str());
+  if (!detectedApi)
+    return eastl::string(eastl::string::CtorSprintf{}, "<no disassembly: %s>\n", detectedApi.error().c_str());
 
   switch (*detectedApi)
   {
@@ -259,10 +261,10 @@ eastl::string disassembleShaderBlob(dag::ConstSpan<uint8_t> bytecode, dag::Const
     case Api::SPIRV: return disassembleSpirV(bytecode, metadata);
 #endif
 
-    default: G_ASSERTF_RETURN(0, {}, "Shader blob disasm for %s is not supported on this platform", api_name(*detectedApi)); break;
+    default:
+      return eastl::string(eastl::string::CtorSprintf{}, "<no disassembly: %s blobs are not disassembled on this platform>\n",
+        api_name(*detectedApi));
   }
-
-  return {};
 }
 
 } // namespace shader_blob_disasm
