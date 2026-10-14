@@ -676,10 +676,13 @@ SQInteger SQLexer::ReadNumber()
 #else
         {
             char *sTemp;
+            const double wide = strtod(&_longstr[0], &sTemp);
             volatile SQFloat value;
-            value = (SQFloat)strtod(&_longstr[0], &sTemp);
+            value = (SQFloat)wide;
             _fvalue = value;
-            if(value == 0)
+            // whether it rounds to zero is told by the double (a literal has no sign): a process that flushes subnormals
+            // to zero (fast math) makes a zero float of any of them
+            if(sizeof(SQFloat) == sizeof(float) ? wide <= double(FLT_TRUE_MIN) / 2 : wide == 0)
             {
                 for(int i = 0; i < _longstr.size(); i++)
                 {
