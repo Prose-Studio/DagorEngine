@@ -1,8 +1,10 @@
 # Running Tests
 
 Tests are registered by the functions of `prog/cmake/DagorTesting.cmake` in the trees that build them, and run by CTest:
-the engine's in its `tests` trees (`cmake --preset <host>-tests`), a project's in its client and dedicated server
-trees. The target `tests` builds the programs they run (in the engine's tests trees they are part of the default build).
+the engine's in its `tests` trees (`cmake --preset <host>-tests`; with the Quirrel tests that csq runs: its script API,
+the script libraries' suites and the static analysis of the shared scripts and of dargbox's samples), dargbox's in its
+`dargbox` trees (each sample runs headless on the stub driver), a project's in its client and dedicated server trees.
+The target `tests` builds the programs they run (in the engine's tests trees they are part of the default build).
 
 ## Running
 
