@@ -9,7 +9,7 @@ ECS_DEF_PULL_VAR(cameraView);
 #include <daECS/core/internal/performQuery.h>
 static constexpr ecs::ComponentDesc process_active_camera_ecs_query_comps[] =
 {
-//start of 11 ro components at [0]
+//start of 12 ro components at [0]
   {ECS_HASH("eid"), ecs::ComponentTypeInfo<ecs::EntityId>()},
   {ECS_HASH("transform"), ecs::ComponentTypeInfo<TMatrix>()},
   {ECS_HASH("camera__accuratePos"), ecs::ComponentTypeInfo<DPoint3>(), ecs::CDF_OPTIONAL},
@@ -20,16 +20,17 @@ static constexpr ecs::ComponentDesc process_active_camera_ecs_query_comps[] =
   {ECS_HASH("zfar"), ecs::ComponentTypeInfo<float>(), ecs::CDF_OPTIONAL},
   {ECS_HASH("camera__fovHorPlus"), ecs::ComponentTypeInfo<bool>(), ecs::CDF_OPTIONAL},
   {ECS_HASH("camera__fovHybrid"), ecs::ComponentTypeInfo<bool>(), ecs::CDF_OPTIONAL},
+  {ECS_HASH("camera__orthoHeight"), ecs::ComponentTypeInfo<float>(), ecs::CDF_OPTIONAL},
   {ECS_HASH("camera__active"), ecs::ComponentTypeInfo<bool>()},
-//start of 1 rq components at [11]
+//start of 1 rq components at [12]
   {ECS_HASH("camera_view"), ecs::ComponentTypeInfo<ecs::Tag>()}
 };
 static ecs::CompileTimeQueryDesc process_active_camera_ecs_query_desc
 (
   "process_active_camera_ecs_query",
   empty_span(),
-  make_span(process_active_camera_ecs_query_comps+0, 11)/*ro*/,
-  make_span(process_active_camera_ecs_query_comps+11, 1)/*rq*/,
+  make_span(process_active_camera_ecs_query_comps+0, 12)/*ro*/,
+  make_span(process_active_camera_ecs_query_comps+12, 1)/*rq*/,
   empty_span());
 template<typename Callable>
 inline void process_active_camera_ecs_query(ecs::EntityManager &manager, Callable function)
@@ -53,6 +54,7 @@ inline void process_active_camera_ecs_query(ecs::EntityManager &manager, Callabl
             , ECS_RO_COMP_OR(process_active_camera_ecs_query_comps, "zfar", float(5000.f))
             , ECS_RO_COMP_OR(process_active_camera_ecs_query_comps, "camera__fovHorPlus", bool(true))
             , ECS_RO_COMP_OR(process_active_camera_ecs_query_comps, "camera__fovHybrid", bool(false))
+            , ECS_RO_COMP_OR(process_active_camera_ecs_query_comps, "camera__orthoHeight", float(0.f))
             );
 
         }while (++comp != compE);
