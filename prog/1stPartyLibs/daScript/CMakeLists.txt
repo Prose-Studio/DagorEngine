@@ -58,7 +58,18 @@ dagor_add_link_choice(1stPartyLibs.daScript PROPERTY DAGOR_DAS_CONSOLE
   ON 1stPartyLibs.daScript.console OFF 1stPartyLibs.daScript.standard)
 
 # the daScript language and daslib test suite, run by the engine's das interpreter (dastest/tests is not included: it
-# spawns '<exe> dastest.das' the way the standalone daslang host is invoked)
+# spawns '<exe> dastest.das' the way the standalone daslang host is invoked); the tests of daScript's tools and of the
+# daslive sample's game logic, from the daScript root (their fixtures are root-relative)
 if(DAGOR_ENGINE_TESTS)
   dagor_add_das_test(daScript.suite PATHS tests TAGS daScript TIMEOUT 1800)
+  foreach(tool lint gen1-to-gen2 find-dupe dascov common)
+    dagor_add_das_test(daScript.utils.${tool} PATHS utils/${tool}/tests WORKING_DIRECTORY . TAGS daScript)
+  endforeach()
+  foreach(tool hygiene requirefix detect-dupe)
+    string(REPLACE "-" "_" file ${tool})
+    dagor_add_das_test(daScript.utils.${tool} PATHS utils/${tool}/test_${file}.das WORKING_DIRECTORY . TAGS daScript)
+  endforeach()
+  set(sequence examples/daslive/sequence)
+  dagor_add_das_test(daScript.daslive.sequence WORKING_DIRECTORY . TAGS daScript
+    PATHS ${sequence}/test_anim.das ${sequence}/test_bots.das ${sequence}/test_gameplay.das)
 endif()

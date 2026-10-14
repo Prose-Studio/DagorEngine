@@ -79,6 +79,7 @@ def private build_tree() : string {
     plant(build, "CMakeCache.txt", "CMAKE_GENERATOR:INTERNAL=Ninja\n")
     plant(build, "stale.das", "options gen2\n")
     plant(tmp_root(), "above.das", "options gen2\n")   //! above the scan root - the ancestor walk stops at the root
+    plant(root, "REVIEW_COMMON.md", "# Common Code Review Checklist\n")   //! the checklist the folder's cites first: live at the root
     plant(folder, "ok.das", "options gen2\n\n[export]\ndef main \{\n    print(\"ok\\n\")\n\}\n")
     plant(folder, "run.das", "options gen2\n\n[export]\ndef main \{\n    print(\"run\\n\")\n\}\n")
     plant(tests, "test_thing_holds.das", "options gen2\n\nrequire dastest/testing_boost public\n\n// def test_thing_ghost - a retired cell, named only in this comment\n\n[test]\ndef test_thing_holds(t : T?) \{\n    t |> equal(1, 1)\n\}\n")

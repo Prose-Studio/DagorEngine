@@ -22,3 +22,7 @@ skyquake/prog/gameBase/gamebase/gamedata/dx12_cache.blk binary
 
 # tools data the cdk install copies into tools/, byte for byte
 prog/tools/toolsData/** -text
+
+# daScript tool tests that compare their fixtures' text with the tools' output: LF on every checkout
+prog/1stPartyLibs/daScript/utils/gen1-to-gen2/** text eol=lf
+prog/1stPartyLibs/daScript/utils/requirefix/** text eol=lf
