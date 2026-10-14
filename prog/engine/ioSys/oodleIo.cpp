@@ -28,6 +28,8 @@ enum
   DECBUF_SZ = 1 << 20
 };
 
+bool oodle_available() { return true; }
+
 size_t oodle_compress(void *dst, size_t maxDstSize, const void *src, size_t srcSize, int compressionLevel)
 {
   SmallTab<char, TmpmemAlloc> cstor;

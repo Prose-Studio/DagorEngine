@@ -2,6 +2,8 @@
 
 #include <ioSys/dag_oodleIo.h>
 
+bool oodle_available() { return false; }
+
 size_t oodle_compress(void *, size_t, const void *, size_t, int)
 {
   G_ASSERTF_RETURN(false, 0, "%s(...) not implemented", __FUNCTION__);

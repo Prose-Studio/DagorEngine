@@ -89,6 +89,9 @@ protected:
 };
 
 
+//! whether the Oodle codecs are built in (Oodle_ROOT, see engine/ioSys); without them the functions below are stubs
+KRNLIMP bool oodle_available();
+
 KRNLIMP int oodle_compress_data(IGenSave &dest, IGenLoad &src, int sz, int compressionLevel = 19);
 KRNLIMP int oodle_decompress_data(IGenSave &dest, IGenLoad &src, int compr_sz, int orig_sz);
 
