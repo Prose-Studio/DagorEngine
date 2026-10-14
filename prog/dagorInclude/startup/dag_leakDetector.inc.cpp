@@ -77,8 +77,9 @@ static struct OnExit
         close_debug_files();
       }
 
-      // reopen log in special synchronous mode (to avoid leaks on async writer memory)
-      if (freopen(log_fname, "at", stdout))
+      // reopen log in special synchronous mode (to avoid leaks on async writer memory); without a log file (-stdout) stdout
+      // stays as it is: freopen of an empty name fails and closes it, and the writes below would then abort
+      if (log_fname[0] && freopen(log_fname, "at", stdout))
       { // workaround against gcc warn_unused_result warning
       }
       set_debug_console_handle(invalid_console_handle);
