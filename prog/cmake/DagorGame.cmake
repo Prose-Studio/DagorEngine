@@ -418,7 +418,7 @@ const char *main_vromfs_mount_dir() { return \"${VROM_DIR}\"; }")
       FILES_CMAKE ${arg_AOT_FILES_CMAKE}
       INCLUDE_DIRECTORIES PRIVATE ${DAGOR_DNG_INCLUDES} ${DAGOR_PROG_DIR}/daNetGameLibs ${DAGOR_PROG_DIR}/gameLibs
       BUILD_DEPENDENCIES PRIVATE daNetGame-das-aot Dagor::Quirrel
-      PROPERTIES DAGOR_NO_GPU ON)
+      PROPERTIES DAGOR_NO_GPU ON DAGOR_NO_CRYPTO ON)
     _dagor_game_lib_files(libs _aot.cmake "${arg_DNG_LIBS}" "${arg_GAME_LIBS}")
     foreach(lib IN LISTS libs)
       include("${lib}")
