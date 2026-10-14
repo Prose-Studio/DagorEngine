@@ -3,7 +3,12 @@
 # and src/hal/performance_time.cpp the time functions the engine kernel provides: they would be duplicate symbols
 dagor_glob_sources(FILES DIRS src/ast src/builtin src/runtime src/simulate src/misc src/parser src/modules/uriparser
   src/hal GLOB *.cpp EXCLUDE "project_specific_file_info\\.cpp$" "performance_time\\.cpp$")
-list(APPEND FILES dagorAdapter/das_jit_runtime.cpp) # (empty without DAS_JIT_RUNTIME)
+# less the sources each build compiles itself: the rest is compiled once, for both
+set(shared ${FILES})
+include("${CMAKE_CURRENT_LIST_DIR}/daScript_build_files.cmake")
+set(build_files ${FILES})
+list(REMOVE_ITEM shared ${build_files})
+set(FILES ${shared} dagorAdapter/das_jit_runtime.cpp) # (empty without DAS_JIT_RUNTIME)
 
 # the sources that throw (and the crash handler, which reads the exception in flight): compiled with exceptions
 # whatever the tree's setting
@@ -15,7 +20,7 @@ endif()
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   list(APPEND exceptions -Wno-macro-redefined)
 endif()
-foreach(file IN LISTS FILES)
+foreach(file IN LISTS FILES build_files)
   if(file MATCHES "(_exceptions|_ast_serialize|runtime_string|format|crash_handler)\\.cpp$")
     set_property(SOURCE "${file}" PROPERTY COMPILE_OPTIONS ${exceptions})
   endif()

@@ -2,7 +2,8 @@
 #   1stPartyLibs.daScript.standard  log output through the engine
 #   1stPartyLibs.daScript.console   stdout output and daScript's own crash handler, for the console tools (the das
 #                                   interpreter) that set the DAGOR_DAS_CONSOLE target property
-# Libraries depend on 1stPartyLibs/daScript, which links the one of the program they end up in.
+# Libraries depend on 1stPartyLibs/daScript, which links the one of the program they end up in. The two differ in 4
+# sources (daScript_build_files.cmake): the others are compiled once, into 1stPartyLibs.daScript.common.
 # DAS_ENABLE_DYN_INCLUDES: as daScript's own CMake build defines it (src/builtin/jit_runtime.cpp needs its header)
 set(defines DAS_ENABLE_KEEPALIVE=0 FMT_UNICODE=0 DAS_ENABLE_DYN_INCLUDES=1 "$<$<CONFIG:Rel,IRel>:DAS_NO_ASSERTIONS=1>")
 if(DAGOR_DAS_LLVM_AOT)
@@ -28,19 +29,28 @@ set(aot_deps)
 if(DAGOR_DAS_AOT)
   set(aot_deps 1stPartyLibs.daScript.daslib) # daslib's scripts compiled ahead of time
 endif()
+set(includes include include/das_hash_map include/modules/uriparser ${DAGOR_PROG_DIR}/3rdPartyLibs/uriparser/include
+  ${DAGOR_PROG_DIR}/3rdPartyLibs/fmt/include)
+set(deps 3rdPartyLibs.eastl 3rdPartyLibs.uriparser 3rdPartyLibs.fmt ${aot_deps})
+# what both builds share, compiled once (an object library: its objects go into each build's library)
+dagor_add_target(NAME 1stPartyLibs.daScript.common OBJECT LAX
+  FILES_CMAKE daScript_files.cmake
+  INCLUDE_DIRECTORIES PRIVATE ${includes}
+  COMPILE_DEFINITIONS PRIVATE ${defines}
+  COMPILE_OPTIONS PRIVATE ${options}
+  BUILD_DEPENDENCIES PRIVATE ${deps}
+)
 foreach(build standard console)
   set(build_defines ${defines})
   if(build STREQUAL "console")
     list(APPEND build_defines DAS_DEFAULT_STDOUT DAS_USE_BASE_CRASH_HANDLER=1)
   endif()
   dagor_add_target(NAME 1stPartyLibs.daScript.${build} STATIC LAX
-    FILES_CMAKE daScript_files.cmake
-    INCLUDE_DIRECTORIES PRIVATE
-      include include/das_hash_map include/modules/uriparser ${DAGOR_PROG_DIR}/3rdPartyLibs/uriparser/include
-      ${DAGOR_PROG_DIR}/3rdPartyLibs/fmt/include
+    FILES_CMAKE daScript_build_files.cmake
+    INCLUDE_DIRECTORIES PRIVATE ${includes}
     COMPILE_DEFINITIONS PRIVATE ${build_defines}
     COMPILE_OPTIONS PRIVATE ${options}
-    BUILD_DEPENDENCIES PRIVATE 3rdPartyLibs.eastl 3rdPartyLibs.uriparser 3rdPartyLibs.fmt ${aot_deps}
+    BUILD_DEPENDENCIES PRIVATE 1stPartyLibs.daScript.common ${deps}
     LICENSES LICENSE
   )
 endforeach()
