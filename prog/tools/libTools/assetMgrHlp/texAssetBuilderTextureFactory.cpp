@@ -10,6 +10,7 @@
 #include <3d/dag_buildOnDemandTexFactory.h>
 #include <3d/dag_texMgr.h>
 #include <3d/ddsxTex.h>
+#include <stdlib.h>
 #include <osApiWrappers/dag_direct.h>
 #include <osApiWrappers/dag_files.h>
 #include <util/dag_texMetaData.h>
@@ -19,6 +20,13 @@ struct TexConvBuildOnDemandHelper : public ITexBuildOnDemandHelper
 {
   TexConvBuildOnDemandHelper(DagorAssetMgr &m, ILogWriter *c) : assetMgr(&m), conWriter(c) {}
 
+  void attach(DagorAssetMgr &m, ILogWriter *c)
+  {
+    assetMgr = &m;
+    conWriter = c;
+  }
+  void detach() { assetMgr = nullptr; } // the textures are still released (by name), none is built any more
+
   bool checkTexNameHandled(const char *tex_fn) override
   {
     const char *plast = strchr(tex_fn, '*');
@@ -27,7 +35,7 @@ struct TexConvBuildOnDemandHelper : public ITexBuildOnDemandHelper
 
   asset_handle_t *resolveTex(const char *tex_fn, TextureMetaData &out_tmd) override
   {
-    if (!tex_fn || !*tex_fn)
+    if (!assetMgr || !tex_fn || !*tex_fn)
       return nullptr;
 
     String name(DagorAsset::fpath2asset(tex_fn));
@@ -102,7 +110,7 @@ struct TexConvBuildOnDemandHelper : public ITexBuildOnDemandHelper
     return true;
   }
 
-  const char *getTexName(unsigned nameId) override { return assetMgr->getAssetName(nameId); }
+  const char *getTexName(unsigned nameId) override { return assetMgr ? assetMgr->getAssetName(nameId) : ""; }
 
   bool prebuildTex(unsigned nameId, bool &out_cache_was_updated) override
   {
@@ -163,6 +171,8 @@ protected:
 
   inline DagorAsset *find_asset_by_name_id(unsigned name_id) const
   {
+    if (!assetMgr)
+      return nullptr;
     for (DagorAsset *a : assetMgr->getAssets())
       if (a->getNameId() == name_id && a->getType() == assetMgr->getTexAssetTypeId())
         return a;
@@ -207,6 +217,12 @@ static TextureFactory *tex_factory = nullptr;
 
 bool texconvcache::init_build_on_demand_tex_factory(DagorAssetMgr &mgr, ILogWriter *con)
 {
+  if (helper) // detached from the previous asset manager
+  {
+    helper->attach(mgr, con);
+    build_on_demand_tex_factory::cease_loading(tex_factory, true);
+    return tex_factory != nullptr;
+  }
   helper = new TexConvBuildOnDemandHelper(mgr, con);
   tex_factory = build_on_demand_tex_factory::init(helper);
   if (tex_factory)
@@ -218,6 +234,19 @@ void texconvcache::term_build_on_demand_tex_factory()
   build_on_demand_tex_factory::term(tex_factory);
   del_it(helper);
   tex_factory = nullptr;
+}
+void texconvcache::detach_build_on_demand_tex_factory()
+{
+  if (!helper)
+    return;
+  build_on_demand_tex_factory::cease_loading(tex_factory, false);
+  helper->detach();
+  // the factory goes at exit, after the textures it made (the program's shutdown released them) and before the texture
+  // manager's statics, which were constructed before this registration
+  static bool terminated_at_exit = false;
+  if (!terminated_at_exit)
+    atexit(term_build_on_demand_tex_factory);
+  terminated_at_exit = true;
 }
 bool texconvcache::build_on_demand_tex_factory_cease_loading(bool en)
 {

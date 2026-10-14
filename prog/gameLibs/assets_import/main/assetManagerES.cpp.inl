@@ -230,11 +230,12 @@ static void asset_manager_track_changes_es(const ecs::UpdateStageInfoAct &, Dago
 }
 
 // the reverse of init_asset_manager_es: the texture factory and the gameres hooks refer to the asset manager, which goes
-// with the entity (textures are released through the factory at exit)
+// with the entity; the factory itself stays, the textures it made being released through it later (the UI, the
+// renderer), and builds nothing more
 ECS_ON_EVENT(on_disappear)
 static void destoy_asset_manager_es(const ecs::Event &, DagorAssetMgr &asset__manager)
 {
-  texconvcache::term_build_on_demand_tex_factory();
+  texconvcache::detach_build_on_demand_tex_factory();
   uninstall_asset_manager_hooks();
   asset__manager.unsubscribeBaseUpdateNotify(&assetWatcher);
   cachedAssetManager = nullptr;

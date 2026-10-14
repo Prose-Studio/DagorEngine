@@ -878,7 +878,8 @@ bool build_on_demand_tex_factory::cease_loading(TextureFactory *f, bool allow_fu
   if (f != &ddsx_bod_tf)
     return false;
   unsigned prev_allow_loading = interlocked_exchange(shared.texLoadingAllowed, unsigned(false));
-  cpujobs::remove_jobs_by_tag(texmgr_internal::reload_jobmgr_id, AsyncMassLoadJob::TAG);
+  if (cpujobs::is_inited()) // (a factory that outlives the job managers goes at exit: their jobs went with them)
+    cpujobs::remove_jobs_by_tag(texmgr_internal::reload_jobmgr_id, AsyncMassLoadJob::TAG);
   while (interlocked_acquire_load(shared.asyncMassLoadJobInProgress) > 0)
     sleep_msec(1);
   perform_async_tex_repl();

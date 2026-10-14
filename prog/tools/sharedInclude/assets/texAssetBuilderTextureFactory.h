@@ -16,6 +16,9 @@ namespace texconvcache
 bool init_build_on_demand_tex_factory(DagorAssetMgr &mgr, ILogWriter *con);
 //! shutdown build-on-demand texture factory
 void term_build_on_demand_tex_factory();
+//! the asset manager goes before the textures the factory made (a game's asset manager goes with its entity): the
+//! factory stays the default one, and builds nothing more until init_build_on_demand_tex_factory() gives it another
+void detach_build_on_demand_tex_factory();
 //! stops tex loading (and optionally disables async tex loading after that); returns previous allow_loading
 bool build_on_demand_tex_factory_cease_loading(bool allow_further_loading);
 
