@@ -3,11 +3,10 @@
 ## General Directory Structure
 
 At the top level of the Dagor Engine directory structure, the root directory
-is organized into four main sections:
+is organized into three main sections:
 
 - [Main Sources](#main-sources). Contain the engine core and associated tools.
 - [Projects](#projects). Contain files specific to individual game projects.
-- [Samples](#samples-1). Include example projects for reference.
 - [Documentation](#documentation). Provides comprehensive guides and references.
 
 Below is a tree of the general directory structure:
@@ -39,7 +38,6 @@ Below is a tree of the general directory structure:
 │   ├── daNetGame
 │   ├── daNetGameLibs
 │   └── samples
-├── samples
 └── _docs
 ```
 
@@ -322,16 +320,6 @@ directories for the editor. In `application.blk`, can be defined:
   For more information, see
   [application.blk](../assets/all-about-blk/application_blk.md).
   ```
-
-## Samples
-
-The `samples` directory includes example projects that demonstrate the usage of
-the core engine and various game libraries. These sample projects serve as
-practical references, showcasing different aspects of game development with the
-Dagor Engine. They are designed to illustrate best practices and provide a
-starting point for developers to build their own projects. Each sample is
-carefully crafted to highlight specific features and functionalities, making it
-easier for developers to learn and apply the concepts in their own work.
 
 ## Documentation
 

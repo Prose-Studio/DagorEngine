@@ -1,3 +1,0 @@
-include "../../../prog/daNetGame/shaders/_build/shaders_spirv.blk"
-include "game_common_override.blk"
-include "loading_screens.blk"

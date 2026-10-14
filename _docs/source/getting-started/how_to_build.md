@@ -82,9 +82,6 @@ Download and extract additional binary files from the repository
 <https://github.com/GaijinEntertainment/DagorEngine/releases> into the
 `X:\develop\DagorEngine` directory:
 
-- `samples-base.7z`: contains initial assets that will be compiled into binary
-  files that will be loaded the game.
-- `samples-prebuilt-game.7z`: contains precompiled assets.
 - `tools-prebuilt.7z`: contains the prebuilt engine toolkit.
 
 The directory structure should look like this:
@@ -93,43 +90,18 @@ The directory structure should look like this:
 develop
 └── DagorEngine
     ├── prog
-    ├── samples
-    │   ├── skiesSample
-    │   │   ├── game
-    │   │   ├── develop
-    │   │   └── prog
-    │   └── testGI
-    │       ├── game
-    │       ├── develop
-    │       └── prog
     ├── tools
     └── _docs
 ```
 
-where
-
-- `prog`: contains game source code.
-- `develop`: contains initial assets.
-- `game`: directory where assets are placed after building and game executable
-  files are located.
-
-  ```{seealso}
-  For more information, see
-  [Directory Structure Overview](directory_structure.md).
-  ```
+```{seealso}
+For more information, see
+[Directory Structure Overview](directory_structure.md).
+```
 
 ## How to Build: Build from Source Code
 
-To build the **testGI** sample:
-
-1. Navigate to the `X:/develop/DagorEngine/samples/testGI/prog` directory.
-
-2. Run the `jam` command.
-
-   After building, the executable file will be placed in the `testGI/game`
-   directory.
-
-3. Run `DagorEngine/build_all.cmd` to build the entire project toolkit from the
-   source code. This process may take a considerable amount of time.
+Run `DagorEngine/build_all.py` to build the entire engine toolkit from the source
+code. This process may take a considerable amount of time.
 
 

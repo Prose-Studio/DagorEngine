@@ -1,15 +1,5 @@
 /tools/
 /samples/physTest
-/samples/*/develop
-/samples/*/game*
-/samples/dngSceneViewer/viewer*
-/samples/*/tools
-/samples/*/application.blk
-/outerSpace/develop
-/outerSpace/game*
-/outerSpace/tools
-/outerSpace/fmod_project
-/outerSpace/application.blk
 /_output/
 /prog/platform.jam
 .#*

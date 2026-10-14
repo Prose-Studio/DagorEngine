@@ -91,7 +91,7 @@ if __name__ == '__main__':
       BUILD_PROJECTS += [s[8:]]
   # when no projects specified we build all of them
   if len(BUILD_PROJECTS) == 0:
-    BUILD_PROJECTS = ['dagorTools', 'dargbox', 'physTest', 'skiesSample', 'testGI', 'outerSpace', 'dngSceneViewer']
+    BUILD_PROJECTS = ['dagorTools', 'dargbox', 'physTest']
 
   # build command line to run other build scripts
   PY_ADD_CMDLINE = BUILD_COMPONENTS
@@ -125,19 +125,3 @@ if __name__ == '__main__':
   # physTest sample
   if 'physTest' in BUILD_PROJECTS:
     run([sys.executable, './build.py'] + PY_ADD_CMDLINE, cwd='prog/samples/physTest')
-
-  # skiesSample
-  if 'skiesSample' in BUILD_PROJECTS:
-    run([sys.executable, './build.py'] + PY_ADD_CMDLINE, cwd='samples/skiesSample/prog')
-
-  # testGI sample
-  if 'testGI' in BUILD_PROJECTS:
-    run([sys.executable, './build.py'] + PY_ADD_CMDLINE, cwd='samples/testGI/prog')
-
-  # Outer Space game sample
-  if 'outerSpace' in BUILD_PROJECTS:
-    run([sys.executable, './build.py'] + PY_ADD_CMDLINE, cwd='outerSpace/prog')
-
-  # daNetGame-based Scene Viewer
-  if 'dngSceneViewer' in BUILD_PROJECTS:
-    run([sys.executable, './build.py'] + PY_ADD_CMDLINE, cwd='samples/dngSceneViewer/prog')
