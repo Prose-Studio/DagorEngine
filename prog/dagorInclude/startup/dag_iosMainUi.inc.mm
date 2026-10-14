@@ -26,7 +26,7 @@
 #include "dag_loadSettings.h"
 #include "dag_iosCallback.h"
 
-#include <userSystemInfo/systemInfo.h>
+#include <os/proc.h>
 
 #if _TARGET_TVOS
 #include "dag_tvosMainUi.h"
@@ -1061,10 +1061,7 @@ extern "C" void dagor_ios_delegate_applicationDidBecomeActive(UIApplication*)
 
 extern "C" void dagor_ios_delegate_applicationDidReceiveMemoryWarning(UIApplication*)
 {
-  int freeMemMb = 0, totalMemMb = 0;
-  systeminfo::get_physical_memory_free(freeMemMb);
-  systeminfo::get_physical_memory(totalMemMb);
-  logwarn("running out of memory. free memory is %d out of %d", freeMemMb, totalMemMb);
+  logwarn("running out of memory. available memory is %d MB", int(os_proc_available_memory() >> 20));
 }
 
 extern "C" BOOL dagor_ios_delegate_openURL(UIApplication *application, NSURL *url, NSString *sourceApplication, id annotation)
