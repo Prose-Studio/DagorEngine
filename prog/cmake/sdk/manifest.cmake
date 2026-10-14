@@ -41,7 +41,7 @@ unset(_llvm_win_tools)
 unset(_llvm_unix)
 unset(_llvm_unix_tools)
 
-# Compiler cache: fetched when DAGOR_COMPILER_LAUNCHER is sccache (toolchains/_common.cmake).
+# Compiler cache: the default compiler launcher (DAGOR_COMPILER_LAUNCHER, toolchains/_common.cmake).
 set(_sccache https://github.com/mozilla/sccache/releases/download/v0.18.0)
 dagor_sdk(sccache 0.18.0
   windows-x86_64

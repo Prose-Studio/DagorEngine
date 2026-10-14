@@ -1,8 +1,8 @@
 name: Dagor build setup
 description: >-
   Python, CMake, Ninja and the Linux system libraries; the SDK cache (keyed on the manifest) in DAGOR_DEPS_DIR and the
-  compiler cache (sccache, pinned by the manifest) in SCCACHE_DIR. The job sets DAGOR_DEPS_DIR,
-  DAGOR_COMPILER_LAUNCHER=sccache and SCCACHE_DIR.
+  compiler cache (sccache, pinned by the manifest; the trees compile through it by default) in SCCACHE_DIR. The job
+  sets DAGOR_DEPS_DIR and SCCACHE_DIR.
 
 inputs:
   cache-key:

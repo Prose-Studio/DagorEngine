@@ -40,7 +40,6 @@ jobs:
     timeout-minutes: 360 # the game, its AOT compiler, the engine's tools and the content
     env:
       DAGOR_DEPS_DIR: ${{ matrix.deps }}
-      DAGOR_COMPILER_LAUNCHER: sccache
       SCCACHE_DIR: ${{ matrix.deps }}/compiler-cache
       SCCACHE_CACHE_SIZE: 2G
     steps:

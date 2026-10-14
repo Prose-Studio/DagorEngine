@@ -44,11 +44,13 @@ The configurations are Dev (optimized, with logs and asserts), Rel, IRel (Rel
 without any logs) and Dbg (unoptimized), all in one Ninja Multi-Config tree.
 Workflow presets chain configure, build and test (or package).
 
-`DAGOR_COMPILER_LAUNCHER=sccache` in the environment (or the cache) of a new
-tree compiles through sccache, the pinned one fetched into `DAGOR_DEPS_DIR`; it
-keeps the objects of every tree and project in one cache (`SCCACHE_DIR`), so a
-rebuild, another worktree or another project compiles only what changed. CI
-builds that way. A path there names another launcher (ccache).
+The trees compile through sccache, the pinned one fetched into
+`DAGOR_DEPS_DIR`: it keeps the objects of every tree and project in one cache
+(sccache's own `SCCACHE_DIR` and `SCCACHE_CACHE_SIZE`, 10 GB by default), so a
+rebuild, another worktree or another project compiles only what changed.
+`DAGOR_COMPILER_LAUNCHER` (the cache or the environment) is `sccache` by
+default, `OFF` for none, or the path of another launcher (ccache); the Visual
+Studio and Xcode generators run none.
 
 Variants are separate trees for what one tree cannot hold: the kernel linkage
 (static in cdk and tests, daKernel in assets and editor) and the 3D driver

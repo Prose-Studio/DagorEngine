@@ -38,7 +38,6 @@ jobs:
     timeout-minutes: 180
     env:
       DAGOR_DEPS_DIR: ${{ matrix.deps }}
-      DAGOR_COMPILER_LAUNCHER: sccache
       SCCACHE_DIR: ${{ matrix.deps }}/compiler-cache
       SCCACHE_CACHE_SIZE: 1G
       PRESET: ${{ matrix.host }}-${{ matrix.preset }}
@@ -77,7 +76,6 @@ jobs:
     timeout-minutes: 180
     env:
       DAGOR_DEPS_DIR: ${{ matrix.deps }}
-      DAGOR_COMPILER_LAUNCHER: sccache
       SCCACHE_DIR: ${{ matrix.deps }}/compiler-cache
     steps:
       - uses: actions/checkout@v4
@@ -115,7 +113,6 @@ jobs:
     timeout-minutes: 90
     env:
       DAGOR_DEPS_DIR: ${{ matrix.deps }}
-      DAGOR_COMPILER_LAUNCHER: sccache
       SCCACHE_DIR: ${{ matrix.deps }}/compiler-cache
     steps:
       - uses: actions/checkout@v4
