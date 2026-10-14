@@ -180,6 +180,8 @@ void DagorHwException::removeHandler(int) {}
 
 #include <osApiWrappers/dag_dbgStr.h>
 #include <osApiWrappers/dag_miscApi.h>
+#include <startup/dag_globalSettings.h>
+#include <debug/dag_logSys.h>
 
 #if _TARGET_APPLE | _TARGET_PC_LINUX
 #include <signal.h>
@@ -275,7 +277,13 @@ void DagorHwException::reportException(DagorException &caught_except, bool termi
   __debugbreak();
 #endif
   if (terminate)
+  {
+    // reported as on Windows (a console program's on its console): the process must not end without a word of why
+    flush_debug_file();
+    if (dgs_report_fatal_error)
+      dgs_report_fatal_error("Exception", caught_except.excDesc, "");
     terminate_process(2);
+  }
 }
 void DagorHwException::cleanup()
 {
