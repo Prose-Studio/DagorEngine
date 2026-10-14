@@ -115,6 +115,11 @@ def run_per_platform(cmds_windows=[], cmds_macOS=[], cmds_linux=[], cwd='.'):
 
 # --- devtools --------------------------------------------------------------------------------------------------------
 
+# jam and the macOS build of DXC come from this repository's releases (copies of those of jam-G8 and DXC-prebuilt, with the
+# same tags and file names); the other tools and SDKs come from their vendors
+DEVTOOLS_RELEASES_URL = 'https://github.com/Prose-Studio/DagorEngine/releases/download'
+JAM_RELEASE_URL = DEVTOOLS_RELEASES_URL + '/2.5-G8-1.3-2024%2F04%2F01'
+
 def error(s):
   print("\nERROR: {0}\n".format(s))
   exit(1)
@@ -895,7 +900,7 @@ def devtools_windows(dest_dir):
     if (os.environ.get('PROCESSOR_ARCHITECTURE', '') == 'ARM64' or
        ('ARMv' in os.environ.get('PROCESSOR_IDENTIFIER', '') and '64-bit' in os.environ.get('PROCESSOR_IDENTIFIER', ''))):
       jam_zip = 'jam-windows-arm64.zip'
-    download_url("https://github.com/GaijinEntertainment/jam-G8/releases/download/2.5-G8-1.3-2024%2F04%2F01/"+jam_zip, dest_dir)
+    download_url(JAM_RELEASE_URL+'/'+jam_zip, dest_dir)
     with zipfile.ZipFile(os.path.normpath(dest_dir+'/.packages/'+jam_zip), 'r') as zip_file:
       zip_file.extractall(dest_dir)
 
@@ -1075,7 +1080,7 @@ def devtools_linux(dest_dir):
       elif is_elbrus_linux:
         jam_zip = 'jam-ElbrusLinux-8-e2k-v3.tar.gz'
 
-    download_url('https://github.com/GaijinEntertainment/jam-G8/releases/download/2.5-G8-1.3-2024%2F04%2F01/'+jam_zip, dest_dir)
+    download_url(JAM_RELEASE_URL+'/'+jam_zip, dest_dir)
     with tarfile.open(os.path.normpath(dest_dir+'/.packages/'+jam_zip), 'r:gz') as tar_file:
       tar_file.extractall(dest_dir)
       print('--- will copy jam to /usr/local/bin using sudo:')
@@ -1164,7 +1169,7 @@ def devtools_macOS(dest_dir):
   if pathlib.Path(dxc_dest_folder).exists():
     print('=== DXC May 2025 - Patch 1 -- 1.8.2505.1 found at {0}, skipping setup'.format(dxc_dest_folder))
   else:
-    download_url('https://github.com/GaijinEntertainment/DXC-prebuilt/releases/download/dxc-1.8.2505.1/DXC-1.8.2505.1.tar.gz', dest_dir)
+    download_url(DEVTOOLS_RELEASES_URL+'/dxc-1.8.2505.1/DXC-1.8.2505.1.tar.gz', dest_dir)
     with tarfile.open(os.path.normpath(dest_dir+'/.packages/DXC-1.8.2505.1.tar.gz'), 'r:gz') as tar_file:
       tar_file.extractall(dest_dir)
       tar_file.close()
@@ -1202,7 +1207,7 @@ def devtools_macOS(dest_dir):
   except FileNotFoundError:
     print("jam not found, installing jam...")
     jam_zip = 'jam-macOS-11.0-arm64.tar.gz' if mac_proc_arm else 'jam-macOS-10.9-x64_86.tar.gz'
-    download_url('https://github.com/GaijinEntertainment/jam-G8/releases/download/2.5-G8-1.3-2024%2F04%2F01/'+jam_zip, dest_dir)
+    download_url(JAM_RELEASE_URL+'/'+jam_zip, dest_dir)
     with tarfile.open(os.path.normpath(dest_dir+'/.packages/'+jam_zip), 'r:gz') as tar_file:
       tar_file.extractall(dest_dir)
       run('chmod 755 '+dest_dir+'/jam')
