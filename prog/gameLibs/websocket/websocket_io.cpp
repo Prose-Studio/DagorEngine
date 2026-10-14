@@ -19,6 +19,8 @@
 
 // curl_multi_poll and curl_multi_wakeup, 7.68.0
 #define WEBSOCKET_CURL_MULTI_POLL (LIBCURL_VERSION_NUM >= 0x074400)
+// curl_multi_waitfds, 8.8.0
+#define WEBSOCKET_CURL_MULTI_WAITFDS (LIBCURL_VERSION_NUM >= 0x080800)
 
 namespace websocket
 {
@@ -155,6 +157,7 @@ private:
   void readTransferResults();
   int performConnections(bool perform_all);
   void waitForIo(int timeout_ms, int &ready_count);
+  void leaveCurlSocketsToCurl();
   void openWakeSocket();
   void flushEvents();
   void workerLoop();
@@ -180,6 +183,7 @@ private:
   eastl::vector<WorkerItem> pendingEvents;
   eastl::vector<curl_waitfd> waitFds;
   eastl::vector<IoConnection *> waitConns;
+  eastl::vector<curl_waitfd> curlFds;
   int runningTransfers = 0;
   CURLMcode lastWaitError = CURLM_OK;
 
@@ -572,8 +576,33 @@ int IoManager::performConnections(bool perform_all)
   return timeoutMs;
 }
 
+// A connection's socket that curl watches too is left to curl: on Windows curl waits through WSAEventSelect, which keeps one
+// event mask for each socket, so a second entry would replace curl's (an upload that waits for FD_WRITE would then wait for the
+// timeout instead)
+void IoManager::leaveCurlSocketsToCurl()
+{
+#if WEBSOCKET_CURL_MULTI_WAITFDS
+  if (waitFds.empty())
+    return;
+  unsigned count = 0;
+  if (curl_multi_waitfds(multi, nullptr, 0, &count) != CURLM_OK || count == 0)
+    return;
+  curlFds.resize(count);
+  if (curl_multi_waitfds(multi, curlFds.data(), count, &count) != CURLM_OK)
+    return;
+  curlFds.resize(count);
+  for (size_t i = waitFds.size(); i-- > 0;)
+    if (eastl::any_of(curlFds.begin(), curlFds.end(), [s = waitFds[i].fd](const curl_waitfd &fd) { return fd.fd == s; }))
+    {
+      waitFds.erase(waitFds.begin() + i);
+      waitConns.erase(waitConns.begin() + i);
+    }
+#endif
+}
+
 void IoManager::waitForIo(int timeout_ms, int &ready_count)
 {
+  leaveCurlSocketsToCurl();
   // constraint: the wake socket sits in waitFds only during the wait, waitFds stays index-matched to waitConns after it
   const bool hasWakeSocket = wakeSocket != OS_SOCKET_INVALID;
   if (hasWakeSocket)
