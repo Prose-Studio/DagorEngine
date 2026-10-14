@@ -1,6 +1,12 @@
 if(DAGOR_GAME_ASSET_MANAGER)
+  # the asset manager and its daScript module outside Rel, the stub in Rel
   dagor_glob_sources(FILES DIRS dasModules GLOB *.cpp)
+  list(TRANSFORM FILES REPLACE "^(.+)$" "$<$<NOT:$<CONFIG:Rel>>:\\1>")
   dagor_glob_sources(ES_FILES DIRS main GLOB *ES.cpp.inl)
+  list(TRANSFORM ES_FILES REPLACE "^(.+)$" "$<$<NOT:$<CONFIG:Rel>>:\\1>")
+  dagor_glob_sources(stub_es DIRS stub GLOB *ES.cpp.inl)
+  list(TRANSFORM stub_es REPLACE "^(.+)$" "$<$<CONFIG:Rel>:\\1>")
+  list(APPEND ES_FILES ${stub_es})
   dagor_glob_sources(DAS_FILES DIRS main das_includes GLOB *.das)
   dagor_glob_sources(debug_ui DIRS debug_ui GLOB *.das)
   list(TRANSFORM debug_ui REPLACE "^(.+)$" "$<$<NOT:$<CONFIG:Rel>>:\\1>")

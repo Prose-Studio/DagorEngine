@@ -28,8 +28,15 @@ option(DAGOR_GAME_EMBEDDED_BROWSER "The game client's embedded browser (CEF, Win
 if(DAGOR_DEDICATED)
   set(DAGOR_GAME_EMBEDDED_BROWSER OFF)
 endif()
-# the in-game asset manager: daBuild built into a Windows client, which builds the assets it loads (the daBuild cache)
-option(DAGOR_GAME_ASSET_MANAGER "The in-game asset manager (daBuild in the Windows client)" OFF)
+# the in-game asset manager (hot reloading): daBuild built into a Windows game client outside Rel, which builds the
+# assets it loads from the project's sources (the daBuild cache) and rebuilds and reloads those that change
+set(_asset_manager OFF)
+if(WIN32 AND DAGOR_GAME_RENDERER AND DAGOR_VARIANT STREQUAL "game" AND NOT DAGOR_DAS_AOT_COMPILER)
+  set(_asset_manager ON)
+endif()
+option(DAGOR_GAME_ASSET_MANAGER "The in-game asset manager: assets reload when they change (Windows clients, not Rel)"
+  ${_asset_manager})
+unset(_asset_manager)
 if(DAGOR_GAME_ASSET_MANAGER AND NOT (WIN32 AND DAGOR_GAME_RENDERER))
   message(FATAL_ERROR "DAGOR_GAME_ASSET_MANAGER: the asset manager is built into Windows clients only")
 endif()
