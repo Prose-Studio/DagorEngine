@@ -124,7 +124,8 @@ dagor_sdk(dxc 1.8.2505.1
     EXTRACT */include/dxc/*.h */lib/macosx/* */LICENSE.TXT
 )
 
-# ARM's ASTC encoder 4.6.1 (astcenc-<isa>), which the texture exporter runs for the ASTC formats
+# ARM's ASTC encoder 4.6.1 (astcenc-<isa>), which the texture exporter, ddsConverter and ddsx2dds run for the ASTC
+# formats
 dagor_sdk(astcenc 4.6.1
   windows-x86_64
     URL https://github.com/ARM-software/astc-encoder/releases/download/4.6.1/astcenc-4.6.1-windows-x64.zip

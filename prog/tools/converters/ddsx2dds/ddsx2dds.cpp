@@ -20,7 +20,7 @@
 static void __cdecl ctrl_break_handler(int) { quit_game(0); }
 
 
-static bool ddsx_to_dds(IGenLoad &crd, IGenSave &cwr)
+static bool ddsx_to_dds(IGenLoad &crd, const char *out_fn)
 {
   struct BitMaskFormat
   {
@@ -60,27 +60,32 @@ static bool ddsx_to_dds(IGenLoad &crd, IGenSave &cwr)
     return false;
   }
 
+  // the packed data goes on past the texture (padded to 8 bytes, the stream's end): reading stops with ceaseReading()
   Tab<char> texData;
   texData.resize(hdr.memSz);
   if (hdr.isCompressionZSTD())
   {
     ZstdLoadCB zcrd(crd, hdr.packedSz);
     zcrd.read(texData.data(), hdr.memSz);
+    zcrd.ceaseReading();
   }
   else if (hdr.isCompressionOODLE())
   {
     OodleLoadCB zcrd(crd, hdr.packedSz, hdr.memSz);
     zcrd.read(texData.data(), hdr.memSz);
+    zcrd.ceaseReading();
   }
   else if (hdr.isCompressionZLIB())
   {
-    ZlibLoadCB zlib_crd(crd, hdr.packedSz);
+    ZlibLoadCB zlib_crd(crd, hdr.packedSz, false, false); // (broken data is a read error, reported, not a fatal one)
     zlib_crd.read(texData.data(), hdr.memSz);
+    zlib_crd.ceaseReading();
   }
   else if (hdr.isCompression7ZIP())
   {
     LzmaLoadCB lzma_crd(crd, hdr.packedSz);
     lzma_crd.read(texData.data(), hdr.memSz);
+    lzma_crd.ceaseReading();
   }
   else
     crd.read(texData.data(), hdr.memSz);
@@ -137,7 +142,13 @@ static bool ddsx_to_dds(IGenLoad &crd, IGenSave &cwr)
   }
 
 
-  // dds output
+  // dds output, created only now that the DDSx is read: a broken one leaves no file behind
+  FullFileSaveCB cwr(out_fn);
+  if (!cwr.fileHandle)
+  {
+    printf("ERR: cannot write <%s>\n", out_fn);
+    return false;
+  }
   uint32_t FourCC = MAKEFOURCC('D', 'D', 'S', ' ');
   cwr.write(&FourCC, sizeof(FourCC));
   cwr.write(&targetHeader, sizeof(targetHeader));
@@ -563,15 +574,13 @@ int DagorWinMain(bool debugmode)
     out_fn += ".dds";
   }
 
-  FullFileSaveCB cwr(out_fn);
-  if (!cwr.fileHandle)
+  DAGOR_TRY { return ddsx_to_dds(crd, out_fn) ? 0 : -1; }
+  DAGOR_CATCH(const IGenLoad::LoadException &)
   {
     print_header();
-    printf("ERR: cannot write <%s>\n", out_fn.str());
-    return -1;
+    printf("ERR: cannot read <%s>: its data is truncated or broken\n", dgs_argv[1]);
   }
-
-  return ddsx_to_dds(crd, cwr) ? 0 : -1;
+  return -1;
 }
 
 #define __UNLIMITED_BASE_PATH 1

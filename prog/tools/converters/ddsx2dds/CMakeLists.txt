@@ -7,3 +7,17 @@ dagor_add_target(NAME ddsx2dds EXECUTABLE LAX NO_CONFIG_POSTFIX
     engine.baseUtil engine.math engine.perfMon.daProfilerStub
   CDK
 )
+# -decodeASTC decodes with ARM's astcenc, which it runs from its own dir
+find_package(Astcenc REQUIRED)
+dagor_target_runtime_files(ddsx2dds ${Astcenc_PROGRAMS})
+
+# its tests (tests/ddsx2dds_tests.py, on the readers of tests/texfiles.py the CDK's other image tests share): DDSx made
+# by ddsxCvt (with the PC plugin, the iOS one for ASTC) converted back, dumped, checked and decoded, and broken ones
+if(DAGOR_CDK_TESTS)
+  foreach(scenario roundtrip dump check bundle astc invalid)
+    dagor_add_exec_test(ddsx2dds.${scenario} COMMAND ${Python3_EXECUTABLE} -B
+      ${CMAKE_CURRENT_SOURCE_DIR}/tests/ddsx2dds_tests.py ${scenario} $<TARGET_FILE:ddsxCvt> $<TARGET_FILE:ddsx2dds>
+      $<TARGET_FILE:pcDdsxConv> $<TARGET_FILE:iosDdsxConv> WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} TAGS cdk
+      TIMEOUT 60)
+  endforeach()
+endif()

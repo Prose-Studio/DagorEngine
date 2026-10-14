@@ -1,7 +1,9 @@
 # ARM's ASTC encoder: the astcenc programs (one per instruction set; one universal binary on macOS) that the texture
-# exporter runs.
+# exporter, ddsConverter and ddsx2dds run.
 #   Astcenc::Astcenc  the programs that link it get the astcenc programs two dirs above them (the root of the CDK, where
 #                     the exporter plugins look for them)
+#   Astcenc_PROGRAMS  the programs, for the runtime files of a tool that runs them from its own dir
+#                     (dagor_target_runtime_files)
 # Astcenc_ROOT: a local copy (default: the pinned one, fetched).
 include(DagorFetch)
 dagor_sdk_root(Astcenc astcenc)
