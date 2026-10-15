@@ -277,11 +277,28 @@ struct build_on_demand_tex_factory::DDSxBuildOnDemandTexFactory : public Texture
   void term()
   {
     if (defFactory)
+    {
       ::set_default_tex_factory(defFactory);
+      handOverPassThroughTextures();
+    }
     shared.delRef();
     onTexFactoryDeleted(this);
     build_helper = nullptr;
     defFactory = nullptr;
+  }
+
+  // while this factory is the default one, every texture added without an explicit factory gets it, though the ones that
+  // build_helper does not handle (UI pictures, for example) are only created and released by defFactory. Their users may
+  // outlive this factory (it goes with its asset manager), so give them to defFactory instead of leaking them in
+  // onTexFactoryDeleted()
+  void handOverPassThroughTextures()
+  {
+    texmgr_internal::TexMgrAutoLock texMgrLock;
+    TEX_REC_AUTO_LOCK();
+    for (unsigned i = 0, ie = RMGR.getAccurateIndexCount(); i < ie; i++)
+      if (RMGR.getFactory(i) == this)
+        if (const char *name = RMGR.getName(i); name && !build_helper->checkTexNameHandled(name))
+          RMGR.setFactory(i, defFactory);
   }
 
   static void mark_cur_ql(unsigned idx, TexQL ql)
