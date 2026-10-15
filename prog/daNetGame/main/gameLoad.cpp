@@ -157,6 +157,8 @@ static void mem_collect_threads(bool loading_job_only = false)
 extern void init_component_replication_filters();
 
 extern void dng_load_localization();
+extern const char *const EMPTY_LEVEL_NAME;      // main/levelES.cpp.inl
+extern const char *const DEFAULT_WR_LEVEL_NAME; // main/levelES.cpp.inl
 
 void add_search_path(const char *path_name)
 {
@@ -239,8 +241,11 @@ void apply_scene_level(eastl::string &&name, eastl::string &&lblk_path)
   current_game.levelBlkPath = eastl::move(lblk_path);
 
   // Before loading common game scenes which might request game resources which might interfere with this settings setup
+  // (a server's scene without a level, or with the default world renderer, names no level blk)
   DataBlock levelBlk;
-  if (!current_game.levelBlkPath.empty() && dblk::load(levelBlk, current_game.levelBlkPath.c_str(), dblk::ReadFlag::ROBUST_IN_REL))
+  if (!current_game.levelBlkPath.empty() && current_game.levelBlkPath != EMPTY_LEVEL_NAME &&
+      current_game.levelBlkPath != DEFAULT_WR_LEVEL_NAME &&
+      dblk::load(levelBlk, current_game.levelBlkPath.c_str(), dblk::ReadFlag::ROBUST_IN_REL))
     prepare_united_vdata_setup(&levelBlk);
 
   load_common_game_client_scenes();
