@@ -38,6 +38,7 @@ Below is a tree of the general directory structure:
 │   ├── daNetGame
 │   ├── daNetGameLibs
 │   └── samples
+├── templates
 └── _docs
 ```
 
@@ -130,6 +131,9 @@ keeping it within individual projects. This practice helps avoid code
 duplication and increases the likelihood of code review and improvement.
 
 ## Projects
+
+The `templates` directory holds the templates `dagor.py new` makes game projects from (see
+[Making a Game Project](new_project.md)); a project made from one can be anywhere on the engine's drive.
 
 ### General Architecture of Projects
 

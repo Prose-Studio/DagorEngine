@@ -1,0 +1,9 @@
+// The base layer of the project templates (dagor.py new): the tokens the layers use in file names and text,
+// replaced with the new project's names (longest first, so title, name and bundle id stay intact). Dirs starting with
+// _ are layers, not templates; a template's template.blk lists the layers it is made of. This file is not copied.
+tokens{
+  bundleId:t="com.example.StarterGame" // <company>.<Name>
+  title:t="Starter Game"               // human readable name: window title, executable info
+  name:t="StarterGame"                 // PascalCase name: macOS bundle, Windows manifest
+  codename:t="starter_game"            // lowercase: executables, vromfs, script and data dirs
+}

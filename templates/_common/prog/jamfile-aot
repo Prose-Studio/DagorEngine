@@ -1,0 +1,20 @@
+# The game's daScript AOT compiler, into ../tools (aot_config.blk is its setup). build.py builds it before the game
+# (jam -f jamfile-aot); the game's jamfile builds it again, up to date, for -sNeedDasAotCompile=yes, passing Root,
+# OutDir, Target and ProjectLocation the same way.
+include _engine.jam ; # EngineRoot and ProjectLocation: the engine of ../application.blk, written by build.py
+Root    ?= $(EngineRoot) ;
+
+PlatformArch_windows ?= host_arch ;
+include $(Root)/prog/_jBuild/defPlatform.jam ;
+
+OutDir ?= $(Root)/$(ProjectLocation)/../tools ;
+Target ?= starter_game-aot ;
+CheckedContainers ?= yes ;
+
+Sources =
+  $(ProjectLocation)/main/dasGameModulesList.cpp
+;
+
+include $(Root)/$(ProjectLocation)/_aot_libs.jam ; # the libs' AOT parts, written by build.py
+
+include $(Root)/prog/daNetGame-das-aot/jamfile ;

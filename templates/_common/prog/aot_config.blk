@@ -1,0 +1,13 @@
+// The setup of the game's daScript AOT compiler (starter_game-aot of jamfile-aot), which the game's jam runs in this dir
+project:t="%scripts/project.das_project"
+dasRoot:t="."
+mountPoints{
+  "%dngdas":t="%engine/prog/daNetGame/scripts/das"
+  "%daslib":t="%engine/prog/1stPartyLibs/daScript/daslib"
+  "%gameLibs":t="%engine/prog/gameLibs"
+  "%dasImgui":t="%engine/prog/1stPartyLibs/daScript/modules/dasImgui/daslib"
+  "%dasLLVM":t="%engine/prog/1stPartyLibs/daScript/modules/dasLLVM"
+  "%danetlibs":t="%engine/prog/daNetGameLibs"
+  "%dastest":t="%engine/prog/1stPartyLibs/daScript/dastest"
+  "%scripts":t="scripts"
+}

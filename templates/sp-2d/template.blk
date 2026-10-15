@@ -1,0 +1,5 @@
+// A project template (python3 dagor.py new --template sp-2d --name MyGame): the project is made of the layers, in
+// order, each one's files replacing those of the layers before it, then of this dir's own files. Not copied.
+description:t="Single-player 2D game: the game is its own server; a world in the XY plane through an orthographic camera"
+layer:t="_common"
+layer:t="_2d"

@@ -1,0 +1,158 @@
+# The game program, into ../game/<platform>-<arch>. build.py builds it (and its dedicated server with -sDedicated=yes
+# when dedicated.jam exists, the multiplayer games); jam here works too once build.py wrote _engine.jam:
+#   jam -sNeedDasAotCompile=yes              its daScript compiled ahead of time (build.py builds jamfile-aot first)
+#   jam -sConfig=rel                         a release build (dev by default; dbg, irel)
+Game     = starter_game ;
+GameMainVromFilePath = starter_game.vromfs.bin ;
+
+include _engine.jam ; # EngineRoot and ProjectLocation: the engine of ../application.blk, written by build.py
+Root    ?= $(EngineRoot) ;
+Location = $(ProjectLocation) ;
+
+PlatformArch_windows ?= host_arch ;
+include $(Root)/prog/_jBuild/defPlatform.jam ;
+
+TargetType  = exe ;
+if $(Dedicated) = yes { Target ?= $(Game)-ded ; } else { Target ?= $(Game) ; } # as prog/daNetGame/target_name_rules.jam
+
+UseModulesAI = no ;
+UseModulesDM = no ;
+UseModulesWeapon = no ;
+if $(Platform) in windows { ExportOptimus ?= yes ; } # force using discrete GPU on start
+
+AotCompilerBaseName = $(Root)/$(Location)/../tools/$(Game)-aot ;
+AotJamfile = $(Root)/$(Location)/jamfile-aot ;
+DAS_AOT_COMPILER_OPT = -- --config $(Root)/$(Location)/aot_config.blk -sConfig $(Config) ;
+StreamlineFeatures = dlss reflex ;
+
+if $(Dedicated) = yes {
+  if ! [ GLOB $(Root)/$(Location) : dedicated.jam ] { Exit $(Game) is a single-player game: it has no dedicated server ; }
+  include $(Root)/$(Location)/dedicated.jam ;
+} else {
+  HaveAssetManager ?= yes ; # develop/assets reloaded while the game runs (assets_import of gamelibs.txt: Windows, outside Rel)
+}
+
+include $(Root)/prog/daNetGame/setup.jam ; # Note - $(Platform) is not defined before this line unless passed in command line
+
+if $(Platform) in windows && $(Dedicated) != yes { VRDeviceSupport ?= yes ; }
+
+SetupOutputDir ;
+
+OutDir = $(Root)/$(Location)/../game/$(Platform)-$(PlatformArch) ;
+
+# the game's daScript: es/ everywhere, es/client/ only where a player plays (scripts/starter_game/starter_game.das)
+AllSrcFolder_DAS =
+  scripts/starter_game
+  scripts/starter_game/es
+;
+if $(Dedicated) != yes { AllSrcFolder_DAS += scripts/starter_game/es/client ; }
+AllSrcFolder_ES  = ;
+AllSrcFolder_CPP = ;
+
+include $(Root)/prog/daNetGame/game.jam ;
+
+SourceES = ;
+
+DasModulesFolder = ;
+DasModuleFiles = ;
+
+AllSrcFolder_CPP = main ;
+
+gamePulls_action = make_module_pull_cpp ;
+gamePulls = daECS/core/componentType.h game_pulls
+  actInThread_pull
+;
+AddGamePullsToSources ;
+
+AddIncludes +=
+  $(Root)/prog/daNetGameLibs
+  $(Root)/prog/gameLibs
+;
+
+UseProgLibs +=
+  daNetGame
+  daNetGameLibs/dm/stub
+  engine/daECS/delayedAct
+;
+
+include $(Root)/$(Location)/_libs.jam ; # the libs of danetgamelibs.txt and gamelibs.txt, written by build.py
+
+if $(Platform) in windows {
+  if ! $(PlatformArch) in x86_64 arm64 { Exit $(Platform)-$(PlatformArch) is not supported! ; }
+  if $(Dedicated) != yes {
+    Manifest = $(Root)/$(Location)/platform/$(Platform)/$(Game).exe.manifest ;
+    Sources += platform/$(Platform)/$(Game).rc ;
+    include $(Root)/prog/engine/drv/drv3d_DX12/copy_bundles.jam ;
+    include $(Root)/prog/engine/drv/drv3d_commonCode/copy_bundles.jam ;
+  }
+  if $(FmodStudio) != src && $(HaveSound) != no {
+    AddLibs += $(FmodStaticLibs) ;
+    for dll in $(FmodStudioSharedLibs) { BundleCopy += @$(dll) $(dll:D=) ; }
+  }
+} else if $(Platform) = linux {
+  ImportsRelativeDir = . ;
+  if $(FmodStudio) != src && $(HaveSound) != no {
+    AddLibs += $(OutDir)/$(FmodStaticLibs:D=:S=) ;
+    for dll in $(FmodStudioSharedLibs) { BundleCopy += @$(dll) $(dll:D=:S=) ; }
+  }
+} else if $(Platform) = macOS && $(Dedicated) != yes {
+  if $(PlatformArch) = arm64 { ForceSignTarget_macOS = yes ; }
+  BundleName = StarterGame ;
+  if $(PlatformArch) = arm64 { BundleName = StarterGameArm64 ; }
+  BundleID   = com.example.StarterGame ;
+  BundlePlist = @$(Root)/prog/_jBuild/macOS/generic.info.plist ../Info.plist ;
+  BundleIcon = $(BundleName) ;
+  BundleCopy =
+    platform/macOS/$(Game).icns ../Resources/$(BundleName).icns
+  ;
+  opt on main/apple_main.mm = -D__S(X)=#X -DDAGOR_MACOSX_CONTENTS=__S(../../..) ;
+
+  if $(Config) = rel {
+    CopyTo = $(OutDir)/$(BundleName) ;
+    OutDir = $(OutDir)/../../rel-build/$(BundleName).app/Contents/MacOS ;
+  } else {
+    CopyTo = $(OutDir) ;
+    OutDir = $(OutDir)/../$(BundleName).app/Contents/MacOS ;
+  }
+
+  if $(SignatureOpt) = none { SignatureOpt = ; }
+  if $(FmodStudio) != src && $(HaveSound) != no {
+    AddLibs += $(FmodStaticLibs) ;
+    UseSharedLibs += $(FmodStudioSharedLibs) ;
+  }
+  if $(HaveSound) != no {
+    LINKopt += -framework AudioUnit -framework CoreAudio ;
+  }
+} else if $(Platform) != macOS {
+  Exit unsupported Platform\=$(Platform) for Target\=$(Target) ;
+}
+
+if $(CheckOnly) != yes { # different compile options are not compatible with PCH
+  gameVersion += //$(VERSION_DOT) //$(VERSION_NUM) //$(BUILD_NUMBER) ;
+  CPPopt += -DVERSION_DOT=$(VERSION_DOT) -DBUILD_NUMBER=$(BUILD_NUMBER) -DVERSION_NUM=$(VERSION_NUM) ;
+
+  if $(VERSION_NUM) && $(Platform) = windows && $(Dedicated) != yes {
+    RCopt += -DVERSION_NUM=$(VERSION_NUM) ;
+    ALWAYS $(Location)/platform/$(Platform)/$(Game).rc ;
+  }
+}
+
+
+AutoscanBuildLists $(AllSrcFolder_CPP) : *.cpp       : Sources ;
+if $(DAS_AOT_COMPILER) { AutoscanBuildLists $(AllSrcFolder_DAS) : *.das : Sources : ; }
+
+AutoscanBuildLists $(AllSrcFolder_ES)  : *ES.cpp.inl : SourceES ;
+for s in $(SourceES) { GenESSourceFile $(s) ; }
+SourceES = ;
+
+if $(VRDeviceSupport) = yes { include $(Root)/prog/engine/drv/vr_device/bundle.jam ; }
+
+if $(DumpBuildCmds) != yes {
+echo building Target\=$(Target) to $(_Output) "
+  "\ using\ GlobalCPPopt\=$(GlobalCPPopt:J=" ") "
+  "\ using\ CPPopt\=$(CPPopt:J=" ") "
+  " HaveRenderer\=$(HaveRenderer) HaveFx\=$(HaveFx) HaveSound\=$(HaveSound) HaveTamVoice\=$(HaveTamVoice)
+    HaveEnlist\=$(HaveEnlist) HaveWebui\=$(HaveWebui) HaveConsole\=$(HaveConsole) HaveEditor\=$(HaveEditor) ;
+}
+
+include $(Root)/prog/_jBuild/build.jam ;

@@ -1,0 +1,6 @@
+# daNetGameLibs this game uses (dirs in <engine>/prog/daNetGameLibs), one per line.
+# build.py writes the _libs* files from it (and gamelibs.txt).
+native_dasevents
+frame_graph_renderer
+render_debug
+blurred_ui

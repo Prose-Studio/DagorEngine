@@ -1,0 +1,6 @@
+# The dedicated server of this multiplayer game (jam -sDedicated=yes; build.py builds it because this file exists),
+# included by the jamfile before daNetGame's setup.
+# The linux server checks the clients' auth keys (NetPeerAuth): zero keys let any linux client in, set real ones (20
+# bytes) before shipping; windows and macOS clients are not checked.
+GameAuthKeyPlatformListPairs = linux linux ;
+GameAuthKey_linux = 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 ;

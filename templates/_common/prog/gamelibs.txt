@@ -1,0 +1,4 @@
+# gameLibs with das, template or game build parts (_lib.jam) this game uses (dirs in <engine>/prog/gameLibs), one
+# per line, see danetgamelibs.txt.
+upscale_sampling # required by frame_graph_renderer
+assets_import    # the asset manager: develop/assets reload in the game when they change (Windows, outside Rel)

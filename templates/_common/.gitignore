@@ -1,0 +1,27 @@
+# written by prog/build.py (dagor.py setup_project) from application.blk (engineRoot) and prog/*libs.txt
+/_engine.cmd
+/_engine.sh
+/prog/_engine.jam
+/prog/_libs.jam
+/prog/_aot_libs.jam
+/prog/_libs.vromfs.blk
+/prog/gameBase/gamedata/templates/_libs.entities.blk
+/prog/scripts/_libs_init.das
+/prog/tools/_libs_init.das
+/prog/shaders/_libs_shaders.blk
+/stubs/
+# written by prog/build.py gui from prog/gameBase/ui/fontgen.blk
+/prog/gameBase/ui/fonts.dynFont.blk
+
+# build outputs (prog/build.py): the game, its content, the editor's files, the intermediate files of shaders
+/tools/
+/game/*
+!/game/*.cmd
+!/game/*.sh
+/build/
+/develop/.cache/
+/develop/dabuild-dbg*
+*.pyc
+
+# daScript's module cache and JIT output, written into the working dir of a das run
+.jitted_scripts/

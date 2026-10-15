@@ -6,14 +6,18 @@
 #   dagor.py build [project:<name>...] [code] [shaders] [assets] [vromfs] [gui] [arch:<arch>] [--dry-run]
 #       builds the engine tools and projects (dagorTools, dargbox, physTest: all when none is named), the components
 #       named (all when none is), after check-hosts
+#   dagor.py new --name <Name> [--template <template>] [--dest <dir>] ... (--help, --list)
+#       creates a game project from a template of templates/, anywhere on the engine's drive
+#   dagor.py relink <project dir>
+#       points a game project at this engine (after either moved)
 #   dagor.py check-hosts
 #       fails on Gaijin hosts, app IDs or release downloads in the engine (see check_hosts)
-# A project's build.py imports it for the build helpers: run, run_per_platform, the tools' paths and the components and
-# arch of the project's own command line.
+# A project's build.py imports it for the build helpers: run, run_per_platform, the tools' paths, the components and
+# arch of the project's own command line, setup_project.
 import sys
 
-if not (sys.version_info.major >= 3 and sys.version_info.minor >= 5):
-  print("\nERROR: Python 3.5 or a higher version is required to run this script.")
+if not (sys.version_info.major >= 3 and sys.version_info.minor >= 7):
+  print("\nERROR: Python 3.7 or a higher version is required to run this script.")
   exit(1)
 
 import subprocess
@@ -32,7 +36,7 @@ import glob
 import filecmp
 from urllib import request
 
-COMMANDS = ['devtools', 'build', 'check-hosts']
+COMMANDS = ['devtools', 'build', 'check-hosts', 'new', 'relink']
 
 # the build's command line: that of the project's build.py, or that of dagor.py after the command
 ARGS = sys.argv[1:]
@@ -1230,6 +1234,277 @@ def devtools_macOS(dest_dir):
     run('sudo jam -sRoot=. -f prog/engine/kernel/jamfile mkdevtools');
 
 
+# --- projects --------------------------------------------------------------------------------------------------------
+
+# A game project is made from a template of templates/ (dagor.py new) and can be anywhere: its application.blk names
+# the engine it is built with (engineRoot:t="<engine root, relative to the project dir or absolute>"), which the game
+# and the tools read too (the %engine named mount). setup_project() writes the project's files that depend on the
+# engine's path and on the project's lib lists (prog/danetgamelibs.txt, prog/gamelibs.txt): they start with _ and are
+# not committed. The project's build.py runs it before each build; dagor.py relink after pointing engineRoot here.
+TEMPLATES_DIR = os.path.join(DAGOR_ROOT_FOLDER, 'templates')
+TEMPLATE_BLK = 'template.blk'
+TEMPLATE_TOKENS = ('bundleId', 'title', 'name', 'codename')
+ENGINE_ROOT_RE = re.compile(r'^([ \t]*engineRoot[ \t]*:[ \t]*t[ \t]*=[ \t]*)"((?:[^"~\n]|~.)*)"', re.MULTILINE)
+GENERATED_NOTE = 'written by dagor.py from application.blk (engineRoot) and prog/*libs.txt: not committed, do not edit'
+
+def norm_path(path):
+  return os.path.normpath(os.path.abspath(path)).replace('\\', '/')
+
+def is_engine_root(path):
+  return os.path.isfile(os.path.join(path, 'prog', '_jBuild', 'defaults.jam'))
+
+def blk_escape(s):
+  return s.replace('~', '~~').replace('"', '~"')
+
+def blk_unescape(s):
+  return re.sub(r'~(.)', lambda m: {'n': '\n', 't': '\t', 'r': '\r'}.get(m.group(1), m.group(1)), s)
+
+def read_text(path):
+  with open(path, 'rb') as f:
+    raw = f.read().decode('utf-8')
+  return raw.replace('\r\n', '\n'), '\r\n' if '\r\n' in raw else '\n'
+
+def write_text(path, text, newline='\n'):
+  data = text.replace('\n', newline).encode('utf-8')
+  if os.path.isfile(path):
+    with open(path, 'rb') as f:
+      if f.read() == data:
+        return # unchanged: jam and the tools see no new file
+  os.makedirs(os.path.dirname(path), exist_ok=True)
+  with open(path, 'wb') as f:
+    f.write(data)
+
+def project_engine_root(project_dir):
+  fn = os.path.join(project_dir, 'application.blk')
+  if not os.path.isfile(fn):
+    error('{0} is not a game project: it has no application.blk'.format(project_dir))
+  m = ENGINE_ROOT_RE.search(read_text(fn)[0])
+  if not m or not m.group(2):
+    error('{0}: expected engineRoot:t="<path to the engine>"'.format(fn))
+  root = norm_path(os.path.join(project_dir, blk_unescape(m.group(2))))
+  if not is_engine_root(root):
+    error('{0}: engineRoot "{1}" is not a Dagor Engine (no prog/_jBuild/defaults.jam in it); point it at one with '
+          'python <engine>/dagor.py relink {2}'.format(fn, m.group(2), project_dir))
+  return root
+
+def set_project_engine_root(project_dir, engine_root, absolute=False):
+  try:
+    value = engine_root if absolute else os.path.relpath(engine_root, project_dir)
+  except ValueError: # another drive
+    value = engine_root
+  fn = os.path.join(project_dir, 'application.blk')
+  text, newline = read_text(fn)
+  if not ENGINE_ROOT_RE.search(text):
+    error('{0} has no engineRoot:t="" line'.format(fn))
+  value = blk_escape(value.replace('\\', '/'))
+  write_text(fn, ENGINE_ROOT_RE.sub(lambda m: '{0}"{1}"'.format(m.group(1), value), text, count=1), newline)
+
+def setup_project(project_dir):
+  project_dir = norm_path(project_dir)
+  engine = project_engine_root(project_dir)
+  prog = project_dir + '/prog'
+  try:
+    engine_from_prog = os.path.relpath(engine, prog).replace('\\', '/')
+    prog_from_engine = os.path.relpath(prog, engine).replace('\\', '/')
+  except ValueError:
+    error('{0} is on another drive than its engine {1}: jam builds it only from the same drive'.format(project_dir, engine))
+  cdk = '{0}/{1}'.format(engine, os.path.relpath(DAGOR_TOOLS_FOLDER, DAGOR_ROOT_FOLDER).replace('\\', '/'))
+
+  # the engine for jam (prog/jamfile, prog/jamfile-aot) and for the scripts of the project (develop/, game/)
+  write_text(prog + '/_engine.jam',
+    '# {0}\nEngineRoot = {1} ; # relative to prog/, where jam runs\nProjectLocation = {2} ; # prog/, relative to the engine\n'
+    .format(GENERATED_NOTE, engine_from_prog, prog_from_engine))
+  write_text(project_dir + '/_engine.cmd',
+    '@rem {0}\n@set "DAGOR_ENGINE_ROOT={1}"\n@set "DAGOR_CDK_DIR={2}"\n'.format(GENERATED_NOTE, engine, cdk), '\r\n')
+  write_text(project_dir + '/_engine.sh',
+    '# {0}\n# source it: . _engine.sh\nexport DAGOR_ENGINE_ROOT="{1}"\nexport DAGOR_CDK_DIR="{2}"\n'.format(GENERATED_NOTE, engine, cdk))
+
+  # the libs: their code (jam), daScript (loaded by load_libs()), entity templates, shaders and vromfs content
+  m = re.search(r'^[ \t]*output[ \t]*:[ \t]*t[ \t]*=[ \t]*"([^"]+)"', read_text(prog + '/prog.vromfs.blk')[0], re.MULTILINE)
+  if not m:
+    error('{0}/prog.vromfs.blk names no output:t=""'.format(prog))
+  vromfs_name = m.group(1)
+  jam = aot_jam = vromfs = templates = shaders = requires = loads = ''
+  for list_name, libs_dir, mount in (('danetgamelibs.txt', 'daNetGameLibs', 'danetlibs'), ('gamelibs.txt', 'gameLibs', 'gameLibs')):
+    list_path = os.path.join(prog, list_name)
+    if not os.path.isfile(list_path):
+      continue
+    for line in read_text(list_path)[0].split('\n'):
+      lib = line.split('#', 1)[0].strip()
+      if not lib:
+        continue
+      lib_rel = 'prog/{0}/{1}'.format(libs_dir, lib)
+      lib_dir = os.path.join(engine, lib_rel)
+      if not os.path.isdir(lib_dir):
+        error('{0}: there is no {1} in the engine ({2})'.format(list_path, lib, engine))
+      name = lib.split('/')[-1]
+      if os.path.isfile(os.path.join(lib_dir, name + '_init.das')):
+        requires += 'require {0}.{1}.{2}_init\n'.format(mount, lib.replace('/', '.'), name)
+        loads += '  ok = load_{0}("%{1}/{2}") && ok\n'.format(name, mount, lib)
+      if os.path.isfile(os.path.join(lib_dir, '_lib.jam')):
+        jam += 'include $(Root)/{0}/_lib.jam ;\n'.format(lib_rel)
+      if os.path.isfile(os.path.join(lib_dir, '_aot.jam')):
+        aot_jam += 'include $(Root)/{0}/_aot.jam ;\n'.format(lib_rel)
+      if os.path.isfile(os.path.join(lib_dir, '_shaders.blk')):
+        shaders += 'include "%engine/{0}/_shaders.blk"\n'.format(lib_rel)
+      if os.path.isdir(os.path.join(lib_dir, 'templates')):
+        for template in sorted(os.listdir(os.path.join(lib_dir, 'templates'))):
+          templates += 'import:t="%{0}/{1}/templates/{2}"\n'.format(mount, lib, template)
+      if os.path.isdir(os.path.join(lib_dir, 'sq_stubs')):
+        copy_tree(os.path.join(lib_dir, 'sq_stubs'), project_dir + '/stubs')
+      wildcards = ''
+      for ext in ('.blk', '.das', '.das_project'):
+        if any(os.path.basename(f) != '_shaders.blk' for f in glob.glob(lib_dir + '/**/*' + ext, recursive=True)):
+          wildcards += '  wildcard:t="*{0}"\n'.format(ext)
+      if wildcards:
+        vromfs += ('\nfolder {{\n  output:t="{0}"\n  path:t="%engine/{1}/"\n  dest_path:t="{2}/{3}/"\n  scan_folder:b=true\n'
+                   '  scan_subfolders:b=true\n{4}}}\n').format(vromfs_name, lib_rel, mount, lib, wildcards)
+  das_init = ('options gen2\n\n// {0}\n\noptions no_aot = true\n{1}\ndef load_libs() : bool {{\n  {2} ok = true\n{3}  return ok\n}}\n\n'
+              '[export]\ndef test_all {{\n  let ok = load_libs()\n  assert(ok)\n}}\n').format(GENERATED_NOTE, requires,
+              'var' if loads else 'let', loads)
+  write_text(prog + '/_libs.jam', '# {0}\n{1}'.format(GENERATED_NOTE, jam))
+  write_text(prog + '/_aot_libs.jam', '# {0}\n{1}'.format(GENERATED_NOTE, aot_jam))
+  write_text(prog + '/_libs.vromfs.blk', '// {0}\n{1}'.format(GENERATED_NOTE, vromfs))
+  write_text(prog + '/gameBase/gamedata/templates/_libs.entities.blk', '// {0}\n{1}'.format(GENERATED_NOTE, templates))
+  write_text(prog + '/shaders/_libs_shaders.blk', '// {0}\n{1}'.format(GENERATED_NOTE, shaders))
+  write_text(prog + '/scripts/_libs_init.das', das_init)
+  write_text(prog + '/tools/_libs_init.das', das_init)
+
+# the templates (dirs with a template.blk, not starting with _): {id: description}
+def list_templates():
+  out = {}
+  if os.path.isdir(TEMPLATES_DIR):
+    for d in sorted(os.listdir(TEMPLATES_DIR)):
+      if not d.startswith('_') and os.path.isfile(os.path.join(TEMPLATES_DIR, d, TEMPLATE_BLK)):
+        out[d] = read_template(d)['description']
+  return out
+
+def blk_params(text, name, kind='t'):
+  value = r'"([^"]*)"' if kind == 't' else r'(\w+)'
+  return re.findall(r'^\s*' + name + r'\s*:\s*' + kind + r'\s*=\s*' + value, text, re.MULTILINE)
+
+# a template: its description, its dirs (the layers it names, then its own; each one's files replace those of the dirs
+# before it) and the name tokens of the layers (tokens{} of their template.blk), replaced in file names and text
+def read_template(template_id):
+  own = os.path.join(TEMPLATES_DIR, template_id)
+  fn = os.path.join(own, TEMPLATE_BLK)
+  if template_id.startswith('_') or not os.path.isfile(fn):
+    error('no template "{0}" in {1} (dagor.py new --list)'.format(template_id, TEMPLATES_DIR))
+  text = read_text(fn)[0]
+  dirs = []
+  for layer in blk_params(text, 'layer'):
+    d = os.path.join(TEMPLATES_DIR, layer)
+    if not layer.startswith('_') or not os.path.isdir(d):
+      error('{0}: layer "{1}" is not a layer dir (_<name>) of {2}'.format(fn, layer, TEMPLATES_DIR))
+    dirs.append(d)
+  dirs.append(own)
+  tokens = {}
+  for d in dirs:
+    if os.path.isfile(os.path.join(d, TEMPLATE_BLK)):
+      m = re.search(r'tokens\s*\{([^}]*)\}', read_text(os.path.join(d, TEMPLATE_BLK))[0])
+      if m:
+        tokens.update({k: v[0] for k in TEMPLATE_TOKENS for v in [blk_params(m.group(1), k)] if v})
+  missing = [k + ':t=' for k in TEMPLATE_TOKENS if not tokens.get(k)]
+  if missing:
+    error('{0}: the tokens{{}} of its layers miss {1}'.format(fn, ', '.join(missing)))
+  return {'description': (blk_params(text, 'description') or [''])[0], 'dirs': dirs, 'tokens': tokens}
+
+# the files of a template dir that git tracks or would track (without git: all but its template.blk)
+def template_dir_files(d):
+  try:
+    out = subprocess.run(['git', 'ls-files', '-z', '--cached', '--others', '--exclude-standard', '--', '.'], cwd=d,
+                         capture_output=True, check=True).stdout.decode('utf-8')
+    files = [f for f in out.split('\0') if f and os.path.isfile(os.path.join(d, f))]
+  except (OSError, subprocess.CalledProcessError):
+    files = [os.path.relpath(os.path.join(dp, f), d).replace('\\', '/') for dp, _, fs in os.walk(d) for f in fs]
+  return sorted(f for f in files if f != TEMPLATE_BLK)
+
+def substitute(text, tokens): # one pass, the longest token first: a replacement is never replaced again
+  mapping = dict(tokens)
+  return re.sub('|'.join(re.escape(old) for old, _ in tokens), lambda m: mapping[m.group(0)], text)
+
+def split_words(name): # PascalCase words: MyGame -> My Game, HTTPServer2 -> HTTP Server2
+  return re.findall(r'[A-Z]?[a-z0-9]+|[A-Z0-9]+(?![a-z])', name)
+
+def new_project(argv):
+  import argparse
+  p = argparse.ArgumentParser(prog='dagor.py new', description='Creates a game project from a template of templates/. '
+    'The project can be anywhere on the engine\'s drive: its application.blk names this engine.')
+  p.add_argument('--template', default='mp-3d', help='the template (default: mp-3d; --list shows them)')
+  p.add_argument('--name', help='PascalCase name, e.g. MyGame')
+  p.add_argument('--dest', help='the project dir to create (default: ../<name> next to the engine)')
+  p.add_argument('--codename', help='lowercase name of the executables and dirs (default: from --name, my_game)')
+  p.add_argument('--title', help='human readable name (default: from --name, "My Game")')
+  p.add_argument('--company', default='com.example', help='reverse domain name of the bundle ids (default: com.example)')
+  p.add_argument('--absolute-engine-path', action='store_true', help='names the engine by its absolute path')
+  p.add_argument('--no-git', action='store_true', help='does not run git init in the new project')
+  p.add_argument('--force', action='store_true', help='writes into an existing non-empty dir')
+  p.add_argument('--list', action='store_true', help='lists the templates')
+  args = p.parse_args(argv)
+  if args.list:
+    for template_id, description in list_templates().items():
+      print('{0:8} {1}'.format(template_id, description))
+    return
+  if not args.name:
+    p.error('--name is required')
+  name, company = args.name, args.company
+  codename = args.codename or '_'.join(w.lower() for w in split_words(name))
+  title = args.title or ' '.join(split_words(name))
+  dest = norm_path(args.dest or os.path.join(DAGOR_ROOT_FOLDER, '..', name))
+  if not re.match(r'^[A-Z][A-Za-z0-9]*$', name):
+    error('--name must be PascalCase ASCII letters and digits (like MyGame), not "{0}"'.format(name))
+  if not re.match(r'^[a-z][a-z0-9_]*$', codename):
+    error('--codename must be lowercase letters, digits and _ (like my_game), not "{0}"'.format(codename))
+  if not title.strip() or '"' in title or '\\' in title:
+    error('--title must be non-empty, without " or \\')
+  if not re.match(r'^[A-Za-z][A-Za-z0-9-]*(\.[A-Za-z][A-Za-z0-9-]*)+$', company):
+    error('--company must be a reverse domain name (like com.example), not "{0}"'.format(company))
+  if contains_spaces(dest) or contains_non_ascii(dest):
+    error('the project dir must be an ASCII path without spaces (the build tools need it), not "{0}"'.format(dest))
+  if (dest + '/').startswith(norm_path(TEMPLATES_DIR) + '/'):
+    error('the project dir is inside the templates')
+  if os.path.exists(dest) and (not os.path.isdir(dest) or os.listdir(dest)) and not args.force:
+    error('{0} exists and is not empty (--force writes into it anyway)'.format(dest))
+
+  template = read_template(args.template)
+  values = {'bundleId': company + '.' + name, 'title': title, 'name': name, 'codename': codename}
+  tokens = sorted(((template['tokens'][k], values[k]) for k in TEMPLATE_TOKENS), key=lambda t: -len(t[0]))
+  files = {}
+  for d in template['dirs']:
+    files.update({rel: os.path.join(d, rel) for rel in template_dir_files(d)})
+  print('creating "{0}" ({1}) from the {2} template in {3}'.format(title, codename, args.template, dest))
+  for rel, src in sorted(files.items()):
+    out = os.path.join(dest, substitute(rel, tokens))
+    with open(src, 'rb') as f:
+      data = f.read()
+    if b'\0' not in data:
+      data = substitute(data.decode('utf-8'), tokens).encode('utf-8')
+    os.makedirs(os.path.dirname(out), exist_ok=True)
+    with open(out, 'wb') as f:
+      f.write(data)
+    shutil.copymode(src, out) # keeps scripts executable
+  set_project_engine_root(dest, norm_path(DAGOR_ROOT_FOLDER), args.absolute_engine_path)
+  setup_project(dest)
+  if not args.no_git and shutil.which('git') and not os.path.isdir(os.path.join(dest, '.git')):
+    subprocess.run(['git', 'init', '-q'], cwd=dest, check=True)
+    print('initialized a git repository in it (nothing committed)')
+  script = '.cmd' if DAGOR_HOST == 'windows' else '.sh'
+  print('\nNext, in {0}:\n  python3 prog/build.py      the game and its content (the engine tools must be built: dagor.py build)\n'
+        '  game/client{1}            runs the game\n  develop/daEditor{1}       opens the editor\nSee its README.md.'
+        .format(dest, script))
+
+def relink_project(argv):
+  import argparse
+  p = argparse.ArgumentParser(prog='dagor.py relink', description='Points a game project at this engine (after either '
+    'moved): its application.blk names it, and its generated files (_*) are written again.')
+  p.add_argument('project', help='the project dir')
+  p.add_argument('--absolute-engine-path', action='store_true', help='names the engine by its absolute path')
+  args = p.parse_args(argv)
+  set_project_engine_root(norm_path(args.project), norm_path(DAGOR_ROOT_FOLDER), args.absolute_engine_path)
+  setup_project(args.project)
+  print('{0} is built with {1} now'.format(norm_path(args.project), norm_path(DAGOR_ROOT_FOLDER)))
+
+
 # --- check-hosts -----------------------------------------------------------------------------------------------------
 
 # The engine contacts and downloads nothing of Gaijin's: no Gaijin hosts or app IDs, no downloads from the releases of
@@ -1267,6 +1542,21 @@ def check_hosts():
 
 # --- build -----------------------------------------------------------------------------------------------------------
 
+# copies the files of src_root into dest_root that are missing or differ there (deletes nothing)
+def copy_tree(src_root, dest_root, skip=()):
+  copied = 0
+  for src_dir, _, files in os.walk(src_root):
+    dest_dir = os.path.join(dest_root, os.path.relpath(src_dir, src_root))
+    for name in files:
+      src, dest = os.path.join(src_dir, name), os.path.join(dest_dir, name)
+      if os.path.relpath(src, src_root).replace('\\', '/') in skip:
+        continue
+      if not os.path.isfile(dest) or not filecmp.cmp(src, dest, shallow=False):
+        os.makedirs(dest_dir, exist_ok=True)
+        shutil.copyfile(src, dest)
+        copied += 1
+  return copied
+
 # copies prog/tools/toolsData (the tools' data that is not built: editor commonData, Scintilla, dargbox's fonts and UI)
 # into tools/, the files that differ
 def copy_tools_data():
@@ -1275,17 +1565,7 @@ def copy_tools_data():
   if DRY_RUN:
     print('DRY_RUN: copy {0} > {1}'.format(src_root, dest_root))
     return
-  copied = 0
-  for src_dir, _, files in os.walk(src_root):
-    dest_dir = os.path.join(dest_root, os.path.relpath(src_dir, src_root))
-    for name in files:
-      if src_dir == src_root and name == 'README.md':
-        continue
-      src, dest = os.path.join(src_dir, name), os.path.join(dest_dir, name)
-      if not os.path.isfile(dest) or not filecmp.cmp(src, dest, shallow=False):
-        os.makedirs(dest_dir, exist_ok=True)
-        shutil.copyfile(src, dest)
-        copied += 1
+  copied = copy_tree(src_root, dest_root, skip=('README.md',))
   print('--- tools data: {0} files copied into {1}'.format(copied, dest_root))
 
 def build():
@@ -1347,9 +1627,15 @@ if __name__ == '__main__':
     build()
   elif command == 'check-hosts':
     exit(0 if check_hosts() else 1)
+  elif command == 'new':
+    new_project(sys.argv[2:])
+  elif command == 'relink':
+    relink_project(sys.argv[2:])
   else:
     print('\nUsage: dagor.py devtools DEVTOOLS_DEST_DIR\n' +
           '       dagor.py build [project:<name>...] [code] [shaders] [assets] [vromfs] [gui] [arch:<arch>] [--dry-run]\n' +
+          '       dagor.py new --name <Name> [--template <template>] [--dest <dir>] ... (see dagor.py new --help)\n' +
+          '       dagor.py relink <project dir>\n' +
           '       dagor.py check-hosts\n' +
           'example: python3 dagor.py devtools {0}\n'.format('d:\\devtools' if DAGOR_HOST == 'windows' else '~/devtools'))
     exit(1)

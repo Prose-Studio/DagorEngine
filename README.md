@@ -72,6 +72,16 @@ If none is passed, all projects are built.
 
 Example: `dagor.py build project:dargbox code shaders` will build only code and shaders for **dargbox**.
 
+## Making a Game Project
+
+`dagor.py new` creates a game project from one of the templates in `templates/` (`sp-3d`, `mp-3d`, `sp-2d`, `mp-2d`: single-player or multiplayer, 3D or 2D daNetGame games with the embedded editor). The project can be anywhere on the engine's drive; build the engine's tools first:
+```
+python3 dagor.py build project:dagorTools code
+python3 dagor.py new --template sp-3d --name MyGame
+python3 ../MyGame/prog/build.py
+```
+`python3 dagor.py new --list` lists the templates, `python3 dagor.py relink ../MyGame` points a project at this engine after either moved. See [Making a Game Project](_docs/source/getting-started/new_project.md).
+
 ### Documentation
   Automatically generated [Dagor Documentation](https://prose-studio.github.io/DagorEngine/) contains general architecture description, API reference, tutorials and manuals.<br>
   It is not complete yet and will be extended.

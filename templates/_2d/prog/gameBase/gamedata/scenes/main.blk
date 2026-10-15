@@ -1,0 +1,17 @@
+// The scene the game starts (settings.blk scene:t=): a 2D world in the XY plane (x right, y up, z into the screen
+// orders what is in front) seen through an orthographic camera that looks along +z; camera__orthoHeight is how many
+// world units the view is high, its width follows the window. The default world lights it; build a level in daEditor
+// (develop/daEditor) and set level__blk:t to its content/.../levels/<name>.blk.
+entity{
+  _template:t="ortho_cam"
+  camera__active:b=yes
+  camera__orthoHeight:r=10
+  transform:m=[[1, 0, 0] [0, 1, 0] [0, 0, 1] [0, 0, -10]]
+}
+
+entity{
+  _template:t="level"
+  level__blk:t="__default__"
+  level__timeSeed:i=1    // fixed seeds: the same light every start (and in the screenshot tests)
+  level__weatherSeed:i=1
+}
