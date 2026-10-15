@@ -71,23 +71,25 @@ static ecs::EntitySystemDesc init_asset_manager_es_es_desc
 );
 static constexpr ecs::ComponentDesc destoy_asset_manager_es_comps[] =
 {
-//start of 1 rq components at [0]
+//start of 1 rw components at [0]
   {ECS_HASH("asset__manager"), ecs::ComponentTypeInfo<DagorAssetMgr>()}
 };
 static void destoy_asset_manager_es_all_events(const ecs::Event &__restrict evt, const ecs::QueryView &__restrict components)
 {
-  G_UNUSED(components);
-  destoy_asset_manager_es(evt
-        );
+  auto comp = components.begin(), compE = components.end(); G_ASSERT(comp!=compE); do
+    destoy_asset_manager_es(evt
+        , ECS_RW_COMP(destoy_asset_manager_es_comps, "asset__manager", DagorAssetMgr)
+    );
+  while (++comp != compE);
 }
 static ecs::EntitySystemDesc destoy_asset_manager_es_es_desc
 (
   "destoy_asset_manager_es",
   "prog/gameLibs/assets_import/main/assetManagerES.cpp.inl",
   ecs::EntitySystemOps(nullptr, destoy_asset_manager_es_all_events),
+  make_span(destoy_asset_manager_es_comps+0, 1)/*rw*/,
   empty_span(),
   empty_span(),
-  make_span(destoy_asset_manager_es_comps+0, 1)/*rq*/,
   empty_span(),
   ecs::EventSetBuilder<ecs::EventEntityDestroyed,
                        ecs::EventComponentsDisappear>::build(),

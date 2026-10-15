@@ -42,3 +42,10 @@ void install_asset_manager_hooks()
   dabuild_resolve_res_handle = gamereshooks::resolve_res_handle;
   gamereshooks::resolve_res_handle = am_resolve_res_handle;
 }
+
+void uninstall_asset_manager_hooks()
+{
+  if (gamereshooks::resolve_res_handle == am_resolve_res_handle)
+    gamereshooks::resolve_res_handle = dabuild_resolve_res_handle;
+  dabuild_resolve_res_handle = nullptr;
+}

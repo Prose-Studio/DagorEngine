@@ -229,9 +229,18 @@ static void asset_manager_track_changes_es(const ecs::UpdateStageInfoAct &, Dago
     dabuildcache::post_base_update_notify();
 }
 
-ECS_REQUIRE(DagorAssetMgr asset__manager)
+// the reverse of init_asset_manager_es: the texture factory and the gameres hooks refer to the asset manager, which goes
+// with the entity (textures are released through the factory at exit)
 ECS_ON_EVENT(on_disappear)
-static void destoy_asset_manager_es(const ecs::Event &) { dabuildcache::term(); }
+static void destoy_asset_manager_es(const ecs::Event &, DagorAssetMgr &asset__manager)
+{
+  texconvcache::term_build_on_demand_tex_factory();
+  uninstall_asset_manager_hooks();
+  asset__manager.unsubscribeBaseUpdateNotify(&assetWatcher);
+  cachedAssetManager = nullptr;
+  cachedExportableTypes.clear();
+  dabuildcache::term();
+}
 
 
 void get_asset_dependencies(DagorAsset &asset, Tab<IDagorAssetRefProvider::Ref> &refs)
